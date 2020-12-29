@@ -24,16 +24,14 @@ export function loginUser(username, password) {
         });
       })
       .catch(e => {
-        setTimeout(() => {
-          hideProgressBar();
-          let message;
-          if (e && e.message) {
-            message = e.message;
-          } else {
-            message = "Network error encountered";
-          }
-          showPopup(message, "Ok");
-        }, 2000)
+        hideProgressBar();
+        let message;
+        if (e && e.message) {
+          message = e.message;
+        } else {
+          message = "Network error encountered";
+        }
+        showPopup(message, "Ok");
       });
   };
 }
