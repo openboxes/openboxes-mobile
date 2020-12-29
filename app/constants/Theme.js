@@ -20,6 +20,7 @@ export default {
       BORDER_COLOR: '#E7E7E7',
       BLOCK: '#E7E7E7',
       ICON: '#4A4A4A',
+      BLACK: '#000000'
     },
     SIZES: {
       BLOCK_SHADOW_RADIUS: 2,
