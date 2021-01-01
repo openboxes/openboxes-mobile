@@ -5,7 +5,7 @@ export default function showPopup(message, buttonText, buttonCallback) {
     throw Error("message not provided");
   }
   if(!buttonText) {
-    throw Error("buttonText not provided");
+    buttonText = "Ok";
   }
   Alert.alert(
     null,

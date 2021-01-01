@@ -33,17 +33,17 @@ class Login extends React.Component {
 
   onLoginPress() {
     if (!this.state.username) {
-      showPopup("Username not provided", "Ok");
+      showPopup("Username not provided");
       return;
     }
 
     if (!this.state.password) {
-      showPopup("Password not provided", "Ok");
+      showPopup("Password not provided");
       return;
     }
 
     if (this.state.password.length < 6) {
-      showPopup("Password is less than 6 characters", "Ok");
+      showPopup("Password is less than 6 characters");
       return;
     }
 

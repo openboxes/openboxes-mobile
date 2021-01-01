@@ -25,7 +25,7 @@ export function loginUser(username, password) {
       })
       .catch(e => {
         hideProgressBar();
-        showPopup(e.message, "Ok");
+        showPopup(e.message);
       });
   };
 }
@@ -46,5 +46,5 @@ export function logout(reason) {
   store.dispatch({
     type: LOGOUT
   })
-  if(reason) showPopup(reason, "Ok");
+  if(reason) showPopup(reason);
 }
