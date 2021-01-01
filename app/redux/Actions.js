@@ -1,5 +1,5 @@
 import apiClient from "../utils/ApiClient";
-import {HIDE_PROGRESS_DIALOG, SHOW_PROGRESS_DIALOG, USER_LOGS_IN} from "./Types";
+import {HIDE_PROGRESS_DIALOG, LOGOUT, SHOW_PROGRESS_DIALOG, USER_LOGS_IN} from "./Types";
 import store from "./Store";
 import showPopup from "../components/Popup";
 
@@ -25,13 +25,7 @@ export function loginUser(username, password) {
       })
       .catch(e => {
         hideProgressBar();
-        let message;
-        if (e && e.message) {
-          message = e.message;
-        } else {
-          message = "Network error encountered";
-        }
-        showPopup(message, "Ok");
+        showPopup(e.message, "Ok");
       });
   };
 }
@@ -46,4 +40,11 @@ export function hideProgressBar() {
   store.dispatch({
     type: HIDE_PROGRESS_DIALOG
   });
+}
+
+export function logout(reason) {
+  store.dispatch({
+    type: LOGOUT
+  })
+  if(reason) showPopup(reason, "Ok");
 }

@@ -16,6 +16,9 @@ const RootReducer = createReducer(initialState, {
   },
   HIDE_PROGRESS_DIALOG: (state, action) => {
     state.progressDialog.visible = false
+  },
+  LOGOUT: (state, action) => {
+    state.user = null;
   }
 });
 export default RootReducer;
