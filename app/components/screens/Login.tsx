@@ -1,14 +1,35 @@
 import React from "react";
 import {StyleSheet} from "react-native";
+// @ts-ignore
 import {Block, Button, Input} from "galio-framework";
-import {loginUser} from "../../redux/Actions";
+import {loginUser} from "../../redux/Dispatchers";
 import {connect} from "react-redux";
 import Theme from "../../constants/Theme";
 import showPopup from "../Popup";
+import {AppState} from "../../redux/Reducer";
 
-class Login extends React.Component {
+export interface OwnProps {
+  //no-op
+}
 
-  constructor(props) {
+interface StateProps {
+  //no-op
+}
+
+interface DispatchProps {
+  loginUser: (username: string, password: string) => void;
+}
+
+type Props = OwnProps & StateProps & DispatchProps;
+
+interface State {
+  username: string;
+  password: string;
+}
+
+class Login extends React.Component<Props, State> {
+
+  constructor(props: Props) {
     super(props);
     this.state = {
       username: "",
@@ -19,13 +40,13 @@ class Login extends React.Component {
     this.onLoginPress = this.onLoginPress.bind(this);
   }
 
-  onUsernameChange(username) {
+  onUsernameChange(username: string) {
     this.setState({
       username: username
     })
   }
 
-  onPasswordChange(password) {
+  onPasswordChange(password: string) {
     this.setState({
       password: password
     })
@@ -78,12 +99,13 @@ const styles = StyleSheet.create({
   }
 });
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state: AppState): StateProps => ({
   //no-op
 });
 
-const mapDispatchToProps = {
+const mapDispatchToProps: DispatchProps = {
   loginUser
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Login);
+
+export default connect<StateProps, DispatchProps, OwnProps, AppState>(mapStateToProps, mapDispatchToProps)(Login);

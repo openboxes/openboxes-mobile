@@ -2,7 +2,11 @@ import React from "react";
 import {ActivityIndicator, View, Modal, StyleSheet} from "react-native";
 import Theme from "../constants/Theme";
 
-export default class ProgressDialog extends React.Component {
+export interface Props {
+  visible: boolean
+}
+
+export default class ProgressDialog extends React.Component<Props> {
 
   render() {
     return (

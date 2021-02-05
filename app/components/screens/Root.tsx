@@ -2,16 +2,40 @@ import React from "react";
 import Home from "./Home";
 import Login from "./Login";
 import {connect} from "react-redux";
+// @ts-ignore
 import {Block} from "galio-framework";
 import ProgressDialog from "../ProgressDialog";
+import {AppState} from "../../redux/Reducer";
 
-class Root extends React.Component {
+export interface OwnProps {
+  //no-op
+}
 
-  constructor(props) {
+interface StateProps {
+  user?: any;
+  progressDialog: {
+    visible: boolean;
+  }
+}
+
+interface DispatchProps {
+  //no-op
+}
+
+
+type Props = OwnProps & StateProps & DispatchProps;
+
+interface State {
+  //no-op
+}
+
+class Root extends React.Component<Props, State> {
+
+  constructor(props: Props) {
     super(props);
   }
 
-  shouldComponentUpdate(nextProps, nextState, nextContext) {
+  shouldComponentUpdate(nextProps: Props, nextState: State) {
     return this.props.user !== nextProps.user ||
       this.props.progressDialog.visible !== nextProps.progressDialog.visible;
   }
@@ -30,13 +54,13 @@ class Root extends React.Component {
   }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state: AppState): StateProps => ({
   user: state.user,
   progressDialog: state.progressDialog
 });
 
-const mapDispatchToProps = {
+const mapDispatchToProps: DispatchProps = {
   //no-op
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Root);
+export default connect<StateProps, DispatchProps, OwnProps, AppState>(mapStateToProps, mapDispatchToProps)(Root);

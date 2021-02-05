@@ -1,4 +1,5 @@
 import React from 'react';
+// @ts-ignore
 import {GalioProvider} from 'galio-framework';
 import {materialTheme} from './app/constants/';
 import Root from "./app/components/screens/Root";

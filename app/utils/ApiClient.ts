@@ -1,11 +1,16 @@
-import axios from "axios";
-import {logout} from "../redux/Actions";
+import axios, {AxiosError, AxiosResponse} from "axios";
+import {logout} from "../redux/Dispatchers";
 
 const apiClient = axios.create()
 
-const handleApiSuccess = response => response;
+export interface ApiError {
+  message: string,
+  code: string
+}
 
-const handleApiFailure = error => {
+const handleApiSuccess = (response: AxiosResponse) => response;
+
+const handleApiFailure = (error: AxiosError): Promise<ApiError> => {
   let message = error.response?.data?.errorMessage;
   const code = error.response?.status;
   switch(code) {

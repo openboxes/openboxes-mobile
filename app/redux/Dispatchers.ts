@@ -1,10 +1,10 @@
-import apiClient from "../utils/ApiClient";
-import {HIDE_PROGRESS_DIALOG, LOGOUT, SHOW_PROGRESS_DIALOG, USER_LOGS_IN} from "./Types";
-import store from "./Store";
+import apiClient, {ApiError} from "../utils/ApiClient";
+import {hideProgressDialogAction, loginAction, logoutAction, showProgressDialogAction} from "./Actions";
+import store, {AppDispatch} from "./Store";
 import showPopup from "../components/Popup";
 
-export function loginUser(username, password) {
-  return (dispatch) => {
+export function loginUser(username: string, password: string) {
+  return (dispatch: AppDispatch) => {
     const url = "TODO";
     const request = {
       username: username,
@@ -19,11 +19,11 @@ export function loginUser(username, password) {
         */
         hideProgressBar()
         dispatch({
-          type: USER_LOGS_IN,
+          type: loginAction.type,
           payload: response
         });
       })
-      .catch(e => {
+      .catch((e: ApiError) => {
         hideProgressBar();
         showPopup(e.message);
       });
@@ -32,19 +32,19 @@ export function loginUser(username, password) {
 
 export function showProgressBar() {
   store.dispatch({
-    type: SHOW_PROGRESS_DIALOG
+    type: showProgressDialogAction.type
   });
 }
 
 export function hideProgressBar() {
   store.dispatch({
-    type: HIDE_PROGRESS_DIALOG
+    type: hideProgressDialogAction.type
   });
 }
 
-export function logout(reason) {
+export function logout(reason?: string) {
   store.dispatch({
-    type: LOGOUT
+    type: logoutAction.type
   })
   if(reason) showPopup(reason);
 }
