@@ -1,5 +1,10 @@
 import apiClient, {ApiError} from "../utils/ApiClient";
-import {hideProgressDialogAction, loginAction, logoutAction, showProgressDialogAction} from "./Actions";
+import {
+  hideFullScreenLoadingIndicatorAction,
+  loginAction,
+  logoutAction,
+  showFullScreenLoadingIndicatorAction
+} from "./Actions";
 import store, {AppDispatch} from "./Store";
 import showPopup from "../components/Popup";
 
@@ -23,28 +28,28 @@ export function loginUser(username: string, password: string) {
           payload: response
         });
       })
-      .catch((e: ApiError) => {
+      .catch(async (e: ApiError) => {
         hideProgressBar();
-        showPopup(e.message);
+        await showPopup({message : e.message});
       });
   };
 }
 
 export function showProgressBar() {
   store.dispatch({
-    type: showProgressDialogAction.type
+    type: showFullScreenLoadingIndicatorAction.type
   });
 }
 
 export function hideProgressBar() {
   store.dispatch({
-    type: hideProgressDialogAction.type
+    type: hideFullScreenLoadingIndicatorAction.type
   });
 }
 
-export function logout(reason?: string) {
+export async function logout(reason?: string) {
   store.dispatch({
     type: logoutAction.type
   })
-  if(reason) showPopup(reason);
+  if(reason) await showPopup({message: reason});
 }

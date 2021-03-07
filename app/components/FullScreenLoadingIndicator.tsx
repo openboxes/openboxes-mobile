@@ -6,7 +6,7 @@ export interface Props {
   visible: boolean
 }
 
-export default class ProgressDialog extends React.Component<Props> {
+export default class FullScreenLoadingIndicator extends React.Component<Props> {
 
   render() {
     return (

@@ -4,7 +4,7 @@ import Login from "./Login";
 import {connect} from "react-redux";
 // @ts-ignore
 import {Block} from "galio-framework";
-import ProgressDialog from "../ProgressDialog";
+import FullScreenLoadingIndicator from "../FullScreenLoadingIndicator";
 import {AppState} from "../../redux/Reducer";
 
 export interface OwnProps {
@@ -13,7 +13,7 @@ export interface OwnProps {
 
 interface StateProps {
   user?: any;
-  progressDialog: {
+  fullScreenLoadingIndicator: {
     visible: boolean;
   }
 }
@@ -37,13 +37,13 @@ class Root extends React.Component<Props, State> {
 
   shouldComponentUpdate(nextProps: Props, nextState: State) {
     return this.props.user !== nextProps.user ||
-      this.props.progressDialog.visible !== nextProps.progressDialog.visible;
+      this.props.fullScreenLoadingIndicator.visible !== nextProps.fullScreenLoadingIndicator.visible;
   }
 
   render() {
     return (
       <Block flex>
-        <ProgressDialog visible={this.props.progressDialog.visible}/>
+        <FullScreenLoadingIndicator visible={this.props.fullScreenLoadingIndicator.visible}/>
         {
           this.props.user
             ? <Home/>
@@ -56,7 +56,7 @@ class Root extends React.Component<Props, State> {
 
 const mapStateToProps = (state: AppState): StateProps => ({
   user: state.user,
-  progressDialog: state.progressDialog
+  fullScreenLoadingIndicator: state.fullScreenLoadingIndicator
 });
 
 const mapDispatchToProps: DispatchProps = {

@@ -1,9 +1,9 @@
 import {createReducer} from "@reduxjs/toolkit";
 import {
-  hideProgressDialogAction,
+  showFullScreenLoadingIndicatorAction,
   loginAction,
   logoutAction,
-  showProgressDialogAction
+  hideFullScreenLoadingIndicatorAction
 } from "./Actions";
 
 export interface AppState {
@@ -13,14 +13,14 @@ export interface AppState {
    backend. Hence it has been set as any for now.
   */
   user?: any;
-  progressDialog: {
+  fullScreenLoadingIndicator: {
     visible: boolean;
   };
 }
 
 const initialState: AppState = {
   user: null,
-  progressDialog: {
+  fullScreenLoadingIndicator: {
     visible: false
   }
 };
@@ -29,11 +29,11 @@ const RootReducer = createReducer<AppState>(initialState, {
   [loginAction.type]: (state, action) => {
     state.user = action.payload;
   },
-  [showProgressDialogAction.type]: (state, action) => {
-    state.progressDialog.visible = true
+  [showFullScreenLoadingIndicatorAction.type]: (state, action) => {
+    state.fullScreenLoadingIndicator.visible = true
   },
-  [hideProgressDialogAction.type]: (state, action) => {
-    state.progressDialog.visible = false
+  [hideFullScreenLoadingIndicatorAction.type]: (state, action) => {
+    state.fullScreenLoadingIndicator.visible = false
   },
   [logoutAction.type]: (state, action) => {
     state.user = null;
