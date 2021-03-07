@@ -28,7 +28,10 @@
     "react-native-gesture-handler": "~1.7.0",
     "react-native-modal-dropdown": "git+https://github.com/siemiatj/react-native-modal-dropdown.git",
     "react-native-reanimated": "~1.13.0",
-    "react-redux": "~7.2.2"
+    "react-redux": "~7.2.2",
+    "expo-intent-launcher": "8.3.0",
+    "expo-application": "2.3.0",
+    "expo-permissions": "9.3.0"
   },
   "devDependencies": {
     "@babel/core": "~7.9.0",
