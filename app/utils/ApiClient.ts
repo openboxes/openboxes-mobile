@@ -10,12 +10,12 @@ export interface ApiError {
 
 const handleApiSuccess = (response: AxiosResponse) => response;
 
-const handleApiFailure = (error: AxiosError): Promise<ApiError> => {
+const handleApiFailure = async (error: AxiosError): Promise<ApiError> => {
   let message = error.response?.data?.errorMessage;
   const code = error.response?.status;
   switch(code) {
     case 401:
-      logout("Unauthorized Access. User has been logged out.");
+      await logout("Unauthorized Access. User has been logged out.");
       message = message ?? "Unauthorized";
       break;
     case 403:

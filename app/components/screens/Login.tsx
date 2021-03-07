@@ -53,22 +53,24 @@ class Login extends React.Component<Props, State> {
   }
 
   onLoginPress() {
-    if (!this.state.username) {
-      showPopup("Username not provided");
-      return;
-    }
+    (async () => {
+      if (!this.state.username) {
+        await showPopup({message: "Username not provided"});
+        return;
+      }
 
-    if (!this.state.password) {
-      showPopup("Password not provided");
-      return;
-    }
+      if (!this.state.password) {
+        await showPopup({message: "Password not provided"});
+        return;
+      }
 
-    if (this.state.password.length < 6) {
-      showPopup("Password is less than 6 characters");
-      return;
-    }
+      if (this.state.password.length < 6) {
+        await showPopup({message:"Password is less than 6 characters"});
+        return;
+      }
 
-    this.props.loginUser(this.state.username, this.state.password);
+      this.props.loginUser(this.state.username, this.state.password);
+    })()
   }
 
   render() {

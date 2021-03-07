@@ -1,20 +1,30 @@
-import {Alert} from "react-native";
+import {Alert, AlertButton} from "react-native";
 
-export default function showPopup(
-  message: string,
-  title: string = "",
-  buttonText: string = "Ok",
-  buttonCallback?: () => void
-) {
-  Alert.alert(
-    title,
-    message,
-    [
-      {
-        text: buttonText,
-        onPress: () => buttonCallback?.()
-      }
-    ],
-    {cancelable: false}
-  )
+export interface PopupParams {
+  message: string
+  title?: string
+  positiveButtonText?: string
+  negativeButtonText?: string
+}
+
+export default function showPopup(params: PopupParams): Promise<boolean> {
+  return new Promise((resolve, reject) => {
+    let buttons: AlertButton[] = []
+    if (params.negativeButtonText) {
+      buttons.push({
+        text: params.negativeButtonText,
+        onPress: () => resolve(false)
+      })
+    }
+    buttons.push({
+      text: params.positiveButtonText ?? "Ok",
+      onPress: () => resolve(true)
+    });
+    Alert.alert(
+      params.title ?? "",
+      params.message,
+      buttons,
+      {cancelable: false}
+    )
+  })
 }
