@@ -1,5 +1,5 @@
 import React from "react";
-import Home from "./Home";
+import Dashboard from "./Dashboard";
 import Login from "./Login";
 import {connect} from "react-redux";
 // @ts-ignore
@@ -46,7 +46,7 @@ class Root extends React.Component<Props, State> {
         <FullScreenLoadingIndicator visible={this.props.fullScreenLoadingIndicator.visible}/>
         {
           this.props.user
-            ? <Home/>
+            ? <Dashboard/>
             : <Login/>
         }
       </Block>

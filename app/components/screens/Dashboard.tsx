@@ -20,7 +20,7 @@ interface State {
 
 }
 
-export default class Home extends React.Component<Props, State> {
+export default class Dashboard extends React.Component<Props, State> {
 
   render() {
     return (
