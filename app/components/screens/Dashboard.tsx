@@ -1,6 +1,5 @@
 import React from "react";
-// @ts-ignore
-import { Block, Text } from "galio-framework";
+import {Text, View} from "react-native";
 
 export interface OwnProps {
   //no-op
@@ -24,11 +23,11 @@ export default class Dashboard extends React.Component<Props, State> {
 
   render() {
     return (
-      <Block flex center>
+      <View>
         <Text>
           If you can see this, then you are definitely logged in.
         </Text>
-      </Block>
+      </View>
     );
   }
 }

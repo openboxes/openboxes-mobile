@@ -1,12 +1,11 @@
 import React from "react";
-// @ts-ignore
-import {Block, Button, Text} from "galio-framework";
-import {StyleSheet} from "react-native";
+import {StyleSheet, Text, View} from "react-native";
 import {AppState} from "../redux/Reducer";
 import {connect} from "react-redux";
 import {PermissionType, requestPermission} from "../utils/permissions/RequestPermission";
 import {Camera} from "expo-camera";
 import {BarCodeScanningResult} from "expo-camera/build/Camera.types";
+import Button from "./Button";
 
 export interface OwnProps {
   onBarCodeScanned: (data: string) => void
@@ -65,10 +64,10 @@ class BarCodeScanner extends React.Component<Props, State> {
       case null:
       case false:
         content =
-          <Block flex middle>
+          <View style={styles.cameraPermissionNotGrantedContainer}>
             <Text>Can't scan bar code without camera permission</Text>
-            <Button onPress={this.getCameraPermission}>Give permission</Button>
-          </Block>
+            <Button title="Give permission" onPress={this.getCameraPermission}/>
+          </View>
         break;
       case true:
         content =
@@ -82,6 +81,16 @@ class BarCodeScanner extends React.Component<Props, State> {
     return (content)
   }
 }
+
+const styles = StyleSheet.create({
+  cameraPermissionNotGrantedContainer: {
+    display: "flex",
+    flex: 1,
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center"
+  }
+})
 
 const mapStateToProps = (state: AppState): StateProps => ({});
 

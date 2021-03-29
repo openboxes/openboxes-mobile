@@ -1,12 +1,12 @@
 import React from "react";
-import {StyleSheet} from "react-native";
-// @ts-ignore
-import {Block, Button, Input} from "galio-framework";
-import {loginUser} from "../../redux/Dispatchers";
+import {StyleSheet, View} from "react-native";
 import {connect} from "react-redux";
-import Theme from "../../constants/Theme";
 import showPopup from "../Popup";
 import {AppState} from "../../redux/Reducer";
+import {login} from "../../data/auth/Login";
+import {TextInput} from "react-native-paper";
+import Header from "../Header";
+import Button from "../Button";
 
 export interface OwnProps {
   //no-op
@@ -17,7 +17,7 @@ interface StateProps {
 }
 
 interface DispatchProps {
-  loginUser: (username: string, password: string) => void;
+  login: (username: string, password: string) => void;
 }
 
 type Props = OwnProps & StateProps & DispatchProps;
@@ -65,38 +65,56 @@ class Login extends React.Component<Props, State> {
       }
 
       if (this.state.password.length < 6) {
-        await showPopup({message:"Password is less than 6 characters"});
+        await showPopup({message: "Password is less than 6 characters"});
         return;
       }
 
-      this.props.loginUser(this.state.username, this.state.password);
+      this.props.login(this.state.username, this.state.password);
     })()
   }
 
+  /*
+  FIXME:
+    1. Pull out the button with the parent View to ensure that its width wraps content into a dedicated
+    component.
+  */
   render() {
     return (
-      <Block flex middle style={styles.container}>
-        <Input
-          placeholder="Username"
-          placeholderTextColor={Theme.COLORS.PLACEHOLDER}
-          color={Theme.COLORS.BLACK}
-          onChangeText={this.onUsernameChange}
-        />
-        <Input
-          placeholder="Password"
-          placeholderTextColor={Theme.COLORS.PLACEHOLDER}
-          color={Theme.COLORS.BLACK}
-          password
-          onChangeText={this.onPasswordChange}
-        />
-        <Button onPress={this.onLoginPress}>Login</Button>
-      </Block>
+      <View style={styles.screenContainer}>
+        <Header title="Login" />
+        <View style={styles.inputContainer}>
+          <TextInput
+            mode="outlined"
+            placeholder="Username"
+            onChangeText={this.onUsernameChange}
+          />
+          <TextInput
+            mode="outlined"
+            placeholder="Password"
+            secureTextEntry={true}
+            onChangeText={this.onPasswordChange}
+            style={{
+              marginTop: 8
+            }}
+          />
+          <Button title="Login" onPress={this.onLoginPress}/>
+        </View>
+      </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  container: {
+  screenContainer: {
+    display: "flex",
+    flexDirection: "column",
+    flex: 1
+  },
+  inputContainer: {
+    display: "flex",
+    flex: 1,
+    flexDirection: "column",
+    justifyContent: "center",
     paddingHorizontal: 10
   }
 });
@@ -106,7 +124,7 @@ const mapStateToProps = (state: AppState): StateProps => ({
 });
 
 const mapDispatchToProps: DispatchProps = {
-  loginUser
+  login
 };
 
 

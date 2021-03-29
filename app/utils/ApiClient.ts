@@ -1,14 +1,40 @@
-import axios, {AxiosError, AxiosResponse} from "axios";
+import axios, {AxiosError, AxiosRequestConfig, AxiosResponse} from "axios";
 import {logout} from "../redux/Dispatchers";
+import {createLogger} from "./Logger";
 
-const apiClient = axios.create()
+const logger = createLogger("ApiClient.ts")
+
+const apiClient = axios.create({
+  baseURL: "https://demo.openboxes.com/openboxes/api",
+  withCredentials: true
+})
 
 export interface ApiError {
   message: string,
   code: string
 }
 
-const handleApiSuccess = (response: AxiosResponse) => response;
+const handleApiRequest = (request: AxiosRequestConfig) => {
+  const url = request.url
+  const headers = request.headers
+  const params = request.params
+  logger.d(`handleApiRequest: url = ${JSON.stringify(url)}, headers = ${JSON.stringify(headers)}`)
+  logger.d(`handleApiRequest: url = ${JSON.stringify(url)}, params = ${JSON.stringify(params)}`)
+  return request
+}
+
+const handleApiSuccess = (response: AxiosResponse) => {
+  const url = response.config.url
+  const headers = response.config.headers
+  const params = response.config.params
+  const responseHeaders = response.headers
+  const responseBody: string = JSON.stringify(response.data)
+  logger.d(`handleApiSuccess: url = ${JSON.stringify(url)}, headers = ${JSON.stringify(headers)}`)
+  logger.d(`handleApiSuccess: url = ${JSON.stringify(url)}, params = ${JSON.stringify(params)}`)
+  logger.d(`handleApiSuccess: url = ${JSON.stringify(url)}, responseHeaders = ${JSON.stringify(responseHeaders)}`)
+  logger.d(`handleApiSuccess: url = ${JSON.stringify(url)}, responseBody = ${responseBody}`)
+  return JSON.parse(responseBody)
+}
 
 const handleApiFailure = async (error: AxiosError): Promise<ApiError> => {
   let message = error.response?.data?.errorMessage;
@@ -38,5 +64,6 @@ const handleApiFailure = async (error: AxiosError): Promise<ApiError> => {
   })
 };
 
+apiClient.interceptors.request.use(handleApiRequest)
 apiClient.interceptors.response.use(handleApiSuccess, handleApiFailure)
 export default apiClient;

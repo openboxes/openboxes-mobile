@@ -1,6 +1,6 @@
 import React from "react";
-import {ActivityIndicator, View, Modal, StyleSheet} from "react-native";
-import Theme from "../constants/Theme";
+import {View, Modal, StyleSheet} from "react-native";
+import {ActivityIndicator} from "react-native-paper";
 
 export interface Props {
   visible: boolean
@@ -17,7 +17,7 @@ export default class FullScreenLoadingIndicator extends React.Component<Props> {
         >
           <View style={styles.modalChild}>
             <View style={styles.progressContainer}>
-              <ActivityIndicator color={Theme.COLORS.PRIMARY} size="large"/>
+              <ActivityIndicator />
             </View>
           </View>
         </Modal>

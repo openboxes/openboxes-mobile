@@ -5,29 +5,30 @@ import {
   logoutAction,
   hideFullScreenLoadingIndicatorAction
 } from "./Actions";
+import {User} from "./User";
+import {Location} from "../data/location/Models";
 
 export interface AppState {
-  /*
-  FIXME:
-   The `user` object type is yet to be decided since it needs to come from the
-   backend. Hence it has been set as any for now.
-  */
-  user?: any;
+  user?: User | null
   fullScreenLoadingIndicator: {
-    visible: boolean;
-  };
+    visible: boolean
+  }
+  currentLocation?: Location | null
 }
 
 const initialState: AppState = {
   user: null,
   fullScreenLoadingIndicator: {
     visible: false
-  }
+  },
+  currentLocation: null
 };
 
 const RootReducer = createReducer<AppState>(initialState, {
   [loginAction.type]: (state, action) => {
-    state.user = action.payload;
+    state.user = {
+      username: action.payload.username
+    };
   },
   [showFullScreenLoadingIndicatorAction.type]: (state, action) => {
     state.fullScreenLoadingIndicator.visible = true

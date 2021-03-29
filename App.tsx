@@ -1,17 +1,15 @@
 import React from 'react';
-// @ts-ignore
-import {GalioProvider} from 'galio-framework';
-import {materialTheme} from './app/constants/';
 import Root from "./app/components/screens/Root";
 import store from "./app/redux/Store";
-import {Provider} from "react-redux";
+import {Provider as ReduxProvider} from "react-redux";
+import {Provider as PaperProvider} from "react-native-paper";
 
 export default function App() {
   return (
-    <Provider store={store}>
-      <GalioProvider theme={materialTheme}>
+    <ReduxProvider store={store}>
+      <PaperProvider>
         <Root/>
-      </GalioProvider>
-    </Provider>
+      </PaperProvider>
+    </ReduxProvider>
   );
 }
