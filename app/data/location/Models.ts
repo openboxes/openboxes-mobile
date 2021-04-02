@@ -8,11 +8,17 @@ FIXME: Is there a better name for this? Don't want this to collide with
 export interface Location {
   id: string
   name: string
+  locationGroup: LocationGroup
   organizationName?: string | null
   hasBinLocationSupport: boolean
   hasPackingSupport: boolean
   hasPartialReceivingSupport: boolean
   locationType: LocationType
+}
+
+export interface LocationGroup {
+  id: string
+  name: string
 }
 
 export interface LocationType {
