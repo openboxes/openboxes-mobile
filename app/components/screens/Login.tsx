@@ -17,14 +17,14 @@ interface StateProps {
 }
 
 interface DispatchProps {
-  login: (username: string, password: string) => void;
+  login: (username: string, password: string) => void
 }
 
 type Props = OwnProps & StateProps & DispatchProps;
 
 interface State {
-  username: string;
-  password: string;
+  username: string
+  password: string
 }
 
 class Login extends React.Component<Props, State> {
@@ -35,9 +35,9 @@ class Login extends React.Component<Props, State> {
       username: "",
       password: ""
     }
-    this.onUsernameChange = this.onUsernameChange.bind(this);
-    this.onPasswordChange = this.onPasswordChange.bind(this);
-    this.onLoginPress = this.onLoginPress.bind(this);
+    this.onUsernameChange = this.onUsernameChange.bind(this)
+    this.onPasswordChange = this.onPasswordChange.bind(this)
+    this.onLoginPress = this.onLoginPress.bind(this)
   }
 
   onUsernameChange(username: string) {
@@ -55,21 +55,21 @@ class Login extends React.Component<Props, State> {
   onLoginPress() {
     (async () => {
       if (!this.state.username) {
-        await showPopup({message: "Username not provided"});
-        return;
+        await showPopup({message: "Username not provided"})
+        return
       }
 
       if (!this.state.password) {
-        await showPopup({message: "Password not provided"});
-        return;
+        await showPopup({message: "Password not provided"})
+        return
       }
 
       if (this.state.password.length < 6) {
-        await showPopup({message: "Password is less than 6 characters"});
-        return;
+        await showPopup({message: "Password is less than 6 characters"})
+        return
       }
 
-      this.props.login(this.state.username, this.state.password);
+      this.props.login(this.state.username, this.state.password)
     })()
   }
 
