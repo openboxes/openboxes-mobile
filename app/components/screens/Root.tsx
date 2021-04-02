@@ -2,26 +2,32 @@ import React from "react";
 import Dashboard from "./Dashboard";
 import Login from "./Login";
 import {connect} from "react-redux";
-// @ts-ignore
-import {Block} from "galio-framework";
 import FullScreenLoadingIndicator from "../FullScreenLoadingIndicator";
 import {AppState} from "../../redux/Reducer";
+import ChooseCurrentLocation from "./ChooseCurrentLocation";
+import {Location} from "../../data/location/Models";
+import {StyleSheet, View} from "react-native";
+import {Session} from "../../data/auth/Session";
+import getSession from "../../data/auth/GetSession";
+import showPopup from "../Popup";
 
 export interface OwnProps {
   //no-op
 }
 
 interface StateProps {
-  user?: any;
+  loggedIn: boolean
   fullScreenLoadingIndicator: {
     visible: boolean;
+    message?: string | null
   }
+  currentLocation?: Location | null
+  session?: Session | null
 }
 
 interface DispatchProps {
-  //no-op
+  getSession: () => void
 }
-
 
 type Props = OwnProps & StateProps & DispatchProps;
 
@@ -33,34 +39,80 @@ class Root extends React.Component<Props, State> {
 
   constructor(props: Props) {
     super(props);
+    this.getSession = this.getSession.bind(this)
   }
 
   shouldComponentUpdate(nextProps: Props, nextState: State) {
-    return this.props.user !== nextProps.user ||
-      this.props.fullScreenLoadingIndicator.visible !== nextProps.fullScreenLoadingIndicator.visible;
+    return this.props.fullScreenLoadingIndicator.visible !== nextProps.fullScreenLoadingIndicator.visible ||
+      this.props.loggedIn != nextProps.loggedIn ||
+      this.props.currentLocation !== nextProps.currentLocation ||
+      this.props.session !== nextProps.session
+  }
+
+  componentDidUpdate(prevProps: Readonly<Props>, prevState: Readonly<State>, snapshot?: any) {
+    if(this.props.loggedIn && this.props.currentLocation !== null && this.props.session === null) {
+      (async () => {
+        await this.getSession()
+      })()
+    }
+  }
+
+  async getSession(): Promise<void> {
+    try {
+      this.props.getSession()
+    } catch(e) {
+      await showPopup({
+        message: "Failed to fetch session",
+        positiveButtonText: "Retry"
+      })
+      await this.getSession()
+    }
   }
 
   render() {
-    return (
-      <Block flex>
-        <FullScreenLoadingIndicator visible={this.props.fullScreenLoadingIndicator.visible}/>
-        {
-          this.props.user
-            ? <Dashboard/>
-            : <Login/>
+    let content
+    if (this.props.loggedIn) {
+      if (this.props.currentLocation != null) {
+        if(this.props.session != null) {
+          content = <Dashboard/>
+        } else {
+          content = null
         }
-      </Block>
+      } else {
+        content = <ChooseCurrentLocation/>
+      }
+    } else {
+      content = <Login/>
+    }
+    return (
+      <View style={styles.container}>
+        <FullScreenLoadingIndicator
+          visible={this.props.fullScreenLoadingIndicator.visible}
+          message={this.props.fullScreenLoadingIndicator.message}
+        />
+        {content}
+      </View>
     );
   }
 }
 
+const styles = StyleSheet.create({
+  container: {
+    display: "flex",
+    flexDirection: "column",
+    flex: 1
+  }
+})
+
 const mapStateToProps = (state: AppState): StateProps => ({
-  user: state.user,
-  fullScreenLoadingIndicator: state.fullScreenLoadingIndicator
-});
+  loggedIn: state.loggedIn,
+  fullScreenLoadingIndicator: state.fullScreenLoadingIndicator,
+  currentLocation: state.currentLocation,
+  session: state.session
+})
 
 const mapDispatchToProps: DispatchProps = {
-  //no-op
+  getSession
 };
 
 export default connect<StateProps, DispatchProps, OwnProps, AppState>(mapStateToProps, mapDispatchToProps)(Root);

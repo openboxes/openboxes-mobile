@@ -1,29 +1,34 @@
 import React from "react";
-import {View, Modal, StyleSheet} from "react-native";
+import {View, Modal, StyleSheet, Text} from "react-native";
 import {ActivityIndicator} from "react-native-paper";
 
 export interface Props {
   visible: boolean
+  message?: string | null
 }
 
-export default class FullScreenLoadingIndicator extends React.Component<Props> {
-
-  render() {
-    return (
-      <View style={styles.modalParent}>
-        <Modal
-          visible={this.props.visible}
-          transparent
-        >
-          <View style={styles.modalChild}>
-            <View style={styles.progressContainer}>
-              <ActivityIndicator />
-            </View>
+export default function FullScreenLoadingIndicator(props: Props) {
+  return (
+    <View style={styles.modalParent}>
+      <Modal
+        visible={props.visible}
+        transparent
+      >
+        <View style={styles.modalChild}>
+          <View style={styles.progressContainer}>
+            <ActivityIndicator />
+            {
+              props.message
+                ?
+                <Text style={styles.progressMessage}>{props.message}</Text>
+                :
+                null
+            }
           </View>
-        </Modal>
-      </View>
-    );
-  }
+        </View>
+      </Modal>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -46,6 +51,12 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     shadowColor: "#000000",
     padding: 20,
-    borderRadius: 5
+    borderRadius: 5,
+    justifyContent: "center",
+    alignItems: "center"
+  },
+  progressMessage: {
+    marginTop: 8,
+    fontSize: 16
   }
 });

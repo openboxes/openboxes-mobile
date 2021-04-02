@@ -1,4 +1,4 @@
-import apiClient, {ApiError} from "../../utils/ApiClient";
+import apiClient from "../../utils/ApiClient";
 import {Location} from "./Models";
 import {hideProgressBar, showProgressBar} from "../../redux/Dispatchers";
 
@@ -8,12 +8,12 @@ interface GetLocationsApiResponse {
   data: Location[]
 }
 
+/*
+FIXME: Maybe consider implementing this using Redux.
+*/
 export default function getLocations(): Promise<Location[]> {
   showProgressBar()
   return apiClient.get(url)
-    .then((response: GetLocationsApiResponse) => {
-      hideProgressBar()
-      return response.data
-    })
+    .then((response: GetLocationsApiResponse) => response.data)
     .finally(() => hideProgressBar())
 }

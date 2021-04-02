@@ -3,12 +3,13 @@ import {
   logoutAction,
   showFullScreenLoadingIndicatorAction
 } from "./Actions";
-import store from "./Store";
+import store, {AppDispatch} from "./Store";
 import showPopup from "../components/Popup";
 
-export function showProgressBar() {
+export function showProgressBar(message?: string | null) {
   store.dispatch({
-    type: showFullScreenLoadingIndicatorAction.type
+    type: showFullScreenLoadingIndicatorAction.type,
+    payload: message
   });
 }
 
