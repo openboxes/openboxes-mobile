@@ -66,7 +66,13 @@ class BarCodeScanner extends React.Component<Props, State> {
         content =
           <View style={styles.cameraPermissionNotGrantedContainer}>
             <Text>Can't scan bar code without camera permission</Text>
-            <Button title="Give permission" onPress={this.getCameraPermission}/>
+            <Button
+              title="Give permission"
+              onPress={this.getCameraPermission}
+              style={{
+                marginTop: 8
+              }}
+            />
           </View>
         break;
       case true:

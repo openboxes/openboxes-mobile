@@ -73,11 +73,6 @@ class Login extends React.Component<Props, State> {
     })()
   }
 
-  /*
-  FIXME:
-    1. Pull out the button with the parent View to ensure that its width wraps content into a dedicated
-    component.
-  */
   render() {
     return (
       <View style={styles.screenContainer}>
@@ -97,7 +92,13 @@ class Login extends React.Component<Props, State> {
               marginTop: 8
             }}
           />
-          <Button title="Login" onPress={this.onLoginPress}/>
+          <Button
+            title="Login"
+            onPress={this.onLoginPress}
+            style={{
+              marginTop: 8
+            }}
+          />
         </View>
       </View>
     );
