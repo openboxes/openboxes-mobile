@@ -10,6 +10,7 @@ import {StyleSheet, View} from "react-native";
 import {Session} from "../../data/auth/Session";
 import getSession from "../../data/auth/GetSession";
 import showPopup from "../Popup";
+import {hideProgressBar, showProgressBar} from "../../redux/Dispatchers";
 
 export interface OwnProps {
   //no-op
@@ -27,6 +28,8 @@ interface StateProps {
 
 interface DispatchProps {
   getSession: () => void
+  showProgressBar: (message?: string) => void
+  hideProgressBar: () => void
 }
 
 type Props = OwnProps & StateProps & DispatchProps;
@@ -59,6 +62,7 @@ class Root extends React.Component<Props, State> {
 
   async getSession(): Promise<void> {
     try {
+      this.props.showProgressBar("Loading session")
       this.props.getSession()
     } catch(e) {
       await showPopup({
@@ -66,6 +70,8 @@ class Root extends React.Component<Props, State> {
         positiveButtonText: "Retry"
       })
       await this.getSession()
+    } finally {
+      this.props.hideProgressBar()
     }
   }
 
@@ -112,7 +118,9 @@ const mapStateToProps = (state: AppState): StateProps => ({
 })
 
 const mapDispatchToProps: DispatchProps = {
-  getSession
+  getSession,
+  showProgressBar,
+  hideProgressBar
 };
 
 export default connect<StateProps, DispatchProps, OwnProps, AppState>(mapStateToProps, mapDispatchToProps)(Root);

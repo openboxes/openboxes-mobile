@@ -7,6 +7,7 @@ import {login} from "../../data/auth/Login";
 import {TextInput} from "react-native-paper";
 import Header from "../Header";
 import Button from "../Button";
+import {hideProgressBar, showProgressBar} from "../../redux/Dispatchers";
 
 export interface OwnProps {
   //no-op
@@ -18,6 +19,8 @@ interface StateProps {
 
 interface DispatchProps {
   login: (username: string, password: string) => void
+  showProgressBar: (message: string) => void
+  hideProgressBar: () => void
 }
 
 type Props = OwnProps & StateProps & DispatchProps;
@@ -38,6 +41,8 @@ class Login extends React.Component<Props, State> {
     this.onUsernameChange = this.onUsernameChange.bind(this)
     this.onPasswordChange = this.onPasswordChange.bind(this)
     this.onLoginPress = this.onLoginPress.bind(this)
+    this.getLoginDisallowedReason = this.getLoginDisallowedReason.bind(this)
+    this.login = this.login.bind(this)
   }
 
   onUsernameChange(username: string) {
@@ -54,23 +59,42 @@ class Login extends React.Component<Props, State> {
 
   onLoginPress() {
     (async () => {
-      if (!this.state.username) {
-        await showPopup({message: "Username not provided"})
-        return
+      const username = this.state.username
+      const password = this.state.password
+      const loginDisallowedReason = this.getLoginDisallowedReason(username, password)
+      if(loginDisallowedReason) {
+        await showPopup({message: loginDisallowedReason})
+      } else {
+        await this.login(username, password)
       }
-
-      if (!this.state.password) {
-        await showPopup({message: "Password not provided"})
-        return
-      }
-
-      if (this.state.password.length < 6) {
-        await showPopup({message: "Password is less than 6 characters"})
-        return
-      }
-
-      this.props.login(this.state.username, this.state.password)
     })()
+  }
+
+  getLoginDisallowedReason(username: string, password: string): string | null {
+    if(!username) {
+      return "Username not provided"
+    }
+
+    if(!password) {
+      return "Password not provided"
+    }
+
+    if(password.length < 6) {
+      return "Password is less than 6 characters"
+    }
+
+    return null
+  }
+
+  async login(username: string, password: string) {
+    try {
+      this.props.showProgressBar("Logging in")
+      this.props.login(username, password)
+    } catch(e) {
+      await showPopup({message: e.message ?? "Login failed"})
+    } finally {
+      this.props.hideProgressBar()
+    }
   }
 
   render() {
@@ -125,7 +149,9 @@ const mapStateToProps = (state: AppState): StateProps => ({
 });
 
 const mapDispatchToProps: DispatchProps = {
-  login
+  login,
+  showProgressBar,
+  hideProgressBar
 };
 
 

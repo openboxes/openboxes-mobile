@@ -1,6 +1,5 @@
 import {Session} from "./Session";
 import apiClient from "../../utils/ApiClient";
-import {hideProgressBar, showProgressBar} from "../../redux/Dispatchers";
 import {AppDispatch} from "../../redux/Store";
 import {setSessionAction} from "../../redux/Actions";
 
@@ -12,7 +11,6 @@ interface GetSessionApiResponse {
 
 export default function getSession() {
   return (dispatch: AppDispatch) => {
-    showProgressBar("Loading session")
     apiClient.get(url)
       .then((response: GetSessionApiResponse) => {
         dispatch({
@@ -21,6 +19,5 @@ export default function getSession() {
         })
         return response.data
       })
-      .finally(() => hideProgressBar())
   }
 }

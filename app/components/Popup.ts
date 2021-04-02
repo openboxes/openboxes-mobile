@@ -2,7 +2,7 @@ import {Alert, AlertButton} from "react-native";
 
 export interface PopupParams {
   message: string
-  title?: string
+  title?: string | null
   positiveButtonText?: string
   negativeButtonText?: string
 }

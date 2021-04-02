@@ -7,21 +7,25 @@ import store, {AppDispatch} from "./Store";
 import showPopup from "../components/Popup";
 
 export function showProgressBar(message?: string | null) {
-  store.dispatch({
-    type: showFullScreenLoadingIndicatorAction.type,
-    payload: message
-  });
+  return (dispatch: AppDispatch) => {
+    dispatch({
+      type: showFullScreenLoadingIndicatorAction.type,
+      payload: message
+    })
+  }
 }
 
 export function hideProgressBar() {
-  store.dispatch({
-    type: hideFullScreenLoadingIndicatorAction.type
-  });
+  return (dispatch: AppDispatch) => {
+    dispatch({
+      type: hideFullScreenLoadingIndicatorAction.type
+    });
+  }
 }
 
 export async function logout(reason?: string) {
   store.dispatch({
     type: logoutAction.type
   })
-  if(reason) await showPopup({message: reason});
+  if (reason) await showPopup({message: reason});
 }
