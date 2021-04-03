@@ -5,12 +5,11 @@ import {connect} from "react-redux";
 import FullScreenLoadingIndicator from "../FullScreenLoadingIndicator";
 import {AppState} from "../../redux/Reducer";
 import ChooseCurrentLocation from "./ChooseCurrentLocation";
-import {Location} from "../../data/location/Models";
+import Location from "../../data/location/Location";
 import {StyleSheet, View} from "react-native";
 import {Session} from "../../data/auth/Session";
 import getSession from "../../data/auth/GetSession";
 import showPopup from "../Popup";
-import {hideProgressBar, showProgressBar} from "../../redux/Dispatchers";
 
 export interface OwnProps {
   //no-op
@@ -28,8 +27,6 @@ interface StateProps {
 
 interface DispatchProps {
   getSession: () => void
-  showProgressBar: (message?: string) => void
-  hideProgressBar: () => void
 }
 
 type Props = OwnProps & StateProps & DispatchProps;
@@ -62,16 +59,13 @@ class Root extends React.Component<Props, State> {
 
   async getSession(): Promise<void> {
     try {
-      this.props.showProgressBar("Loading session")
-      this.props.getSession()
+      return await this.props.getSession()
     } catch(e) {
       await showPopup({
         message: "Failed to fetch session",
         positiveButtonText: "Retry"
       })
-      await this.getSession()
-    } finally {
-      this.props.hideProgressBar()
+      return await this.getSession()
     }
   }
 
@@ -118,9 +112,7 @@ const mapStateToProps = (state: AppState): StateProps => ({
 })
 
 const mapDispatchToProps: DispatchProps = {
-  getSession,
-  showProgressBar,
-  hideProgressBar
+  getSession
 };
 
 export default connect<StateProps, DispatchProps, OwnProps, AppState>(mapStateToProps, mapDispatchToProps)(Root);

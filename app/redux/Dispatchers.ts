@@ -6,20 +6,26 @@ import {
 import store, {AppDispatch} from "./Store";
 import showPopup from "../components/Popup";
 
-export function showProgressBar(message?: string | null) {
+export function dispatchShowProgressBarAction(message?: string | null) {
   return (dispatch: AppDispatch) => {
-    dispatch({
-      type: showFullScreenLoadingIndicatorAction.type,
-      payload: message
-    })
+    dispatch(getShowProgressBarAction(message))
   }
 }
 
-export function hideProgressBar() {
-  return (dispatch: AppDispatch) => {
-    dispatch({
-      type: hideFullScreenLoadingIndicatorAction.type
-    });
+export function getShowProgressBarAction(message?: string | null) {
+  return {
+    type: showFullScreenLoadingIndicatorAction.type,
+    payload: message
+  }
+}
+
+export function dispatchHideProgressBarAction() {
+  return (dispatch: AppDispatch) => dispatch(getHideProgressBarAction())
+}
+
+export function getHideProgressBarAction() {
+  return {
+    type: hideFullScreenLoadingIndicatorAction.type
   }
 }
 

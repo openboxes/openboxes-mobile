@@ -5,7 +5,7 @@ import {
   logoutAction,
   hideFullScreenLoadingIndicatorAction, setCurrentLocationAction, setSessionAction
 } from "./Actions";
-import {Location} from "../data/location/Models";
+import Location from "../data/location/Location";
 import {Session} from "../data/auth/Session";
 
 export interface AppState {

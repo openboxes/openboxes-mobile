@@ -1,6 +1,6 @@
-import {Location} from "../location/Models";
 import {User} from "./User";
 import {Locale} from "../Locale";
+import Location from "../location/Location";
 
 export interface Session {
   location: Location

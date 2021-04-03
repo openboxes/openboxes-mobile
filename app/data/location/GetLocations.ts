@@ -1,5 +1,5 @@
 import apiClient from "../../utils/ApiClient";
-import {Location} from "./Models";
+import Location from "./Location";
 
 const url = "/locations?locationTypeCode=DEPOT&activityCodes=MANAGE_INVENTORY&applyUserFilter=true"
 

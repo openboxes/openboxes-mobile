@@ -7,7 +7,6 @@ import {login} from "../../data/auth/Login";
 import {TextInput} from "react-native-paper";
 import Header from "../Header";
 import Button from "../Button";
-import {hideProgressBar, showProgressBar} from "../../redux/Dispatchers";
 
 export interface OwnProps {
   //no-op
@@ -19,8 +18,6 @@ interface StateProps {
 
 interface DispatchProps {
   login: (username: string, password: string) => void
-  showProgressBar: (message: string) => void
-  hideProgressBar: () => void
 }
 
 type Props = OwnProps & StateProps & DispatchProps;
@@ -88,12 +85,9 @@ class Login extends React.Component<Props, State> {
 
   async login(username: string, password: string) {
     try {
-      this.props.showProgressBar("Logging in")
       this.props.login(username, password)
     } catch(e) {
       await showPopup({message: e.message ?? "Login failed"})
-    } finally {
-      this.props.hideProgressBar()
     }
   }
 
@@ -149,9 +143,7 @@ const mapStateToProps = (state: AppState): StateProps => ({
 });
 
 const mapDispatchToProps: DispatchProps = {
-  login,
-  showProgressBar,
-  hideProgressBar
+  login
 };
 
 

@@ -2,17 +2,18 @@ import React from "react";
 import {AppState} from "../../redux/Reducer";
 import {connect} from "react-redux";
 import getLocationsFromApi from "../../data/location/GetLocations";
-import {Location} from "../../data/location/Models";
+import Location from "../../data/location/Location";
 import _, {Dictionary} from "lodash";
 import {ScrollView, StyleSheet, Text, View} from "react-native";
-import {createLogger} from "../../utils/Logger";
 import Header from "../Header";
 import {List} from "react-native-paper";
 import showPopup from "../Popup";
 import setCurrentLocation from "../../data/location/SetCurrentLocation";
-import {hideProgressBar, showProgressBar} from "../../redux/Dispatchers";
+import {
+  dispatchHideProgressBarAction as hideProgressBar,
+  dispatchShowProgressBarAction as showProgressBar
+} from "../../redux/Dispatchers";
 
-const logger = createLogger("ChooseCurrentLocation.tsx")
 const NO_ORGANIZATION_NAME = "No organization"
 
 export interface OwnProps {
@@ -60,7 +61,7 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
   async getLocations(): Promise<Location[]> {
     try {
       this.props.showProgressBar("Fetching locations")
-      return getLocationsFromApi()
+      return await getLocationsFromApi()
     } catch (e) {
       const title = e.message ? "Failed to load locations" : null
       const message = e.message ?? "Failed to load locations"
@@ -69,7 +70,7 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
         message: message,
         positiveButtonText: "Retry"
       })
-      return this.getLocations()
+      return await this.getLocations()
     } finally {
       this.props.hideProgressBar()
     }
@@ -120,8 +121,7 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
   setCurrentLocation(location: Location) {
     (async () => {
       try {
-        this.props.showProgressBar("Setting current location")
-        await this.props.setCurrentLocation(location)
+        this.props.setCurrentLocation(location)
       } catch(e) {
         const tryAgain = await showPopup({
           message: "Failed to set current location",
@@ -129,8 +129,6 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
           negativeButtonText: "Cancel"
         })
         if(tryAgain) this.setCurrentLocation(location)
-      } finally {
-        this.props.hideProgressBar()
       }
     })()
   }
