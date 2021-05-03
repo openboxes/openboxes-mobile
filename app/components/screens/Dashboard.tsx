@@ -30,18 +30,7 @@ class Dashboard extends React.Component<Props, State> {
     let countItems = [
       {
         icon: Name.Boxes,
-        label: "Products",
-        value: 1234
-      },
-      {
-        icon: Name.ShoppingCart,
-        label: "Purchase Orders",
-        value: 11
-      },
-      {
-        icon: Name.User,
-        label: "Users",
-        value: 109
+        label: "Products"
       }
     ]
     return (
@@ -54,7 +43,6 @@ class Dashboard extends React.Component<Props, State> {
                 <Icon name={item.icon} size={14}/>
                 <Text style={styles.countLabel}>{item.label}</Text>
               </View>
-              <Text style={styles.countValue}>{item.value}</Text>
             </View>
           })
         }
@@ -89,12 +77,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 16,
     marginStart: 4
-  },
-  countValue: {
-    fontSize: 24,
-    color: Theme.colors.primary,
-    fontWeight: "bold",
-    marginTop: 4
   }
 });
 
