@@ -1,8 +1,8 @@
 // noinspection DuplicatedCode
 
 import React, {ReactElement} from "react";
-import {Appbar, Searchbar} from "react-native-paper";
-import {StyleSheet, TextInput} from "react-native";
+import {Searchbar} from "react-native-paper";
+import {StyleSheet} from "react-native";
 import {Platform, StatusBar} from "react-native";
 import Icon, {Name, Props as IconProps} from "./Icon";
 import Theme from "../utils/Theme";
