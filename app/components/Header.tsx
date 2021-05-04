@@ -5,7 +5,7 @@ import Icon, {Props as IconProps} from "./Icon";
 export interface Props {
   title: string
   backButtonVisible: boolean
-  onBackButtonPress: () => void
+  onBackButtonPress?: () => void
   rightIcon?: IconProps
 }
 

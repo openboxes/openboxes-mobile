@@ -12,7 +12,7 @@ import Header from "./Header";
 export interface Props {
   title: string
   backButtonVisible: boolean
-  onBackButtonPress: () => void
+  onBackButtonPress?: () => void
   searchHint: string
   onSearchQueryChange: (query: string) => void
 }
