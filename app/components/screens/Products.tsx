@@ -5,7 +5,7 @@ import {connect} from "react-redux";
 import SearchHeader from "../SearchHeader";
 
 export interface OwnProps {
-  //no-op
+  onBackButtonPress: () => void
 }
 
 interface StateProps {
@@ -26,12 +26,7 @@ class Products extends React.Component<Props, State> {
 
   constructor(props: Props) {
     super(props);
-    this.onBackButtonPress = this.onBackButtonPress.bind(this)
     this.onSearchQueryChange = this.onSearchQueryChange.bind(this)
-  }
-
-  onBackButtonPress() {
-    console.log("onBackButtonPress")
   }
 
   onSearchQueryChange(query: string) {
@@ -44,7 +39,7 @@ class Products extends React.Component<Props, State> {
         <SearchHeader
           title="Products"
           backButtonVisible={true}
-          onBackButtonPress={this.onBackButtonPress}
+          onBackButtonPress={this.props.onBackButtonPress}
           searchHint="Search products"
           onSearchQueryChange={this.onSearchQueryChange}
         />

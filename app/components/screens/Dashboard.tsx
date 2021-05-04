@@ -1,5 +1,5 @@
 import React from "react";
-import {StyleSheet, Text, View } from "react-native";
+import {StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import Header from "../Header";
 import {AppState} from "../../redux/Reducer";
 import {connect} from "react-redux";
@@ -7,7 +7,7 @@ import Icon, {Name} from "../Icon";
 import Theme from "../../utils/Theme";
 
 export interface OwnProps {
-  //no-op
+  onProductsCardPressed: () => void
 }
 
 interface StateProps {
@@ -27,25 +27,18 @@ interface State {
 class Dashboard extends React.Component<Props, State> {
 
   render() {
-    let countItems = [
-      {
-        icon: Name.Boxes,
-        label: "Products"
-      }
-    ]
     return (
       <View style={styles.screenContainer}>
-        <Header title="Dashboard"/>
-        {
-          countItems.map(item => {
-            return <View style={styles.countContainer} key={item.label}>
-              <View style={styles.countLabelAndIconContainer}>
-                <Icon name={item.icon} size={14}/>
-                <Text style={styles.countLabel}>{item.label}</Text>
-              </View>
-            </View>
-          })
-        }
+        <Header
+          title="Dashboard"
+          backButtonVisible={false}
+        />
+        <TouchableOpacity style={styles.countContainer} onPress={this.props.onProductsCardPressed}>
+          <View style={styles.countLabelAndIconContainer}>
+            <Icon name={Name.Boxes} size={14}/>
+            <Text style={styles.countLabel}>Products</Text>
+          </View>
+        </TouchableOpacity>
       </View>
     );
   }
