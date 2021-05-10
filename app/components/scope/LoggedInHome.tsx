@@ -60,7 +60,7 @@ class LoggedInHome extends React.Component<Props, State> {
         break;
       case ScreenInFocus.Products:
         content =
-          <Products onBackButtonPress={this.goToDashboardsPage}/>
+          <Products exit={this.goToDashboardsPage}/>
         break;
     }
     return (
