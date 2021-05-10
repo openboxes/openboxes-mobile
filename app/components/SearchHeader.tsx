@@ -14,7 +14,8 @@ export interface Props {
   backButtonVisible: boolean
   onBackButtonPress?: () => void
   searchHint: string
-  onSearchQueryChange: (query: string) => void
+  onSearchBoxVisibilityChange: (visible: boolean) => void
+  onSearchQuerySubmitted: (query: string) => void
 }
 
 interface State {
@@ -33,7 +34,7 @@ const placeholderColor = "#FFFFFF80"
 Starts out as a basic header with a back button, title and the search button.
 
 When the user taps on the search button, the header transforms into a search box. The default Searchbar component
-does not follow the color template of their header component. So we have made changes to the theme and styling of the
+does not follow the color template of their header component. So changes have been made to the theme and styling of the
 SearchBar component to ensure that the color scheme of the normal header and the Searchbar remains the same.
 */
 export default class SearchHeader extends React.Component<Props, State> {
@@ -49,6 +50,7 @@ export default class SearchHeader extends React.Component<Props, State> {
     this.onClearIconPressed = this.onClearIconPressed.bind(this)
     this.getClearIcon = this.getClearIcon.bind(this)
     this.getSearchIcon = this.getSearchIcon.bind(this)
+    this.onSearchQuerySubmitted = this.onSearchQuerySubmitted.bind(this)
     setStatusBarBackgroundColor(Theme.colors.primary, false)
   }
 
@@ -56,13 +58,13 @@ export default class SearchHeader extends React.Component<Props, State> {
     this.setState({
       isSearching: true
     })
+    this.props.onSearchBoxVisibilityChange(true)
   }
 
   onSearchQueryChange(query: string) {
     this.setState({
       searchQuery: query
     })
-    this.props.onSearchQueryChange(query)
   }
 
   onClearIconPressed() {
@@ -70,12 +72,12 @@ export default class SearchHeader extends React.Component<Props, State> {
       this.setState({
         isSearching: false
       })
+      this.props.onSearchBoxVisibilityChange(false)
     } else {
       this.setState({
         searchQuery: ""
       })
     }
-    this.props.onSearchQueryChange("")
   }
 
   getSearchIcon(): IconProps {
@@ -94,6 +96,10 @@ export default class SearchHeader extends React.Component<Props, State> {
       size={24}
       color={Theme.colors.surface}
     />
+  }
+
+  onSearchQuerySubmitted() {
+    this.props.onSearchQuerySubmitted(this.state.searchQuery)
   }
 
   render() {
@@ -131,6 +137,7 @@ export default class SearchHeader extends React.Component<Props, State> {
               color: white
             }}
             iconColor={white}
+            onSubmitEditing={this.onSearchQuerySubmitted}
           />
         )
     )
