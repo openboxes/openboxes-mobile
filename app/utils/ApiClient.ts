@@ -5,7 +5,7 @@ import {createLogger} from "./Logger";
 const logger = createLogger("ApiClient.ts")
 
 const apiClient = axios.create({
-  baseURL: "https://demo.openboxes.com/openboxes/api",
+  baseURL: "https://demo2.openboxes.com/openboxes/api",
   withCredentials: true
 })
 
@@ -18,8 +18,9 @@ const handleApiRequest = (request: AxiosRequestConfig) => {
   const url = request.url
   const headers = request.headers
   const params = request.params
-  logger.d(`handleApiRequest: url = ${JSON.stringify(url)}, headers = ${JSON.stringify(headers)}`)
-  logger.d(`handleApiRequest: url = ${JSON.stringify(url)}, params = ${JSON.stringify(params)}`)
+  const data = request.data
+  logger.d(`handleApiRequest: url = ${JSON.stringify(url)}, method = ${JSON.stringify(request.method)}, 
+  headers = ${JSON.stringify(headers)}, params = ${JSON.stringify(params)}, data = ${JSON.stringify(data)}`)
   return request
 }
 
@@ -29,16 +30,16 @@ const handleApiSuccess = (response: AxiosResponse) => {
   const params = response.config.params
   const responseHeaders = response.headers
   const responseBody: string = JSON.stringify(response.data)
-  logger.d(`handleApiSuccess: url = ${JSON.stringify(url)}, headers = ${JSON.stringify(headers)}`)
-  logger.d(`handleApiSuccess: url = ${JSON.stringify(url)}, params = ${JSON.stringify(params)}`)
-  logger.d(`handleApiSuccess: url = ${JSON.stringify(url)}, responseHeaders = ${JSON.stringify(responseHeaders)}`)
-  logger.d(`handleApiSuccess: url = ${JSON.stringify(url)}, responseBody = ${responseBody}`)
+  logger.d(`handleApiSuccess: url = ${JSON.stringify(url)}, headers = ${JSON.stringify(headers)}, 
+  params = ${JSON.stringify(params)}, responseHeaders = ${JSON.stringify(responseHeaders)}, 
+  responseBody = ${responseBody}`)
   return JSON.parse(responseBody)
 }
 
 const handleApiFailure = async (error: AxiosError): Promise<ApiError> => {
   let message = error.response?.data?.errorMessage;
   const code = error.response?.status;
+  logger.d(`handleApiFailure: code = ${code}, message = ${message}`)
   switch(code) {
     case 401:
       await logout("Unauthorized Access. User has been logged out.");
