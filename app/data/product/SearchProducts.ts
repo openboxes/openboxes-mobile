@@ -5,11 +5,13 @@ import {AxiosRequestConfig} from "axios";
 const url = "/generic/product/search"
 
 interface SearchProductsApiRequest {
-  searchAttributes: {
-    property: string,
-    operator: string,
-    value: string
-  }
+  searchAttributes: SearchAttributes[]
+}
+
+interface SearchAttributes {
+  property: string
+  operator: string
+  value: string
 }
 
 interface SearchProductsApiResponse {
@@ -18,15 +20,12 @@ interface SearchProductsApiResponse {
 
 export default function searchProducts(name: string): Promise<Product[]> {
   const request: SearchProductsApiRequest = {
-    searchAttributes: {
+    searchAttributes: [{
       property: "name",
       operator: "like",
       value: `${name}%`
-    }
+    }]
   }
-  const config: AxiosRequestConfig = {
-    data: request
-  }
-  return apiClient.get(url, config)
+  return apiClient.post(url, request)
     .then((response: SearchProductsApiResponse) => response.data)
 }
