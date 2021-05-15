@@ -1,4 +1,4 @@
-import {Entypo, FontAwesome5, MaterialCommunityIcons} from "@expo/vector-icons";
+import {Entypo, FontAwesome5, MaterialCommunityIcons, MaterialIcons} from "@expo/vector-icons";
 import React from "react";
 import {TouchableOpacity} from "react-native";
 
@@ -7,7 +7,8 @@ export enum Name {
   ShoppingCart,
   User,
   Cross,
-  Search
+  Search,
+  Category
 }
 
 export interface Props {
@@ -34,6 +35,9 @@ export default function Icon(props: Props) {
       break
     case Name.Search:
       content = <MaterialCommunityIcons name="magnify" size={props.size} color={props.color}/>
+      break
+    case Name.Category:
+      content = <MaterialIcons name="category" size={props.size} color={props.color}/>
       break
   }
   return (
