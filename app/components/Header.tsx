@@ -4,6 +4,7 @@ import Icon, {Props as IconProps} from "./Icon";
 
 export interface Props {
   title: string
+  subtitle?: string | null
   backButtonVisible: boolean
   onBackButtonPress?: () => void
   rightIcon?: IconProps
@@ -15,7 +16,10 @@ export default function Header(props: Props) {
       {
         props.backButtonVisible && <Appbar.BackAction onPress={props.onBackButtonPress}/>
       }
-      <Appbar.Content title={props.title}/>
+      <Appbar.Content
+        title={props.title}
+        subtitle={props.subtitle}
+      />
       {
         props.rightIcon
         &&
