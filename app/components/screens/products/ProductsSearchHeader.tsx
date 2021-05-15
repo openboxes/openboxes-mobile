@@ -4,22 +4,20 @@ import React, {ReactElement} from "react";
 import {Searchbar} from "react-native-paper";
 import {StyleSheet} from "react-native";
 import {Platform, StatusBar} from "react-native";
-import Icon, {Name, Props as IconProps} from "./Icon";
-import Theme from "../utils/Theme";
+import Icon, {Name} from "../../Icon";
+import Theme from "../../../utils/Theme";
 import {setStatusBarBackgroundColor} from "expo-status-bar";
-import Header from "./Header";
+import Header from "../../Header";
 
 export interface Props {
-  title: string
-  backButtonVisible: boolean
+  subtitle?: string | null
+  searchBoxVisible: boolean
   onBackButtonPress?: () => void
-  searchHint: string
   onSearchBoxVisibilityChange: (visible: boolean) => void
   onSearchQuerySubmitted: (query: string) => void
 }
 
 interface State {
-  isSearching: boolean
   searchQuery: string
 }
 
@@ -37,27 +35,22 @@ When the user taps on the search button, the header transforms into a search box
 does not follow the color template of their header component. So changes have been made to the theme and styling of the
 SearchBar component to ensure that the color scheme of the normal header and the Searchbar remains the same.
 */
-export default class SearchHeader extends React.Component<Props, State> {
+export default class ProductsSearchHeader extends React.Component<Props, State> {
 
   constructor(props: Props) {
     super(props);
     this.state = {
-      isSearching: false,
       searchQuery: ""
     }
     this.onSearchButtonPress = this.onSearchButtonPress.bind(this)
     this.onSearchQueryChange = this.onSearchQueryChange.bind(this)
     this.onClearIconPressed = this.onClearIconPressed.bind(this)
     this.getClearIcon = this.getClearIcon.bind(this)
-    this.getSearchIcon = this.getSearchIcon.bind(this)
     this.onSearchQuerySubmitted = this.onSearchQuerySubmitted.bind(this)
     setStatusBarBackgroundColor(Theme.colors.primary, false)
   }
 
   onSearchButtonPress() {
-    this.setState({
-      isSearching: true
-    })
     this.props.onSearchBoxVisibilityChange(true)
   }
 
@@ -68,24 +61,12 @@ export default class SearchHeader extends React.Component<Props, State> {
   }
 
   onClearIconPressed() {
-    if(this.state.searchQuery.length == 0) {
-      this.setState({
-        isSearching: false
-      })
+    if (this.state.searchQuery.length == 0) {
       this.props.onSearchBoxVisibilityChange(false)
     } else {
       this.setState({
         searchQuery: ""
       })
-    }
-  }
-
-  getSearchIcon(): IconProps {
-    return {
-      name: Name.Search,
-      onPress: this.onSearchButtonPress,
-      size: 24,
-      color: Theme.colors.surface
     }
   }
 
@@ -104,14 +85,14 @@ export default class SearchHeader extends React.Component<Props, State> {
 
   render() {
     return (
-      !this.state.isSearching
+      !this.props.searchBoxVisible
         ?
         (
           <Header
-            title={this.props.title}
-            backButtonVisible={this.props.backButtonVisible}
+            title="Products"
+            subtitle={this.props.subtitle}
+            backButtonVisible={true}
             onBackButtonPress={this.props.onBackButtonPress}
-            rightIcon={this.getSearchIcon()}
           />
         )
         :
@@ -127,7 +108,7 @@ export default class SearchHeader extends React.Component<Props, State> {
                 placeholder: placeholderColor
               }
             }}
-            placeholder={this.props.searchHint}
+            placeholder="Search by product name"
             onChangeText={this.onSearchQueryChange}
             value={this.state.searchQuery}
             style={styles.searchBar}

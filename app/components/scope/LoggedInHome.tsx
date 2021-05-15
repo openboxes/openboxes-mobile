@@ -3,7 +3,7 @@ import {StyleSheet, View} from "react-native";
 import {AppState} from "../../redux/Reducer";
 import {connect} from "react-redux";
 import Dashboard from "../screens/Dashboard";
-import Products from "../screens/Products";
+import Products from "../screens/products/Products";
 
 export interface OwnProps {
   //no-op

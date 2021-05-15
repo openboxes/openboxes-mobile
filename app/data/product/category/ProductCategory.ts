@@ -1,5 +1,5 @@
 export interface ProductCategory {
   id: string
   name: string
-  parentCategory?: ProductCategory
+  parentCategory?: ProductCategory | null
 }
