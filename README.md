@@ -1,15 +1,8 @@
 # Introduction
-React Native app using Expo (proof-of-concept)
-
-## Dependencies
-These are the versions I have installed at the moment
-* expo app: any version
-* expo-cli: 3.28.2
-* npm: 6.14.8
+Openboxes mobile app built using Expo(expo.io)
 
 ## Getting Started 
-* Download expo app on your mobile device
-* Install server-side dependencies 
+* Ensure that the Expo app is installed on your iOS/Android device.
 * Checkout the source code
     ```
     git clone git@github.com:openboxes/openboxes-mobile.git
@@ -17,13 +10,13 @@ These are the versions I have installed at the moment
 * Download app dependencies
     ```
     cd openboxes-mobile
-    npm install
+    yarn install
     ```
 * Start expo 
     ```
     expo start
     ```
-* Expo should open in a new tab in your web browser 
-* Open camera app on a mobile device (iOS or Android)
-* Scan barcode using camera app 
-* The bundle should be downloaded and executed on your mobile device 
+* Expo should open in a new tab in your web browser.
+* Open camera app on a mobile device (iOS or Android).
+* Scan barcode using camera app.
+* The bundle should be downloaded and executed on your mobile device.
