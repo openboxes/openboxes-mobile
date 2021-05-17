@@ -1,5 +1,4 @@
 import React from "react";
-import Dashboard from "./Dashboard";
 import Login from "./Login";
 import {connect} from "react-redux";
 import FullScreenLoadingIndicator from "../FullScreenLoadingIndicator";
@@ -10,6 +9,7 @@ import {StyleSheet, View} from "react-native";
 import {Session} from "../../data/auth/Session";
 import getSession from "../../data/auth/GetSession";
 import showPopup from "../Popup";
+import LoggedInHome from "../scope/LoggedInHome";
 
 export interface OwnProps {
   //no-op
@@ -74,7 +74,7 @@ class Root extends React.Component<Props, State> {
     if (this.props.loggedIn) {
       if (this.props.currentLocation != null) {
         if(this.props.session != null) {
-          content = <Dashboard/>
+          content = <LoggedInHome/>
         } else {
           content = null
         }

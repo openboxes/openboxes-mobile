@@ -94,7 +94,7 @@ class Login extends React.Component<Props, State> {
   render() {
     return (
       <View style={styles.screenContainer}>
-        <Header title="Login" />
+        <Header title="Login" backButtonVisible={false}/>
         <View style={styles.inputContainer}>
           <TextInput
             mode="outlined"
