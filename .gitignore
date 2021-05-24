@@ -23,3 +23,5 @@ web-build/
 .idea/**/shelf
 .idea/*.iml
 .idea/modules.xml
+
+app/utils/EnvironmentActual.ts
