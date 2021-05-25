@@ -1,7 +1,7 @@
 import {EnvironmentActual} from "./EnvironmentActual";
 
 export interface Environment {
-  API_URL: string
+  API_BASE_URL: string
 }
 
 export const environment = EnvironmentActual
