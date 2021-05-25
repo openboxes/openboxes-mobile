@@ -6,7 +6,7 @@ import {environment} from "./Environment";
 const logger = createLogger("ApiClient.ts")
 
 const apiClient = axios.create({
-  baseURL: environment.API_URL,
+  baseURL: environment.API_BASE_URL,
   withCredentials: true
 })
 
