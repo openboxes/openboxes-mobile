@@ -9,7 +9,7 @@ import {StyleSheet, View} from "react-native";
 import {Session} from "../../data/auth/Session";
 import getSession from "../../data/auth/GetSession";
 import showPopup from "../Popup";
-import LoggedInHome from "../scope/LoggedInHome";
+import Dashboard from "./Dashboard";
 
 export interface OwnProps {
   //no-op
@@ -74,7 +74,7 @@ class Root extends React.Component<Props, State> {
     if (this.props.loggedIn) {
       if (this.props.currentLocation != null) {
         if(this.props.session != null) {
-          content = <LoggedInHome/>
+          content = <Dashboard/>
         } else {
           content = null
         }
