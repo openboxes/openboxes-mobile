@@ -1,11 +1,12 @@
 import axios, {AxiosError, AxiosRequestConfig, AxiosResponse} from "axios";
 import {logout} from "../redux/Dispatchers";
 import {createLogger} from "./Logger";
+import {environment} from "./Environment";
 
 const logger = createLogger("ApiClient.ts")
 
 const apiClient = axios.create({
-  baseURL: "https://demo2.openboxes.com/openboxes/api",
+  baseURL: environment.API_BASE_URL,
   withCredentials: true
 })
 
