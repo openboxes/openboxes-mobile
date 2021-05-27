@@ -1,34 +1,14 @@
 import React from "react";
 import {StyleSheet, Text, TouchableOpacity, View} from "react-native";
-import Header from "../Header";
-import {AppState} from "../../redux/Reducer";
+import Header from "../../Header";
+import {AppState} from "../../../redux/Reducer";
 import {connect} from "react-redux";
-import Icon, {Name} from "../Icon";
-import Theme from "../../utils/Theme";
-import Products from "./products/Products";
-
-export interface OwnProps {
-
-}
-
-interface StateProps {
-  //no-op
-}
-
-interface DispatchProps {
-  //no-op
-}
-
-type Props = OwnProps & StateProps & DispatchProps;
-
-enum NavigationState {
-  Here,
-  ProductsScreen
-}
-
-interface State {
-  navigationState: NavigationState
-}
+import Icon, {Name} from "../../Icon";
+import Theme from "../../../utils/Theme";
+import Products from "../products/Products";
+import {DispatchProps, OwnProps, Props, StateProps} from "./Props";
+import {NavigationState, State} from "./State";
+import ScreenContainer from "../../ScreenContainer";
 
 class Dashboard extends React.Component<Props, State> {
 
@@ -54,7 +34,7 @@ class Dashboard extends React.Component<Props, State> {
 
   renderContent() {
     return (
-      <View style={styles.screenContainer}>
+      <ScreenContainer>
         <Header
           title="Dashboard"
           backButtonVisible={false}
@@ -68,7 +48,7 @@ class Dashboard extends React.Component<Props, State> {
             <Text style={styles.countLabel}>Products</Text>
           </View>
         </TouchableOpacity>
-      </View>
+      </ScreenContainer>
     )
   }
 

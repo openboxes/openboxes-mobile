@@ -9,7 +9,7 @@ import {StyleSheet, View} from "react-native";
 import {Session} from "../../data/auth/Session";
 import getSession from "../../data/auth/GetSession";
 import showPopup from "../Popup";
-import Dashboard from "./Dashboard";
+import Dashboard from "./dashboard/Dashboard";
 
 export interface OwnProps {
   //no-op
