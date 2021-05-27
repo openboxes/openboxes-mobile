@@ -21,45 +21,11 @@ import CentralMessage from "./CentralMessage";
 import FloatingActionButtonMenu from "./FloatingActionButtonMenu";
 import ProductCategoryPickerPopup from "./ProductCategoryPickerPopup";
 import {ProductCategory} from "../../../data/product/category/ProductCategory";
-
-export interface OwnProps {
-  exit: () => void
-}
-
-interface StateProps {
-  //no-op
-}
-
-interface DispatchProps {
-  showProgressBar: (message?: string) => void
-  hideProgressBar: () => void
-}
-
-type Props = OwnProps & StateProps & DispatchProps;
-
-interface State {
-  error: string | null
-  allProducts: Product[] | null
-  searchBoxVisible: boolean
-  categoryPickerPopupVisible: boolean
-  searchByName: {
-    query: string
-    results: Product[] | null
-  } | null
-  searchByCategory: {
-    category: ProductCategory,
-    results: Product[] | null
-  } | null
-}
-
-interface VM {
-  subtitle: string
-  searchBoxVisible: boolean
-  categoryPickerPopupVisible: boolean
-  list: Product[] | null
-  floatingActionButtonVisible: boolean
-  centralErrorMessage: string | null
-}
+import ProductDetails from "../product_details/ProductDetails";
+import {DispatchProps, OwnProps, Props, StateProps} from "./Props";
+import {NavigationStateHere, NavigationStateProductDetails, NavigationStateType, State} from "./State";
+import {VM} from "./VM";
+import vmMapper from "./VMMapper";
 
 class Products extends React.Component<Props, State> {
 
@@ -71,7 +37,8 @@ class Products extends React.Component<Props, State> {
       searchBoxVisible: false,
       categoryPickerPopupVisible: false,
       searchByName: null,
-      searchByCategory: null
+      searchByCategory: null,
+      navigationState: new NavigationStateHere()
     }
     this.getProducts = this.getProducts.bind(this)
     this.searchProducts = this.searchProducts.bind(this)
@@ -81,8 +48,11 @@ class Products extends React.Component<Props, State> {
     this.onSearchByCategoryPress = this.onSearchByCategoryPress.bind(this)
     this.hideCategoryPickerPopup = this.hideCategoryPickerPopup.bind(this)
     this.onCategoryChosen = this.onCategoryChosen.bind(this)
-    this.stateToVM = this.stateToVM.bind(this)
     this.onBackButtonPress = this.onBackButtonPress.bind(this)
+    this.renderContent = this.renderContent.bind(this)
+    this.showProductDetailsScreen = this.showProductDetailsScreen.bind(this)
+    this.renderProductDetailsScreen = this.renderProductDetailsScreen.bind(this)
+    this.showProductsScreen = this.showProductsScreen.bind(this)
   }
 
   onSearchByProductNamePress() {
@@ -223,11 +193,11 @@ class Products extends React.Component<Props, State> {
     this.hideCategoryPickerPopup();
     (async () => {
       const searchedProducts = await this.searchProductsByCategory(category)
-      if(!searchedProducts) {
+      if (!searchedProducts) {
         return
       }
 
-      if(searchedProducts.length == 0) {
+      if (searchedProducts.length == 0) {
         this.setState({
           error: `No products found in category "${category.name}"`,
           searchByCategory: {
@@ -282,42 +252,9 @@ class Products extends React.Component<Props, State> {
     })
   }
 
-  stateToVM(state: State): VM {
-    let subtitle = "All products"
-    if(state.searchByCategory) {
-      subtitle = `Products in category \"${state.searchByCategory.category.name}\"`
-    }
-    let list = null
-    if(state.error == null) {
-      if(state.searchByCategory && state.searchByCategory.results && state.searchByCategory.results.length > 0) {
-        list = state.searchByCategory.results
-      } else if(state.searchByName && state.searchByName.results && state.searchByName.results.length > 0) {
-        list = state.searchByName.results
-      } else {
-        list = state.allProducts
-      }
-    }
-    let floatingActionButtonVisible = true
-    if (state.searchBoxVisible) {
-      floatingActionButtonVisible = false
-    }
-    let centralErrorMessage = state.error
-    if(!centralErrorMessage && (!list || list.length == 0)) {
-      centralErrorMessage = "No products found"
-    }
-    return {
-      subtitle: subtitle,
-      searchBoxVisible: state.searchBoxVisible,
-      categoryPickerPopupVisible: state.categoryPickerPopupVisible,
-      list: list,
-      floatingActionButtonVisible: floatingActionButtonVisible,
-      centralErrorMessage: centralErrorMessage
-    }
-  }
-
   onBackButtonPress() {
     const currState = this.state
-    if(currState.searchByCategory) {
+    if (currState.searchByCategory) {
       this.setState({
         error: null,
         searchByCategory: null
@@ -328,7 +265,17 @@ class Products extends React.Component<Props, State> {
   }
 
   render() {
-    const vm = this.stateToVM(this.state)
+    const vm = vmMapper(this.state)
+    switch (vm.navigationState.type) {
+      case NavigationStateType.Here:
+        return this.renderContent(vm);
+      case NavigationStateType.ProductDetails:
+        const navigationStateProductDetails = vm.navigationState as NavigationStateProductDetails
+        return this.renderProductDetailsScreen(navigationStateProductDetails.product);
+    }
+  }
+
+  renderContent(vm: VM) {
     return (
       <View style={styles.screenContainer}>
         <ProductsSearchHeader
@@ -339,7 +286,7 @@ class Products extends React.Component<Props, State> {
           onSearchBoxVisibilityChange={this.onSearchBoxVisibilityChange}
         />
         <View style={styles.content}>
-          <ProductsList products={vm.list}/>
+          <ProductsList products={vm.list} onProductTapped={this.showProductDetailsScreen}/>
           <CentralMessage message={vm.centralErrorMessage}/>
           <FloatingActionButtonMenu
             visible={vm.floatingActionButtonVisible}
@@ -354,6 +301,27 @@ class Products extends React.Component<Props, State> {
         </View>
       </View>
     )
+  }
+
+  showProductDetailsScreen(product: Product) {
+    this.setState({
+      navigationState: new NavigationStateProductDetails(product)
+    })
+  }
+
+  renderProductDetailsScreen(product: Product) {
+    return (
+      <ProductDetails
+        product={product}
+        exit={this.showProductsScreen}
+      />
+    )
+  }
+
+  showProductsScreen() {
+    this.setState({
+      navigationState: new NavigationStateHere()
+    })
   }
 }
 
