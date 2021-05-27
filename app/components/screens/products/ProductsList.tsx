@@ -2,9 +2,13 @@ import Product from "../../../data/product/Product";
 import {FlatList, ListRenderItemInfo, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import React, {ReactElement} from "react";
 import Theme from "../../../utils/Theme";
+import {createLogger} from "../../../utils/Logger";
+
+const logger = createLogger("ProductsList")
 
 export interface Props {
   products: Product[] | null
+  onProductTapped: (product: Product) => void
 }
 
 export default function ProductsList(props: Props) {
@@ -13,7 +17,7 @@ export default function ProductsList(props: Props) {
       ?
       <FlatList
         data={props.products}
-        renderItem={renderProduct}
+        renderItem={(item: ListRenderItemInfo<Product>) => renderProduct(item.item, () => props.onProductTapped(item.item))}
         keyExtractor={product => product.id}
         style={styles.list}
       />
@@ -22,16 +26,22 @@ export default function ProductsList(props: Props) {
   )
 }
 
-function renderProduct(item: ListRenderItemInfo<Product>): ReactElement {
+function renderProduct(
+  product: Product,
+  onProductTapped: () => void
+): ReactElement {
   return (
-    <TouchableOpacity style={styles.listItemContainer}>
+    <TouchableOpacity
+      style={styles.listItemContainer}
+      onPress={() => onProductTapped()}
+    >
       <View style={styles.listItemNameContainer}>
         <Text style={styles.listItemNameLabel}>Name</Text>
-        <Text style={styles.listItemName}>{item.item.name}</Text>
+        <Text style={styles.listItemName}>{product.name}</Text>
       </View>
       <View style={styles.listItemCategoryContainer}>
         <Text style={styles.listItemCategoryLabel}>Category</Text>
-        <Text style={styles.listItemCategory}>{item.item.category.name}</Text>
+        <Text style={styles.listItemCategory}>{product.category.name}</Text>
       </View>
     </TouchableOpacity>
   )
