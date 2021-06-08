@@ -24,4 +24,4 @@ web-build/
 .idea/*.iml
 .idea/modules.xml
 
-app/utils/EnvironmentActual.ts
+#app/utils/EnvironmentActual.ts
