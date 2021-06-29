@@ -55,7 +55,7 @@
 		<dict>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.openboxes.android</string>
+				<string>com.openboxes.ios</string>
 			</array>
 		</dict>
 	</array>

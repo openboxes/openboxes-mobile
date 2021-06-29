@@ -310,13 +310,12 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.openboxes.android";
-				PRODUCT_NAME = android;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.openboxes.ios";
+				PRODUCT_NAME = OpenBoxes;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 				TARGETED_DEVICE_FAMILY = "1,2";
-				CODE_SIGN_ENTITLEMENTS = openboxesexpo/android.entitlements;
 			};
 			name = Debug;
 		};
@@ -336,12 +335,11 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.openboxes.android";
-				PRODUCT_NAME = android;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.openboxes.ios";
+				PRODUCT_NAME = OpenBoxes;
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 				TARGETED_DEVICE_FAMILY = "1,2";
-				CODE_SIGN_ENTITLEMENTS = openboxesexpo/android.entitlements;
 			};
 			name = Release;
 		};
@@ -402,7 +400,6 @@
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
-				CODE_SIGN_ENTITLEMENTS = openboxesexpo/android.entitlements;
 			};
 			name = Debug;
 		};
@@ -456,7 +453,6 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
-				CODE_SIGN_ENTITLEMENTS = openboxesexpo/android.entitlements;
 			};
 			name = Release;
 		};
