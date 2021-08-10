@@ -12,6 +12,8 @@ export default function vmMapper(state: State): VM {
       list = state.searchByCategory.results
     } else if (state.searchByName && state.searchByName.results && state.searchByName.results.length > 0) {
       list = state.searchByName.results
+    } else if (state.searchByProductCode && state.searchByProductCode.results && state.searchByProductCode.results.length > 0) {
+      list = state.searchByProductCode.results
     } else {
       list = state.allProducts
     }
@@ -27,6 +29,7 @@ export default function vmMapper(state: State): VM {
   return {
     subtitle: subtitle,
     searchBoxVisible: state.searchBoxVisible,
+    searchBoxProductCodeVisible: state.searchBoxProductCodeVisible,
     categoryPickerPopupVisible: state.categoryPickerPopupVisible,
     list: list,
     floatingActionButtonVisible: floatingActionButtonVisible,

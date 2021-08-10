@@ -9,6 +9,7 @@ import getProductsFromApi from "../../../data/product/GetProducts";
 import showPopup from "../../Popup";
 import {
   searchProductsByName as searchProductsByNameFromApi,
+  searchProductsByProductCode as searchProductCodeFromApi,
   searchProductsByCategory as searchProductsByCategoryFromApi
 } from "../../../data/product/SearchProducts";
 import {
@@ -26,6 +27,7 @@ import {DispatchProps, OwnProps, Props, StateProps} from "./Props";
 import {NavigationStateHere, NavigationStateProductDetails, NavigationStateType, State} from "./State";
 import {VM} from "./VM";
 import vmMapper from "./VMMapper";
+import ProductsSearchCodeHeader from "./ProductsSearchCodeHeader";
 
 class Products extends React.Component<Props, State> {
 
@@ -35,16 +37,20 @@ class Products extends React.Component<Props, State> {
       error: null,
       allProducts: null,
       searchBoxVisible: false,
+      searchBoxProductCodeVisible: false,
       categoryPickerPopupVisible: false,
       searchByName: null,
+      searchByProductCode: null,
       searchByCategory: null,
       navigationState: new NavigationStateHere()
     }
     this.getProducts = this.getProducts.bind(this)
     this.searchProducts = this.searchProducts.bind(this)
     this.onSearchQuerySubmitted = this.onSearchQuerySubmitted.bind(this)
+    this.onSearchProductCodeQuerySubmitted = this.onSearchProductCodeQuerySubmitted.bind(this)
     this.onSearchBoxVisibilityChange = this.onSearchBoxVisibilityChange.bind(this)
     this.onSearchByProductNamePress = this.onSearchByProductNamePress.bind(this)
+    this.onSearchByProductCodePress = this.onSearchByProductCodePress.bind(this)
     this.onSearchByCategoryPress = this.onSearchByCategoryPress.bind(this)
     this.hideCategoryPickerPopup = this.hideCategoryPickerPopup.bind(this)
     this.onCategoryChosen = this.onCategoryChosen.bind(this)
@@ -58,6 +64,12 @@ class Products extends React.Component<Props, State> {
   onSearchByProductNamePress() {
     this.setState({
       searchBoxVisible: true
+    })
+  }
+
+  onSearchByProductCodePress() {
+    this.setState({
+      searchBoxProductCodeVisible: true
     })
   }
 
@@ -77,7 +89,9 @@ class Products extends React.Component<Props, State> {
       this.setState({
         error: error,
         searchBoxVisible: false,
-        searchByName: null
+        searchBoxProductCodeVisible: false,
+        searchByName: null,
+        searchByProductCode: null
       })
     }
   }
@@ -136,6 +150,68 @@ class Products extends React.Component<Props, State> {
       })
       if (shouldRetry) {
         return await this.searchProducts(query)
+      } else {
+        return Promise.resolve(null)
+      }
+    } finally {
+      this.props.hideProgressBar()
+    }
+  }
+
+  onSearchProductCodeQuerySubmitted(query: string) {
+    (async () => {
+      if (!query) {
+        await showPopup({
+          message: "Search query is empty",
+          positiveButtonText: "Ok"
+        })
+        return
+      }
+
+      if (this.state.searchByProductCode?.query == query) {
+        return
+      }
+
+      const searchedProducts = await this.searchProductByProductCode(query)
+      if (!searchedProducts) {
+        return
+      }
+
+      if (searchedProducts.length == 0) {
+        this.setState({
+          searchByProductCode: {
+            query: query,
+            results: null
+          },
+          error: `No search results found for product code "${query}"`
+        })
+      } else {
+        this.setState({
+          searchByProductCode: {
+            query: query,
+            results: searchedProducts,
+          },
+          error: null
+        })
+      }
+    })()
+  }
+
+  async searchProductByProductCode(query: string): Promise<Product[] | null> {
+    try {
+      this.props.showProgressBar(`Searching for products with product code "${query}"`)
+      return await searchProductCodeFromApi(query)
+    } catch (e) {
+      const title = e.message ? `Failed to load search results with code = "${query}"` : null
+      const message = e.message ?? `Failed to load search results with code = "${query}"`
+      const shouldRetry = await showPopup({
+        title: title,
+        message: message,
+        positiveButtonText: "Retry",
+        negativeButtonText: "Cancel"
+      })
+      if (shouldRetry) {
+        return await this.searchProductByProductCode(query)
       } else {
         return Promise.resolve(null)
       }
@@ -285,12 +361,20 @@ class Products extends React.Component<Props, State> {
           onSearchQuerySubmitted={this.onSearchQuerySubmitted}
           onSearchBoxVisibilityChange={this.onSearchBoxVisibilityChange}
         />
+        <ProductsSearchCodeHeader
+          subtitle={vm.subtitle}
+          searchBoxProductCodeVisible={vm.searchBoxProductCodeVisible}
+          onBackButtonPress={this.onBackButtonPress}
+          onSearchProductCodeQuerySubmitted={this.onSearchProductCodeQuerySubmitted}
+          onSearchBoxVisibilityChange={this.onSearchBoxVisibilityChange}
+        />
         <View style={styles.content}>
           <ProductsList products={vm.list} onProductTapped={this.showProductDetailsScreen}/>
           <CentralMessage message={vm.centralErrorMessage}/>
           <FloatingActionButtonMenu
             visible={vm.floatingActionButtonVisible}
             onSearchByProductNamePress={this.onSearchByProductNamePress}
+            onSearchByProductCodePress={this.onSearchByProductCodePress}
             onSearchByCategoryPress={this.onSearchByCategoryPress}
           />
           <ProductCategoryPickerPopup
