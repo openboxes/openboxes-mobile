@@ -33,8 +33,13 @@ export interface State {
   error: string | null
   allProducts: Product[] | null
   searchBoxVisible: boolean
+  searchBoxProductCodeVisible: boolean
   categoryPickerPopupVisible: boolean
   searchByName: {
+    query: string
+    results: Product[] | null
+  } | null
+  searchByProductCode: {
     query: string
     results: Product[] | null
   } | null
