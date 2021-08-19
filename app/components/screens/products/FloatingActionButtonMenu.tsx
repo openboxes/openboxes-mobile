@@ -6,6 +6,7 @@ import Theme from "../../../utils/Theme";
 export interface Props {
   visible: boolean
   onSearchByProductNamePress: () => void
+  onSearchByProductCodePress: () => void
   onSearchByCategoryPress: () => void
 }
 
@@ -34,6 +35,10 @@ export default class FloatingActionButtonMenu extends React.Component<Props, Sta
     this.flipOpenState()
     this.props.onSearchByProductNamePress()
   }
+  onSearchByProductCodePress() {
+    this.flipOpenState()
+    this.props.onSearchByProductCodePress()
+  }
 
   onSearchByCategoryPress() {
     this.flipOpenState()
@@ -51,6 +56,11 @@ export default class FloatingActionButtonMenu extends React.Component<Props, Sta
             icon: () => <Icon name={Name.Boxes} size={22}/>,
             label: "Search by product name",
             onPress: () => this.onSearchByProductNamePress(),
+          },
+          {
+            icon: () => <Icon name={Name.Boxes} size={22}/>,
+            label: "Search by product code",
+            onPress: () => this.onSearchByProductCodePress(),
           },
           {
             icon: () => <Icon name={Name.Category} size={22}/>,

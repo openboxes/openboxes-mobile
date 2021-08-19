@@ -43,3 +43,16 @@ export function searchProductsByCategory(category: ProductCategory): Promise<Pro
   return apiClient.post(url, request)
     .then((response: SearchProductsApiResponse) => response.data)
 }
+
+export function searchProductsByProductCode(productCode: String): Promise<Product[]> {
+  const request: SearchProductsApiRequest = {
+    searchAttributes: [{
+      property: "productCode",
+      operator: "like",
+      value: `${productCode}%`
+    }]
+  }
+
+  return apiClient.post(url, request)
+    .then((response: SearchProductsApiResponse) => response.data)
+}

@@ -11,10 +11,10 @@ import Header from "../../Header";
 
 export interface Props {
   subtitle?: string | null
-  searchBoxVisible: boolean
+  searchBoxProductCodeVisible: boolean
   onBackButtonPress?: () => void
   onSearchBoxVisibilityChange: (visible: boolean) => void
-  onSearchQuerySubmitted: (query: string) => void
+  onSearchProductCodeQuerySubmitted: (query: string) => void
 }
 
 interface State {
@@ -35,7 +35,7 @@ When the user taps on the search button, the header transforms into a search box
 does not follow the color template of their header component. So changes have been made to the theme and styling of the
 SearchBar component to ensure that the color scheme of the normal header and the Searchbar remains the same.
 */
-export default class ProductsSearchHeader extends React.Component<Props, State> {
+export default class ProductsSearchCodeHeader extends React.Component<Props, State> {
 
   constructor(props: Props) {
     super(props);
@@ -46,7 +46,7 @@ export default class ProductsSearchHeader extends React.Component<Props, State> 
     this.onSearchQueryChange = this.onSearchQueryChange.bind(this)
     this.onClearIconPressed = this.onClearIconPressed.bind(this)
     this.getClearIcon = this.getClearIcon.bind(this)
-    this.onSearchQuerySubmitted = this.onSearchQuerySubmitted.bind(this)
+    this.onSearchProductCodeQuerySubmitted = this.onSearchProductCodeQuerySubmitted.bind(this)
     setStatusBarBackgroundColor(Theme.colors.primary, false)
   }
 
@@ -79,24 +79,14 @@ export default class ProductsSearchHeader extends React.Component<Props, State> 
     />
   }
 
-  onSearchQuerySubmitted() {
-    this.props.onSearchQuerySubmitted(this.state.searchQuery)
+  onSearchProductCodeQuerySubmitted() {
+    this.props.onSearchProductCodeQuerySubmitted(this.state.searchQuery)
   }
 
   render() {
     return (
-      !this.props.searchBoxVisible
-        ?
-        (
-          <Header
-            title="Products"
-            subtitle={this.props.subtitle}
-            backButtonVisible={true}
-            onBackButtonPress={this.props.onBackButtonPress}
-          />
-        )
-        :
-        (
+      this.props.searchBoxProductCodeVisible ?
+
           <Searchbar
             theme={{
               colors: {
@@ -108,7 +98,7 @@ export default class ProductsSearchHeader extends React.Component<Props, State> 
                 placeholder: placeholderColor
               }
             }}
-            placeholder="Search by product name"
+            placeholder="Search by product code"
             onChangeText={this.onSearchQueryChange}
             value={this.state.searchQuery}
             style={styles.searchBar}
@@ -118,10 +108,10 @@ export default class ProductsSearchHeader extends React.Component<Props, State> 
               color: white
             }}
             iconColor={white}
-            onSubmitEditing={this.onSearchQuerySubmitted}
-          />
+            onSubmitEditing={this.onSearchProductCodeQuerySubmitted}
+          /> : (<></>)
 
-        )
+
     )
   }
 }

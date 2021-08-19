@@ -4,6 +4,7 @@ import {NavigationState} from "./State";
 export interface VM {
   subtitle: string
   searchBoxVisible: boolean
+  searchBoxProductCodeVisible: boolean
   categoryPickerPopupVisible: boolean
   list: Product[] | null
   floatingActionButtonVisible: boolean
