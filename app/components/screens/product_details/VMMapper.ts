@@ -2,13 +2,21 @@ import {Props} from "./Props";
 import {State} from "./State";
 import {DetailsItemVM, VM} from "./VM";
 import {ProductCategory} from "../../../data/product/category/ProductCategory";
+import ProductDetails from "./ProductDetails";
 
 export function vmMapper(props: Props, state: State): VM {
   return {
     header: "Product Details",
     name: props.product.name,
+    productCode: props.product.productCode,
     description: props.product.description ?? "No description provided",
-    details: getDetails(props)
+    pricePerUnit: props.product.pricePerUnit ?? 0.00,
+    details: getDetails(props),
+    category: props.product.category,
+    availability: props.product.availability ?? {quantityAvailableToPromise: {value: 0, unitOfMeasure: {code: "", name: ""}}, quantityOnHand: {value: 0, unitOfMeasure: {code: "", name: ""}}, quantityAllocated: {value: 0, unitOfMeasure: {code: "", name: ""}}, quantityOnOrder: {value: 0, unitOfMeasure: {code: "", name: ""}} },
+    attributes: props.product.attributes ?? [{code:"Sample_1", value: "Sample value 1", name: "Attribute 1"}, {code:"Sample_2", value: "Sample value 2", name: "Attribute 2"}],
+    productType: props.product.productType ?? {name: "Sample Name"},
+    images: props.product.images ?? [{id: "", name: "Sample Image", url: "https://off.com.ph/en-ph/product/off-overtime/off-overtime-insect-repellent-lotion"}]
   }
 }
 
