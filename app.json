@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "openboxes-expo",
-    "slug": "openboxes-expo",
+    "name": "OpenBoxes",
+    "slug": "OpenBoxes",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./app/assets/icon.png",
@@ -17,10 +17,14 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.openboxes.ios"
     },
     "web": {
       "favicon": "./app/assets/favicon.png"
+    },
+    "android": {
+      "package": "com.openboxes.android"
     }
   }
 }

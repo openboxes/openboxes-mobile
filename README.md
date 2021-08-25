@@ -1,22 +1,35 @@
 # Introduction
-Openboxes mobile app built using Expo(expo.io)
 
-## Getting Started 
-* Ensure that the Expo app is installed on your iOS/Android device.
-* Checkout the source code
+Openboxes mobile app built using React Native.
+
+## Getting Started
+
+- Checkout the source code
     ```
     git clone git@github.com:openboxes/openboxes-mobile.git
     ```
-* Download app dependencies
+- Download app dependencies
     ```
     cd openboxes-mobile
     yarn install
     ```
-* Start expo 
-    ```
-    expo start
-    ```
-* Expo should open in a new tab in your web browser.
-* Open camera app on a mobile device (iOS or Android).
-* Scan barcode using camera app.
-* The bundle should be downloaded and executed on your mobile device.
+- At this point the necessary dependencies would have been downloaded and further development can happen.
+  
+## Environment setup
+Follow the instructions given [here](https://reactnative.dev/docs/environment-setup#development-os) to set up your 
+environment depending on the OS running on your machine(Windows, MacOS, Linux), and the mobile device you want to 
+run the app on(Android, iOS).
+
+## Build and run the app
+### On Android
+```
+yarn android
+```
+
+Depending on whether an Android device is already connected to the machine, it will try running the app on that device,
+or it will try launching an emulator.
+
+### On iOS
+```
+yarn ios
+```
