@@ -1,5 +1,5 @@
 import React from "react";
-import {StyleSheet, Text, View} from "react-native";
+import {Image, ScrollView, StyleSheet, Text, View} from "react-native";
 import {AppState} from "../../../redux/Reducer";
 import {
   dispatchHideProgressBarAction as hideProgressBar,
@@ -14,7 +14,6 @@ import {vmMapper} from "./VMMapper";
 import Theme from "../../../utils/Theme";
 
 class ProductDetails extends React.Component<Props, State> {
-
   constructor(props: Props) {
     super(props);
   }
@@ -30,6 +29,65 @@ class ProductDetails extends React.Component<Props, State> {
         />
         <View style={styles.contentContainer}>
           <Text style={styles.name}>{vm.name}</Text>
+          <Image
+            style={styles.tinyLogo}
+            source={{
+              uri: 'https://reactnative.dev/img/tiny_logo.png',
+            }}
+          />
+          <ScrollView>
+          <Text style={styles.boxHeading}>Status</Text>
+          <View style={styles.container}>
+            <View style={styles.row}>
+              <View style={styles.label}><Text>{'On Hand Quantity'}</Text></View>
+              <View style={styles.value}><Text style={styles.textAlign}>{vm.availability.quantityOnHand.value} {vm.availability.quantityOnHand.unitOfMeasure.code}</Text></View>
+            </View>
+            <View style={styles.row}>
+              <View style={styles.label}><Text>{'Available to Promise'}</Text></View>
+              <View style={styles.value}><Text style={styles.textAlign}>{vm.availability.quantityAvailableToPromise.value} {vm.availability.quantityAvailableToPromise.unitOfMeasure.code}</Text></View>
+            </View>
+            <View style={styles.row}>
+              <View style={styles.label}><Text>{'Allocated to Order'}</Text></View>
+              <View style={styles.value}><Text style={styles.textAlign}>{vm.availability.quantityAllocated.value} {vm.availability.quantityAllocated.unitOfMeasure.code}</Text></View>
+            </View>
+            <View style={styles.row}>
+              <View style={styles.label}><Text>{'On Order'}</Text></View>
+              <View style={styles.value}><Text style={styles.textAlign}>{vm.availability.quantityOnOrder.value} {vm.availability.quantityOnOrder.unitOfMeasure.code}</Text></View>
+            </View>
+          </View>
+
+          <Text style={styles.boxHeading}>Details</Text>
+          <View style={styles.container}>
+            <View style={styles.row}>
+              <View style={styles.label}><Text>{'Product Code'}</Text></View>
+              <View style={styles.value}><Text style={styles.textAlign}>{vm.productCode} {vm.availability.quantityOnHand.unitOfMeasure.code}</Text></View>
+            </View>
+            <View style={styles.row}>
+              <View style={styles.label}><Text>{'Category'}</Text></View>
+              <View style={styles.value}><Text style={styles.textAlign}>{vm.category.name} {vm.availability.quantityAvailableToPromise.unitOfMeasure.code}</Text></View>
+            </View>
+            {
+              vm.attributes.map(item => {
+                return (
+                  <View key={item.code} style={styles.row}>
+                    <Text style={styles.label}>{item.name}</Text>
+                    <Text style={styles.value}>{item.value}</Text>
+                  </View>
+                )
+              })
+            }
+            <View style={styles.row}>
+              <View style={styles.label}><Text>{'Product Type'}</Text></View>
+              <View style={styles.value}><Text style={styles.textAlign}>{vm.productType.name}</Text></View>
+            </View>
+            <View style={styles.row}>
+              <View style={styles.label}><Text>{'Price per unit'}</Text></View>
+              <View style={styles.value}><Text style={styles.textAlign}>{vm.pricePerUnit}</Text></View>
+            </View>
+
+          </View>
+          </ScrollView>
+          {/*<Text style={styles.descriptionText}>{vm.description}</Text>
           <Text style={styles.descriptionLabel}>Description</Text>
           <Text style={styles.descriptionText}>{vm.description}</Text>
           <Text style={styles.detailsLabel}>Details</Text>
@@ -44,7 +102,7 @@ class ProductDetails extends React.Component<Props, State> {
                 )
               })
             }
-          </View>
+          </View>*/}
         </View>
       </ScreenContainer>
     )
@@ -59,9 +117,22 @@ const styles = StyleSheet.create({
     padding: 8
   },
   name: {
-    fontSize: 28,
+    fontSize: 17,
     color: Theme.colors.text,
     fontWeight: "bold"
+  },
+  boxHeading: {
+    fontSize: 15,
+    color: Theme.colors.text,
+    fontWeight: "bold",
+    marginTop: 8
+  },
+  box: {
+    borderColor: Theme.colors.onBackground,
+    borderWidth: 1,
+    borderRadius: 8,
+    marginTop: 8,
+    padding: 8
   },
   descriptionLabel: {
     fontSize: 20,
@@ -105,6 +176,39 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: Theme.colors.text,
     marginStart: 8
+  },
+  container: {
+    flexWrap: 'wrap',
+    alignItems: 'flex-start', // if you want to fill rows left to right
+    borderColor: Theme.colors.onBackground,
+    borderWidth: 1,
+    borderRadius: 8,
+  },
+  row: {
+    flexDirection: 'row',
+    borderColor: Theme.colors.onBackground,
+    borderBottomWidth: 1,
+    marginTop: 8,
+    padding: 8,
+    width: '100%'
+  },
+  label: {
+    width: '50%', // is 50% of container width
+  },
+  value: {
+    width: '50%', // is 50% of container width
+    textAlign: "right"
+  },
+  textAlign: {
+    textAlign: "right"
+  },
+  tinyLogo: {
+    width: '100%',
+    height: '20%',
+  },
+  logo: {
+    width: 66,
+    height: 58,
   }
 })
 
