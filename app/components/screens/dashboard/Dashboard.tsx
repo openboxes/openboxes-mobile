@@ -9,6 +9,7 @@ import Products from "../products/Products";
 import {DispatchProps, OwnProps, Props, StateProps} from "./Props";
 import {NavigationState, State} from "./State";
 import ScreenContainer from "../../ScreenContainer";
+import QuickBarCodeScanner from "../QuickBarCodeScanner";
 
 class Dashboard extends React.Component<Props, State> {
 
@@ -19,7 +20,9 @@ class Dashboard extends React.Component<Props, State> {
     }
     this.renderContent = this.renderContent.bind(this)
     this.goToProductsScreen = this.goToProductsScreen.bind(this)
+    this.goToQuickBarCodeScannerScreen = this.goToQuickBarCodeScannerScreen.bind(this)
     this.renderProductsScreen = this.renderProductsScreen.bind(this)
+    this.renderQuickBarCodeScanScreen = this.renderQuickBarCodeScanScreen.bind(this)
     this.showDashboardContent = this.showDashboardContent.bind(this)
   }
 
@@ -29,6 +32,8 @@ class Dashboard extends React.Component<Props, State> {
         return this.renderContent()
       case NavigationState.ProductsScreen:
         return this.renderProductsScreen()
+      case NavigationState.QuickBarCodeScannerScreen:
+        return this.renderQuickBarCodeScanScreen()
     }
   }
 
@@ -48,6 +53,15 @@ class Dashboard extends React.Component<Props, State> {
             <Text style={styles.countLabel}>Products</Text>
           </View>
         </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.countContainer}
+          onPress={this.goToQuickBarCodeScannerScreen}
+        >
+          <View style={styles.countLabelAndIconContainer}>
+            <Icon name="barCode" size={14}/>
+            <Text style={styles.countLabel}>Bar Code</Text>
+          </View>
+        </TouchableOpacity>
       </ScreenContainer>
     )
   }
@@ -57,9 +71,18 @@ class Dashboard extends React.Component<Props, State> {
       navigationState: NavigationState.ProductsScreen
     })
   }
+  goToQuickBarCodeScannerScreen() {
+    this.setState({
+      navigationState: NavigationState.QuickBarCodeScannerScreen
+    })
+  }
 
   renderProductsScreen() {
     return (<Products exit={this.showDashboardContent}/>)
+  }
+
+  renderQuickBarCodeScanScreen() {
+    return (<QuickBarCodeScanner exit={this.showDashboardContent}/>)
   }
 
   showDashboardContent() {
