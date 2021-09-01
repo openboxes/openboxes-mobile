@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, StyleSheet, Button } from 'react-native';
+import {Text, View, StyleSheet, Button, FlatList} from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import {DispatchProps, OwnProps, Props, StateProps} from "./products/Props";
-import {VM} from "./products/VM";
-import {PermissionType, requestPermission} from "../../utils/permissions/RequestPermission";
 import {BarCodeScanningResult} from "expo-camera/build/Camera.types";
 import {AppState} from "../../redux/Reducer";
 import {
@@ -11,13 +9,14 @@ import {
   dispatchShowProgressBarAction as showProgressBar
 } from "../../redux/Dispatchers";
 import {connect} from "react-redux";
-import vmMapper from "./products/VMMapper";
-import {NavigationStateProductDetails, NavigationStateType} from "./products/State";
+import {Input} from "react-native-elements";
 
 interface State {
   hasPermission: boolean | null;
   scanned: boolean | null;
   cameraPermissionGranted: boolean | null;
+  barcodeNo: string | '';
+  barCodes: string[] | []
 }
 
 class  QuickBarCodeScanner  extends React.Component<Props, State> {
@@ -27,11 +26,16 @@ class  QuickBarCodeScanner  extends React.Component<Props, State> {
     this.state = {
       hasPermission: false,
       scanned: false,
-      cameraPermissionGranted: false
+      cameraPermissionGranted: false,
+      barcodeNo: '',
+      barCodes: []
     }
     this.getCameraPermission = this.getCameraPermission.bind(this);
     this.setHasPermission = this.setHasPermission.bind(this)
     this.renderContent = this.renderContent.bind(this)
+    this.changeBarcode = this.changeBarcode.bind(this)
+    this.submitBarcode = this.submitBarcode.bind(this)
+    this.setBarcodeNo = this.setBarcodeNo.bind(this)
     this.handleBarCodeScanned = this.handleBarCodeScanned.bind(this)
     this.getCameraPermission()
 
@@ -100,6 +104,31 @@ class  QuickBarCodeScanner  extends React.Component<Props, State> {
   //   this.props.onBarCodeScanned(result.data)
   // }
 
+  changeBarcode(barcode:string){
+    // some validations
+    this.setBarcodeNo(barcode);
+  }
+
+  submitBarcode() {
+    // handleBarcodeScan(barcodeNo);
+    const bCodes = this.state.barCodes
+    bCodes.push({'key': this.state.barcodeNo})
+    console.debug("bCodes::"+bCodes)
+    console.debug(bCodes)
+    this.setState({
+      barCodes: bCodes
+    })
+    this.setBarcodeNo('');
+  }
+
+  setBarcodeNo(barcode:string){
+    this.setState({
+      barcodeNo: barcode
+    })
+  }
+
+
+
   render() {
     // const vm = vmMapper(this.state)
     // switch (vm.navigationState.type) {
@@ -114,11 +143,21 @@ class  QuickBarCodeScanner  extends React.Component<Props, State> {
   renderContent() {
   return(
     <View style={styles.container}>
-      <BarCodeScanner
-        onBarCodeScanned={this.handleBarCodeScanned}
-        style={StyleSheet.absoluteFillObject}
+      <Input
+        value={this.state.barcodeNo}
+        onChangeText={this.changeBarcode}
+        onSubmitEditing={this.submitBarcode}
       />
-      {<Button title={'Tap to Scan Again'} onPress={() => this.setScanned(false)} />}
+
+      <FlatList
+        data={this.state.barCodes}
+        renderItem={({item}) =>
+          <View><Text >{item.key}</Text></View>
+        }
+
+        style={styles.list}
+      />
+
     </View>
   )
   }
@@ -131,6 +170,9 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     justifyContent: 'center',
+  },
+  list: {
+    width: "100%"
   },
 });
 
