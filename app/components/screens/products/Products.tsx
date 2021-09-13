@@ -1,7 +1,7 @@
 // noinspection DuplicatedCode
 
 import React from "react";
-import {StyleSheet, View} from "react-native";
+import {Platform, StatusBar, StyleSheet, TextInput, View} from "react-native";
 import {AppState} from "../../../redux/Reducer";
 import {connect} from "react-redux";
 import Product from "../../../data/product/Product";
@@ -10,6 +10,7 @@ import showPopup from "../../Popup";
 import {
   searchProductsByName as searchProductsByNameFromApi,
   searchProductsByProductCode as searchProductCodeFromApi,
+  searchProducts as searchProductsApi,
   searchProductsByCategory as searchProductsByCategoryFromApi
 } from "../../../data/product/SearchProducts";
 import {
@@ -28,12 +29,14 @@ import {NavigationStateHere, NavigationStateProductDetails, NavigationStateType,
 import {VM} from "./VM";
 import vmMapper from "./VMMapper";
 import ProductsSearchCodeHeader from "./ProductsSearchCodeHeader";
-
+import BarCodeSearchHeader from "./BarCodeSearchHeader";
 class Products extends React.Component<Props, State> {
+
 
   constructor(props: Props) {
     super(props)
     this.state = {
+      searchGlobally: null,
       error: null,
       allProducts: null,
       searchBoxVisible: false,
@@ -42,7 +45,8 @@ class Products extends React.Component<Props, State> {
       searchByName: null,
       searchByProductCode: null,
       searchByCategory: null,
-      navigationState: new NavigationStateHere()
+      navigationState: new NavigationStateHere(),
+      barcodeNo: ''
     }
     this.getProducts = this.getProducts.bind(this)
     this.searchProducts = this.searchProducts.bind(this)
@@ -59,6 +63,9 @@ class Products extends React.Component<Props, State> {
     this.showProductDetailsScreen = this.showProductDetailsScreen.bind(this)
     this.renderProductDetailsScreen = this.renderProductDetailsScreen.bind(this)
     this.showProductsScreen = this.showProductsScreen.bind(this)
+
+    this.onBarCodeSearchQuerySubmitted = this.onBarCodeSearchQuerySubmitted.bind(this)
+
   }
 
   onSearchByProductNamePress() {
@@ -340,6 +347,67 @@ class Products extends React.Component<Props, State> {
     }
   }
 
+  onBarCodeSearchQuerySubmitted(query: string) {
+    // handleBarcodeScan(barcodeNo);
+    (async () => {
+      if (!query) {
+        await showPopup({
+          message: "Search query is empty",
+          positiveButtonText: "Ok"
+        })
+        return
+      }
+
+      const searchedProducts = await this.searchProductGlobally(query)
+      if (!searchedProducts) {
+        return
+      }
+
+      if (searchedProducts.length == 0) {
+        this.setState({
+          searchGlobally: {
+            query: query,
+            results: null
+          },
+          error: `No search results found for query "${query}"`
+        })
+      } else {
+        this.setState({
+          searchGlobally: {
+            query: query,
+            results: searchedProducts,
+          },
+          error: null
+        })
+      }
+    })()
+  }
+
+  async searchProductGlobally(query: string): Promise<Product[] | null> {
+    try {
+      this.props.showProgressBar(`Searching for products with value "${query}"`)
+      return await searchProductsApi(query)
+    } catch (e) {
+      const title = e.message ? `Failed to load search results with value = "${query}"` : null
+      const message = e.message ?? `Failed to load search results with value = "${query}"`
+      const shouldRetry = await showPopup({
+        title: title,
+        message: message,
+        positiveButtonText: "Retry",
+        negativeButtonText: "Cancel"
+      })
+      if (shouldRetry) {
+        return await this.searchProductGlobally(query)
+      } else {
+        return Promise.resolve(null)
+      }
+    } finally {
+      this.props.hideProgressBar()
+    }
+  }
+
+
+
   render() {
     const vm = vmMapper(this.state)
     switch (vm.navigationState.type) {
@@ -368,7 +436,12 @@ class Products extends React.Component<Props, State> {
           onSearchProductCodeQuerySubmitted={this.onSearchProductCodeQuerySubmitted}
           onSearchBoxVisibilityChange={this.onSearchBoxVisibilityChange}
         />
+        <BarCodeSearchHeader
+          subtitle={vm.subtitle}
+          onBarCodeSearchQuerySubmitted={this.onBarCodeSearchQuerySubmitted}
+          searchBox={false}/>
         <View style={styles.content}>
+
           <ProductsList products={vm.list} onProductTapped={this.showProductDetailsScreen}/>
           <CentralMessage message={vm.centralErrorMessage}/>
           <FloatingActionButtonMenu

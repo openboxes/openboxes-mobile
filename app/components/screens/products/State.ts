@@ -47,5 +47,10 @@ export interface State {
     category: ProductCategory,
     results: Product[] | null
   } | null
-  navigationState: NavigationState
+  searchGlobally: {
+    query: string,
+    results: Product[] | null
+  } | null
+  navigationState: NavigationState,
+  barcodeNo: string | ''
 }
