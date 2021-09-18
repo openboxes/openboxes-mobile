@@ -4,6 +4,7 @@ import {AxiosRequestConfig} from "axios";
 import {ProductCategory} from "./category/ProductCategory";
 
 const url = "/generic/product/search"
+const searchGlobalUrl = "/products/search"
 
 interface SearchProductsApiRequest {
   searchAttributes: SearchAttributes[]
@@ -12,6 +13,9 @@ interface SearchProductsApiRequest {
 interface SearchAttributes {
   property: string
   operator: string
+  value: string
+}
+interface GlobalSearchAttributes {
   value: string
 }
 
@@ -54,5 +58,14 @@ export function searchProductsByProductCode(productCode: String): Promise<Produc
   }
 
   return apiClient.post(url, request)
+    .then((response: SearchProductsApiResponse) => response.data)
+}
+
+export function searchProducts(value: String): Promise<Product[]> {
+  const request: GlobalSearchAttributes = {
+      value: `${value}`
+  }
+
+  return apiClient.post(searchGlobalUrl, request)
     .then((response: SearchProductsApiResponse) => response.data)
 }
