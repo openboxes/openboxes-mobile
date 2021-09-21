@@ -9,6 +9,7 @@ import Products from "../products/Products";
 import {DispatchProps, OwnProps, Props, StateProps} from "./Props";
 import {NavigationState, State} from "./State";
 import ScreenContainer from "../../ScreenContainer";
+import Orders from "../orders/Orders";
 
 class Dashboard extends React.Component<Props, State> {
 
@@ -19,7 +20,9 @@ class Dashboard extends React.Component<Props, State> {
     }
     this.renderContent = this.renderContent.bind(this)
     this.goToProductsScreen = this.goToProductsScreen.bind(this)
+    this.goToOrdersScreen = this.goToOrdersScreen.bind(this)
     this.renderProductsScreen = this.renderProductsScreen.bind(this)
+    this.renderOrdersScreen = this.renderOrdersScreen.bind(this)
     this.showDashboardContent = this.showDashboardContent.bind(this)
   }
 
@@ -29,6 +32,8 @@ class Dashboard extends React.Component<Props, State> {
         return this.renderContent()
       case NavigationState.ProductsScreen:
         return this.renderProductsScreen()
+      case NavigationState.OrdersScreen:
+        return this.renderOrdersScreen()
     }
   }
 
@@ -48,6 +53,15 @@ class Dashboard extends React.Component<Props, State> {
             <Text style={styles.countLabel}>Products</Text>
           </View>
         </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.countContainer}
+          onPress={this.goToOrdersScreen}
+        >
+          <View style={styles.countLabelAndIconContainer}>
+            <Icon name={Name.Boxes} size={14}/>
+            <Text style={styles.countLabel}>Orders</Text>
+          </View>
+        </TouchableOpacity>
       </ScreenContainer>
     )
   }
@@ -57,9 +71,18 @@ class Dashboard extends React.Component<Props, State> {
       navigationState: NavigationState.ProductsScreen
     })
   }
+  goToOrdersScreen() {
+    this.setState({
+      navigationState: NavigationState.OrdersScreen
+    })
+  }
 
   renderProductsScreen() {
     return (<Products exit={this.showDashboardContent}/>)
+  }
+
+  renderOrdersScreen() {
+    return (<Orders exit={this.showDashboardContent}/>)
   }
 
   showDashboardContent() {
