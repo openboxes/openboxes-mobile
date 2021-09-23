@@ -371,6 +371,8 @@ class Products extends React.Component<Props, State> {
           },
           error: `No search results found for query "${query}"`
         })
+      }else if (searchedProducts.length == 1) {
+        this.showProductDetailsScreen(searchedProducts[0])
       } else {
         this.setState({
           searchGlobally: {
