@@ -14,5 +14,7 @@ export default interface Product {
   availability: ProductAvailability,
   attributes: Attributes[],
   productType: ProductType,
-  images: ProductImage[]
+  images: ProductImage[],
+  unitOfMeasure: string
+
 }

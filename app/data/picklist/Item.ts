@@ -1,8 +1,9 @@
 import Product from "../product/Product";
 import BinLocation from "./BinLocation";
+import InventoryItem from "./InventoryItem";
 
 export default interface Item{
-  id: String
+  id: string | ""
   status: String,
   productCode: String,
   product: Product,
@@ -12,6 +13,9 @@ export default interface Item{
   quantityRequired: number
   reasonCode: String,
   comment: String
-  binLocation: BinLocation,
-
+  binLocation: BinLocation | null,
+  inventoryItem: InventoryItem | null,
+  quantityRequested: number,
+  quantityRemaining: number,
+  quantityAvailable: number
 }
