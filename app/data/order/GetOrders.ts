@@ -7,7 +7,7 @@ interface GetOrdersApiResponse {
   data: Order[]
 }
 
-export default function getOrders(): Promise<Order[]> {
-  return apiClient.get(url)
+export default function getOrders(locationId: string): Promise<Order[]> {
+  return apiClient.get(url+"&origin.id="+locationId)
     .then((response: GetOrdersApiResponse) => response.data)
 }
