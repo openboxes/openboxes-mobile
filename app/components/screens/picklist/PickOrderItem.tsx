@@ -4,7 +4,16 @@ import {State} from "./State";
 import {orderDetailsVMMapper} from "../order_details/OrderDetailsVMMapper";
 import ScreenContainer from "../../ScreenContainer";
 import Header from "../../Header";
-import {FlatList, ListRenderItemInfo, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
+import {
+  FlatList,
+  KeyboardAvoidingView,
+  ListRenderItemInfo, ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
+} from "react-native";
 import Item from "../../../data/picklist/Item";
 import {pickListVMMapper} from "./PickListVMMapper";
 import Theme from "../../../utils/Theme";
@@ -73,6 +82,7 @@ class PickOrderItem extends React.Component<Props, State> {
       }
       const requestBody = {
         "product.id": this.state.product?.id,
+        "productCode": this.state.product?.productCode,
         "inventoryItem.id": null,
         "binLocation.id": this.state.binLocation?.id,
         "quantityPicked": this.state.quantityPicked,
@@ -119,7 +129,7 @@ class PickOrderItem extends React.Component<Props, State> {
 
       if (!searchedProducts || searchedProducts.length == 0) {
         await showPopup({
-          message: "Product not found with ProductCode:"+this.state.productSearchQuery,
+          message: "Product not found with ProductCode:" + this.state.productSearchQuery,
           positiveButtonText: "Ok"
         })
         return
@@ -149,163 +159,166 @@ class PickOrderItem extends React.Component<Props, State> {
   render() {
     const vm = pickListVMMapper(this.props, this.state)
     return (
-      <ScreenContainer>
-        <Header
-          title={vm.header}
-          backButtonVisible={true}
-          onBackButtonPress={this.props.exit}
-        />
-        <View style={styles.contentContainer}>
-          <View style={styles.topRow}>
-            <Text style={styles.name}>{vm.picklistItems.product.name}</Text>
-          </View>
-          <View style={styles.row}>
-            <View style={styles.col40}>
-              <Text style={styles.value}>Order Number</Text>
-            </View>
-            <View style={styles.col60}>
-              <Text style={styles.value}>{vm.order.identifier}</Text>
-            </View>
-          </View>
-          <View style={styles.row}>
-            <View style={styles.col40}>
-              <Text style={styles.value}>Destination</Text>
-            </View>
-            <View style={styles.col60}>
-              <Text style={styles.value}>{vm.order.destination?.name}</Text>
-            </View>
-          </View>
-          <View style={styles.row}>
-            <View style={styles.col40}>
-              <Text style={styles.value}>Product Code</Text>
-            </View>
-            <View style={styles.col60}>
-              <Text style={styles.value}>{vm.picklistItems.productCode}</Text>
-            </View>
-          </View>
-          <View style={styles.row}>
-            <View style={styles.col40}>
-              <Text style={styles.value}>Product Name</Text>
-            </View>
-            <View style={styles.col60}>
-              <Text style={styles.value}>{vm.picklistItems.product.name}</Text>
-            </View>
-          </View>
-          <View style={styles.row}>
-            <View style={styles.col40}>
-              <Text style={styles.value}>Unit of Measure</Text>
-            </View>
-            <View style={styles.col60}>
-              <Text style={styles.value}>{vm.picklistItems.product.unitOfMeasure}</Text>
-            </View>
-          </View>
-          <View style={styles.row}>
-            <View style={styles.col40}>
-              <Text style={styles.value}>Lot Number</Text>
-            </View>
-            <View style={styles.col60}>
-              <Text style={styles.value}>{vm.picklistItems.inventoryItem?.lotNumber}</Text>
-            </View>
-          </View>
-          <View style={styles.row}>
-            <View style={styles.col40}>
-              <Text style={styles.value}>Expiration</Text>
-            </View>
-            <View style={styles.col60}>
-              <Text style={styles.value}>{vm.picklistItems.inventoryItem?.expirationDate}</Text>
-            </View>
-          </View>
-          <View style={styles.row}>
-            <View style={styles.col40}>
-              <Text style={styles.value}>Bin Location</Text>
-            </View>
-            <View style={styles.col60}>
-              <Text style={styles.value}>{vm.picklistItems.binLocation?.name}</Text>
-            </View>
-          </View>
-          <View style={styles.row}>
-            <View style={styles.col40}>
-              <Text style={styles.value}>Qty Requested</Text>
-            </View>
-            <View style={styles.col60}>
-              <Text style={styles.value}>{vm.picklistItems.quantityRequested}</Text>
-            </View>
-          </View>
-          <View style={styles.row}>
-            <View style={styles.col40}>
-              <Text style={styles.value}>Qty Remaining</Text>
-            </View>
-            <View style={styles.col60}>
-              <Text style={styles.value}>{vm.picklistItems.quantityRequested - vm.picklistItems.quantityPicked}</Text>
-            </View>
-          </View>
-          <View style={styles.row}>
-            <View style={styles.col40}>
-              <Text style={styles.value}>Qty Picked</Text>
-            </View>
-            <View style={styles.col60}>
-              <Text style={styles.value}>{vm.picklistItems.quantityPicked}</Text>
-            </View>
-          </View>
+        <ScrollView>
 
-
-          <View style={styles.emptyRow}>
-
-          </View>
-
-
-          <View style={styles.topRow}>
-            <View style={styles.col40}>
-              <Text style={styles.value}>Product Code</Text>
-            </View>
-            <View style={styles.col60}>
-              <TextInput
-                placeholder="Scan Product"
-                onChangeText={this.productSearchQueryChange}
-                value={this.state.productSearchQuery}
-                style={styles.value}
-                onSubmitEditing={this.onProductBarCodeSearchQuerySubmitted}
-              />
-            </View>
-          </View>
-          <View style={styles.row}>
-            <View style={styles.col40}>
-              <Text style={styles.value}>Bin Location</Text>
-            </View>
-            <View style={styles.col60}>
-              <TextInput
-                placeholder="Scan Bin Location"
-                onChangeText={this.binLocationSearchQueryChange}
-                value={this.state.binLocationSearchQuery}
-                style={styles.value}
-                // onSubmitEditing={this.onBarCodeSearchQuerySubmitted}
-              />
-            </View>
-          </View>
-          <View style={styles.row}>
-            <View style={styles.col40}>
-              <Text style={styles.value}>Quantity Picked</Text>
-            </View>
-            <View style={styles.col60}>
-              <TextInput
-                placeholder="Enter Picked Quantity"
-                onChangeText={this.quantityPickedChange}
-                value={this.state.quantityPicked}
-                style={styles.value}
-                // onSubmitEditing={this.onBarCodeSearchQuerySubmitted}
-              />
-            </View>
-          </View>
-          <View>
-            <Button
-              title="Submit"
-              style={{
-                marginTop: 8,
-              }}
-              onPress={this.formSubmit}
+          <ScreenContainer>
+            <Header
+              title={vm.header}
+              backButtonVisible={true}
+              onBackButtonPress={this.props.exit}
             />
-          </View>
-          {/*<View style={styles.row}>
+            <View style={styles.contentContainer}>
+              <View style={styles.topRow}>
+                <Text style={styles.name}>{vm.picklistItems.product.name}</Text>
+              </View>
+              <View style={styles.row}>
+                <View style={styles.col40}>
+                  <Text style={styles.value}>Order Number</Text>
+                </View>
+                <View style={styles.col60}>
+                  <Text style={styles.value}>{vm.order.identifier}</Text>
+                </View>
+              </View>
+              <View style={styles.row}>
+                <View style={styles.col40}>
+                  <Text style={styles.value}>Destination</Text>
+                </View>
+                <View style={styles.col60}>
+                  <Text style={styles.value}>{vm.order.destination?.name}</Text>
+                </View>
+              </View>
+              <View style={styles.row}>
+                <View style={styles.col40}>
+                  <Text style={styles.value}>Product Code</Text>
+                </View>
+                <View style={styles.col60}>
+                  <Text style={styles.value}>{vm.picklistItems.productCode}</Text>
+                </View>
+              </View>
+              <View style={styles.row}>
+                <View style={styles.col40}>
+                  <Text style={styles.value}>Product Name</Text>
+                </View>
+                <View style={styles.col60}>
+                  <Text style={styles.value}>{vm.picklistItems.product.name}</Text>
+                </View>
+              </View>
+              <View style={styles.row}>
+                <View style={styles.col40}>
+                  <Text style={styles.value}>Unit of Measure</Text>
+                </View>
+                <View style={styles.col60}>
+                  <Text style={styles.value}>{vm.picklistItems.product.unitOfMeasure}</Text>
+                </View>
+              </View>
+              <View style={styles.row}>
+                <View style={styles.col40}>
+                  <Text style={styles.value}>Lot Number</Text>
+                </View>
+                <View style={styles.col60}>
+                  <Text style={styles.value}>{vm.picklistItems.inventoryItem?.lotNumber}</Text>
+                </View>
+              </View>
+              <View style={styles.row}>
+                <View style={styles.col40}>
+                  <Text style={styles.value}>Expiration</Text>
+                </View>
+                <View style={styles.col60}>
+                  <Text style={styles.value}>{vm.picklistItems.inventoryItem?.expirationDate}</Text>
+                </View>
+              </View>
+              <View style={styles.row}>
+                <View style={styles.col40}>
+                  <Text style={styles.value}>Bin Location</Text>
+                </View>
+                <View style={styles.col60}>
+                  <Text style={styles.value}>{vm.picklistItems.binLocation?.name}</Text>
+                </View>
+              </View>
+              <View style={styles.row}>
+                <View style={styles.col40}>
+                  <Text style={styles.value}>Qty Requested</Text>
+                </View>
+                <View style={styles.col60}>
+                  <Text style={styles.value}>{vm.picklistItems.quantityRequested}</Text>
+                </View>
+              </View>
+              <View style={styles.row}>
+                <View style={styles.col40}>
+                  <Text style={styles.value}>Qty Remaining</Text>
+                </View>
+                <View style={styles.col60}>
+                  <Text
+                    style={styles.value}>{vm.picklistItems.quantityRequested - vm.picklistItems.quantityPicked}</Text>
+                </View>
+              </View>
+              <View style={styles.row}>
+                <View style={styles.col40}>
+                  <Text style={styles.value}>Qty Picked</Text>
+                </View>
+                <View style={styles.col60}>
+                  <Text style={styles.value}>{vm.picklistItems.quantityPicked}</Text>
+                </View>
+              </View>
+
+
+              <View style={styles.emptyRow}>
+
+              </View>
+
+
+              <View style={styles.topRow}>
+                <View style={styles.col40}>
+                  <Text style={styles.value}>Product Code</Text>
+                </View>
+                <View style={styles.col60}>
+                  <TextInput
+                    placeholder="Scan Product"
+                    onChangeText={this.productSearchQueryChange}
+                    value={this.state.productSearchQuery}
+                    style={styles.value}
+                    onSubmitEditing={this.onProductBarCodeSearchQuerySubmitted}
+                  />
+                </View>
+              </View>
+              <View style={styles.row}>
+                <View style={styles.col40}>
+                  <Text style={styles.value}>Bin Location</Text>
+                </View>
+                <View style={styles.col60}>
+                  <TextInput
+                    placeholder="Scan Bin Location"
+                    onChangeText={this.binLocationSearchQueryChange}
+                    value={this.state.binLocationSearchQuery}
+                    style={styles.value}
+                    // onSubmitEditing={this.onBarCodeSearchQuerySubmitted}
+                  />
+                </View>
+              </View>
+              <View style={styles.row}>
+                <View style={styles.col40}>
+                  <Text style={styles.value}>Quantity Picked</Text>
+                </View>
+                <View style={styles.col60}>
+                  <TextInput
+                    placeholder="Enter Picked Quantity"
+                    onChangeText={this.quantityPickedChange}
+                    value={this.state.quantityPicked}
+                    style={styles.value}
+                    // onSubmitEditing={this.onBarCodeSearchQuerySubmitted}
+                  />
+                </View>
+              </View>
+              <View>
+                <Button
+                  title="Submit"
+                  style={{
+                    marginTop: 8,
+                  }}
+                  onPress={this.formSubmit}
+                />
+              </View>
+              {/*<View style={styles.row}>
             <View style={styles.col50}>
               <Text style={styles.label}>Qty Available</Text>
               <Text style={styles.value}>{vm.picklistItems.quantityAvailable}</Text>
@@ -316,13 +329,16 @@ class PickOrderItem extends React.Component<Props, State> {
                          value={vm.picklistItems.quantityPicked.toString()}/>
             </View>
           </View>*/}
-        </View>
-      </ScreenContainer>
+            </View>
+
+          </ScreenContainer>
+        </ScrollView>
     )
   }
 }
 
 const styles = StyleSheet.create({
+
   contentContainer: {
     display: "flex",
     flex: 1,
