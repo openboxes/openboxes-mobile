@@ -35,21 +35,35 @@ function renderOrder(
       style={styles.listItemContainer}
       onPress={() => onOrderTapped()}
     >
-      <View style={styles.listItemNameContainer}>
-        <Text style={styles.listItemNameLabel}>Name</Text>
-        <Text style={styles.listItemName}>{order.name}</Text>
+      <View style={styles.row}>
+        <View style={styles.col50}>
+          <Text style={styles.label}>Identifire</Text>
+          <Text style={styles.value}>{order.identifier}</Text>
+        </View>
+        <View style={styles.col50}>
+          <Text style={styles.label}>Name</Text>
+          <Text style={styles.value}>{order.name}</Text>
+        </View>
       </View>
-      <View style={styles.listItemCategoryContainer}>
-        <Text style={styles.listItemCategoryLabel}>Description</Text>
-        <Text style={styles.listItemCategory}>{order.description}</Text>
+      <View style={styles.row}>
+        <View style={styles.col50}>
+          <Text style={styles.label}>Status Code</Text>
+          <Text style={styles.value}>{order.statusCode}</Text>
+        </View>
+        <View style={styles.col50}>
+          <Text style={styles.label}>Requested Delivery Date</Text>
+          <Text style={styles.value}>{order.requestedDeliveryDate}</Text>
+        </View>
       </View>
-      <View style={styles.listItemCategoryContainer}>
-        <Text style={styles.listItemCategoryLabel}>Origin</Text>
-        <Text style={styles.listItemCategory}>{order.origin?.name}</Text>
-      </View>
-      <View style={styles.listItemCategoryContainer}>
-        <Text style={styles.listItemCategoryLabel}>Destination</Text>
-        <Text style={styles.listItemCategory}>{order.destination?.name}</Text>
+      <View style={styles.row}>
+        <View style={styles.col50}>
+          <Text style={styles.label}>Origin</Text>
+          <Text style={styles.value}>{order.origin?.name}</Text>
+        </View>
+        <View style={styles.col50}>
+          <Text style={styles.label}>Destination</Text>
+          <Text style={styles.value}>{order.destination?.name}</Text>
+        </View>
       </View>
     </TouchableOpacity>
   )
@@ -96,6 +110,30 @@ const styles = StyleSheet.create({
     color: Theme.colors.placeholder
   },
   listItemCategory: {
+    fontSize: 16,
+    color: Theme.colors.text
+  },
+  row: {
+    flexDirection: 'row',
+    borderColor: Theme.colors.onBackground,
+    // borderBottomWidth: 1,
+    marginTop: 1,
+    padding: 2,
+    width: '100%'
+  },
+  col50: {
+    display: "flex",
+    flexDirection: "column",
+    flex: 0,
+    marginStart: 4,
+    width: "50%"
+
+  },
+  label: {
+    fontSize: 12,
+    color: Theme.colors.placeholder
+  },
+  value: {
     fontSize: 16,
     color: Theme.colors.text
   }

@@ -16,7 +16,8 @@ import {NavigationStateHere, NavigationStateOrderDetails, NavigationStateType, S
 import OrdersList from "./OrdersList";
 import Order from "../../../data/order/Order";
 import CentralMessage from "../products/CentralMessage";
-// import OrderDetails from "../product_details/OrderDetails";
+import Header from "../../Header";
+import OrderDetails from "../order_details/OrderDetails";
 
 class Orders extends React.Component<Props, State> {
 
@@ -25,7 +26,8 @@ class Orders extends React.Component<Props, State> {
     this.state = {
       error: null,
       allOrders: null,
-      navigationState: new NavigationStateHere()
+      navigationState: new NavigationStateHere(),
+
     }
     this.getOrders = this.getOrders.bind(this)
     this.onBackButtonPress = this.onBackButtonPress.bind(this)
@@ -87,14 +89,14 @@ class Orders extends React.Component<Props, State> {
       this.props.exit()
   }
 
-  renderOrderDetailsScreen(product: Order) {
-    // return (
-    //   // <OrderDetails
-    //   //   product={product}
-    //   //   exit={this.showOrdersScreen}
-    //   // />
-    // )
-    return ("")
+  renderOrderDetailsScreen(order: Order) {
+    return (
+      <OrderDetails
+        order={order}
+        pickList={null}
+        exit={this.showOrdersScreen}
+      />
+    )
   }
 
   render() {
@@ -111,6 +113,12 @@ class Orders extends React.Component<Props, State> {
   renderContent() {
     return (
       <View style={styles.screenContainer}>
+        <Header
+          title="Orders"
+          subtitle={'All Outbound Orders'}
+          backButtonVisible={true}
+          onBackButtonPress={this.onBackButtonPress}
+        />
         <View style={styles.content}>
           <OrdersList orders={this.state.allOrders} onOrderTapped={this.showOrderDetailsScreen}/>
           {/*<CentralMessage message={this.state.centralErrorMessage}/>*/}
@@ -124,10 +132,10 @@ class Orders extends React.Component<Props, State> {
       navigationState: new NavigationStateHere()
     })
   }
-  showOrderDetailsScreen(product: Order) {
-    // this.setState({
-    //   navigationState: new NavigationStateOrderDetails(product)
-    // })
+  showOrderDetailsScreen(order: Order) {
+    this.setState({
+      navigationState: new NavigationStateOrderDetails(order)
+    })
   }
 }
 
