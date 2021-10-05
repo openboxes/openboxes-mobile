@@ -1,4 +1,5 @@
 import Location from "./Location";
+import PickList from "../picklist/PickList";
 
 export default interface Order {
   id: string
@@ -9,4 +10,5 @@ export default interface Order {
   requestedDeliveryDate?: Date | null
   origin: Location | null
   destination: Location | null
+  picklist: PickList | null
 }

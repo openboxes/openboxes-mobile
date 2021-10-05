@@ -3,6 +3,7 @@ import Requisition from "./Requisition";
 import Item from "./Item";
 import Order from "../order/Order";
 import apiClient from "../../utils/ApiClient";
+import PicklistItem from "./PicklistItem";
 
 
 const url = "/picklistItems/"
@@ -14,7 +15,7 @@ export default interface PickList{
   picker: Person,
   datePicked: Date,
   requisition: Requisition
-  picklistItems: Item[]
+  picklistItems: PicklistItem[]
 }
 
 interface SubmitPickListResponse {

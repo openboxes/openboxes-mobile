@@ -33,9 +33,16 @@ import {
 } from "../../../data/picklist/PickList";
 import {
   searchProductsByProductCode as searchProductCodeFromApi,
-  searchProductsByProductCode as searchProductsByProductCode
 } from "../../../data/product/SearchProducts"
+import {
+  searchLocationByLocationNumber as searchLocationByLocationNumber,
+} from "../../../data/location/SearchLocation"
 import showPopup from "../../Popup";
+import {lightBlue50} from "react-native-paper/lib/typescript/styles/colors";
+import PicklistItem from "../../../data/picklist/PicklistItem";
+import getOrdersFromApi from "../../../data/order/GetOrders";
+import {getPickListItemApi} from "../../../data/picklist/GetPickList"
+
 
 class PickOrderItem extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -50,12 +57,29 @@ class PickOrderItem extends React.Component<Props, State> {
       product: null,
       binLocation: null,
     }
+    this.getPickListItem = this.getPickListItem.bind(this)
     this.productSearchQueryChange = this.productSearchQueryChange.bind(this)
     this.binLocationSearchQueryChange = this.binLocationSearchQueryChange.bind(this)
     this.quantityPickedChange = this.quantityPickedChange.bind(this)
     this.formSubmit = this.formSubmit.bind(this)
     this.onProductBarCodeSearchQuerySubmitted = this.onProductBarCodeSearchQuerySubmitted.bind(this)
+    this.onBinLocationBarCodeSearchQuerySubmitted = this.onBinLocationBarCodeSearchQuerySubmitted.bind(this)
 
+  }
+
+  componentDidMount(){
+    this.getPickListItem()
+  }
+
+  // @ts-ignore
+  async getPickListItem(): Promise<PicklistItem>{
+    try {
+      // this.props.showProgressBar("Fetching PickList Item")
+      return await getPickListItemApi(this.props.pickListItem?.id)
+    }catch (e){
+
+    }
+    this.props.hideProgressBar()
   }
 
   async formSubmit() {
@@ -85,6 +109,7 @@ class PickOrderItem extends React.Component<Props, State> {
         "productCode": this.state.product?.productCode,
         "inventoryItem.id": null,
         "binLocation.id": this.state.binLocation?.id,
+        "binLocation.locationNumber": this.state.binLocation?.locationNumber ? this.state.binLocation?.locationNumber : this.state.binLocationSearchQuery,
         "quantityPicked": this.state.quantityPicked,
         "picker.id": null,
         "datePicked": null,
@@ -125,7 +150,7 @@ class PickOrderItem extends React.Component<Props, State> {
         return
       }
 
-      const searchedProducts = await searchProductCodeFromApi(this.state.productSearchQuery)
+      let searchedProducts = await searchProductCodeFromApi(this.state.productSearchQuery)
 
       if (!searchedProducts || searchedProducts.length == 0) {
         await showPopup({
@@ -138,6 +163,33 @@ class PickOrderItem extends React.Component<Props, State> {
           product: searchedProducts[0],
           quantityPicked: parseInt(this.state.quantityPicked) + 1 + "",
           productSearchQuery: ""
+        })
+      }
+    })()
+  }
+  onBinLocationBarCodeSearchQuerySubmitted() {
+
+    (async () => {
+      if (!this.state.binLocationSearchQuery) {
+        await showPopup({
+          message: "Search query is empty",
+          positiveButtonText: "Ok"
+        })
+        return
+      }
+
+      let location = await searchLocationByLocationNumber(this.state.binLocationSearchQuery)
+
+      if (!location) {
+        await showPopup({
+          message: "Bin Location not found with LocationNumber:" + this.state.binLocationSearchQuery,
+          positiveButtonText: "Ok"
+        })
+        return
+      } else if (location) {
+        this.setState({
+          binLocation: location,
+          binLocationSearchQuery: ""
         })
       }
     })()
@@ -169,7 +221,7 @@ class PickOrderItem extends React.Component<Props, State> {
             />
             <View style={styles.contentContainer}>
               <View style={styles.topRow}>
-                <Text style={styles.name}>{vm.picklistItems.product.name}</Text>
+                <Text style={styles.name}>{vm.picklistItems["product.name"]}</Text>
               </View>
               <View style={styles.row}>
                 <View style={styles.col40}>
@@ -200,7 +252,7 @@ class PickOrderItem extends React.Component<Props, State> {
                   <Text style={styles.value}>Product Name</Text>
                 </View>
                 <View style={styles.col60}>
-                  <Text style={styles.value}>{vm.picklistItems.product.name}</Text>
+                  <Text style={styles.value}>{vm.picklistItems["product.name"]}</Text>
                 </View>
               </View>
               <View style={styles.row}>
@@ -208,7 +260,7 @@ class PickOrderItem extends React.Component<Props, State> {
                   <Text style={styles.value}>Unit of Measure</Text>
                 </View>
                 <View style={styles.col60}>
-                  <Text style={styles.value}>{vm.picklistItems.product.unitOfMeasure}</Text>
+                  <Text style={styles.value}>{vm.picklistItems.unitOfMeasure}</Text>
                 </View>
               </View>
               <View style={styles.row}>
@@ -216,7 +268,7 @@ class PickOrderItem extends React.Component<Props, State> {
                   <Text style={styles.value}>Lot Number</Text>
                 </View>
                 <View style={styles.col60}>
-                  <Text style={styles.value}>{vm.picklistItems.inventoryItem?.lotNumber}</Text>
+                  <Text style={styles.value}>{vm.picklistItems.lotNumber}</Text>
                 </View>
               </View>
               <View style={styles.row}>
@@ -224,7 +276,7 @@ class PickOrderItem extends React.Component<Props, State> {
                   <Text style={styles.value}>Expiration</Text>
                 </View>
                 <View style={styles.col60}>
-                  <Text style={styles.value}>{vm.picklistItems.inventoryItem?.expirationDate}</Text>
+                  <Text style={styles.value}>{vm.picklistItems.expirationDate}</Text>
                 </View>
               </View>
               <View style={styles.row}>
@@ -232,7 +284,7 @@ class PickOrderItem extends React.Component<Props, State> {
                   <Text style={styles.value}>Bin Location</Text>
                 </View>
                 <View style={styles.col60}>
-                  <Text style={styles.value}>{vm.picklistItems.binLocation?.name}</Text>
+                  <Text style={styles.value}>{vm.picklistItems["binLocation.name"]}</Text>
                 </View>
               </View>
               <View style={styles.row}>
@@ -249,7 +301,7 @@ class PickOrderItem extends React.Component<Props, State> {
                 </View>
                 <View style={styles.col60}>
                   <Text
-                    style={styles.value}>{vm.picklistItems.quantityRequested - vm.picklistItems.quantityPicked}</Text>
+                    style={styles.value}>{vm.picklistItems.quantityToPick}</Text>
                 </View>
               </View>
               <View style={styles.row}>
@@ -269,6 +321,23 @@ class PickOrderItem extends React.Component<Props, State> {
 
               <View style={styles.topRow}>
                 <View style={styles.col40}>
+                  <Text style={styles.value}>Bin Location</Text>
+                </View>
+                <View style={styles.col60}>
+                  <TextInput
+                    placeholder="Scan Bin Location"
+                    onChangeText={this.binLocationSearchQueryChange}
+                    value={this.state.binLocationSearchQuery}
+                    style={styles.value}
+                    onSubmitEditing={this.onBinLocationBarCodeSearchQuerySubmitted}
+                  />
+                  {this.state.binLocation != null ? <Text style={styles.info}>{this.state.binLocation?.locationNumber}-{this.state.binLocation?.name}</Text>: null }
+                </View>
+                <View style={styles.width100}>
+                </View>
+              </View>
+              <View style={styles.row}>
+                <View style={styles.col40}>
                   <Text style={styles.value}>Product Code</Text>
                 </View>
                 <View style={styles.col60}>
@@ -279,20 +348,7 @@ class PickOrderItem extends React.Component<Props, State> {
                     style={styles.value}
                     onSubmitEditing={this.onProductBarCodeSearchQuerySubmitted}
                   />
-                </View>
-              </View>
-              <View style={styles.row}>
-                <View style={styles.col40}>
-                  <Text style={styles.value}>Bin Location</Text>
-                </View>
-                <View style={styles.col60}>
-                  <TextInput
-                    placeholder="Scan Bin Location"
-                    onChangeText={this.binLocationSearchQueryChange}
-                    value={this.state.binLocationSearchQuery}
-                    style={styles.value}
-                    // onSubmitEditing={this.onBarCodeSearchQuerySubmitted}
-                  />
+                  {this.state.product != null ? <Text style={styles.info}>{this.state.product?.productCode}-{this.state.product?.description}</Text>: null }
                 </View>
               </View>
               <View style={styles.row}>
@@ -363,7 +419,7 @@ const styles = StyleSheet.create({
     // marginTop: 1,
     // padding: 2,
     width: '100%',
-    height: 100,
+    height: 20,
   },
   topRow: {
     flexDirection: 'row',
@@ -452,7 +508,9 @@ const styles = StyleSheet.create({
     flex: 0,
     marginStart: 4,
     width: "100%"
-
+  },
+  width100:{
+    width: "100%"
   },
   label: {
     fontSize: 12,
@@ -463,6 +521,12 @@ const styles = StyleSheet.create({
   value: {
     fontSize: 16,
     color: Theme.colors.text,
+    // justifyContent: 'center'
+    // width: "70%"
+  },
+  info: {
+    fontSize: 12,
+    color: "#000000",
     // justifyContent: 'center'
     // width: "70%"
   },

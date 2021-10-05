@@ -1,9 +1,10 @@
 import Item from "../../../data/picklist/Item";
 import Order from "../../../data/order/Order";
+import PicklistItem from "../../../data/picklist/PicklistItem";
 
 export  interface PickListProps{
   exit: () => void
-  pickListItem: Item | null
+  pickListItem: PicklistItem | null
   order: Order | null
 }
 

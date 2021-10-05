@@ -14,13 +14,15 @@ import Header from "../../Header";
 import {FlatList, ListRenderItemInfo, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import Theme from "../../../utils/Theme";
 import PickList from "../../../data/picklist/PickList";
-import getPickListApi from "../../../data/picklist/GetPickList"
+import {getPickListItemsApi} from "../../../data/picklist/GetPickList"
 import getProductsFromApi from "../../../data/product/GetProducts";
 import Item from "../../../data/picklist/Item";
 import Product from "../../../data/product/Product";
 import Order from "../../../data/order/Order";
 import PickOrderItem from "../picklist/PickOrderItem";
 import {NavigationStateHere, NavigationStateOrderDetails, NavigationStateType} from "../orders/State";
+import PicklistItem from "../../../data/picklist/PicklistItem";
+import showPopup from "../../Popup";
 
 class OrderDetails extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -31,44 +33,51 @@ class OrderDetails extends React.Component<Props, State> {
       pickListItems: [],
       navigationState: new NavigationStateHere(),
     }
-    this.getPickList = this.getPickList.bind(this)
+    this.getPickListItems = this.getPickListItems.bind(this)
     this.renderPickOrderItemScreen = this.renderPickOrderItemScreen.bind(this)
     this.showOrderDetailsScreen = this.showOrderDetailsScreen.bind(this)
   }
 
   componentDidMount() {
     (async () => {
-      console.debug("this.props.order.id::" + this.props.order.id)
-      const items = await this.getPickList(this.props.order.id)
-      // if (!pickList) {
-      //   this.setState({
-      //     error: "No Picklist found",
-      //     pickList: pickList
-      //   })
-      //   // this.props.exit()
-      //   // return
-      // }
+      console.debug("this.props.order.id::" + this.props.order.picklist)
+      if(this.props.order.picklist!=null) {
+        const items = await this.getPickListItems(this.props.order.picklist ? this.props.order.picklist.id : '')
+        // if (!pickList) {
+        //   this.setState({
+        //     error: "No Picklist found",
+        //     pickList: pickList
+        //   })
+        //   // this.props.exit()
+        //   // return
+        // }
 
-      if (items?.length == 0) {
-        this.setState({
-          pickList: null,
-          error: "No Picklist found",
-          pickListItems: items
-        })
-      } else {
-        this.setState({
-          pickList: null,
-          error: null,
-          pickListItems: items ? items : []
+        if (items?.length == 0) {
+          this.setState({
+            pickList: null,
+            error: "No Picklist found",
+            pickListItems: items
+          })
+        } else {
+          this.setState({
+            pickList: null,
+            error: null,
+            pickListItems: items ? items : []
+          })
+        }
+      }else{
+        await showPopup({
+          message: "PickList is empty",
+          positiveButtonText: "Ok"
         })
       }
     })()
   }
 
   // @ts-ignore
-  async getPickList(id: string): Promise<Item[] | null> {
+  async getPickListItems(id: string): Promise<PicklistItem[] | null> {
     try {
-      return await getPickListApi(id)
+      return await getPickListItemsApi(id)
     } catch (e) {
 
     }
@@ -86,10 +95,36 @@ class OrderDetails extends React.Component<Props, State> {
             onBackButtonPress={this.props.exit}
           />
           <View style={styles.contentContainer}>
-            <Text style={styles.name}>{vm.name}</Text>
+            {/*<Text style={styles.name}>{vm.name}</Text>*/}
+            <View style={styles.row}>
+              <View style={styles.col50}>
+                <Text style={styles.label}>Order Number</Text>
+                <Text style={styles.value}>{vm.id}</Text>
+              </View>
+              <View style={styles.col50}>
+                <Text style={styles.label}>Name</Text>
+                <Text style={styles.value}>{vm.name}</Text>
+              </View>
+            </View>
+            <View style={styles.row}>
+              <View style={styles.col50}>
+                <Text style={styles.label}>Status</Text>
+                <Text style={styles.value}>{vm.status}</Text>
+              </View>
+              <View style={styles.col50}>
+                <Text style={styles.label}>Origin</Text>
+                <Text style={styles.value}>{vm.origin.locationNumber}-{vm.origin.name}</Text>
+              </View>
+            </View>
+            <View style={styles.row}>
+              <View style={styles.col50}>
+                <Text style={styles.label}>Destination</Text>
+                <Text style={styles.value}>{vm.destination.locationNumber}-{vm.destination.name}</Text>
+              </View>
+            </View>
             <FlatList
               data={this.state.pickListItems}
-              renderItem={(item: ListRenderItemInfo<Item>) => renderPickListItem(item.item, () => this.onItemTapped(this.props.order, item.item))}
+              renderItem={(item: ListRenderItemInfo<PicklistItem>) => renderPickListItem(item.item, () => this.onItemTapped(this.props.order, item.item))}
               keyExtractor={item => item.id}
               style={styles.list}
             />
@@ -101,7 +136,7 @@ class OrderDetails extends React.Component<Props, State> {
     }
   }
 
-  renderPickOrderItemScreen(order: Order, item: Item) {
+  renderPickOrderItemScreen(order: Order, item: PicklistItem) {
     return (
       <PickOrderItem
         order={order}
@@ -117,7 +152,7 @@ class OrderDetails extends React.Component<Props, State> {
     })
   }
 
-  onItemTapped(order: Order, item: Item){
+  onItemTapped(order: Order, item: PicklistItem){
     this.setState({
       navigationState: new NavigationStatePickItemDetails(order, item)
     })
@@ -125,7 +160,7 @@ class OrderDetails extends React.Component<Props, State> {
 }
 
 function renderPickListItem(
-  item: Item,
+  item: PicklistItem,
   onItemTapped: () => void
 
 ): ReactElement {
@@ -141,7 +176,7 @@ function renderPickListItem(
         </View>
         <View style={styles.col50}>
           <Text style={styles.label}>Product Name</Text>
-          <Text style={styles.value}>{item.product.name}</Text>
+          <Text style={styles.value}>{item["product.name"]}</Text>
         </View>
       </View>
       <View style={styles.row}>
@@ -157,7 +192,7 @@ function renderPickListItem(
       <View style={styles.row}>
         <View style={styles.col50}>
           <Text style={styles.label}>Qty Required</Text>
-          <Text style={styles.value}>{item.quantityRequired}</Text>
+          <Text style={styles.value}>{item.quantityRequested}</Text>
         </View>
         <View style={styles.col50}>
           <Text style={styles.label}>Qty Picked</Text>

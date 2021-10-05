@@ -3,7 +3,7 @@ import Order from "./Order";
 
 const url = "/stockMovements?exclude=lineItems&direction=OUTBOUND"
 
-interface GetOrdersApiResponse {
+interface GetOrdersApiResponse {// StockMovement Object
   data: Order[]
 }
 
