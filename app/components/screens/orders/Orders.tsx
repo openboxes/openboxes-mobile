@@ -119,7 +119,7 @@ class Orders extends React.Component<Props, State> {
         />
         <BarCodeSearchHeader
           onBarCodeSearchQuerySubmitted={this.getOrders}
-          placeHolder={'Search Orders by Name'}
+          placeHolder={'Search Order Number'}
           searchBox={false}/>
         <View style={styles.content}>
           <OrdersList orders={this.state.allOrders} onOrderTapped={this.showOrderDetailsScreen}/>
