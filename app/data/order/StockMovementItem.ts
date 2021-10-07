@@ -1,8 +1,8 @@
 import Product from "../product/Product";
-import BinLocation from "./BinLocation";
-import InventoryItem from "./InventoryItem";
+import BinLocation from "../picklist/BinLocation";
+import InventoryItem from "../picklist/InventoryItem";
 
-export default interface Item{
+export default interface StockMovementItem{
   id: string | ""
   status: String,
   productCode: String,

@@ -1,6 +1,7 @@
 import PickList from "../../../data/picklist/PickList";
 import Item from "../../../data/picklist/Item";
 import Order from "../../../data/order/Order";
+import PicklistItem from "../../../data/picklist/PicklistItem";
 
 
 
@@ -25,7 +26,7 @@ export class NavigationStateHere extends NavigationState {
 
 export class NavigationStatePickItemDetails extends NavigationState {
   order: Order
-  item: Item
+  item: PicklistItem
   constructor(order: Order, item: Item) {
     super(NavigationStateType.OrderDetails)
     this.order = order
@@ -42,7 +43,7 @@ export class NavigationStateOrderDetails extends NavigationState {
 
 export interface State {
   pickList: PickList | null
-  pickListItems: Item[] | []
+  pickListItems: PicklistItem[] | []
   error: string | null
   navigationState: NavigationState
 }

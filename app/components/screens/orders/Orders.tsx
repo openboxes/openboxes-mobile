@@ -63,7 +63,7 @@ class Orders extends React.Component<Props, State> {
   async getOrders(): Promise<Order[] | null> {
     try {
       this.props.showProgressBar("Fetching products")
-      return await getOrdersFromApi()
+      return await getOrdersFromApi(global.location)
     } catch (e) {
       const title = e.message ? "Failed to fetch products" : null
       const message = e.message ?? "Failed to fetch products"
@@ -94,6 +94,7 @@ class Orders extends React.Component<Props, State> {
       <OrderDetails
         order={order}
         pickList={null}
+        pickListItem={[]}
         exit={this.showOrdersScreen}
       />
     )

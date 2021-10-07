@@ -1,18 +1,30 @@
 import PickList from "./PickList";
 import apiClient from "../../utils/ApiClient";
 import Item from "./Item";
+import PicklistItem from "./PicklistItem";
 
-const url = "/stockMovements/"
+const url = "/picklists/"
+const pickListItemUrl = "/picklistItems/"
 
 
-interface GetPickListApiResponse {
-  data: Item[]
+interface GetPickListsApiResponse {
+  data: PicklistItem[]
 }
 
-export default function getPickListApi(id: string): Promise<Item[]>{
-  const finalUrl = url + id + "/stockMovementItems"
+interface GetPickListApiResponse {
+  data: PicklistItem
+}
+
+export function getPickListItemsApi(id: string): Promise<PicklistItem[]>{
+  const finalUrl = url + id
+  console.debug("finalUrl"+finalUrl)
+  return apiClient.get(finalUrl)
+    .then((response: GetPickListsApiResponse) => response.data.picklistItems)
+}
+
+export function getPickListItemApi(id: string): Promise<PicklistItem>{
+  const finalUrl = pickListItemUrl + id
   console.debug("finalUrl"+finalUrl)
   return apiClient.get(finalUrl)
     .then((response: GetPickListApiResponse) => response.data)
-
 }
