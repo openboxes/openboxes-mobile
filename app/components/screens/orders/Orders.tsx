@@ -18,6 +18,7 @@ import Order from "../../../data/order/Order";
 import CentralMessage from "../products/CentralMessage";
 import Header from "../../Header";
 import OrderDetails from "../order_details/OrderDetails";
+import BarCodeSearchHeader from "../products/BarCodeSearchHeader";
 
 class Orders extends React.Component<Props, State> {
 
@@ -40,47 +41,43 @@ class Orders extends React.Component<Props, State> {
 
   componentDidMount() {
     (async () => {
-      const products = await this.getOrders()
-      if (!products) {
-        this.props.exit()
-        return
-      }
+      await this.getOrders(null)
 
-      if (products.length == 0) {
-        this.setState({
-          error: "No products found",
-          allOrders: products
-        })
-      } else {
-        this.setState({
-          error: null,
-          allOrders: products
-        })
-      }
     })()
   }
 
-  async getOrders(): Promise<Order[] | null> {
+  async getOrders(query: string | null): Promise<Order[] | null> {
+    let orders = null
     try {
-      this.props.showProgressBar("Fetching products")
-      return await getOrdersFromApi()
+      this.props.showProgressBar("Fetching orders")
+      orders = await getOrdersFromApi(query)
     } catch (e) {
-      const title = e.message ? "Failed to fetch products" : null
-      const message = e.message ?? "Failed to fetch products"
-      const shouldRetry = await showPopup({
-        title: title,
-        message: message,
-        positiveButtonText: "Retry",
-        negativeButtonText: "Cancel"
-      })
-      if (shouldRetry) {
-        return await this.getOrders()
-      } else {
-        return Promise.resolve(null)
-      }
+      const title = e.message ? "Failed to fetch orders" : null
+      const message = e.message ?? "Failed to fetch orders"
+      return Promise.resolve(null)
     } finally {
       this.props.hideProgressBar()
     }
+    if (!orders) {
+      this.props.exit()
+      return null
+    }
+
+    if (orders.length == 0) {
+      this.setState({
+        error: "No orders found",
+        allOrders: orders
+      })
+    } else if (orders.length == 1) {
+      this.showOrderDetailsScreen(orders[0])
+    }else {
+      console.debug("orders found::"+orders.length)
+      this.setState({
+        error: null,
+        allOrders: orders
+      })
+    }
+    return orders
   }
 
 
@@ -119,6 +116,10 @@ class Orders extends React.Component<Props, State> {
           backButtonVisible={true}
           onBackButtonPress={this.onBackButtonPress}
         />
+        <BarCodeSearchHeader
+          onBarCodeSearchQuerySubmitted={this.getOrders}
+          placeHolder={'Search Orders by Name'}
+          searchBox={false}/>
         <View style={styles.content}>
           <OrdersList orders={this.state.allOrders} onOrderTapped={this.showOrderDetailsScreen}/>
           {/*<CentralMessage message={this.state.centralErrorMessage}/>*/}
