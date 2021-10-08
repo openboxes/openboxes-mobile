@@ -7,7 +7,11 @@ interface GetOrdersApiResponse {// StockMovement Object
   data: Order[]
 }
 
-export default function getOrders(locationId: string): Promise<Order[]> {
-  return apiClient.get(url+"&origin.id="+locationId)
+export default function getOrders(query: string | null): Promise<Order[]> {
+  let getUrl = url
+  if(query!=null){
+    getUrl += "&orderNumber="+query
+  }
+  return apiClient.get(getUrl)
     .then((response: GetOrdersApiResponse) => response.data)
 }
