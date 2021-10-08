@@ -91,6 +91,7 @@ class Orders extends React.Component<Props, State> {
       <OrderDetails
         order={order}
         pickList={null}
+        pickListItem={[]}
         exit={this.showOrdersScreen}
       />
     )

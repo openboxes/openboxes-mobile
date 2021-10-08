@@ -20,6 +20,7 @@ export default function getSession() {
           type: setSessionAction.type,
           payload: response.data
         })
+        global.location = response.data.location.id
         return response.data
       })
       .catch(() => dispatch(getHideProgressBarAction()))

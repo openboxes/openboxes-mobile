@@ -40,7 +40,7 @@ update-alternatives: using /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java to pro
 ```
 ### Set JAVA_HOME to Java 8
 ```
-export JAVA_HOME = /usr/lib/jvm/java-8-openjdk-amd64
+export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 ```
 
 ### Set Android Home and PATH environment variables

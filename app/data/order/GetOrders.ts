@@ -10,7 +10,7 @@ interface GetOrdersApiResponse {// StockMovement Object
 export default function getOrders(query: string | null): Promise<Order[]> {
   let getUrl = url
   if(query!=null){
-    getUrl += "&name="+query
+    getUrl += "&orderNumber="+query
   }
   return apiClient.get(getUrl)
     .then((response: GetOrdersApiResponse) => response.data)

@@ -3,15 +3,19 @@ import Requisition from "../../../data/picklist/Requisition";
 import Product from "../../../data/product/Product";
 import BinLocation from "../../../data/picklist/BinLocation";
 import Item from "../../../data/picklist/Item";
+import Location from "../../../data/order/Location";
 
 export interface OrderDetailsVm {
   header: string
   id: string,
   name: string,
+  status: string,
   description: string,
   picker: Person,
   datePicked: Date,
   requisition: Requisition
+  origin: Location
+  destination: Location
   picklistItems: Item[]
 }
 
