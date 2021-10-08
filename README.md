@@ -99,3 +99,8 @@ or it will try launching an emulator.
 ```
 yarn ios
 ```
+
+## Automated builds 
+
+We are currently using bitrise.io for automated builds.
+https://app.bitrise.io/dashboard/builds
