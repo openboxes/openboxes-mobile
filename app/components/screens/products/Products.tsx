@@ -438,6 +438,7 @@ class Products extends React.Component<Props, State> {
         />
         <BarCodeSearchHeader
           subtitle={vm.subtitle}
+          placeHolder={'Search by barcode'}
           onBarCodeSearchQuerySubmitted={this.onBarCodeSearchQuerySubmitted}
           searchBox={false}/>
         <View style={styles.content}>
