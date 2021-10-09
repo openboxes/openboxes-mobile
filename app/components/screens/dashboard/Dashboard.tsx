@@ -216,8 +216,8 @@ class Dashboard extends React.Component<Props, State> {
           onPress={this.goToOrdersScreen}
         >
           <View style={styles.countLabelAndIconContainer}>
-            <Icon name={Name.Boxes} size={14}/>
-            <Text style={styles.countLabel}>Orders</Text>
+            <Icon name={Name.Truck} size={14}/>
+            <Text style={styles.countLabel}>Outbound Orders</Text>
           </View>
         </TouchableOpacity>
         <View style={styles.container}>

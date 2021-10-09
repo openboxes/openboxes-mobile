@@ -24,6 +24,9 @@ export default function Icon(props: Props) {
     case Name.Boxes:
       content = <FontAwesome5 name="boxes" size={props.size} color={props.color}/>
       break
+    case Name.Truck:
+      content = <FontAwesome5 name="truck" size={props.size} color={props.color}/>
+      break
     case Name.ShoppingCart:
       content = <FontAwesome5 name="shopping-cart" size={props.size} color={props.color}/>
       break
