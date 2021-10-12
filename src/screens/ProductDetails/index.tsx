@@ -11,7 +11,6 @@ class ProductDetails extends React.Component<Props, State> {
   }
 
   render() {
-    console.log(3333333333,this.props.route.params)
     const vm = vmMapper(this.props.route.params, this.state);
     return (
       <View

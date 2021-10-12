@@ -5,7 +5,6 @@ import {connect} from 'react-redux';
 import {login} from '../../redux/actions/auth';
 import showPopup from '../../components/Popup';
 import {TextInput} from 'react-native-paper';
-import Header from '../../components/Header';
 import Button from '../../components/Button';
 import {RootState} from '../../redux/reducers';
 
@@ -98,7 +97,6 @@ class Login extends Component<Props, State> {
   render() {
     return (
       <View style={styles.screenContainer}>
-        <Header title="Login" backButtonVisible={false} />
         <View style={styles.inputContainer}>
           <TextInput
             mode="outlined"

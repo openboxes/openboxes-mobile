@@ -4,9 +4,8 @@ import React, {ReactElement} from 'react';
 import {Searchbar} from 'react-native-paper';
 import {StyleSheet} from 'react-native';
 import {Platform, StatusBar} from 'react-native';
-// import Icon, {Name} from '../../Icon';
+import Icon, {Name} from '../../components/Icon';
 import Theme from '../../utils/Theme';
-// import {setStatusBarBackgroundColor} from 'expo-status-bar';
 
 export interface Props {
   subtitle?: string | null;
@@ -72,16 +71,16 @@ export default class ProductsSearchCodeHeader extends React.Component<
     }
   }
 
-  // getClearIcon(): ReactElement {
-  //   return (
-  //     <Icon
-  //       name={Name.Cross}
-  //       onPress={this.onClearIconPressed}
-  //       size={24}
-  //       color={Theme.colors.surface}
-  //     />
-  //   );
-  // }
+  getClearIcon(): ReactElement {
+    return (
+      <Icon
+        name={Name.Cross}
+        onPress={this.onClearIconPressed}
+        size={24}
+        color={Theme.colors.surface}
+      />
+    );
+  }
 
   onSearchProductCodeQuerySubmitted() {
     this.props.onSearchProductCodeQuerySubmitted(this.state.searchQuery);
@@ -104,7 +103,7 @@ export default class ProductsSearchCodeHeader extends React.Component<
         onChangeText={this.onSearchQueryChange}
         value={this.state.searchQuery}
         style={styles.searchBar}
-        // clearIcon={this.getClearIcon}
+        clearIcon={this.getClearIcon}
         autoFocus={true}
         inputStyle={{
           color: white,

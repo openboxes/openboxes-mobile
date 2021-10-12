@@ -73,12 +73,12 @@ class Index extends React.Component<Props, State> {
   render() {
     return (
       <View style={styles.screenContainer}>
-        <Header
-          title="Orders"
-          subtitle={'All Outbound Orders'}
-          backButtonVisible={true}
-          onBackButtonPress={this.onBackButtonPress}
-        />
+        {/*<Header*/}
+        {/*  title="Orders"*/}
+        {/*  subtitle={'All Outbound Orders'}*/}
+        {/*  backButtonVisible={true}*/}
+        {/*  onBackButtonPress={this.onBackButtonPress}*/}
+        {/*/>*/}
         <View style={styles.content}>
           <OrdersList
             orders={this.state.allOrders}

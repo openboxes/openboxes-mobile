@@ -19,7 +19,6 @@ class PickOrderItem extends React.Component<Props, State> {
 
   render() {
     const vm = pickListVMMapper(this.props.route.params, this.state);
-    console.log(333333, this.props.route.params)
     return (
       <View style={styles.screenContainer}>
         <Header

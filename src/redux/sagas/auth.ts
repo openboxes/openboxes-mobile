@@ -32,7 +32,7 @@ function* login(action: any) {
       type: LOGIN_REQUEST_SUCCESS,
       payload: data,
     });
-    yield NavigationService.navigate('ChooseCurrentLocation');
+    yield NavigationService.navigate('Drawer');
     yield put(hideScreenLoading());
   } catch (e) {
     console.log('function* auth', e.response);

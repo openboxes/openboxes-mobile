@@ -56,7 +56,6 @@ class Products extends React.Component<Types, State> {
           negativeButtonText: 'Cancel',
         });
       } else {
-        console.log(333333333, data);
         if (data.length === 0) {
           this.setState({
             error: 'No products found',

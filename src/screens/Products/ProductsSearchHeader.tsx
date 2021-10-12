@@ -4,7 +4,7 @@ import React, {ReactElement} from 'react';
 import {Searchbar} from 'react-native-paper';
 import {StyleSheet} from 'react-native';
 import {Platform, StatusBar} from 'react-native';
-// import Icon, {Name} from '../../Icon';
+import Icon, {Name} from '../../components/Icon';
 import Theme from '../../utils/Theme';
 // import {setStatusBarBackgroundColor} from 'expo-status-bar';
 import Header from '../../components/Header';
@@ -72,53 +72,52 @@ export default class ProductsSearchHeader extends React.Component<
     }
   }
 
-  // getClearIcon(): ReactElement {
-  //   return (
-  //     <Icon
-  //       name={Name.Cross}
-  //       onPress={this.onClearIconPressed}
-  //       size={24}
-  //       color={Theme.colors.surface}
-  //     />
-  //   );
-  // }
+  getClearIcon(): ReactElement {
+    return (
+      <Icon
+        name={Name.Cross}
+        onPress={this.onClearIconPressed}
+        size={24}
+        color={Theme.colors.surface}
+      />
+    );
+  }
 
   onSearchQuerySubmitted() {
     this.props.onSearchQuerySubmitted(this.state.searchQuery);
   }
 
   render() {
-    return !this.props.searchBoxVisible ? (
-      <Header
-        title="Products"
-        subtitle={this.props.subtitle}
-        backButtonVisible={true}
-        onBackButtonPress={this.props.onBackButtonPress}
-      />
-    ) : (
-      <Searchbar
-        theme={{
-          colors: {
-            /*
-                This ensures that the selection color and the text input cursor color is set to white. This is
-                necessary since the background color has been set to the normally primary purple color.
-                */
-            primary: white,
-            placeholder: placeholderColor,
-          },
-        }}
-        placeholder="Search by product name"
-        onChangeText={this.onSearchQueryChange}
-        value={this.state.searchQuery}
-        style={styles.searchBar}
-        // clearIcon={this.getClearIcon}
-        autoFocus={true}
-        inputStyle={{
-          color: white,
-        }}
-        iconColor={white}
-        onSubmitEditing={this.onSearchQuerySubmitted}
-      />
+    return (
+        <>
+          {
+            this.props.searchBoxVisible ?
+                <Searchbar
+                    theme={{
+                      colors: {
+                        /*
+                            This ensures that the selection color and the text input cursor color is set to white. This is
+                            necessary since the background color has been set to the normally primary purple color.
+                            */
+                        primary: white,
+                        placeholder: placeholderColor,
+                      },
+                    }}
+                    placeholder="Search by product name"
+                    onChangeText={this.onSearchQueryChange}
+                    value={this.state.searchQuery}
+                    style={styles.searchBar}
+                    clearIcon={this.getClearIcon}
+                    autoFocus={true}
+                    inputStyle={{
+                      color: white,
+                    }}
+                    iconColor={white}
+                    onSubmitEditing={this.onSearchQuerySubmitted}
+                />
+                :null
+          }
+        </>
     );
   }
 }
