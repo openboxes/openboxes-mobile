@@ -23,6 +23,7 @@ export interface Props {
 
 export default function Icon(props: Props) {
   let content;
+  console.log(11111111, props)
   switch (props.name) {
     case Name.Boxes:
       content = (

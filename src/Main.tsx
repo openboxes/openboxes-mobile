@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-// import {connect} from 'react-redux';
 import * as NavigationService from './NavigationService';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
@@ -9,16 +8,19 @@ import OrderDetails from './screens/OrderDetails';
 import ProductDetails from './screens/ProductDetails';
 import Dashboard from './screens/Dashboard';
 import Products from './screens/Products';
-import ChooseCurrentLocation from './screens/ChooseCurrentLocation';
+import DrawerNavigator from './screens/DrawerNavigator';
 import PickOrderItem from './screens/PickList';
 import FullScreenLoadingIndicator from './components/FullScreenLoadingIndicator';
 import {RootState} from './redux/reducers';
 import {connect} from 'react-redux';
-import {View} from 'react-native';
+import SplashScreen from 'react-native-splash-screen'
+import {Image, View} from 'react-native';
 import Location from './data/location/Location';
 import {Session} from './data/auth/Session';
 import {getSessionAction} from './redux/actions/main';
 import showPopup from './components/Popup';
+import {colors, DefaultTheme} from "./constants";
+
 const Stack = createStackNavigator();
 
 export interface OwnProps {
@@ -83,6 +85,10 @@ class Main extends Component<Props, State> {
     }
   }
 
+  componentDidMount() {
+    SplashScreen.hide()
+  }
+
   render() {
     const {loggedIn} = this.props;
     return (
@@ -96,14 +102,29 @@ class Main extends Component<Props, State> {
           visible={this.props.fullScreenLoadingIndicator.visible}
           message={this.props.fullScreenLoadingIndicator.message}
         />
-        <NavigationContainer ref={NavigationService.navigationRef}>
+        <NavigationContainer
+            ref={NavigationService.navigationRef}
+            theme={DefaultTheme}
+
+        >
           <Stack.Navigator
-            initialRouteName={loggedIn ? 'Login' : 'ChooseCurrentLocation'}
-            screenOptions={{headerShown: false}}>
+            initialRouteName={!loggedIn ? 'Login' : 'Drawer'}
+            screenOptions={{
+              headerRight: () => <Image
+                  source={require('./assets/images/logo.png')}
+                  style={{resizeMode: 'stretch', width: 40, height: 30, marginRight: 30}}
+              />,
+              headerStyle: {
+                backgroundColor: colors.headerColor
+              },
+            }}>
             <Stack.Screen name="Login" component={Login} />
             <Stack.Screen
-              name="ChooseCurrentLocation"
-              component={ChooseCurrentLocation}
+              name="Drawer"
+              component={DrawerNavigator}
+              options={{
+                headerShown: false
+              }}
             />
             <Stack.Screen name="Orders" component={Orders} />
             <Stack.Screen name="OrderDetails" component={OrderDetails} />

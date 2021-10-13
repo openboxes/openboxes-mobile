@@ -1,7 +1,6 @@
 import {FAB} from 'react-native-paper';
 import React from 'react';
-import {Text} from 'react-native';
-// import Icon, {Name} from '../../Icon';
+import Icon, {Name} from '../../components/Icon';
 import Theme from '../../utils/Theme';
 
 export interface Props {
@@ -53,20 +52,20 @@ export default class FloatingActionButtonMenu extends React.Component<
       <FAB.Group
         visible={this.props.visible}
         open={this.state.open}
-        icon={() => <Text>icon.Search</Text>}
+        icon={() => <Icon name={Name.Search} size={22}/>}
         actions={[
           {
-            icon: () => <Text>icon.Boxes</Text>,
+            icon: () => <Icon name={Name.Boxes} size={22}/>,
             label: 'Search by product name',
             onPress: () => this.onSearchByProductNamePress(),
           },
           {
-            icon: () => <Text>icon.Boxes</Text>,
+            icon: () => <Icon name={Name.Boxes} size={22}/>,
             label: 'Search by product code',
             onPress: () => this.onSearchByProductCodePress(),
           },
           {
-            icon: () => <Text>icon.Category</Text>,
+            icon: () => <Icon name={Name.Category} size={22}/>,
             label: 'Search by category',
             onPress: () => this.onSearchByCategoryPress(),
           },

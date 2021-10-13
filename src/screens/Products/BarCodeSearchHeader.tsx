@@ -67,7 +67,7 @@ export default class ProductsSearchCodeHeader extends React.Component<
 const styles = StyleSheet.create({
   searchBar: {
     height: 56,
-    marginTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
+    // marginTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
     elevation: 4,
     borderRadius: 0,
   },
