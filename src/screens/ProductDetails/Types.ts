@@ -1,4 +1,5 @@
 import Product from '../../data/product/Product';
+import {getProductByIdAction} from "../../redux/actions/products";
 
 export interface OwnProps {
   exit: () => void;
@@ -12,10 +13,14 @@ export interface StateProps {
 }
 
 export interface DispatchProps {
-  showProgressBar: (message?: string) => void;
-  hideProgressBar: () => void;
+  getProductByIdAction: (
+      id: any,
+      callback: (data: any) => void,
+  )=> void
 }
 
 export type Props = OwnProps & StateProps & DispatchProps;
 
-export interface State {}
+export interface State {
+  visible: boolean
+}

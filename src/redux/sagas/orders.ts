@@ -35,7 +35,6 @@ function* getPickList(action: any) {
       api.getPickList,
       action.payload.id,
     );
-    console.log(7777777777, response.data);
     yield put({
       type: GET_LOCATIONS_REQUEST_SUCCESS,
       payload: response.data,

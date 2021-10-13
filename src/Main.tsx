@@ -19,7 +19,7 @@ import Location from './data/location/Location';
 import {Session} from './data/auth/Session';
 import {getSessionAction} from './redux/actions/main';
 import showPopup from './components/Popup';
-import {colors, DefaultTheme} from "./constants";
+import {colors} from "./constants";
 
 const Stack = createStackNavigator();
 
@@ -104,8 +104,6 @@ class Main extends Component<Props, State> {
         />
         <NavigationContainer
             ref={NavigationService.navigationRef}
-            theme={DefaultTheme}
-
         >
           <Stack.Navigator
             initialRouteName={!loggedIn ? 'Login' : 'Drawer'}

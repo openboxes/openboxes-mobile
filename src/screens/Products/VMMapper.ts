@@ -1,4 +1,4 @@
-import {State} from './Types';
+import {State} from './types';
 import {VM} from './VM';
 
 export default function vmMapper(state: State): VM {

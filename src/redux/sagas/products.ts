@@ -9,7 +9,7 @@ import {
   SEARCH_PRODUCT_GLOBALY_REQUEST,
   SEARCH_PRODUCT_GLOBALY_REQUEST_SUCCESS,
   SEARCH_PRODUCTS_BY_CATEGORY_REQUEST,
-  SEARCH_PRODUCTS_BY_CATEGORY_REQUEST_SUCCESS,
+  SEARCH_PRODUCTS_BY_CATEGORY_REQUEST_SUCCESS, GET_PRODUCT_BY_ID_REQUEST, GET_PRODUCT_BY_ID_REQUEST_SUCCESS,
 } from '../actions/products';
 
 import * as api from '../../apis';
@@ -123,6 +123,24 @@ function* searchProductsByCategory(action: any) {
     });
   }
 }
+function* getProductById(action: any) {
+  try {
+    yield showScreenLoading('Fetching product by ID');
+    const response = yield call(api.getProductById, action.payload.id);
+    yield put({
+      type: GET_PRODUCT_BY_ID_REQUEST_SUCCESS,
+      payload: response.data,
+    });
+    yield action.callback(response.data);
+    yield hideScreenLoading();
+  } catch (e) {
+    console.log('function* getProductById', e.message);
+    yield action.callback({
+      error: true,
+      message: e.message,
+    });
+  }
+}
 
 export default function* watcher() {
   yield takeLatest(GET_PRODUCTS_REQUEST, getProducts);
@@ -133,4 +151,5 @@ export default function* watcher() {
     SEARCH_PRODUCTS_BY_CATEGORY_REQUEST,
     searchProductsByCategory,
   );
+  yield takeLatest(GET_PRODUCT_BY_ID_REQUEST, getProductById,);
 }

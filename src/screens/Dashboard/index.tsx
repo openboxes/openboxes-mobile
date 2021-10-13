@@ -13,7 +13,6 @@ class Dashboard extends React.Component<Props, State> {
   render() {
     return (
       <View style={styles.screenContainer}>
-        <Header title="Dashboard" backButtonVisible={false} />
         <TouchableOpacity
           style={styles.countContainer}
           onPress={() => {

@@ -43,3 +43,7 @@ export function searchProductsByCategory(category: any) {
     ],
   });
 }
+
+export function getProductById(id: any) {
+  return apiClient.post(`/product/${id}`);
+}
