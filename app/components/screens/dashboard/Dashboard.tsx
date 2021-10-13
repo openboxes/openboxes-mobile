@@ -10,6 +10,7 @@ import {DispatchProps, OwnProps, Props, StateProps} from "./Props";
 import {NavigationState, State} from "./State";
 import ScreenContainer from "../../ScreenContainer";
 import Orders from "../orders/Orders";
+import PutAwayList from "../putaway/PutAwayList";
 
 class Dashboard extends React.Component<Props, State> {
 
@@ -20,9 +21,11 @@ class Dashboard extends React.Component<Props, State> {
     }
     this.renderContent = this.renderContent.bind(this)
     this.goToProductsScreen = this.goToProductsScreen.bind(this)
-    this.goToOrdersScreen = this.goToOrdersScreen.bind(this)
     this.renderProductsScreen = this.renderProductsScreen.bind(this)
+    this.goToOrdersScreen = this.goToOrdersScreen.bind(this)
     this.renderOrdersScreen = this.renderOrdersScreen.bind(this)
+    this.goToPutAwayListScreen = this.goToPutAwayListScreen.bind(this)
+    this.renderPutAwayListScreen = this.renderPutAwayListScreen.bind(this)
     this.showDashboardContent = this.showDashboardContent.bind(this)
   }
 
@@ -34,6 +37,8 @@ class Dashboard extends React.Component<Props, State> {
         return this.renderProductsScreen()
       case NavigationState.OrdersScreen:
         return this.renderOrdersScreen()
+      case NavigationState.PutAwayListScreen:
+        return this.renderPutAwayListScreen()
     }
   }
 
@@ -62,6 +67,14 @@ class Dashboard extends React.Component<Props, State> {
             <Text style={styles.countLabel}>Orders</Text>
           </View>
         </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.countContainer}
+          onPress={this.goToPutAwayListScreen}>
+          <View style={styles.countLabelAndIconContainer}>
+            <Icon name={Name.Boxes} size={14}/>
+            <Text style={styles.countLabel}>PutAway List</Text>
+          </View>
+        </TouchableOpacity>
       </ScreenContainer>
     )
   }
@@ -71,9 +84,16 @@ class Dashboard extends React.Component<Props, State> {
       navigationState: NavigationState.ProductsScreen
     })
   }
+
   goToOrdersScreen() {
     this.setState({
       navigationState: NavigationState.OrdersScreen
+    })
+  }
+
+  goToPutAwayListScreen() {
+    this.setState({
+      navigationState: NavigationState.PutAwayListScreen
     })
   }
 
@@ -83,6 +103,10 @@ class Dashboard extends React.Component<Props, State> {
 
   renderOrdersScreen() {
     return (<Orders exit={this.showDashboardContent}/>)
+  }
+
+  renderPutAwayListScreen() {
+    return (<PutAwayList exit={this.showDashboardContent}/>)
   }
 
   showDashboardContent() {

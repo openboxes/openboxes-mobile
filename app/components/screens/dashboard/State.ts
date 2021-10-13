@@ -1,7 +1,8 @@
 export enum NavigationState {
   Here,
   ProductsScreen,
-  OrdersScreen
+  OrdersScreen,
+  PutAwayListScreen
 }
 
 export interface State {
