@@ -17,4 +17,6 @@ export default interface Location {
   hasPackingSupport: boolean
   hasPartialReceivingSupport: boolean
   locationType: LocationType
+  locationNumber: string
+
 }

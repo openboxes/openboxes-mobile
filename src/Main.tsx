@@ -19,7 +19,9 @@ import Location from './data/location/Location';
 import {Session} from './data/auth/Session';
 import {getSessionAction} from './redux/actions/main';
 import showPopup from './components/Popup';
-import {colors} from "./constants";
+import {colors, DefaultTheme} from "./constants";
+import PutAwayList from "./screens/putaway/PutAwayList";
+import PutAwayDetail from "./screens/putaway/PutAwayDetail";
 
 const Stack = createStackNavigator();
 
@@ -130,6 +132,8 @@ class Main extends Component<Props, State> {
             <Stack.Screen name="PickOrderItem" component={PickOrderItem} />
             <Stack.Screen name="Dashboard" component={Dashboard} />
             <Stack.Screen name="Products" component={Products} />
+            <Stack.Screen name="PutAwayList" component={PutAwayList} />
+            <Stack.Screen name="PutAwayDetail" component={PutAwayDetail} />
             {/*<Stack.Screen name="Drawer" component={DrawerNavigator} />*/}
             {/*<Stack.Screen name="Drawer" component={DrawerNavigator} />*/}
           </Stack.Navigator>

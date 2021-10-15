@@ -10,40 +10,51 @@ import {DispatchProps, Props, State} from './Types';
 import {RootState} from '../../redux/reducers';
 
 class Dashboard extends React.Component<Props, State> {
-  render() {
-    return (
-      <View style={styles.screenContainer}>
-        <TouchableOpacity
-          style={styles.countContainer}
-          onPress={() => {
-            this.props.navigation.navigate('Products');
-          }}>
-          <View style={styles.countLabelAndIconContainer}>
-            {/*<Icon name={Name.Boxes} size={14} />*/}
-            <Text style={styles.countLabel}>Products</Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.countContainer}
-          onPress={() => {
-            this.props.navigation.navigate('Orders');
-          }}>
-          <View style={styles.countLabelAndIconContainer}>
-            {/*<Icon name={Name.Boxes} size={14} />*/}
-            <Text style={styles.countLabel}>Orders</Text>
-          </View>
-        </TouchableOpacity>
-      </View>
-    );
-  }
+    render() {
+        return (
+            <View style={styles.screenContainer}>
+                <Header title="Dashboard" backButtonVisible={false}/>
+                <TouchableOpacity
+                    style={styles.countContainer}
+                    onPress={() => {
+                        this.props.navigation.navigate('Products');
+                    }}>
+                    <View style={styles.countLabelAndIconContainer}>
+                        {/*<Icon name={Name.Boxes} size={14} />*/}
+                        <Text style={styles.countLabel}>Products</Text>
+                    </View>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.countContainer}
+                    onPress={() => {
+                        this.props.navigation.navigate('Orders');
+                    }}>
+                    <View style={styles.countLabelAndIconContainer}>
+                        {/*<Icon name={Name.Boxes} size={14} />*/}
+                        <Text style={styles.countLabel}>Orders</Text>
+                    </View>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.countContainer}
+                    onPress={() => {
+                        this.props.navigation.navigate('PutAwayList');
+                    }}>
+                    <View style={styles.countLabelAndIconContainer}>
+                        {/*<Icon name={Name.Boxes} size={14}/>*/}
+                        <Text style={styles.countLabel}>PutAway List</Text>
+                    </View>
+                </TouchableOpacity>
+            </View>
+        );
+    }
 }
 
 const mapStateToProps = (state: RootState) => ({
-  //no-op
+    //no-op
 });
 
 const mapDispatchToProps: DispatchProps = {
-  //no-op
+    //no-op
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);
