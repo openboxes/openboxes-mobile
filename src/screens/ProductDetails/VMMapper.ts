@@ -1,9 +1,8 @@
-import {Props, State} from './Types';
+import {Props, State} from './types';
 import {DetailsItemVM, VM} from './VM';
 import {ProductCategory} from '../../data/product/category/ProductCategory';
 
 export function vmMapper(props: Props, state: State): VM {
-  console.log(444444444, props)
   return {
     header: 'Product Details',
     name: props?.product?.name,

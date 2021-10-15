@@ -106,8 +106,6 @@ class Main extends Component<Props, State> {
         />
         <NavigationContainer
             ref={NavigationService.navigationRef}
-            theme={DefaultTheme}
-
         >
           <Stack.Navigator
             initialRouteName={!loggedIn ? 'Login' : 'Drawer'}

@@ -9,7 +9,7 @@ import CentralMessage from './CentralMessage';
 import FloatingActionButtonMenu from './FloatingActionButtonMenu';
 import ProductCategoryPickerPopup from './ProductCategoryPickerPopup';
 import {ProductCategory} from '../../data/product/category/ProductCategory';
-import {DispatchProps, Types, State} from './Types';
+import {DispatchProps, Types, State} from './types';
 // import {VM} from './VM';
 import vmMapper from './VMMapper';
 import ProductsSearchCodeHeader from './ProductsSearchCodeHeader';

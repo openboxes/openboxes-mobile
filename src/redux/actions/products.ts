@@ -28,7 +28,11 @@ export const SEARCH_PRODUCTS_BY_CATEGORY_REQUEST_SUCCESS =
 export const SEARCH_PRODUCTS_BY_CATEGORY_REQUEST_FAIL =
   'SEARCH_PRODUCTS_BY_CATEGORY_REQUEST_FAIL';
 
-export function getProductsAction(callback: (products: any) => void) {
+export const GET_PRODUCT_BY_ID_REQUEST = 'GET_PRODUCT_BY_ID_REQUEST';
+export const GET_PRODUCT_BY_ID_REQUEST_SUCCESS = 'GET_PRODUCT_BY_ID_REQUEST_SUCCESS';
+export const GET_PRODUCT_BY_ID_REQUEST_FAIL = 'GET_PRODUCT_BY_ID_REQUEST_FAIL';
+
+export function getProductsAction(callback?: (products: any) => void) {
   return {
     type: GET_PRODUCTS_REQUEST,
     callback,
@@ -74,6 +78,17 @@ export function searchProductSByCategoryAction(
   return {
     type: SEARCH_PRODUCTS_BY_CATEGORY_REQUEST,
     payload: {category},
+    callback,
+  };
+}
+
+export function getProductByIdAction(
+    id: any,
+    callback: (data: any) => void,
+) {
+  return {
+    type: GET_PRODUCT_BY_ID_REQUEST,
+    payload: {id},
     callback,
   };
 }
