@@ -8,16 +8,22 @@ import {connect} from 'react-redux';
 import {DispatchProps, Props, State} from './Types';
 
 import {RootState} from '../../redux/reducers';
+// @ts-ignore
+import {useNavigation} from "@react-navigation/native";
+import useEventListener from "../../hooks/useEventListener";
 
-class Dashboard extends React.Component<Props, State> {
-    render() {
+const Dashboard =()=> {
+    const navigation = useNavigation();
+    const event =useEventListener();
+    console.log("EVENT",event);
+
         return (
             <View style={styles.screenContainer}>
                 <Header title="Dashboard" backButtonVisible={false}/>
                 <TouchableOpacity
                     style={styles.countContainer}
                     onPress={() => {
-                        this.props.navigation.navigate('Products');
+                        navigation.navigate('Products');
                     }}>
                     <View style={styles.countLabelAndIconContainer}>
                         {/*<Icon name={Name.Boxes} size={14} />*/}
@@ -27,7 +33,7 @@ class Dashboard extends React.Component<Props, State> {
                 <TouchableOpacity
                     style={styles.countContainer}
                     onPress={() => {
-                        this.props.navigation.navigate('Orders');
+                        navigation.navigate('Orders');
                     }}>
                     <View style={styles.countLabelAndIconContainer}>
                         {/*<Icon name={Name.Boxes} size={14} />*/}
@@ -37,7 +43,7 @@ class Dashboard extends React.Component<Props, State> {
                 <TouchableOpacity
                     style={styles.countContainer}
                     onPress={() => {
-                        this.props.navigation.navigate('PutAwayList');
+                        navigation.navigate('PutAwayList');
                     }}>
                     <View style={styles.countLabelAndIconContainer}>
                         {/*<Icon name={Name.Boxes} size={14}/>*/}
@@ -46,7 +52,6 @@ class Dashboard extends React.Component<Props, State> {
                 </TouchableOpacity>
             </View>
         );
-    }
 }
 
 const mapStateToProps = (state: RootState) => ({
