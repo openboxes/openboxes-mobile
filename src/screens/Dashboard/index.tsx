@@ -33,16 +33,16 @@ class Dashboard extends React.Component<Props, State> {
                         <Text style={styles.countLabel}>Orders</Text>
                     </View>
                 </TouchableOpacity>
-                {/*<TouchableOpacity*/}
-                {/*    style={styles.countContainer}*/}
-                {/*    onPress={() => {*/}
-                {/*        this.props.navigation.navigate('PutAwayList');*/}
-                {/*    }}>*/}
-                {/*    <View style={styles.countLabelAndIconContainer}>*/}
-                {/*        /!*<Icon name={Name.Boxes} size={14}/>*!/*/}
-                {/*        <Text style={styles.countLabel}>PutAway List</Text>*/}
-                {/*    </View>*/}
-                {/*</TouchableOpacity>*/}
+                <TouchableOpacity
+                    style={styles.countContainer}
+                    onPress={() => {
+                        this.props.navigation.navigate('PutawayList');
+                    }}>
+                    <View style={styles.countLabelAndIconContainer}>
+                        {/*<Icon name={Name.Boxes} size={14}/>*/}
+                        <Text style={styles.countLabel}>Putaway List</Text>
+                    </View>
+                </TouchableOpacity>
             </View>
         );
     }
