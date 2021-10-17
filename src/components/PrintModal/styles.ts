@@ -1,15 +1,16 @@
 import {StyleSheet} from "react-native";
+import {colors, device, ratio} from "../../constants";
 
 export default StyleSheet.create({
     centeredView: {
         flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
+        justifyContent: 'center',
+        alignItems: 'center',
         backgroundColor: 'rgba(99, 107, 99, 0.8)'
     },
     modalView: {
         width: '80%',
-        minHeight: '45%',
+        minHeight: device.windowHeight / 2.2,
         backgroundColor: "white",
         borderRadius: 10,
         paddingVertical: 20,
@@ -26,8 +27,8 @@ export default StyleSheet.create({
 
     },
     image: {
-        width: 200,
-        height: 150,
+        width: ratio.width * 250,
+        height: ratio.height * 200,
         resizeMode: "stretch"
     },
     form: {
@@ -54,10 +55,24 @@ export default StyleSheet.create({
         textAlign: "center"
     },
     inputLabel: {
-        borderWidth:2,
         height: 40,
-        width: '100%',
-        padding: 5
+        padding: 5,
+        flex: 1
+    },
+    sizeBox: {
+        flexDirection: 'row',
+        justifyContent: 'space-between'
+    },
+    sizeItem:{
+        flexDirection: 'row',
+        borderWidth:1,
+        flex: 0.48
+    },
+    sizeLabel:{
+        textAlignVertical: 'center',
+        backgroundColor: 'gray',
+        padding: 10,
+        fontSize: 13
     },
     select: {
         width: '100%',

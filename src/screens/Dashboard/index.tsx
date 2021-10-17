@@ -13,7 +13,6 @@ class Dashboard extends React.Component<Props, State> {
     render() {
         return (
             <View style={styles.screenContainer}>
-                <Header title="Dashboard" backButtonVisible={false}/>
                 <TouchableOpacity
                     style={styles.countContainer}
                     onPress={() => {
@@ -34,16 +33,16 @@ class Dashboard extends React.Component<Props, State> {
                         <Text style={styles.countLabel}>Orders</Text>
                     </View>
                 </TouchableOpacity>
-                <TouchableOpacity
-                    style={styles.countContainer}
-                    onPress={() => {
-                        this.props.navigation.navigate('PutAwayList');
-                    }}>
-                    <View style={styles.countLabelAndIconContainer}>
-                        {/*<Icon name={Name.Boxes} size={14}/>*/}
-                        <Text style={styles.countLabel}>PutAway List</Text>
-                    </View>
-                </TouchableOpacity>
+                {/*<TouchableOpacity*/}
+                {/*    style={styles.countContainer}*/}
+                {/*    onPress={() => {*/}
+                {/*        this.props.navigation.navigate('PutAwayList');*/}
+                {/*    }}>*/}
+                {/*    <View style={styles.countLabelAndIconContainer}>*/}
+                {/*        /!*<Icon name={Name.Boxes} size={14}/>*!/*/}
+                {/*        <Text style={styles.countLabel}>PutAway List</Text>*/}
+                {/*    </View>*/}
+                {/*</TouchableOpacity>*/}
             </View>
         );
     }
