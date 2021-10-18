@@ -8,21 +8,15 @@ import {connect} from 'react-redux';
 import {DispatchProps, Props, State} from './Types';
 
 import {RootState} from '../../redux/reducers';
-// @ts-ignore
-import {useNavigation} from "@react-navigation/native";
-import useEventListener from "../../hooks/useEventListener";
 
-const Dashboard =()=> {
-    const navigation = useNavigation();
-    const event =useEventListener();
-    console.log("EVENT",event);
-
+class Dashboard extends React.Component<Props, State> {
+    render() {
         return (
             <View style={styles.screenContainer}>
                 <TouchableOpacity
                     style={styles.countContainer}
                     onPress={() => {
-                        navigation.navigate('Products');
+                        this.props.navigation.navigate('Products');
                     }}>
                     <View style={styles.countLabelAndIconContainer}>
                         {/*<Icon name={Name.Boxes} size={14} />*/}
@@ -32,7 +26,7 @@ const Dashboard =()=> {
                 <TouchableOpacity
                     style={styles.countContainer}
                     onPress={() => {
-                        navigation.navigate('Orders');
+                        this.props.navigation.navigate('Orders');
                     }}>
                     <View style={styles.countLabelAndIconContainer}>
                         {/*<Icon name={Name.Boxes} size={14} />*/}
@@ -42,7 +36,7 @@ const Dashboard =()=> {
                 {/*<TouchableOpacity
                     style={styles.countContainer}
                     onPress={() => {
-                        navigation.navigate('PutawayList');
+                        this.props.navigation.navigate('PutawayList');
                     }}>
                     <View style={styles.countLabelAndIconContainer}>
                         <Text style={styles.countLabel}>Putaway List</Text>
@@ -50,6 +44,7 @@ const Dashboard =()=> {
                 </TouchableOpacity>*/}
             </View>
         );
+    }
 }
 
 const mapStateToProps = (state: RootState) => ({
