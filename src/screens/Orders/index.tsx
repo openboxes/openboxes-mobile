@@ -49,7 +49,9 @@ class Index extends React.Component<Props, State> {
             error: 'No products found',
             allOrders: data,
           });
-        } else {
+        } else if(data.length == 1){
+          this.goToOrderDetailsScreen(data[0])
+        }else {
           this.setState({
             error: null,
             allOrders: data,
