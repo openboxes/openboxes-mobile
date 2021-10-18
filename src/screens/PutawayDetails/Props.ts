@@ -8,8 +8,8 @@ export interface StateProps {
 }
 
 export interface DispatchProps {
-  showProgressBar: (message?: string) => void
-  hideProgressBar: () => void
+  //showProgressBar: (message?: string) => void
+  //hideProgressBar: () => void
 }
 
 export type Props = OwnProps & StateProps & DispatchProps

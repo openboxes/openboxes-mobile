@@ -8,7 +8,7 @@ import {
 import {SET_CURRENT_LOCATION_REQUEST_SUCCESS} from '../actions/locations';
 import {LOGIN_REQUEST_SUCCESS} from '../actions/auth';
 
-export interface AppState {
+export interface State {
   loggedIn: boolean;
   fullScreenLoadingIndicator: {
     visible: boolean;
@@ -18,7 +18,7 @@ export interface AppState {
   session?: Session | null;
 }
 
-const initialState: AppState = {
+const initialState: State = {
   loggedIn: false,
   fullScreenLoadingIndicator: {
     visible: false,

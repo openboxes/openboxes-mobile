@@ -32,6 +32,12 @@ export const GET_PRODUCT_BY_ID_REQUEST = 'GET_PRODUCT_BY_ID_REQUEST';
 export const GET_PRODUCT_BY_ID_REQUEST_SUCCESS = 'GET_PRODUCT_BY_ID_REQUEST_SUCCESS';
 export const GET_PRODUCT_BY_ID_REQUEST_FAIL = 'GET_PRODUCT_BY_ID_REQUEST_FAIL';
 
+export const PRINT_LABEL_REQUEST = 'PRINT_LABEL_REQUEST';
+export const PRINT_LABEL_REQUEST_SUCCESS = 'PRINT_LABEL_REQUEST_SUCCESS';
+export const PRINT_LABEL_REQUEST_FAIL = 'PRINT_LABEL_REQUEST_FAIL';
+
+
+
 export function getProductsAction(callback?: (products: any) => void) {
   return {
     type: GET_PRODUCTS_REQUEST,
@@ -88,6 +94,17 @@ export function getProductByIdAction(
 ) {
   return {
     type: GET_PRODUCT_BY_ID_REQUEST,
+    payload: {id},
+    callback,
+  };
+}
+
+export function printLabelAction(
+    id: any,
+    callback?: (data: any) => void,
+) {
+  return {
+    type: PRINT_LABEL_REQUEST,
     payload: {id},
     callback,
   };

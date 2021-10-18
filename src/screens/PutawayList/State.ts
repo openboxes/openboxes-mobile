@@ -1,10 +1,11 @@
-import Order from "../../../data/order/Order";
-import PutAway from "../../../app/data/putaway/PutAway";
+// import Order from "../../../data/order/Order";
+import Putaway from "../../../app/data/putaway/Putaway";
+import {Order} from "../../data/order/Order";
 
 export enum NavigationStateType {
   Here,
-  PutAwayDetail,
-  PutAwayToBinLocation = 2
+  PutawayDetails,
+  PutawayToBinLocation = 2
 }
 
 export abstract class NavigationState {
@@ -21,19 +22,18 @@ export class NavigationStateHere extends NavigationState {
   }
 }
 
-export class NavigationStatePutAwayDetail extends NavigationState {
+export class NavigationStatePutawayDetails extends NavigationState {
   order: Order
 
   constructor(order: Order) {
-    super(NavigationStateType.PutAwayDetail)
+    super(NavigationStateType.PutawayDetails)
     this.order = order
   }
 }
 
 export interface State {
   error: string | null
-  putAwayList: PutAway[] | null
-  putAway: PutAway | null
-  navigationState: NavigationState
+  putawayList: Putaway[] | null
+  putaway: Putaway | null
   orderId: string | null
 }

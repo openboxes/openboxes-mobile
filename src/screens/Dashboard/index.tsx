@@ -19,7 +19,6 @@ const Dashboard =()=> {
 
         return (
             <View style={styles.screenContainer}>
-                <Header title="Dashboard" backButtonVisible={false}/>
                 <TouchableOpacity
                     style={styles.countContainer}
                     onPress={() => {
@@ -40,16 +39,15 @@ const Dashboard =()=> {
                         <Text style={styles.countLabel}>Orders</Text>
                     </View>
                 </TouchableOpacity>
-                <TouchableOpacity
+                {/*<TouchableOpacity
                     style={styles.countContainer}
                     onPress={() => {
-                        navigation.navigate('PutAwayList');
+                        navigation.navigate('PutawayList');
                     }}>
                     <View style={styles.countLabelAndIconContainer}>
-                        {/*<Icon name={Name.Boxes} size={14}/>*/}
-                        <Text style={styles.countLabel}>PutAway List</Text>
+                        <Text style={styles.countLabel}>Putaway List</Text>
                     </View>
-                </TouchableOpacity>
+                </TouchableOpacity>*/}
             </View>
         );
 }

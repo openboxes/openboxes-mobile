@@ -3,7 +3,7 @@ import styles from './styles';
 import {connect} from 'react-redux';
 import {View} from 'react-native';
 import showPopup from '../../components/Popup';
-import {DispatchProps, State, Props} from './Types';
+import {DispatchProps, State, Props} from './types';
 import OrdersList from './OrdersList';
 import {Order} from '../../data/order/Order';
 import Header from '../../components/Header';
