@@ -13,7 +13,7 @@ import GetPickListApiResponse from '../../data/picklist/Item';
 function* getOrders(action: any) {
   try {
     yield showScreenLoading('Fetching products');
-    const response: GetOrdersApiResponse = yield call(api.getOrders);
+    const response: GetOrdersApiResponse = yield call(api.getOrders, action.payload);
     yield put({
       type: GET_ORDERS_REQUEST_SUCCESS,
       payload: response.data,
