@@ -1,6 +1,3 @@
-import Location from "../location/Location";
-import Product from "../product/Product";
-import InventoryItem from "../picklist/InventoryItem";
 
 export default interface PutawayItems{
   "id":string,

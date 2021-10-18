@@ -1,5 +1,6 @@
-import Order from "../../../data/order/Order";
+// import Order from "../../../data/order/Order";
 import Putaway from "../../../app/data/putaway/Putaway";
+import {Order} from "../../data/order/Order";
 
 export enum NavigationStateType {
   Here,
@@ -34,6 +35,5 @@ export interface State {
   error: string | null
   putawayList: Putaway[] | null
   putaway: Putaway | null
-  navigationState: NavigationState
   orderId: string | null
 }
