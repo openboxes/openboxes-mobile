@@ -1,6 +1,7 @@
 import React from 'react';
-import {Image, ScrollView, Text, View, Button} from 'react-native';
+import {Image, ScrollView, Text, View, Button, KeyboardAvoidingView, Platform} from 'react-native';
 import styles from './styles';
+import {device} from '../../constants'
 import PrintModal from '../../components/PrintModal';
 import {Props, State, DispatchProps} from './types';
 import {vmMapper} from './VMMapper';
@@ -22,11 +23,14 @@ class ProductDetails extends React.Component<Props, State> {
 
     handleClick =()=>{
         const {product} = this.props.route.params
-        this.props.getProductByIdAction(product.id, (data)=>{
+        this.props.getProductByIdAction(product.productCode, (data)=>{
+            // console.log(3333, data)
             this.setState({visible:true})
         })
 
     }
+
+
 
     render() {
         const vm = vmMapper(this.props.route.params, this.state);
@@ -34,13 +38,13 @@ class ProductDetails extends React.Component<Props, State> {
         return (
             <View
                 style={{
-                    display: 'flex',
                     flexDirection: 'column',
-                    flex: 1,
+                    flex:1
                 }}>
                 <PrintModal
                     visible={visible}
                     closeModal={this.closeModal}
+                    id={vm.productCode}
                 />
                 <View style={styles.contentContainer}>
                     <Text style={styles.name}>{vm.name}</Text>
@@ -155,7 +159,7 @@ class ProductDetails extends React.Component<Props, State> {
                             </View>
                         </View>
                         <Button
-                            title={'Print Barcode Lable'}
+                            title={'Print Barcode Label'}
                             onPress={this.handleClick}
                         />
                     </ScrollView>
