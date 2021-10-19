@@ -9,6 +9,8 @@ import {Order} from '../../data/order/Order';
 import Header from '../../components/Header';
 import {getOrdersAction} from '../../redux/actions/orders';
 import {showScreenLoading, hideScreenLoading} from '../../redux/actions/main';
+import BarCodeSearchHeader from '../Products/BarCodeSearchHeader';
+
 
 class Index extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -20,6 +22,10 @@ class Index extends React.Component<Props, State> {
   }
 
   componentDidMount() {
+    this.searchOrders(null);
+  }
+
+  searchOrders = (query: string | null) => {
     const actionCallback = (data: any) => {
       if (data?.error) {
         showPopup({
@@ -28,7 +34,7 @@ class Index extends React.Component<Props, State> {
           positiveButton: {
             text: 'Retry',
             callback: () => {
-              this.props.getOrdersAction(actionCallback);
+              this.props.getOrdersAction(query, actionCallback);
             },
           },
           negativeButtonText: 'Cancel',
@@ -43,7 +49,9 @@ class Index extends React.Component<Props, State> {
             error: 'No products found',
             allOrders: data,
           });
-        } else {
+        } else if(data.length == 1){
+          this.goToOrderDetailsScreen(data[0])
+        }else {
           this.setState({
             error: null,
             allOrders: data,
@@ -53,7 +61,7 @@ class Index extends React.Component<Props, State> {
 
       this.props.hideScreenLoading();
     };
-    this.props.getOrdersAction(actionCallback);
+    this.props.getOrdersAction(query, actionCallback);
   }
 
   onBackButtonPress = () => {
@@ -79,6 +87,10 @@ class Index extends React.Component<Props, State> {
         {/*  backButtonVisible={true}*/}
         {/*  onBackButtonPress={this.onBackButtonPress}*/}
         {/*/>*/}
+        <BarCodeSearchHeader
+            onBarCodeSearchQuerySubmitted={this.searchOrders}
+            placeHolder={'Search Orders by Name'}
+            searchBox={false}/>
         <View style={styles.content}>
           <OrdersList
             orders={this.state.allOrders}
