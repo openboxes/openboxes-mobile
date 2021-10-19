@@ -1,153 +1,174 @@
-// import {DispatchProps, OwnProps, Props, StateProps} from "./Props";
-// //import {NavigationStateHere, NavigationStatePutawayDetails, NavigationStateType, State} from "./State";
-// import React from "react";
-// // import Order from "../../../data/order/Order";
-// import {getOrdersAction} from '../../redux/actions/orders';
-// import {StyleSheet, View} from "react-native";
-// import BarCodeSearchHeader from '../Products/BarCodeSearchHeader';
-//
-// import {connect} from "react-redux";
-// import {AppState} from "../../../redux/Reducer";
-// // import {
-// //   dispatchHideProgressBarAction as hideProgressBar,
-// //   dispatchShowProgressBarAction as showProgressBar
-// // } from "../../../redux/Dispatchers";
-// import PutawayDetails from "../PutawayDetails";
-// import {Order} from "../../data/order/Order";
-// import {Header} from "@react-navigation/stack";
-// import {RootState} from "../../redux/reducers";
-//
-// class PutawayList extends React.Component<Props, State> {
-//   constructor(props: Props) {
-//     super(props)
-//     this.state = {
-//       error: null,
-//       putawayList: null,
-//       putaway: null,
-//       orderId: null,
-//       navigationState: new NavigationStateHere()
-//     }
-//     this.searchOrder = this.searchOrder.bind(this)
-//     this.showPutawayListScreen = this.showPutawayListScreen.bind(this)
-//     this.renderContent = this.renderContent.bind(this)
-//     this.renderPutawayDetailsScreen = this.renderPutawayDetailsScreen.bind(this)
-//     this.showPutawayDetailsScreen = this.showPutawayDetailsScreen.bind(this)
-//     this.onBackButtonPress = this.onBackButtonPress.bind(this)
-//   }
-//
-//   async searchOrder(query: string) {
-//     let orders = null
-//     try {
-//       //this.props.showProgressBar("Fetching orders")
-//       orders = await getOrdersAction(query)
-//     } catch (e) {
-//       const title = e.message ? "Failed to fetch orders" : null
-//       const message = e.message ?? "Failed to fetch orders"
-//       return Promise.resolve(null)
-//     } finally {
-//       //this.props.hideProgressBar()
-//     }
-//     if (!orders) {
-//       this.props.exit()
-//     }
-//
-//     if (orders.length == 0) {
-//       this.setState({
-//         error: "No orders found",
-//       })
-//     } else if (orders.length == 1) {
-//       this.showPutawayDetailsScreen(orders[0])
-//     } else {
-//       console.debug("orders found::" + orders.length)
-//       this.setState({
-//         error: null,
-//       })
-//       //this.showPutawayDetailsScreen(orders[0])
-//
-//     }
-//   }
-//
-//   showPutawayListScreen() {
-//     console.debug(">>>>> showPutawayListScreen")
-//     this.setState({
-//       navigationState: new NavigationStateHere()
-//     })
-//   }
-//
-//   showPutawayDetailsScreen(order: Order) {
-//     console.debug(">>>>> showPutawayDetailsScreen")
-//     this.setState({
-//       navigationState: new NavigationStatePutawayDetails(order)
-//     })
-//   }
-//
-//   render() {
-//     // const vm = this.state
-//     switch (this.state.navigationState.type) {
-//       case NavigationStateType.Here:
-//         return this.renderContent();
-//       case NavigationStateType.PutawayDetails:
-//         const navigationStatePutawayDetails = this.state.navigationState as NavigationStatePutawayDetails
-//         return this.renderPutawayDetailsScreen(navigationStatePutawayDetails.order);
-//     }
-//   }
-//
-//   renderPutawayDetailsScreen(order: Order) {
-//     return (
-//       <PutawayDetails
-//         orderId={order.id}
-//         // pickList={null}
-//         // pickListItem={[]}
-//         exit={this.showPutawayListScreen}
-//       />
-//     )
-//   }
-//
-//   onBackButtonPress() {
-//     const currState = this.state
-//     this.props.exit()
-//   }
-//
-//
-//   renderContent() {
-//     return (
-//       <View style={styles.screenContainer}>
-//         <Header
-//           title="Putaway List"
-//           subtitle={'All Pending Put Away List'}
-//           backButtonVisible={true}
-//           onBackButtonPress={this.onBackButtonPress}
-//         />
-//         <BarCodeSearchHeader
-//           onBarCodeSearchQuerySubmitted={this.searchOrder}
-//           placeHolder={'Search Orders by Name'}
-//           searchBox={false}/>
-//       </View>
-//       )
-//   }
-//
-// }
-// const styles = StyleSheet.create({
-//   screenContainer: {
-//     display: "flex",
-//     flexDirection: "column",
-//     flex: 1
-//   },
-//   content: {
-//     display: "flex",
-//     flexDirection: "column",
-//     flex: 1,
-//     justifyContent: "center",
-//     alignItems: "center"
-//   }
-// });
-//
-// const mapStateToProps = (state: RootState) => ({
-//   products: state.productsReducer,
-// });
-//
-// const mapDispatchToProps: DispatchProps = {
-//   //showProgressBar,
-//   //hideProgressBar
-// }
-// export default connect<StateProps, DispatchProps, OwnProps, AppState>(mapStateToProps, mapDispatchToProps)(PutawayList);
+import {DispatchProps, OwnProps, Props, StateProps, State} from "./types";
+import React from "react";
+// import Order from "../../../data/order/Order";
+import {getOrdersAction} from '../../redux/actions/orders';
+import {View, FlatList, ListRenderItemInfo, Text} from "react-native";
+import BarCodeSearchHeader from '../Products/BarCodeSearchHeader';
+
+import {connect} from "react-redux";
+import {showScreenLoading, hideScreenLoading} from '../../redux/actions/main';
+import {RootState} from "../../redux/reducers";
+import showPopup from "../../components/Popup";
+import styles from "./styles";
+import PutAwayItem from "../../components/PutAwayItem";
+import PutAwayItems from "../../data/putaway/PutAwayItems";
+import {fetchPutAwayFromOrderAction} from "../../redux/actions/putaways";
+
+
+class PutawayList extends React.Component<Props, State> {
+    constructor(props: Props) {
+        super(props)
+        this.state = {
+            error: null,
+            putAwayList: null,
+            putAway: null,
+            orderId: null,
+            showList: false
+        }
+
+    }
+
+    searchOrder = (query: string) => {
+        const actionCallback = (data: any) => {
+            console.log(111111, data)
+            if (data?.error) {
+                showPopup({
+                    title: data.error.message ? 'Failed to fetch products' : null,
+                    message: data.error.message ?? 'Failed to fetch products',
+                    positiveButton: {
+                        text: 'Retry',
+                        callback: () => {
+                            this.props.getOrdersAction(query, actionCallback);
+                        },
+                    },
+                    negativeButtonText: 'Cancel',
+                });
+            } else {
+                if (data.length == 0) {
+                    this.setState({
+                        error: "No orders found",
+                    })
+                } else if (data.length == 1) {
+                    this.fetchPutAway(data[0])
+                    // this.setState({showList: true})
+                    // this.showPutAwayDetailsScreen(data[0])
+                } else {
+                    console.debug("orders found::" + data.length)
+                    this.setState({
+                        error: null,
+                    })
+                    //this.showPutAwayDetailsScreen(orders[0])
+                }
+            }
+            this.props.hideScreenLoading();
+        };
+        this.props.getOrdersAction(query, actionCallback);
+    }
+
+    fetchPutAway =(data: any)=> {
+        const actionCallback = (data: any) => {
+            if (data?.error) {
+                const title = data.error.message ? "Failed to fetch PutAway Detail" : null
+                const message = data.error.message ?? "Failed to fetch PutAway Detail"
+                return Promise.resolve(null)
+            } else {
+                this.setState({
+                    showList: true
+                })
+            }
+            this.props.hideScreenLoading();
+        };
+
+        this.props.fetchPutAwayFromOrderAction(data.id, actionCallback)
+    }
+
+    // showPutAwayListScreen =()=> {
+    //   console.debug(">>>>> showPutAwayListScreen")
+    //   this.setState({
+    //     navigationState: new NavigationStateHere()
+    //   })
+    // }
+
+    // showPutAwayDetailsScreen = (order: Order) => {
+    //     this.props.navigation.navigate('PutAwayDetails', {orderId: order.id})
+    // }
+
+    renderItem = (item: ListRenderItemInfo<PutAwayItems>) => {
+        return (
+            <PutAwayItem
+                item={item.item}
+                // onItemTapped={() => this.onItemTapped(this.props.order, item.item)}
+            />
+        )
+    }
+
+    render() {
+        const {showList} = this.state
+        return (
+            <View style={styles.screenContainer}>
+                {/*<Header*/}
+                {/*  title="PutAway List"*/}
+                {/*  subtitle={'All Pending Put Away List'}*/}
+                {/*  backButtonVisible={true}*/}
+                {/*  onBackButtonPress={this.onBackButtonPress}*/}
+                {/*/>*/}
+                <BarCodeSearchHeader
+                    onBarCodeSearchQuerySubmitted={this.searchOrder}
+                    placeHolder={'Search Orders by Name'}
+                    searchBox={false}
+                />
+                {
+                    showList ?
+                        <View style={styles.contentContainer}>
+                            {/*<Text style={styles.name}>{vm.name}</Text>*/}
+                            <View style={styles.row}>
+                                <View style={styles.col50}>
+                                    <Text style={styles.label}>Status</Text>
+                                    <Text style={styles.value}>{this.state.putAway?.putawayStatus}</Text>
+                                </View>
+                                <View style={styles.col50}>
+                                    <Text style={styles.label}>PutAway Number</Text>
+                                    <Text style={styles.value}>{this.state.putAway?.putawayNumber}</Text>
+                                </View>
+
+                            </View>
+                            <View style={styles.row}>
+                                <View style={styles.col50}>
+                                    <Text style={styles.label}>Origin</Text>
+                                    <Text
+                                        style={styles.value}>{this.state.putAway?.["origin.name"]}</Text>
+                                </View>
+                                <View style={styles.col50}>
+                                    <Text style={styles.label}>Destination</Text>
+                                    <Text
+                                        style={styles.value}>{this.state.putAway?.["destination.name"]}</Text>
+                                </View>
+                            </View>
+                            <FlatList
+                                data={this.props.putAway?.putawayItems}
+                                // renderItem={(item: ListRenderItemInfo<PutAwayItems>) => renderPutAwayItem(item.item, () => this.onItemTapped(this.props.order, item.item))}
+                                renderItem={this.renderItem}
+                                keyExtractor={item => item.id}
+                                style={styles.list}
+                            />
+                        </View>
+                        : null
+                }
+            </View>
+        )
+    }
+
+}
+
+
+const mapStateToProps = (state: RootState) => ({
+    putAway: state.putawayReducer.putAway,
+});
+
+const mapDispatchToProps: DispatchProps = {
+    showScreenLoading,
+    hideScreenLoading,
+    getOrdersAction,
+    fetchPutAwayFromOrderAction
+}
+export default connect(mapStateToProps, mapDispatchToProps)(PutawayList);
