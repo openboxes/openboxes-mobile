@@ -1,7 +1,6 @@
 import React from "react";
 import {DeviceEventEmitter} from 'react-native'
-// @ts-ignore
-import {DataWedgeIntents} from 'react-native-datawedge-intents';
+import DataWedgeIntents from 'react-native-datawedge-intents';
 import {
     ACTION,
     FILTER_ACTIONS,
@@ -29,6 +28,7 @@ const useEventListener = () => {
             activeProfileText: "Requires DataWedge 6.3+",
             enumeratedScannersText: "Requires DataWedge 6.3+",
             scans: [],
+            data:{},
             sendCommandResult: "false"
         }
     )
@@ -176,11 +176,14 @@ const useEventListener = () => {
         var scannedData = scanData[ACTION.DATA_STRING];
         var scannedType = scanData[ACTION.LABEL_TYPE];
         console.log("Scan: " + scannedData);
-        let dataScan :any ={data: scannedData, decoder: scannedType, timeAtDecode: timeOfScan}
-        state.scans.unshift(dataScan);
-        console.log("SCAN DATA", state.scans);
-        setState({...state});
+        if (scannedData && scannedType) {
+            let dataScanned = {data: scannedData, decoder: scannedType, timeAtDecode: timeOfScan}
+            state.data = dataScanned
+            state.scans.unshift(dataScanned);
+            console.log("SCAN DATA", state.scans);
+            setState({...state});
+        }
     }
-    return state.scans;
+    return state.data;
 };
 export default useEventListener;

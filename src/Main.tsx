@@ -20,6 +20,7 @@ import {Session} from './data/auth/Session';
 import {getSessionAction} from './redux/actions/main';
 import showPopup from './components/Popup';
 import {colors, DefaultTheme} from "./constants";
+import Scan from "./screens/Scan";
 // import PutawayList from "./screens/PutawayList";
 // import PutawayDetails from "./screens/PutawayDetails";
 
@@ -131,6 +132,7 @@ class Main extends Component<Props, State> {
             <Stack.Screen name="ProductDetails" component={ProductDetails} />
             <Stack.Screen name="PickOrderItem" component={PickOrderItem} />
             <Stack.Screen name="Dashboard" component={Dashboard} />
+            <Stack.Screen name="Scan" component={Scan} />
             <Stack.Screen name="Products" component={Products} />
             {/*<Stack.Screen name="PutawayList" component={PutawayList} />*/}
             {/*<Stack.Screen name="PutawayDetails" component={PutawayDetails} />*/}
