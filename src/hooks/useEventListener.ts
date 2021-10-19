@@ -42,9 +42,6 @@ const useEventListener = () => {
         DeviceEventEmitter.addListener(LISTENER.BARCODE_SCAN, callback)
         DeviceEventEmitter.addListener(LISTENER.ENUMERATED_SCANNER, callback)
         registerBroadcastReceiver();
-        return ()=> {
-            DeviceEventEmitter.removeAllListeners()
-        }
     }, [event]);
 
     const registerBroadcastReceiver = () => {
