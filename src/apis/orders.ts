@@ -5,5 +5,15 @@ export function getOrders() {
 }
 
 export function getPickList(id: string) {
-  return apiClient.get(`/stockMovements/${id}/stockMovementItems`);
+  console.debug("id::><><><:"+id)
+  return apiClient.get(`/picklists/`+id);
+}
+
+export function getPickListItem(id: string) {
+  return apiClient.get(`/picklistItems/`+id);
+}
+export function submitPickListItem(id: string, requestBody: any) {
+  console.debug("submit id:"+id)
+  console.debug(requestBody)
+  return apiClient.post(`/picklistItems/`+id, requestBody);
 }

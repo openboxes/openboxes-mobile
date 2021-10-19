@@ -9,6 +9,7 @@ import {Item} from '../../data/picklist/Item';
 import {getPickListAction} from '../../redux/actions/orders';
 import {State, DispatchProps, Props} from './types';
 import PickListItem from './PickListItem';
+import {PicklistItem} from "../../data/picklist/PicklistItem";
 
 class OrderDetails extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -26,22 +27,22 @@ class OrderDetails extends React.Component<Props, State> {
     const actionCallback = (data: any) => {
       if (data?.length == 0) {
         this.setState({
-          pickList: null,
+          pickList: data,
           error: 'No Picklist found',
           pickListItems: data,
         });
       } else {
         this.setState({
-          pickList: null,
+          pickList: data,
           error: null,
           pickListItems: data ? data : [],
         });
       }
     };
-    this.props.getPickListAction(order.id, actionCallback);
+    this.props.getPickListAction(order?.picklist?.id, actionCallback);
   }
 
-  onItemTapped = (item: Item) => {
+  onItemTapped = (item: PicklistItem) => {
     const {order} = this.props.route.params;
     this.props.navigation.navigate('PickOrderItem', {
       order,
@@ -53,16 +54,36 @@ class OrderDetails extends React.Component<Props, State> {
     const vm = orderDetailsVMMapper(this.props.route?.params, this.state);
     return (
       <View style={styles.screenContainer}>
-        <Header
-          title={vm.header}
-          backButtonVisible={true}
-          onBackButtonPress={this.props.exit}
-        />
         <View style={styles.contentContainer}>
-          <Text style={styles.name}>{vm.name}</Text>
+          <View style={styles.row}>
+            <View style={styles.col50}>
+              <Text style={styles.label}>Order Number</Text>
+              <Text style={styles.value}>{vm.id}-{vm.identifier}</Text>
+            </View>
+            <View style={styles.col50}>
+              <Text style={styles.label}>Name</Text>
+              <Text style={styles.value}>{vm.name}</Text>
+            </View>
+          </View>
+          <View style={styles.row}>
+            <View style={styles.col50}>
+              <Text style={styles.label}>Status</Text>
+              <Text style={styles.value}>{vm.status}</Text>
+            </View>
+            <View style={styles.col50}>
+              <Text style={styles.label}>Origin</Text>
+              <Text style={styles.value}>{vm.origin.locationNumber}-{vm.origin.name}</Text>
+            </View>
+          </View>
+          <View style={styles.row}>
+            <View style={styles.col50}>
+              <Text style={styles.label}>Destination</Text>
+              <Text style={styles.value}>{vm.destination.locationNumber}-{vm.destination.name}</Text>
+            </View>
+          </View>
           <FlatList
-            data={this.state.pickListItems}
-            renderItem={(item: ListRenderItemInfo<Item>) => (
+            data={this.state.pickList?.picklistItems}
+            renderItem={(item: ListRenderItemInfo<PicklistItem>) => (
               <PickListItem
                 item={item.item}
                 onPress={() => {

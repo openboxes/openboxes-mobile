@@ -1,6 +1,7 @@
 import Person from "./Person";
 import Requisition from "./Requisition";
 import {Item} from "./Item";
+import {PicklistItem} from "./PicklistItem";
 
 export default interface PickList{
   id: string,
@@ -9,5 +10,5 @@ export default interface PickList{
   picker: Person,
   datePicked: Date,
   requisition: Requisition
-  picklistItems: Item[]
+  picklistItems: PicklistItem[]
 }
