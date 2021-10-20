@@ -33,7 +33,7 @@ class Dashboard extends React.Component<Props, State> {
                         <Text style={styles.countLabel}>Orders</Text>
                     </View>
                 </TouchableOpacity>
-                {/*<TouchableOpacity
+                <TouchableOpacity
                     style={styles.countContainer}
                     onPress={() => {
                         this.props.navigation.navigate('PutawayList');
@@ -41,7 +41,7 @@ class Dashboard extends React.Component<Props, State> {
                     <View style={styles.countLabelAndIconContainer}>
                         <Text style={styles.countLabel}>Putaway List</Text>
                     </View>
-                </TouchableOpacity>*/}
+                </TouchableOpacity>
             </View>
         );
     }

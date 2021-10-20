@@ -47,6 +47,6 @@ export function searchProductsByCategory(category: any) {
 export function getProductById(id: any) {
   return apiClient.get(`/products/${id}/details`);
 }
-export function printLabel(id: any) {
-  return apiClient.post(`/products/${id}/labels`);
+export function printLabel(data: any) {
+  return apiClient.post(`/products/${data.productId}/labels/${data.barcodeId}`);
 }

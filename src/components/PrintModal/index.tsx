@@ -16,8 +16,11 @@ const arrowDown = require('../../assets/images/arrow-down.png')
 function PrintModal(props: Props) {
 
     const handleClick =()=>{
-        const {printLabelAction, id} = props
-        printLabelAction(id)
+        const {printLabelAction, currentBarcodeLabel, product} = props
+        printLabelAction({
+            productId: product.id,
+            barcodeId: currentBarcodeLabel['id'],
+        })
     }
     return (
         <Modal
