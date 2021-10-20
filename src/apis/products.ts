@@ -48,5 +48,5 @@ export function getProductById(id: any) {
   return apiClient.get(`/products/${id}/details`);
 }
 export function printLabel(id: any) {
-  return apiClient.post(`/products/${id}/details`);
+  return apiClient.post(`/products/${id}/labels`);
 }
