@@ -3,7 +3,7 @@ import {Text, TouchableOpacity, View} from 'react-native';
 import Header from '../../components/Header';
 import styles from './styles';
 // import Header from '../../components/Header';
-import {connect} from 'react-redux';
+import {connect, useDispatch} from 'react-redux';
 // import Icon, {Name} from '../../Icon';
 
 import {RootState} from '../../redux/reducers';
@@ -21,15 +21,17 @@ import {showScreenLoading, hideScreenLoading} from '../../redux/actions/main';
 const Scan = () => {
     const barcodeData = useEventListener();
     const navigation = useNavigation();
+    const dispatch = useDispatch();
     const [state,setState]= useState<any>(   {
         error: null,
-        searchByProductCode: null
+        searchProductCode: null,
+
     });
     useEffect(() => {
-        if (barcodeData && Object.keys(barcodeData).length === 0) {
-           onBarCodeScanned(barcodeData?.data)
+        if (barcodeData && Object.keys(barcodeData).length !== 0) {
+           onBarCodeScanned(barcodeData.data)
         }
-    }, [barcodeData])
+    },[barcodeData])
 
 
     const onBarCodeScanned = (query: string) => {
@@ -43,7 +45,6 @@ const Scan = () => {
         }
 
         const actionCallback = (data: any) => {
-            console.log(data)
             if (data?.error) {
                 showPopup({
                     title: data.error.message
@@ -55,39 +56,37 @@ const Scan = () => {
                     positiveButton: {
                         text: 'Retry',
                         callback: () => {
-                            searchProductGloballyAction(query, actionCallback);
+                           dispatch(searchProductGloballyAction(query, actionCallback));
                         },
                     },
                     negativeButtonText: 'Cancel',
                 });
             } else {
-                console.log(data)
                 if (data.length == 0) {
-                    setState({
-                        searchByProductCode: {
+                    setState({...state,
+                        searchProductCode: {
                             query: query,
                             results: null,
                         },
                         error: `No search results found for product name "${query}"`,
                     });
                 } else {
-                    setState({
-                        searchByProductCode: {
+                    setState({...state,
+                        searchProductCode: {
                             query: query,
                             results: data,
                         },
                         error: null,
                     });
-                    if (state.searchByProductCode) {
-                        console.log(state)
-                        navigateToProduct(state.searchByProductCode?.results)
+                    if (data && Object.keys(data).length !== 0) {
+                        navigateToProduct(data.data[0])
                     }
                 }
-                // hideScreenLoading();
+                hideScreenLoading();
             }
         };
 
-        searchProductGloballyAction(query, actionCallback);
+        dispatch( searchProductGloballyAction(query, actionCallback));
     };
     const navigateToOrder = (order: Order) => {
         // navigation.navigate(`OrderDetails`, {
@@ -98,13 +97,17 @@ const Scan = () => {
         //     },
         // })
     }
-    const navigateToProduct = (product: Product) => {
-        // navigation.navigate('ProductDetails', {product})
+    const navigateToProduct = (product: Product | undefined) => {
+        if(product)
+            { // @ts-ignore
+                navigation.navigate('ProductDetails', {product})
+            }
+
     }
     return (
         <View style={styles.screenContainer}>
             <View style={styles.countLabelAndIconContainer}>
-                <Text style={styles.countLabel}>{JSON.stringify(barcodeData)}</Text>
+                { barcodeData && <Text style={styles.countLabel}>{JSON.stringify(barcodeData?.data)}</Text>}
             </View>
         </View>
     );
