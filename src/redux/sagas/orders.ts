@@ -15,8 +15,8 @@ import {GetPickListItemApiResponse, GetPickListItemsApiResponse} from "../../dat
 
 function* getOrders(action: any) {
   try {
-    yield showScreenLoading('Fetching orders');
-    const response: GetOrdersApiResponse = yield call(api.getOrders);
+    yield showScreenLoading('Fetching products');
+    const response: GetOrdersApiResponse = yield call(api.getOrders, action.payload);
     yield put({
       type: GET_ORDERS_REQUEST_SUCCESS,
       payload: response.data,

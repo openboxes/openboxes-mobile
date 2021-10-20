@@ -9,9 +9,10 @@ export const GET_PICKLIST_REQUEST_SUCCESS = 'GET_PICKLIST_REQUEST_SUCCESS';
 export const GET_PICKLIST_REQUEST_SUCCESS_FAIL =
   'GET_PICKLIST_REQUEST_SUCCESS_FAIL';
 
-export function getOrdersAction(callback: (products: any) => void) {
+export function getOrdersAction(value: string | null, callback: (products: any) => void) {
   return {
     type: GET_ORDERS_REQUEST,
+    payload: value,
     callback,
   };
 }
