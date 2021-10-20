@@ -44,7 +44,7 @@ class Index extends React.Component<Props, State> {
         //   this.props.exit();
         //   return;
         // }
-        if (data.length == 0) {
+        if (data?.length == 0) {
           this.setState({
             error: 'No products found',
             allOrders: data,

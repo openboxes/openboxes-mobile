@@ -10,7 +10,7 @@ export interface StateProps {
   products: any;
 }
 
-export interface DispatchProps {
+export interface  DispatchProps {
   showScreenLoading: (message?: string) => void;
   hideScreenLoading: () => void;
   getProductsAction: (callback: (products: any) => void) => void;

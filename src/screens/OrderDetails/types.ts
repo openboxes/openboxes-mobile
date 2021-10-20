@@ -1,10 +1,11 @@
 import PickList from '../../data/picklist/PickList';
 import {Item} from '../../data/picklist/Item';
 import {Order} from '../../data/order/Order';
+import {PicklistItem} from "../../data/picklist/PicklistItem";
 
 export interface State {
   pickList: PickList | null;
-  pickListItems: Item[] | [];
+  pickListItems: PicklistItem[] | [];
   error: string | null;
 }
 
@@ -12,7 +13,7 @@ export interface PicklistOwnProps {
   exit: () => void;
   pickList: PickList | null;
   order: Order;
-  pickListItem: Item[] | [];
+  pickListItem: PicklistItem[] | [];
 }
 export interface OwnProps {
   navigation: any;

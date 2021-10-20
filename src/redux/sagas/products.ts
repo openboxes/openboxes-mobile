@@ -61,7 +61,7 @@ function* searchProductsByName(action: any) {
 function* searchProductByCode(action: any) {
   try {
     yield showScreenLoading(
-      `Searching for products with product code "${action.payload.productCod}"`,
+      `Searching for products with product code "${action.payload.productCode}"`,
     );
     const data = yield call(
       api.searchProductByCode,
