@@ -24,7 +24,6 @@ class ProductDetails extends React.Component<Props, State> {
     handleClick =()=>{
         const {product} = this.props.route.params
         this.props.getProductByIdAction(product.productCode, (data)=>{
-            // console.log(3333, data)
             this.setState({visible:true})
         })
 
@@ -34,6 +33,8 @@ class ProductDetails extends React.Component<Props, State> {
 
     render() {
         const vm = vmMapper(this.props.route.params, this.state);
+        const {product} = this.props.route.params
+        console.log(66666, product)
         const {visible} = this.state;
         return (
             <View
@@ -44,7 +45,7 @@ class ProductDetails extends React.Component<Props, State> {
                 <PrintModal
                     visible={visible}
                     closeModal={this.closeModal}
-                    id={vm.productCode}
+                    product={product}
                 />
                 <View style={styles.contentContainer}>
                     <Text style={styles.name}>{vm.name}</Text>

@@ -148,8 +148,7 @@ function* getProductById(action: any) {
 function* printLabel(action: any) {
   try {
     yield showScreenLoading('Fetching product by ID');
-    const response = yield call(api.printLabel, action.payload.id);
-    console.log(333333, response)
+    const response = yield call(api.printLabel, action.payload.data);
     yield put({
       type: PRINT_LABEL_REQUEST_SUCCESS,
       payload: response,

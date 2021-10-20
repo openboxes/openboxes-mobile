@@ -4,7 +4,7 @@ import {printLabelAction} from "../../redux/actions/products";
 export interface OwnProps {
     visible: boolean
     closeModal: ()=> void,
-    id: string
+    product: any
 }
 
 export interface StateProps {
@@ -14,7 +14,7 @@ export interface StateProps {
 
 export interface DispatchProps {
     printLabelAction: (
-        id: string,
+        data: any,
         callback?: (data: any) => void,
     )=> void
 }
