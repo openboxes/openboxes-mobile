@@ -5,12 +5,13 @@ import {
 } from '../actions/putaways';
 import {hideScreenLoading, showScreenLoading} from '../actions/main';
 import * as api from '../../apis';
+import {GetPutAwayApiResponse} from "../../data/putaway/PutAway";
 
 
 function* fetchPutAwayFromOrder(action: any) {
     try {
         yield showScreenLoading('Fetching products');
-        const response = yield call(api.fetchPutAwayFromOrder, action.payload.orderId);
+        const response: GetPutAwayApiResponse = yield call(api.fetchPutAwayFromOrder, action.payload.orderNumber);
         yield put({
             type: FETCH_PUTAWAY_FROM_ORDER_REQUEST_SUCCESS,
             payload: response.data,
@@ -18,7 +19,7 @@ function* fetchPutAwayFromOrder(action: any) {
         yield action.callback(response.data);
         yield hideScreenLoading();
     } catch (e) {
-        // console.log('function* fetchPutAwayFromOrder', e.message);
+        console.log('function* fetchPutAwayFromOrder', e.message);
         console.log( e.response);
         yield action.callback({
             error: true,

@@ -29,57 +29,66 @@ class PutawayList extends React.Component<Props, State> {
     }
 
     searchOrder = (query: string) => {
-        const actionCallback = (data: any) => {
-            console.log(111111, data)
-            if (data?.error) {
-                showPopup({
-                    title: data.error.message ? 'Failed to fetch products' : null,
-                    message: data.error.message ?? 'Failed to fetch products',
-                    positiveButton: {
-                        text: 'Retry',
-                        callback: () => {
-                            this.props.getOrdersAction(query, actionCallback);
-                        },
-                    },
-                    negativeButtonText: 'Cancel',
-                });
-            } else {
-                if (data.length == 0) {
-                    this.setState({
-                        error: "No orders found",
-                    })
-                } else if (data.length == 1) {
-                    this.fetchPutAway(data[0])
-                    // this.setState({showList: true})
-                    // this.showPutAwayDetailsScreen(data[0])
-                } else {
-                    console.debug("orders found::" + data.length)
-                    this.setState({
-                        error: null,
-                    })
-                    //this.showPutAwayDetailsScreen(orders[0])
-                }
-            }
-            this.props.hideScreenLoading();
-        };
-        this.props.getOrdersAction(query, actionCallback);
+        // const actionCallback = (data: any) => {
+        //     console.log(111111, data)
+        //     if (!data || data?.error) {
+        //         showPopup({
+        //             title: data.error.message ? 'Failed to fetch Order' : null,
+        //             message: data.error.message ?? 'Failed to fetch Order with:'+query,
+        //             positiveButton: {
+        //                 text: 'Retry',
+        //                 callback: () => {
+        //                     this.props.getOrdersAction(query, actionCallback);
+        //                 },
+        //             },
+        //             negativeButtonText: 'Cancel',
+        //         });
+        //     } else {
+        //         if (data.length == 0) {
+        //             showPopup({
+        //                 title: data.error.message ? 'Failed to fetch Order' : null,
+        //                 message: data.error.message ?? 'Failed to fetch Order with:'+query,
+        //                 positiveButton: {
+        //                     text: 'OK'
+        //                 },
+        //             });
+        //             this.setState({
+        //                 error: "No orders found",
+        //             })
+        //         } else if (data.length == 1) {
+        //             this.fetchPutAway(data[0])
+        //             // this.setState({showList: true})
+        //             // this.showPutAwayDetailsScreen(data[0])
+        //         } else {
+        //             console.debug("orders found::" + data.length)
+        //             this.setState({
+        //                 error: null,
+        //             })
+        //             //this.showPutAwayDetailsScreen(orders[0])
+        //         }
+        //     }
+        //     this.props.hideScreenLoading();
+        // };
+        // this.props.getOrdersAction(query, actionCallback);
+        this.fetchPutAway(query)
     }
 
-    fetchPutAway =(data: any)=> {
+    fetchPutAway =(query: any)=> {
         const actionCallback = (data: any) => {
-            if (data?.error) {
+            if (!data || data?.error) {
                 const title = data.error.message ? "Failed to fetch PutAway Detail" : null
-                const message = data.error.message ?? "Failed to fetch PutAway Detail"
+                const message = data.error.message ?? "Failed to fetch PutAway Detail with OrderNumber:"+query
                 return Promise.resolve(null)
             } else {
                 this.setState({
-                    showList: true
+                    showList: true,
+                    putAway: data
                 })
             }
             this.props.hideScreenLoading();
         };
 
-        this.props.fetchPutAwayFromOrderAction(data.id, actionCallback)
+        this.props.fetchPutAwayFromOrderAction(query, actionCallback)
     }
 
     // showPutAwayListScreen =()=> {
@@ -145,7 +154,7 @@ class PutawayList extends React.Component<Props, State> {
                                 </View>
                             </View>
                             <FlatList
-                                data={this.props.putAway?.putawayItems}
+                                data={this.state.putAway?.putawayItems}
                                 // renderItem={(item: ListRenderItemInfo<PutAwayItems>) => renderPutAwayItem(item.item, () => this.onItemTapped(this.props.order, item.item))}
                                 renderItem={this.renderItem}
                                 keyExtractor={item => item.id}

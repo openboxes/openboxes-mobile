@@ -29,7 +29,7 @@ export interface DispatchProps {
         callback: (data: any) => void
     ) => void;
     fetchPutAwayFromOrderAction: (
-        orderId: string | null,
+        orderNumber: string | null,
         callback: (data: any) => void
     ) => void;
 }

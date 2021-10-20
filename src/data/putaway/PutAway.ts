@@ -1,4 +1,5 @@
 import PutAwayItems from "./PutAwayItems";
+import {Order} from "../order/Order";
 
 export default interface PutAway{
 
@@ -18,4 +19,9 @@ export default interface PutAway{
   sortBy: string
   putawayItems: PutAwayItems[]
 
+}
+
+
+export interface GetPutAwayApiResponse {
+  data: PutAway;
 }

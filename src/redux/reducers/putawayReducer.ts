@@ -13,7 +13,7 @@ export interface State {
 }
 
 const initialState: State = {
-    putAway: [],
+    putAway: null,
 };
 
 function reducer(state = initialState, action: any) {
@@ -21,7 +21,7 @@ function reducer(state = initialState, action: any) {
         case FETCH_PUTAWAY_FROM_ORDER_REQUEST_SUCCESS: {
             return {
                 ...state,
-                putAway: [...action.payload.data],
+                putAway: action.payload.data,
             };
         }
 

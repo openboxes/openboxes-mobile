@@ -14,7 +14,7 @@ export default function PutAwayItem (props: Props) {
             <View style={styles.row}>
                 <View style={styles.col50}>
                     <Text style={styles.label}>Id</Text>
-                    <Text style={styles.value}>{item.id}</Text>
+                    <Text style={styles.value}>{item["stockMovement.name"]}</Text>
                 </View>
                 <View style={styles.col50}>
                     <Text style={styles.label}>Product Name</Text>
@@ -24,11 +24,11 @@ export default function PutAwayItem (props: Props) {
             <View style={styles.row}>
                 <View style={styles.col50}>
                     <Text style={styles.label}>Current Location</Text>
-                    <Text style={styles.value}>{item["currentLocation.id"]}-{item["currentLocation.name"]}</Text>
+                    <Text style={styles.value}>{item["currentLocation.name"]}</Text>
                 </View>
                 <View style={styles.col50}>
                     <Text style={styles.label}>Putaway Location</Text>
-                    <Text style={styles.value}>{item["putawayLocation.id"]}-{item["putawayLocation.name"]}</Text>
+                    <Text style={styles.value}>{item["putawayLocation.name"]}</Text>
                 </View>
             </View>
             <View style={styles.row}>

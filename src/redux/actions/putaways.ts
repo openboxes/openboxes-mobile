@@ -23,13 +23,13 @@ export const FETCH_PUTAWAY_FROM_ORDER_REQUEST_SUCCESS = 'FETCH_PUTAWAY_FROM_ORDE
 
 
 export function fetchPutAwayFromOrderAction(
-    orderId: string|null,
+    orderNumber: string|null,
     callback: (data: any) => void,
 ) {
   console.log('action OK');
   return {
     type: FETCH_PUTAWAY_FROM_ORDER_REQUEST,
-    payload: {orderId},
+    payload: {orderNumber},
     callback,
   };
 }
