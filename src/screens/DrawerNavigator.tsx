@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import ChooseCurrentLocation from "./ChooseCurrentLocation";
+import InternalTransfer from "./InternalTransfer";
 import {Image} from 'react-native'
 import {colors} from "../constants";
 
@@ -21,6 +22,15 @@ class DrawerNavigator extends Component {
                 <Drawer.Screen
                     name="ChooseCurrentLocation"
                     component={ChooseCurrentLocation}
+                    options={{
+                        // headerStyle: {
+                        //     backgroundColor: '#f4511e',
+                        // }
+                    }}
+                />
+                <Drawer.Screen
+                    name="InternalTransfer"
+                    component={InternalTransfer}
                     options={{
                         // headerStyle: {
                         //     backgroundColor: '#f4511e',
