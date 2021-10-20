@@ -12,6 +12,7 @@ import {getPickListItemAction, submitPickListItem} from '../../redux/actions/ord
 import {
     searchProductByCodeAction
 } from '../../redux/actions/products';
+import {searchLocationByLocationNumber} from "../../redux/actions/locations";
 
 
 class PickOrderItem extends React.Component<Props, State> {
@@ -173,9 +174,8 @@ class PickOrderItem extends React.Component<Props, State> {
 
     onBinLocationBarCodeSearchQuerySubmitted = () => {
 
-        (async () => {
             if (!this.state.binLocationSearchQuery) {
-                await showPopup({
+                showPopup({
                     message: "Search query is empty",
                     positiveButton: {
                         text: 'Ok'
@@ -184,23 +184,23 @@ class PickOrderItem extends React.Component<Props, State> {
                 return
             }
 
-            /*let location = await searchLocationByLocationNumber(this.state.binLocationSearchQuery)
-
-            if (!location) {
-              await showPopup({
-                message: "Bin Location not found with LocationNumber:" + this.state.binLocationSearchQuery,
-                positiveButton: {
-                  text: 'Ok'
+            const actionCallback = (location: any) => {
+                if (!location || location.error) {
+                    showPopup({
+                        message: "Bin Location not found with LocationNumber:" + this.state.binLocationSearchQuery,
+                        positiveButton: {
+                            text: 'Ok'
+                        }
+                    })
+                    return
+                } else if (location) {
+                    this.setState({
+                        binLocation: location,
+                        binLocationSearchQuery: ""
+                    })
                 }
-              })
-              return
-            } else if (location) {
-              this.setState({
-                binLocation: location,
-                binLocationSearchQuery: ""
-              })
-            }*/
-        })()
+            }
+            this.props.searchLocationByLocationNumber(this.state.binLocationSearchQuery, actionCallback)
     }
 
     binLocationSearchQueryChange = (query: string) => {
@@ -406,5 +406,6 @@ const mapDispatchToProps: DispatchProps = {
     getPickListItemAction,
     submitPickListItem,
     searchProductByCodeAction,
+    searchLocationByLocationNumber,
 };
 export default connect(null, mapDispatchToProps)(PickOrderItem);

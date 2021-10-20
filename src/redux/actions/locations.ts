@@ -7,6 +7,7 @@ export const SET_CURRENT_LOCATION_REQUEST_SUCCESS =
   'SET_CURRENT_LOCATION_REQUEST_SUCCESS';
 export const SET_CURRENT_LOCATION_REQUEST_FAIL =
   'SET_CURRENT_LOCATION_REQUEST_FAIL';
+export const GET_LOCATION_FROM_NUMBER = 'GET_LOCATION_FROM_NUMBER';
 
 export function getLocationsAction(callback: (products: any) => void) {
   return {
@@ -22,6 +23,17 @@ export function setCurrentLocationAction(
   return {
     type: SET_CURRENT_LOCATION_REQUEST,
     payload: {location},
+    callback,
+  };
+}
+
+export function searchLocationByLocationNumber(
+    locationNumber: string,
+    callback: (data: any) => void,
+){
+  return {
+    type: GET_LOCATION_FROM_NUMBER,
+    payload: {locationNumber},
     callback,
   };
 }

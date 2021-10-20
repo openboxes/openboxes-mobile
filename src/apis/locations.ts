@@ -9,3 +9,7 @@ export function getLocations() {
 export function setCurrentLocation(location: any) {
   return apiClient.put(`/chooseLocation/${location.id}`);
 }
+export function searchLocationByLocationNumber(locationNumber: string){
+  return apiClient.get(`/locations/${locationNumber}`);
+
+}

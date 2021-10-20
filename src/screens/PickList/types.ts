@@ -37,6 +37,10 @@ export interface DispatchProps {
       productCode: string,
       callback: (data: any) => void,
   ) => void;
+  searchLocationByLocationNumber: (
+      locationNumber: string,
+      callback: (data: any) => void,
+  ) => void;
 }
 
 export type Props = PickListProps & StateProps & OwnProps & DispatchProps;

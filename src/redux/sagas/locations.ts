@@ -6,6 +6,7 @@ import {
   GET_LOCATIONS_REQUEST_SUCCESS,
   SET_CURRENT_LOCATION_REQUEST,
   SET_CURRENT_LOCATION_REQUEST_SUCCESS,
+  GET_LOCATION_FROM_NUMBER
 } from '../actions/locations';
 
 function* getLocations(action: any) {
@@ -49,7 +50,28 @@ function* setCurrentLocation(action: any) {
   }
 }
 
+function* searchLocationByLocationNumber(action: any) {
+  try {
+    yield showScreenLoading('Fetching locations with locationNumber:'+action.payload.locationNumber);
+    const response = yield call(api.searchLocationByLocationNumber, action.payload.locationNumber);
+    yield put({
+      type: GET_LOCATIONS_REQUEST_SUCCESS,
+      payload: response.data,
+    });
+    yield action.callback(response.data);
+    yield hideScreenLoading();
+  } catch (e) {
+    console.log('function* getLocations', e);
+    yield action.callback({
+      error: true,
+      message: e.message,
+    });
+  }
+}
+
+
 export default function* watcher() {
   yield takeLatest(GET_LOCATIONS_REQUEST, getLocations);
   yield takeLatest(SET_CURRENT_LOCATION_REQUEST, setCurrentLocation);
+  yield takeLatest(GET_LOCATION_FROM_NUMBER, searchLocationByLocationNumber);
 }
