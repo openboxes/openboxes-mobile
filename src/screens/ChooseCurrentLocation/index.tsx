@@ -4,6 +4,7 @@ import styles from './styles';
 import Location from '../../data/location/Location';
 import _, {Dictionary} from 'lodash';
 import {ScrollView, View} from 'react-native';
+import  {Props, State, DispatchProps} from './types'
 import Header from '../../components/Header';
 import {List} from 'react-native-paper';
 import showPopup from '../../components/Popup';
@@ -14,30 +15,6 @@ import {
 } from '../../redux/actions/locations';
 
 const NO_ORGANIZATION_NAME = 'No organization';
-
-export interface OwnProps {
-  navigation: any;
-}
-
-interface StateProps {
-  //no-op
-}
-
-interface DispatchProps {
-  getLocationsAction: (callback: (locations: any) => void) => void;
-  setCurrentLocationAction: (
-    location: Location,
-    callback: (data: any) => void,
-  ) => void;
-  showScreenLoading: (message?: string) => void;
-  hideScreenLoading: () => void;
-}
-
-type Props = OwnProps & StateProps & DispatchProps;
-
-interface State {
-  orgNameAndLocationsDictionary: Dictionary<Location[]>;
-}
 
 class ChooseCurrentLocation extends React.Component<Props, State> {
   constructor(props: Props) {

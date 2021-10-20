@@ -108,7 +108,7 @@ class Main extends Component<Props, State> {
             ref={NavigationService.navigationRef}
         >
           <Stack.Navigator
-            initialRouteName={!loggedIn ? 'Login' : 'Drawer'}
+            initialRouteName={loggedIn ? 'Login' : 'Drawer'}
             screenOptions={{
               headerRight: () => <Image
                   source={require('./assets/images/logo.png')}
