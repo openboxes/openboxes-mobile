@@ -1,18 +1,35 @@
-import Putaway from "../../../app/data/putaway/Putaway";
-import apiClient from "../../utils/ApiClient";
+// import Putaway from "../../../app/data/putaway/Putaway";
+// import apiClient from "../../utils/ApiClient";
+// import {GET_PICKLIST_REQUEST} from "./orders";
+//
+// const url = "/putaways"
+//
+//
+// interface PutawayApiResponse{
+//   data: Putaway
+// }
+//
+// export function fetchPutawayFromOrder(orderId: string|null):Promise<Putaway>{
+//   let getUrl = url + "/" + orderId
+//   console.debug("putaway url:"+getUrl)
+//   return apiClient.get(getUrl)
+//     .then((response: PutawayApiResponse) => response.data)
+//
+// }
 
-const url = "/putaways"
+
+export const FETCH_PUTAWAY_FROM_ORDER_REQUEST = 'FETCH_PUTAWAY_FROM_ORDER_REQUEST';
+export const FETCH_PUTAWAY_FROM_ORDER_REQUEST_SUCCESS = 'FETCH_PUTAWAY_FROM_ORDER_REQUEST_SUCCESS';
 
 
-interface PutawayApiResponse{
-  data: Putaway
-}
-
-export function fetchPutawayFromOrder(orderId: string|null):Promise<Putaway>{
-  let getUrl = url + "/" + orderId
-  // let getUrl = url + "/" + "ff8081817b8871ec017b88d515ee000b"
-  console.debug("putaway url:"+getUrl)
-  return apiClient.get(getUrl)
-    .then((response: PutawayApiResponse) => response.data)
-
+export function fetchPutAwayFromOrderAction(
+    orderNumber: string|null,
+    callback: (data: any) => void,
+) {
+  console.log('action OK');
+  return {
+    type: FETCH_PUTAWAY_FROM_ORDER_REQUEST,
+    payload: {orderNumber},
+    callback,
+  };
 }

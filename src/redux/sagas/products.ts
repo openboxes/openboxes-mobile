@@ -61,7 +61,7 @@ function* searchProductsByName(action: any) {
 function* searchProductByCode(action: any) {
   try {
     yield showScreenLoading(
-      `Searching for products with product code "${action.payload.productCod}"`,
+      `Searching for products with product code "${action.payload.productCode}"`,
     );
     const data = yield call(
       api.searchProductByCode,
@@ -148,8 +148,7 @@ function* getProductById(action: any) {
 function* printLabel(action: any) {
   try {
     yield showScreenLoading('Fetching product by ID');
-    const response = yield call(api.printLabel, action.payload.id);
-    console.log(333333, response)
+    const response = yield call(api.printLabel, action.payload.data);
     yield put({
       type: PRINT_LABEL_REQUEST_SUCCESS,
       payload: response,

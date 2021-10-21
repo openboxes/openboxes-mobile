@@ -4,7 +4,7 @@ import * as NavigationService from '../../NavigationService';
 
 import * as api from '../../apis';
 import {
-  GET_SESSION_REQUEST,
+  GET_SESSION_REQUEST, GET_SESSION_REQUEST_SUCCESS,
   hideScreenLoading,
   showScreenLoading,
 } from '../actions/main';
@@ -15,7 +15,7 @@ function* getSession() {
     yield showScreenLoading('"Fetching session details"');
     const response: GetSessionApiResponse = yield call(api.getSession);
     yield put({
-      type: GET_SESSION_REQUEST,
+      type: GET_SESSION_REQUEST_SUCCESS,
       payload: response.data,
     });
     yield hideScreenLoading();

@@ -1,6 +1,5 @@
 import {PickListVm} from "./PickListVm";
-import {Props} from "./PickListProps";
-import {State} from "./State";
+import {Props, State} from "./types";
 
 export function pickListVMMapper(props: Props, state: State): PickListVm {
   return <PickListVm>{

@@ -6,15 +6,17 @@ export function orderDetailsVMMapper(
   state: State,
 ): OrderDetailsVm {
   return <OrderDetailsVm>{
-    header: 'Order Details',
-    id: props.order ? props.order.id : '',
-    name: props.order ? props.order.name : '',
-    description: props.order
-      ? props.order.description ?? 'No description provided'
-      : '',
+    header: "Order Details",
+    id: props.order ? props.order.id : "",
+    identifier: props.order ? props.order.identifier : "",
+    name: props.order ? props.order.name : "",
+    status: props.order ? props.order.statusCode : "",
+    description: props.order ? props.order.description ?? "No description provided" : "",
+    origin: props.order ? props.order.origin : null,
+    destination: props.order ? props.order.destination : null,
     datePicked: props.pickList ? props.pickList.datePicked ?? null : null,
     picker: props.pickList ? props.pickList.picker ?? null : null,
-    requisition: props.pickList ? props.pickList.requisition ?? null : '',
+    requisition: props.pickList ? props.pickList.requisition ?? null : "",
     picklistItems: props.pickListItem ? props.pickListItem : [],
   };
 }

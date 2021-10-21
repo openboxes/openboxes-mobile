@@ -100,12 +100,12 @@ export function getProductByIdAction(
 }
 
 export function printLabelAction(
-    id: any,
+    data: any,
     callback?: (data: any) => void,
 ) {
   return {
     type: PRINT_LABEL_REQUEST,
-    payload: {id},
+    payload: {data},
     callback,
   };
 }

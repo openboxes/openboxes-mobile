@@ -21,7 +21,7 @@ import {getSessionAction} from './redux/actions/main';
 import showPopup from './components/Popup';
 import {colors, DefaultTheme} from "./constants";
 import Scan from "./screens/Scan";
-// import PutawayList from "./screens/PutawayList";
+import PutawayList from "./screens/PutawayList";
 // import PutawayDetails from "./screens/PutawayDetails";
 
 const Stack = createStackNavigator();
@@ -134,7 +134,7 @@ class Main extends Component<Props, State> {
             <Stack.Screen name="Dashboard" component={Dashboard} />
             <Stack.Screen name="Scan" component={Scan} />
             <Stack.Screen name="Products" component={Products} />
-            {/*<Stack.Screen name="PutawayList" component={PutawayList} />*/}
+            <Stack.Screen name="PutawayList" component={PutawayList} />
             {/*<Stack.Screen name="PutawayDetails" component={PutawayDetails} />*/}
             {/*<Stack.Screen name="Drawer" component={DrawerNavigator} />*/}
             {/*<Stack.Screen name="Drawer" component={DrawerNavigator} />*/}
