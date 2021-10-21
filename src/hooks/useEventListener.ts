@@ -184,7 +184,6 @@ const useEventListener = () => {
             setState({...state});
         }
     }
-    console.log("SCAN DATA Return", state.data);
     return state.data;
 };
 export default useEventListener;

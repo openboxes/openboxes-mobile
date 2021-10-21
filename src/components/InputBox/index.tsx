@@ -8,12 +8,11 @@ const Edit = require("../../assets/images/edit.png")
 const Done = require( '../../assets/images/tick.png')
 const Dots = require('../../assets/images/dots.png')
 
-export default function ({refs, value, label, showSelect, disabled,onChange}: Props) {
+export default function ({refs, value, label, showSelect, disabled, onChange, keyboard}: Props) {
     const [edit, setEdit] = useState(disabled)
     const onEdit = () => {
         setEdit(!edit)
     }
-
 
 
     const renderIcon = () => {
@@ -31,7 +30,8 @@ export default function ({refs, value, label, showSelect, disabled,onChange}: Pr
                     label={label}
                     placeholder={label}
                     value={value}
-                    disabled={edit}
+                    disabled={edit||false}
+                    keyboardType={keyboard||"default"}
                     onChangeText={onChange}
                     style={styles.input}
                     right={!showSelect ?

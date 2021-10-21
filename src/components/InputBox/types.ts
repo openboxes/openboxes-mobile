@@ -5,6 +5,7 @@ export interface OwnProps {
     value?: string
     onChange?: (text:string) => void;
     disabled?: boolean
+    keyboard?: any
 }
 
 export interface StateProps {}
