@@ -1,6 +1,7 @@
 import React from 'react';
-import {View, ViewProps} from 'react-native';
+import {StyleSheet, View, ViewProps} from 'react-native';
 import {Button as PaperButton} from 'react-native-paper';
+import {colors} from "../constants";
 
 export interface Props extends ViewProps {
   title: string;
@@ -19,12 +20,31 @@ export default function Button(props: Props) {
       <PaperButton
         onPress={props.onPress}
         mode="contained"
-        style={{
-          padding: 4,
-        }}
+        style={styles.viewStyle}
+        labelStyle={styles.label}
         compact={true}>
         {props.title}
       </PaperButton>
     </View>
   );
 }
+const styles = StyleSheet.create({
+    label: {
+        color: 'white',
+        fontSize: 15,
+        alignSelf: 'center',
+        fontWeight: '600',
+        width: '100%',
+        textAlign: 'center',
+    },
+    viewStyle: {
+        width: '80%',
+        height: 45,
+        marginTop: 25,
+        backgroundColor:colors.headerColor,
+        alignSelf: 'center',
+        justifyContent: 'center',
+        display: 'flex',
+        flexDirection: 'column',
+    },
+});

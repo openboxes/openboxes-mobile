@@ -1,7 +1,7 @@
-import React, {Component} from 'react';
+import React, {Component, useState} from 'react';
 import {View} from 'react-native';
 import styles from './styles';
-import {connect} from 'react-redux';
+import {connect, useDispatch} from 'react-redux';
 import {login} from '../../redux/actions/auth';
 import showPopup from '../../components/Popup';
 import {TextInput} from 'react-native-paper';
@@ -10,6 +10,10 @@ import {RootState} from '../../redux/reducers';
 
 import {StackNavigationProp} from '@react-navigation/stack';
 import {StackList} from '../../types/navigationTypes';
+// @ts-ignore
+import EYE_SHOW from '../../assets/images/eye_show.png'
+// @ts-ignore
+import EYE_HIDE from '../../assets/images/eye_hide.png'
 
 type ProfileScreenNavigationProp = StackNavigationProp<StackList, 'Login'>;
 
@@ -32,42 +36,42 @@ interface State {
   password: string;
 }
 
-class Login extends Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
-
-    this.state = {
+const Login =()=>{
+  const dispatch = useDispatch()
+  const [state,setState] = useState<any>( {
       username: '',
       password: '',
-    };
-  }
+      isSeePassword:true,
+    });
 
-  onUsernameChange = (username: string) => {
-    this.setState({
+ const onUsernameChange = (username: string) => {
+   setState({
+      ...state,
       username: username,
     });
   };
 
-  onPasswordChange = (password: string) => {
-    this.setState({
+  const onPasswordChange = (password: string) => {
+    setState({
+      ...state,
       password: password,
     });
   };
 
-  onLoginPress = () => {
-    const {username, password} = this.state;
-    const loginDisallowedReason = this.getLoginDisallowedReason(
+ const onLoginPress = () => {
+    const {username, password} = state;
+    const loginDisallowedReason = getLoginDisallowedReason(
       username,
       password,
     );
     if (loginDisallowedReason) {
       showPopup({message: loginDisallowedReason});
     } else {
-      this.login(username, password);
+        onLogin(username, password);
     }
   };
 
-  getLoginDisallowedReason = (
+  const getLoginDisallowedReason = (
     username: string,
     password: string,
   ): string | null => {
@@ -86,35 +90,45 @@ class Login extends Component<Props, State> {
     return null;
   };
 
-  login = (username: string, password: string) => {
+  const onLogin = (username: string, password: string) => {
     try {
-      this.props.login({username, password});
+      dispatch(login({username, password}));
     } catch (e) {
       showPopup({message: e.message ?? 'Login failed'});
     }
   };
+  const onPasswordClick= () =>{
+    setState({ ...state,isSeePassword: !state.isSeePassword});
+  }
 
-  render() {
     return (
       <View style={styles.screenContainer}>
         <View style={styles.inputContainer}>
           <TextInput
             mode="outlined"
+            label={"Username"}
             placeholder="Username"
-            onChangeText={this.onUsernameChange}
+            onChangeText={onUsernameChange}
           />
           <TextInput
             mode="outlined"
             placeholder="Password"
-            secureTextEntry={true}
-            onChangeText={this.onPasswordChange}
+            label={"Password"}
+            secureTextEntry={state.isSeePassword}
+            right={
+                  <TextInput.Icon
+                      name={state.isSeePassword ? EYE_SHOW : EYE_HIDE}
+                      onPress={onPasswordClick}
+                  />
+            }
+            onChangeText={onPasswordChange}
             style={{
               marginTop: 8,
             }}
           />
           <Button
             title="Login"
-            onPress={this.onLoginPress}
+            onPress={onLoginPress}
             style={{
               marginTop: 8,
             }}
@@ -122,15 +136,7 @@ class Login extends Component<Props, State> {
         </View>
       </View>
     );
-  }
+
 }
 
-const mapStateToProps = (state: RootState) => ({
-  //no-op
-});
-
-const mapDispatchToProps: DispatchProps = {
-  login,
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(Login);
+export default Login;
