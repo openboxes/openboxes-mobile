@@ -143,7 +143,7 @@ const InternalTransfer = () => {
     const onTransfer = () =>{
         // dispatch(showScreenLoading("Update Transfer"))
         const request :any = {
-            "status": "PENDING",
+            "status": "COMPLETED",
             "stockTransferNumber": "",
             "description": "Test stock transfer from bin with quantity =",
             "origin.id": "1",
