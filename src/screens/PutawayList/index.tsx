@@ -13,6 +13,10 @@ import styles from "./styles";
 import PutAwayItem from "../../components/PutAwayItem";
 import PutAwayItems from "../../data/putaway/PutAwayItems";
 import {fetchPutAwayFromOrderAction} from "../../redux/actions/putaways";
+import {Order} from "../../data/order/Order";
+import PutAway from "../../data/putaway/PutAway";
+import {PicklistItem} from "../../data/picklist/PicklistItem";
+import PickListItem from "../OrderDetails/PickListItem";
 
 
 class PutawayList extends React.Component<Props, State> {
@@ -106,10 +110,20 @@ class PutawayList extends React.Component<Props, State> {
         return (
             <PutAwayItem
                 item={item.item}
-                // onItemTapped={() => this.onItemTapped(this.props.order, item.item)}
+                onItemTapped={() => this.goToPutawayItemDetailScreen(this.state.putAway, item.item)}
             />
         )
     }
+
+    goToPutawayItemDetailScreen = (putAway: PutAway, putAwayItem: PutAwayItems) => {
+        this.props.navigation.navigate('PutawayItemDetail', {
+            putAway,
+            putAwayItem,
+            exit: () => {
+                this.props.navigation.navigate('PutawayList');
+            },
+        });
+    };
 
     render() {
         const {showList} = this.state
@@ -155,8 +169,16 @@ class PutawayList extends React.Component<Props, State> {
                             </View>
                             <FlatList
                                 data={this.state.putAway?.putawayItems}
+                                renderItem={(item: ListRenderItemInfo<PicklistItem>) => (
+                                    <PutAwayItem
+                                        item={item.item}
+                                        onPress={() => {
+                                            this.renderItem(item.item);
+                                        }}
+                                    />
+                                )}
                                 // renderItem={(item: ListRenderItemInfo<PutAwayItems>) => renderPutAwayItem(item.item, () => this.onItemTapped(this.props.order, item.item))}
-                                renderItem={this.renderItem}
+                                // renderItem={this.renderItem}
                                 keyExtractor={item => item.id}
                                 style={styles.list}
                             />
