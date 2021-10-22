@@ -11,20 +11,18 @@ export function vmMapper(props: Props, state: State): VM {
     pricePerUnit: props.product.pricePerUnit ?? 0.0,
     details: getDetails(props),
     category: props.product.category,
-    availability: props.product.availability ?? {
-      quantityAvailableToPromise: {
-        value: 0,
-        unitOfMeasure: {code: '', name: ''},
-      },
-      quantityOnHand: {value: 0, unitOfMeasure: {code: '', name: ''}},
-      quantityAllocated: {value: 0, unitOfMeasure: {code: '', name: ''}},
-      quantityOnOrder: {value: 0, unitOfMeasure: {code: '', name: ''}},
-    },
+    status: props.product.status ?? 'Not Available',
+    quantityAllocated: props.product.quantityAllocated ?? 0,
+    quantityAvailable: props.product.quantityAvailableToPromise ?? 0,
+    quantityOnHand: props.product.quantityOnHand ?? 0,
+    quantityOnOrder: props.product.quantityOnOrder ?? 0,
+    unitOfMeasure: props.product.unitOfMeasure ?? 'EA',
     attributes: props.product.attributes ?? [
       {code: 'Sample_1', value: 'Sample value 1', name: 'Attribute 1'},
       {code: 'Sample_2', value: 'Sample value 2', name: 'Attribute 2'},
     ],
     productType: props.product.productType ?? {name: 'Sample Name'},
+    image: props.product.image ?? { id: '', name: '', uri: 'https://reactnative.dev/img/tiny_logo.png' },
     images: props.product.images ?? [
       {
         id: '',

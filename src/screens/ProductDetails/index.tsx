@@ -26,10 +26,7 @@ class ProductDetails extends React.Component<Props, State> {
         this.props.getProductByIdAction(product.productCode, (data)=>{
             this.setState({visible:true})
         })
-
     }
-
-
 
     render() {
         const vm = vmMapper(this.props.route.params, this.state);
@@ -49,23 +46,33 @@ class ProductDetails extends React.Component<Props, State> {
                 />
                 <View style={styles.contentContainer}>
                     <Text style={styles.name}>{vm.name}</Text>
+                    <Text style={styles.title}>{vm.productCode}</Text>
                     <Image
                         style={styles.tinyLogo}
-                        source={{
-                            uri: 'https://reactnative.dev/img/tiny_logo.png',
-                        }}
+                        source={{uri: vm.image.uri}}
                     />
+
                     <ScrollView>
-                        <Text style={styles.boxHeading}>Status</Text>
+                        <Text style={styles.boxHeading}>Availability</Text>
                         <View style={styles.container}>
+                            <View style={styles.row}>
+                                <View style={styles.label}>
+                                    <Text>{'Status'}</Text>
+                                </View>
+                                <View style={styles.value}>
+                                    <Text style={styles.textAlign}>
+                                        {vm.status}{' '}
+                                    </Text>
+                                </View>
+                            </View>
                             <View style={styles.row}>
                                 <View style={styles.label}>
                                     <Text>{'On Hand Quantity'}</Text>
                                 </View>
                                 <View style={styles.value}>
                                     <Text style={styles.textAlign}>
-                                        {vm.availability.quantityOnHand.value}{' '}
-                                        {vm.availability.quantityOnHand.unitOfMeasure.code}
+                                        {vm.quantityOnHand}{' '}
+                                        {vm.unitOfMeasure}
                                     </Text>
                                 </View>
                             </View>
@@ -75,11 +82,8 @@ class ProductDetails extends React.Component<Props, State> {
                                 </View>
                                 <View style={styles.value}>
                                     <Text style={styles.textAlign}>
-                                        {vm.availability.quantityAvailableToPromise.value}{' '}
-                                        {
-                                            vm.availability.quantityAvailableToPromise.unitOfMeasure
-                                                .code
-                                        }
+                                        {vm.quantityAvailable}{' '}
+                                        {vm.unitOfMeasure}
                                     </Text>
                                 </View>
                             </View>
@@ -89,8 +93,8 @@ class ProductDetails extends React.Component<Props, State> {
                                 </View>
                                 <View style={styles.value}>
                                     <Text style={styles.textAlign}>
-                                        {vm.availability.quantityAllocated.value}{' '}
-                                        {vm.availability.quantityAllocated.unitOfMeasure.code}
+                                        {vm.quantityAllocated}{' '}
+                                        {vm.unitOfMeasure}
                                     </Text>
                                 </View>
                             </View>
@@ -100,8 +104,8 @@ class ProductDetails extends React.Component<Props, State> {
                                 </View>
                                 <View style={styles.value}>
                                     <Text style={styles.textAlign}>
-                                        {vm.availability.quantityOnOrder.value}{' '}
-                                        {vm.availability.quantityOnOrder.unitOfMeasure.code}
+                                        {vm.quantityOnOrder}{' '}
+                                        {vm.unitOfMeasure}
                                     </Text>
                                 </View>
                             </View>
@@ -116,7 +120,6 @@ class ProductDetails extends React.Component<Props, State> {
                                 <View style={styles.value}>
                                     <Text style={styles.textAlign}>
                                         {vm.productCode}{' '}
-                                        {vm.availability.quantityOnHand.unitOfMeasure.code}
                                     </Text>
                                 </View>
                             </View>
@@ -127,10 +130,6 @@ class ProductDetails extends React.Component<Props, State> {
                                 <View style={styles.value}>
                                     <Text style={styles.textAlign}>
                                         {vm.category.name}{' '}
-                                        {
-                                            vm.availability.quantityAvailableToPromise.unitOfMeasure
-                                                .code
-                                        }
                                     </Text>
                                 </View>
                             </View>
