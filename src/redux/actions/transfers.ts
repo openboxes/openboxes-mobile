@@ -1,16 +1,11 @@
 
 
 export const UPDATE_INTERNAL_STOCK_TRANSFER = 'UPDATE_INTERNAL_STOCK_TRANSFER';
+export const UPDATE_INTERNAL_STOCK_TRANSFER_SUCCESS="UPDATE_INTERNAL_STOCK_TRANSFER_SUCCESS";
 
-
-export function updateStockTransfer(
-    requestBody: any,
-    callback: (products: any) => void,
-) {
-    console.log('action OK');
+export const updateStockTransfer=(data: any) =>{
     return {
         type: UPDATE_INTERNAL_STOCK_TRANSFER,
-        payload: { requestBody},
-        callback,
+        payload:  {data}
     };
 }

@@ -130,7 +130,7 @@ const InternalTransfer = () => {
     }
 
     const onChangeFrom = (text: string) => {
-        setState({...state, from: text})
+        setState({...state, binFromLocation: text})
     }
     const onChangeBin = (text: string) => {
         setState({...state, binToLocation: text})
@@ -140,12 +140,12 @@ const InternalTransfer = () => {
     }
 
 
-    const onTransfer = ()=>{
+    const onTransfer = () =>{
         // dispatch(showScreenLoading("Update Transfer"))
         const request :any = {
-            status: "PENDING",
-            stockTransferNumber: "",
-            description: "Test stock transfer from bin with quantity =",
+            "status": "PENDING",
+            "stockTransferNumber": "",
+            "description": "Test stock transfer from bin with quantity =",
             "origin.id": "1",
             "destination.id": "1",
             "stockTransferItems": [
@@ -159,34 +159,34 @@ const InternalTransfer = () => {
 
                 }]
         }
-        const actionCallback = (data: any) => {
-            if (data?.error) {
-                showPopup({
-                    title: data.error.message
-                        ? `Failed to update`
-                        : null,
-                    message:
-                        data.error.message ??
-                        `Failed to update`,
-                    positiveButton: {
-                        text: 'Retry',
-                        callback: () => {
-                            dispatch(updateStockTransfer(request, actionCallback));
-                        },
-                    },
-                    negativeButtonText: 'Cancel',
-                });
-            } else {
-                if (data.length == 0) {
-                    showPopup({
-                        message: `No search results`,
-                        positiveButton: {text: 'Ok'},
-                    });
-                }
-                dispatch(hideScreenLoading());;
-            }
-        };
-        dispatch(updateStockTransfer(request, actionCallback));
+        // const actionCallback = (data: any) => {
+        //     if (data?.error) {
+        //         showPopup({
+        //             title: data.error.message
+        //                 ? `Failed to update`
+        //                 : null,
+        //             message:
+        //                 data.error.message ??
+        //                 `Failed to update`,
+        //             positiveButton: {
+        //                 text: 'Retry',
+        //                 callback: () => {
+        //                     dispatch(updateStockTransfer(request));
+        //                 },
+        //             },
+        //             negativeButtonText: 'Cancel',
+        //         });
+        //     } else {
+        //         if (data.length == 0) {
+        //             showPopup({
+        //                 message: `No search results`,
+        //                 positiveButton: {text: 'Ok'},
+        //             });
+        //         }
+        //         dispatch(hideScreenLoading());;
+        //     }
+        // };
+        dispatch(updateStockTransfer(request));
     }
 
 
