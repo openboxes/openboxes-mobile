@@ -11,10 +11,10 @@ import showPopup from '../../components/Popup';
 import InputBox from '../../components/InputBox';
 import {showScreenLoading, hideScreenLoading} from '../../redux/actions/main';
 import useEventListener from "../../hooks/useEventListener";
-import {useNavigation} from "@react-navigation/native";
 import {searchProductGloballyAction} from "../../redux/actions/products";
 import {searchLocationByLocationNumber} from "../../redux/actions/locations"
 import Button from "../../components/Button";
+import {updateStockTransfer} from "../../redux/actions/transfers";
 
 
 const InternalTransfer = () => {
@@ -22,8 +22,11 @@ const InternalTransfer = () => {
     const dispatch = useDispatch();
     const [state, setState] = useState<any>({
         productCode: "",
-        binLocation: "",
-        from: "",
+        product:"",
+        fromData:"",
+        toData:"",
+        binFromLocation:"",
+        binToLocation: "",
         quantity: "0",
         error: null,
         searchProductCode: null,
@@ -67,6 +70,7 @@ const InternalTransfer = () => {
                 if (data?.error) {
                     showErrorPopup(data, query, actionCallback, searchProductGloballyAction)
                 } else {
+                    console.log(data)
                     if (data.length == 0) {
                         showPopup({
                             message: `No search results found for product name "${query}"`,
@@ -75,6 +79,7 @@ const InternalTransfer = () => {
                     } else {
                         if (data && Object.keys(data).length !== 0) {
                             if (state.productCode === "" || state.productCode === data.data[0].productCode) {
+                                state.product = data.data[0];
                                 state.productCode = data.data[0].productCode;
                                 state.quantity = (parseInt(state.quantity,10) +1).toString();
                             } else {
@@ -86,7 +91,7 @@ const InternalTransfer = () => {
                             setState({...state})
                         }
                     }
-                    hideScreenLoading();
+                    dispatch(hideScreenLoading());;
                 }
             };
             dispatch(searchProductGloballyAction(query, actionCallback));
@@ -101,12 +106,19 @@ const InternalTransfer = () => {
                             positiveButton: {text: 'Ok'},
                         });
                     } else {
+                        console.log(data)
                         if (data && Object.keys(data).length !== 0) {
-                            state.binLocation = data.name;
+                            if (state.binFromLocation === "") {
+                                state.fromData = data;
+                                state.binFromLocation = data.name;
+                            }else if(state.binToLocation === "") {
+                                state.toData = data;
+                                state.binToLocation = data.name;
+                            }
                             setState({...state})
                         }
                     }
-                    hideScreenLoading();
+                    dispatch(hideScreenLoading());
                 }
             };
             dispatch(searchLocationByLocationNumber(query, actionLocationCallback));
@@ -121,14 +133,61 @@ const InternalTransfer = () => {
         setState({...state, from: text})
     }
     const onChangeBin = (text: string) => {
-        setState({...state, binLocation: text})
+        setState({...state, binToLocation: text})
     }
     const onChangeQuantity = (text: string) => {
         setState({...state, quantity: text})
     }
 
 
-    const onTransfer = ()=>{}
+    const onTransfer = ()=>{
+        // dispatch(showScreenLoading("Update Transfer"))
+        const request :any = {
+            status: "PENDING",
+            stockTransferNumber: "",
+            description: "Test stock transfer from bin with quantity =",
+            "origin.id": "1",
+            "destination.id": "1",
+            "stockTransferItems": [
+                {
+                    "product.id":state.product.id,
+                    "inventoryItem.id": "",
+                    "location.id": "1",
+                    "originBinLocation.id": state.fromData.id,
+                    "destinationBinLocation.id": state.toData.id,
+                    "quantity": state.quantity
+
+                }]
+        }
+        const actionCallback = (data: any) => {
+            if (data?.error) {
+                showPopup({
+                    title: data.error.message
+                        ? `Failed to update`
+                        : null,
+                    message:
+                        data.error.message ??
+                        `Failed to update`,
+                    positiveButton: {
+                        text: 'Retry',
+                        callback: () => {
+                            dispatch(updateStockTransfer(request, actionCallback));
+                        },
+                    },
+                    negativeButtonText: 'Cancel',
+                });
+            } else {
+                if (data.length == 0) {
+                    showPopup({
+                        message: `No search results`,
+                        positiveButton: {text: 'Ok'},
+                    });
+                }
+                dispatch(hideScreenLoading());;
+            }
+        };
+        dispatch(updateStockTransfer(request, actionCallback));
+    }
 
 
     return (
@@ -140,13 +199,13 @@ const InternalTransfer = () => {
                     onChange={onChangeProduct}
                     label={'Product Code'}/>
                 <InputBox
+                    value={state.binFromLocation}
                     label={'From'}
                     disabled={true}
                     onChange={onChangeFrom}
-                    value={state.from}
                 />
                 <InputBox
-                    value={state.binLocation}
+                    value={state.binToLocation}
                     disabled={true}
                     onChange={onChangeBin}
                     label={'To'}/>
