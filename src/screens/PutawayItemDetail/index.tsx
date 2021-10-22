@@ -6,6 +6,7 @@ import showPopup from "../../components/Popup";
 import {searchLocationByLocationNumber} from "../../redux/actions/locations";
 import {hideScreenLoading, showScreenLoading} from "../../redux/actions/main";
 import {connect} from "react-redux";
+import {submitPutawayItem} from "../../redux/actions/putaways";
 
 class PutawayItemDetail extends React.Component<Props, State> {
     constructor(props: Props) {
@@ -19,6 +20,14 @@ class PutawayItemDetail extends React.Component<Props, State> {
             binLocation: null,
             quantityPicked: "0",
         }
+    }
+
+    componentDidMount() {
+        const {putAway, putAwayItem} = this.props.route.params;
+        this.setState({
+            putAway: putAway,
+            putAwayItem: putAwayItem
+        })
     }
 
     onBinLocationBarCodeSearchQuerySubmitted = () => {
@@ -79,6 +88,47 @@ class PutawayItemDetail extends React.Component<Props, State> {
             })
             return Promise.resolve(null)
         }
+
+        const requestBody = {
+            "id": this.state.putAway?.id,
+            "putawayNumber": this.state.putAway?.putawayNumber,
+            "putawayStatus": this.state.putAway?.putawayStatus,
+            "putawayDate": this.state.putAway?.putawayDate,
+            "putawayAssignee": "",
+            "origin.id": this.state.putAway?.["origin.id"],
+            "destination.id": this.state.putAway?.["destination.id"],
+            "putawayItems": [
+                {
+                    "id": this.state.putAwayItem?.id,
+                    "putawayStatus": this.state.putAway?.putawayStatus,
+                    "currentLocation.id": this.state.putAwayItem?.["currentLocation.id"],
+                    "product.id": this.state.putAwayItem?.["product.id"],
+                    "inventoryItem.id": this.state.putAwayItem?.["inventoryItem.id"],
+                    "putawayFacility.id": this.state.putAwayItem?.["putawayFacility.id"],
+                    "putawayLocation.id": this.state.binLocation?.id,
+                    "quantity": this.state.putAwayItem?.quantity
+                }
+            ],
+            "orderedBy.id": "1",
+            "sortBy": null
+        }
+        const actionCallback = (data: any) => {
+            console.debug("data after submit")
+            console.debug(data)
+            if (data?.length == 0) {
+                // this.setState({
+                //     pickListItem: data,
+                //     error: 'No Picklist found',
+                // });
+            } else {
+                // this.setState({
+                //     pickListItem: data,
+                //     error: null,
+                // });
+            }
+        }
+        this.props.submitPutawayItem(this.state.putAwayItem?.id as string, requestBody, actionCallback);
+
     }
 
     render() {
@@ -113,7 +163,7 @@ class PutawayItemDetail extends React.Component<Props, State> {
                         <Text style={styles.value}>Origin Name</Text>
                     </View>
                     <View style={styles.col60}>
-                        <Text style={styles.value}>{this.state.putAway?.["origin.name"]}</Text>
+                        <Text style={styles.value}>{this.state.putAwayItem?.["currentLocation.name"]}</Text>
                     </View>
                 </View>
                 <View style={styles.row}>
@@ -126,10 +176,10 @@ class PutawayItemDetail extends React.Component<Props, State> {
                 </View>
                 <View style={styles.row}>
                     <View style={styles.col40}>
-                        <Text style={styles.value}>Putaway Facility</Text>
+                        <Text style={styles.value}>Preferred Location</Text>
                     </View>
                     <View style={styles.col60}>
-                        <Text style={styles.value}>{this.state.putAwayItem?.["putawayFacility.name"]}</Text>
+                        <Text style={styles.value}>{this.state.putAwayItem?.["preferredBin.name"]}</Text>
                     </View>
                 </View>
                 <View style={styles.row}>
@@ -201,5 +251,6 @@ const mapDispatchToProps: DispatchProps = {
     showScreenLoading,
     hideScreenLoading,
     searchLocationByLocationNumber,
+    submitPutawayItem,
 };
 export default connect(null, mapDispatchToProps)(PutawayItemDetail);

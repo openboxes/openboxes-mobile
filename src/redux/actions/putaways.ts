@@ -20,6 +20,8 @@
 
 export const FETCH_PUTAWAY_FROM_ORDER_REQUEST = 'FETCH_PUTAWAY_FROM_ORDER_REQUEST';
 export const FETCH_PUTAWAY_FROM_ORDER_REQUEST_SUCCESS = 'FETCH_PUTAWAY_FROM_ORDER_REQUEST_SUCCESS';
+export const SUBMIT_PUTAWAY_ITEM_BIN_LOCATION = 'SUBMIT_PUTAWAY_ITEM_BIN_LOCATION';
+export const SUBMIT_PUTAWAY_ITEM_BIN_LOCATION_SUCCESS = 'SUBMIT_PUTAWAY_ITEM_BIN_LOCATION_SUCCESS';
 
 
 export function fetchPutAwayFromOrderAction(
@@ -32,4 +34,17 @@ export function fetchPutAwayFromOrderAction(
     payload: {orderNumber},
     callback,
   };
+}
+
+export  function submitPutawayItem(
+    id: string,
+    requestBody: any,
+    callback: (data: any) => void,
+
+){
+return{
+  type: SUBMIT_PUTAWAY_ITEM_BIN_LOCATION,
+  payload: {id, requestBody},
+  callback,
+}
 }

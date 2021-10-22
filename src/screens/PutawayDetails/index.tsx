@@ -36,7 +36,6 @@ class PutawayDetails extends React.Component<Props, State> {
         let putAwayObj = null
         try {
             this.props.showScreenLoading("Fetching PutAway Detail")
-            console.debug("this.props.orderId::" + this.props.orderId)
             putAwayObj = await fetchPutAwayFromOrderAction(this.props.orderId)
             this.setState({
                 putAway: putAwayObj

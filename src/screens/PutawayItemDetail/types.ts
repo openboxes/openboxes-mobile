@@ -15,14 +15,17 @@ export interface State {
 }
 
 
-export interface OwnProps {
+export interface PutawayItemProps {
     exit: () => void
-    orderId: string,
+    putAway: PutAway | null
+    putAwayItem: PutAwayItems | null
+}
+export interface OwnProps {
     navigation: any;
+    route: any;
 }
 
 export interface StateProps {
-    putAwayItem: any
 }
 
 export interface DispatchProps {
@@ -32,7 +35,12 @@ export interface DispatchProps {
         locationNumber: string,
         callback: (data: any) => void,
     ) => void;
+    submitPutawayItem: (
+        id: string,
+        requestBody: any,
+        callback: (data: any) => void,
+    ) => void;
 
 }
 
-export type Props = OwnProps & StateProps & DispatchProps
+export type Props = PutawayItemProps & StateProps & DispatchProps & OwnProps

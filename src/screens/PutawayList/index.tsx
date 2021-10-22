@@ -117,7 +117,7 @@ class PutawayList extends React.Component<Props, State> {
     goToPutawayItemDetailScreen = (putAway: PutAway, putAwayItem: PutAwayItems) => {
         this.props.navigation.navigate('PutawayItemDetail', {
             putAway,
-            putAwayItem,
+            putAwayItem: putAwayItem,
             exit: () => {
                 this.props.navigation.navigate('PutawayList');
             },
