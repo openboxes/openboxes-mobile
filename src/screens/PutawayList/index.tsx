@@ -110,7 +110,6 @@ class PutawayList extends React.Component<Props, State> {
         return (
             <PutAwayItem
                 item={item.item}
-                onItemTapped={() => this.goToPutawayItemDetailScreen(this.state.putAway, item.item)}
             />
         )
     }
@@ -172,9 +171,8 @@ class PutawayList extends React.Component<Props, State> {
                                 renderItem={(item: ListRenderItemInfo<PicklistItem>) => (
                                     <PutAwayItem
                                         item={item.item}
-                                        onPress={() => {
-                                            this.renderItem(item.item);
-                                        }}
+                                        onItemTapped={() => this.goToPutawayItemDetailScreen(this.state.putAway, item.item)}
+
                                     />
                                 )}
                                 // renderItem={(item: ListRenderItemInfo<PutAwayItems>) => renderPutAwayItem(item.item, () => this.onItemTapped(this.props.order, item.item))}

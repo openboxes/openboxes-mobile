@@ -5,11 +5,11 @@ import {Props} from "./types";
 import styles from "./styles";
 
 export default function PutAwayItem (props: Props) {
-    const {item} = props
+    const {item,onItemTapped} = props
     return (
         <TouchableOpacity
             style={styles.listItemContainer}
-            // onPress={() => onItemTapped()}
+            onPress={onItemTapped}
         >
             <View style={styles.row}>
                 <View style={styles.col50}>
