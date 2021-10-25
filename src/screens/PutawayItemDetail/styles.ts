@@ -35,12 +35,12 @@ export default StyleSheet.create({
     // marginTop: 1,
     // padding: 2,
     width: '100%',
-    borderLeftWidth: 1,
-    borderTopWidth: 1,
+    borderLeftWidth: 0,
+    borderTopWidth: 0,
     borderTopColor: "black",
-    borderBottomWidth: 1,
+    borderBottomWidth: 0,
     borderBottomColor: "black",
-    borderRightWidth: 1,
+    borderRightWidth: 0,
     borderRightColor: "black",
     textAlign: "center"
 
@@ -52,11 +52,11 @@ export default StyleSheet.create({
     // marginTop: 1,
     // padding: 2,
     width: '100%',
-    borderLeftWidth: 1,
+    borderLeftWidth: 0,
     borderLeftColor: "black",
-    borderBottomWidth: 1,
+    borderBottomWidth: 0,
     borderBottomColor: "black",
-    borderRightWidth: 1,
+    borderRightWidth: 0,
     borderRightColor: "black"
   },
   col30: {
@@ -65,7 +65,7 @@ export default StyleSheet.create({
     flex: 0,
     marginStart: 4,
     width: "30%",
-    borderRightWidth: 1,
+    borderRightWidth: 0,
     borderRightColor: "black"
 
   },
@@ -75,7 +75,7 @@ export default StyleSheet.create({
     flex: 0,
     marginStart: 4,
     width: "40%",
-    borderRightWidth: 1,
+    borderRightWidth: 0,
     borderRightColor: "black",
     justifyContent: 'center', //Centered horizontally
     // alignItems: 'center', //Centered vertically

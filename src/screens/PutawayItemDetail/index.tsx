@@ -92,7 +92,7 @@ class PutawayItemDetail extends React.Component<Props, State> {
         const requestBody = {
             "id": this.state.putAway?.id,
             "putawayNumber": this.state.putAway?.putawayNumber,
-            "putawayStatus": this.state.putAway?.putawayStatus,
+            "putawayStatus": "COMPLETED",
             "putawayDate": this.state.putAway?.putawayDate,
             "putawayAssignee": "",
             "origin.id": this.state.putAway?.["origin.id"],
@@ -100,7 +100,8 @@ class PutawayItemDetail extends React.Component<Props, State> {
             "putawayItems": [
                 {
                     "id": this.state.putAwayItem?.id,
-                    "putawayStatus": this.state.putAway?.putawayStatus,
+                    "putawayStatus": "COMPLETED",
+                    "currentFacility.id": this.state.putAwayItem?.["currentFacility.id"],
                     "currentLocation.id": this.state.putAwayItem?.["currentLocation.id"],
                     "product.id": this.state.putAwayItem?.["product.id"],
                     "inventoryItem.id": this.state.putAwayItem?.["inventoryItem.id"],
@@ -152,15 +153,23 @@ class PutawayItemDetail extends React.Component<Props, State> {
                 </View>
                 <View style={styles.row}>
                     <View style={styles.col40}>
-                        <Text style={styles.value}>Putaway Date</Text>
+                        <Text style={styles.value}>Product Code</Text>
                     </View>
                     <View style={styles.col60}>
-                        <Text style={styles.value}>{this.state.putAway?.putawayDate}</Text>
+                        <Text style={styles.value}>{this.state.putAwayItem?.["product.productCode"]}</Text>
                     </View>
                 </View>
                 <View style={styles.row}>
                     <View style={styles.col40}>
-                        <Text style={styles.value}>Origin Name</Text>
+                        <Text style={styles.value}>Product Name</Text>
+                    </View>
+                    <View style={styles.col60}>
+                        <Text style={styles.value}>{this.state.putAwayItem?.["product.name"]}</Text>
+                    </View>
+                </View>
+                <View style={styles.row}>
+                    <View style={styles.col40}>
+                        <Text style={styles.value}>Current Location</Text>
                     </View>
                     <View style={styles.col60}>
                         <Text style={styles.value}>{this.state.putAwayItem?.["currentLocation.name"]}</Text>
@@ -168,10 +177,10 @@ class PutawayItemDetail extends React.Component<Props, State> {
                 </View>
                 <View style={styles.row}>
                     <View style={styles.col40}>
-                        <Text style={styles.value}>Destination Name</Text>
+                        <Text style={styles.value}>Putaway Location</Text>
                     </View>
                     <View style={styles.col60}>
-                        <Text style={styles.value}>{this.state.putAway?.["destination.name"]}</Text>
+                        <Text style={styles.value}>{this.state.putAwayItem?.["putawayLocation.name"]}</Text>
                     </View>
                 </View>
                 <View style={styles.row}>
@@ -191,14 +200,6 @@ class PutawayItemDetail extends React.Component<Props, State> {
                     </View>
                 </View>
 
-                <View style={styles.row}>
-                    <View style={styles.col40}>
-                        <Text style={styles.value}>Product Name</Text>
-                    </View>
-                    <View style={styles.col60}>
-                        <Text style={styles.value}>{this.state.putAwayItem?.["product.name"]}</Text>
-                    </View>
-                </View>
                 <View style={styles.topRow}>
                     <View style={styles.col40}>
                         <Text style={styles.value}>Bin Location</Text>
