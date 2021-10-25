@@ -42,6 +42,9 @@ const useEventListener = () => {
         DeviceEventEmitter.addListener(LISTENER.BARCODE_SCAN, callback)
         DeviceEventEmitter.addListener(LISTENER.ENUMERATED_SCANNER, callback)
         registerBroadcastReceiver();
+        return ()=>{
+            DeviceEventEmitter.removeAllListeners()
+        }
     }, [event]);
 
     const registerBroadcastReceiver = () => {
@@ -170,9 +173,9 @@ const useEventListener = () => {
     }
 
     const barcodeScanned = (scanData:any, timeOfScan:string) => {
-        var scannedData = scanData[ACTION.DATA_STRING];
-        var scannedType = scanData[ACTION.LABEL_TYPE];
-        console.log("Scan: " + scannedData);
+        var scannedData = scanData[ACTION.DATA_STRING]?? scanData["data"];
+        var scannedType = scanData[ACTION.LABEL_TYPE]?? scanData["labelType"];
+        console.log("Scan:1 " + scanData["data"]);
         if (scannedData && scannedType) {
             let dataScanned = {data: scannedData, decoder: scannedType, timeAtDecode: timeOfScan}
             state.data = dataScanned
