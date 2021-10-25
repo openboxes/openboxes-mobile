@@ -25,3 +25,7 @@ export default interface PutAway{
 export interface GetPutAwayApiResponse {
   data: PutAway;
 }
+
+export interface PostPutAwayItemApiResponse {
+  data: PutAwayItems;
+}
