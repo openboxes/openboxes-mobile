@@ -36,6 +36,15 @@ class Dashboard extends React.Component<Props, State> {
                 <TouchableOpacity
                     style={styles.countContainer}
                     onPress={() => {
+                        this.props.navigation.navigate('InternalTransfer');
+                    }}>
+                    <View style={styles.countLabelAndIconContainer}>
+                        <Text style={styles.countLabel}>Stock Transfer</Text>
+                    </View>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.countContainer}
+                    onPress={() => {
                         this.props.navigation.navigate('PutawayList');
                     }}>
                     <View style={styles.countLabelAndIconContainer}>
