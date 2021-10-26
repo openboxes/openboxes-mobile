@@ -19,16 +19,16 @@ export function vmMapper(product: Product, state: State): VM {
     quantityOnOrder: product.quantityOnOrder ?? 0,
     unitOfMeasure: product.unitOfMeasure ?? 'EA',
     attributes: product.attributes ?? [
-      {code: 'Sample_1', value: 'Sample value 1', name: 'Attribute 1'},
-      {code: 'Sample_2', value: 'Sample value 2', name: 'Attribute 2'},
+      {code: '', value: '', name: ''},
+      {code: '', value: '', name: ''},
     ],
-    productType: product.productType ?? {name: 'Sample Name'},
-//    image: product.image ?? { id: '', name: '', uri: 'https://reactnative.dev/img/tiny_logo.png' },
+    productType: product.productType ?? {name: ''},
+   image: product.image ?? { id: '', name: '', uri: 'https://reactnative.dev/img/tiny_logo.png' },
     images: product.images ?? [
       {
         id: '',
-        name: 'Sample Image',
-        url: 'https://off.com.ph/en-ph/product/off-overtime/off-overtime-insect-repellent-lotion',
+        name: '',
+        url: '',
       },
     ],
   };
@@ -43,16 +43,16 @@ function getDetails(product: Product): DetailsItemVM[] {
 
 function getDetailsCodeItem(product: Product): DetailsItemVM {
   return {
-    key: 'code',
-    name: 'Code',
+    key: '',
+    name: '',
     value: product.productCode,
   };
 }
 
 function getDetailsCategoryItem(product: Product): DetailsItemVM {
   return {
-    key: 'category',
-    name: 'Category',
+    key: '',
+    name: '',
     value: getCategoryText(product.category),
   };
 }

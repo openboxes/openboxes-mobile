@@ -21,5 +21,5 @@ export default interface Product {
   quantityOnOrder:number,
   status?:string
   unitOfMeasure:string
-  // image?:string
+  image?:any
 }

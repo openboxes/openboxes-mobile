@@ -29,17 +29,17 @@ class ProductDetails extends React.Component<Props, State> {
         const {product} = this.props.route.params
         this.props.getProductByIdAction(product.productCode, (data) => {
             this.setState({visible: true})
-            console.log(data)
         })
     }
 
 
-    componentWillMount() {
+    componentDidMount() {
         const {product} = this.props.route.params
         this.getProductDetails(product.id)
     }
 
     getProductDetails(id: string) {
+        this.props.showScreenLoading();
         if (!id) {
             showPopup({
                 message: 'Product id is empty',
@@ -66,14 +66,11 @@ class ProductDetails extends React.Component<Props, State> {
                     negativeButtonText: 'Cancel',
                 });
             } else {
-                console.log(data)
                this.setState({productDetails:data})
-                this.setState({visible: true})
             }
         };
-
+        this.props.hideScreenLoading();
         this.props.getProductByIdAction(id, actionCallback);
-
     }
 
     render() {
@@ -85,19 +82,18 @@ class ProductDetails extends React.Component<Props, State> {
                     flexDirection: 'column',
                     flex: 1
                 }}>
-              {/*  <PrintModal
+                <PrintModal
                     visible={visible}
                     closeModal={this.closeModal}
-                    product={product}
-                />*/}
+                    product={vm}
+                />
                 <View style={styles.contentContainer}>
                     <Text style={styles.name}>{vm.name}</Text>
                     <Text style={styles.title}>{vm.productCode}</Text>
-                    {/*<Image*/}
-                    {/*    style={styles.tinyLogo}*/}
-                    {/*    source={{uri: vm.image.uri}}*/}
-                    {/*/>*/}
-
+                    <Image
+                        style={styles.tinyLogo}
+                        source={{uri: vm.image.uri}}
+                    />
                     <ScrollView>
                         <Text style={styles.boxHeading}>Availability</Text>
                         <View style={styles.container}>
@@ -179,9 +175,9 @@ class ProductDetails extends React.Component<Props, State> {
                                     </Text>
                                 </View>
                             </View>
-                            {vm?.attributes?.map(item => {
+                            {vm?.attributes?.map((item,index )=> {
                                 return (
-                                    <View key={`${item.code}`} style={styles.row}>
+                                    <View key={index} style={styles.row}>
                                         <Text style={styles.label}>{item.name}</Text>
                                         <Text style={styles.value}>{item.value}</Text>
                                     </View>
