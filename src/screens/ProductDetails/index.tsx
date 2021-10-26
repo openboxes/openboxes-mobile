@@ -5,52 +5,98 @@ import {device} from '../../constants'
 import PrintModal from '../../components/PrintModal';
 import {Props, State, DispatchProps} from './types';
 import {vmMapper} from './VMMapper';
-import {getProductByIdAction} from "../../redux/actions/products";
+import {getProductByIdAction } from "../../redux/actions/products";
+import {showScreenLoading, hideScreenLoading} from '../../redux/actions/main';
 import {connect} from "react-redux";
+import showPopup from "../../components/Popup";
+import Product from '../../data/product/Product';
+import {RootState} from "../../redux/reducers";
 
 class ProductDetails extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
-
         this.state = {
-            visible: false
+            visible:false,
+            productDetails:{},
         }
     }
 
-    closeModal =()=>{
-        this.setState({visible:false})
+    closeModal = () => {
+        this.setState({visible: false})
     }
 
-    handleClick =()=>{
+    handleClick = () => {
         const {product} = this.props.route.params
-        this.props.getProductByIdAction(product.productCode, (data)=>{
-            this.setState({visible:true})
+        this.props.getProductByIdAction(product.productCode, (data) => {
+            this.setState({visible: true})
+            console.log(data)
         })
     }
 
-    render() {
-        const vm = vmMapper(this.props.route.params, this.state);
+
+    componentWillMount() {
         const {product} = this.props.route.params
-        console.log(66666, product)
+        this.getProductDetails(product.id)
+    }
+
+    getProductDetails(id: string) {
+        if (!id) {
+            showPopup({
+                message: 'Product id is empty',
+                positiveButton: {text: 'Ok'},
+            });
+            return;
+        }
+
+        const actionCallback = (data: any) => {
+            if (data?.error) {
+                showPopup({
+                    title: data.error.message
+                        ? `Failed to load product details with value = "${id}"`
+                        : null,
+                    message:
+                        data.error.message ??
+                        `Failed to load product details with value = "${id}"`,
+                    positiveButton: {
+                        text: 'Retry',
+                        callback: () => {
+                            this.props.getProductByIdAction(id, actionCallback);
+                        },
+                    },
+                    negativeButtonText: 'Cancel',
+                });
+            } else {
+                console.log(data)
+               this.setState({productDetails:data})
+                this.setState({visible: true})
+            }
+        };
+
+        this.props.getProductByIdAction(id, actionCallback);
+
+    }
+
+    render() {
+        const vm = vmMapper(this.state.productDetails, this.state);
         const {visible} = this.state;
         return (
             <View
                 style={{
                     flexDirection: 'column',
-                    flex:1
+                    flex: 1
                 }}>
-                <PrintModal
+              {/*  <PrintModal
                     visible={visible}
                     closeModal={this.closeModal}
                     product={product}
-                />
+                />*/}
                 <View style={styles.contentContainer}>
                     <Text style={styles.name}>{vm.name}</Text>
                     <Text style={styles.title}>{vm.productCode}</Text>
-                    <Image
-                        style={styles.tinyLogo}
-                        source={{uri: vm.image.uri}}
-                    />
+                    {/*<Image*/}
+                    {/*    style={styles.tinyLogo}*/}
+                    {/*    source={{uri: vm.image.uri}}*/}
+                    {/*/>*/}
 
                     <ScrollView>
                         <Text style={styles.boxHeading}>Availability</Text>
@@ -133,7 +179,7 @@ class ProductDetails extends React.Component<Props, State> {
                                     </Text>
                                 </View>
                             </View>
-                            {vm.attributes.map(item => {
+                            {vm?.attributes?.map(item => {
                                 return (
                                     <View key={`${item.code}`} style={styles.row}>
                                         <Text style={styles.label}>{item.name}</Text>
@@ -171,6 +217,8 @@ class ProductDetails extends React.Component<Props, State> {
 
 const mapDispatchToProps: DispatchProps = {
     getProductByIdAction,
+    showScreenLoading,
+    hideScreenLoading
 };
 
 export default connect(null, mapDispatchToProps)(ProductDetails);
