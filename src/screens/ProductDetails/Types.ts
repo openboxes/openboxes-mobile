@@ -1,5 +1,6 @@
 import Product from '../../data/product/Product';
 import {getProductByIdAction} from "../../redux/actions/products";
+import {hideScreenLoading, showScreenLoading} from "../../redux/actions/main";
 
 export interface OwnProps {
   exit: () => void;
@@ -16,11 +17,15 @@ export interface DispatchProps {
   getProductByIdAction: (
       id: any,
       callback: (data: any) => void,
-  )=> void
+  )=> void,
+  showScreenLoading:()=> void,
+  hideScreenLoading:()=> void
+
 }
 
 export type Props = OwnProps & StateProps & DispatchProps;
 
 export interface State {
   visible: boolean
+  productDetails: any
 }

@@ -14,5 +14,12 @@ export default interface Product {
   availability: ProductAvailability,
   attributes: Attributes[],
   productType: ProductType,
-  images: ProductImage[]
+  images: ProductImage[],
+  quantityAllocated:number,
+  quantityAvailableToPromise:number,
+  quantityOnHand:number,
+  quantityOnOrder:number,
+  status?:string
+  unitOfMeasure:string
+  image?:any
 }
