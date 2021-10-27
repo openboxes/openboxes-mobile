@@ -8,6 +8,9 @@ export default StyleSheet.create({
     flexDirection: "column",
     padding: 8,
   },
+  from:{
+    flex: 1
+  },
   name: {
     fontSize: 17,
     color: Theme.colors.text,
@@ -124,6 +127,11 @@ export default StyleSheet.create({
     color: Theme.colors.placeholder,
     width: "30%"
 
+  },
+  title: {
+    fontSize: 16,
+    color: Theme.colors.text,
+    fontWeight:"bold",
   },
   value: {
     fontSize: 16,

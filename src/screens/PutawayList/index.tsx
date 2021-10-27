@@ -31,6 +31,9 @@ class PutawayList extends React.Component<Props, State> {
         }
 
     }
+    componentDidMount() {
+        this.searchOrder("")
+    }
 
     searchOrder = (query: string) => {
         // const actionCallback = (data: any) => {
@@ -86,7 +89,7 @@ class PutawayList extends React.Component<Props, State> {
             } else {
                 this.setState({
                     showList: true,
-                    putAway: data
+                    putAway: data[0]
                 })
             }
             this.props.hideScreenLoading();
@@ -116,11 +119,8 @@ class PutawayList extends React.Component<Props, State> {
 
     goToPutawayItemDetailScreen = (putAway: PutAway, putAwayItem: PutAwayItems) => {
         this.props.navigation.navigate('PutawayItemDetail', {
-            putAway,
+            putAway: putAway,
             putAwayItem: putAwayItem,
-            exit: () => {
-                this.props.navigation.navigate('PutawayList');
-            },
         });
     };
 
