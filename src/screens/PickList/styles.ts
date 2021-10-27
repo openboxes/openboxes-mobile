@@ -8,6 +8,9 @@ export default StyleSheet.create({
     flexDirection: "column",
     padding: 8,
   },
+  from:{
+    flex:1,
+  },
   name: {
     fontSize: 17,
     color: Theme.colors.text,
