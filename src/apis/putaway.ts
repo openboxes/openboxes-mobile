@@ -13,3 +13,12 @@ export function submitPutawayItem(id: string, requestBody: any) {
     console.debug(requestBody)
     return apiClient.post(`/putaways/`+id, requestBody);
 }
+export function getCandidates(locationId: string) {
+    return apiClient.get(`locations/${locationId}/putawayCandidates`);
+}
+
+export function createPutawayOder(data: any) {
+    return apiClient.post(`/putaways`, data);
+}
+
+

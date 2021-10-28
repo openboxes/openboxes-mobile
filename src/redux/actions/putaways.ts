@@ -1,25 +1,9 @@
-// import Putaway from "../../../app/data/putaway/Putaway";
-// import apiClient from "../../utils/ApiClient";
-// import {GET_PICKLIST_REQUEST} from "./orders";
-//
-// const url = "/putaways"
-//
-//
-// interface PutawayApiResponse{
-//   data: Putaway
-// }
-//
-// export function fetchPutawayFromOrder(orderId: string|null):Promise<Putaway>{
-//   let getUrl = url + "/" + orderId
-//   console.debug("putaway url:"+getUrl)
-//   return apiClient.get(getUrl)
-//     .then((response: PutawayApiResponse) => response.data)
-//
-// }
-
-
 export const FETCH_PUTAWAY_FROM_ORDER_REQUEST = 'FETCH_PUTAWAY_FROM_ORDER_REQUEST';
 export const FETCH_PUTAWAY_FROM_ORDER_REQUEST_SUCCESS = 'FETCH_PUTAWAY_FROM_ORDER_REQUEST_SUCCESS';
+export const GET_PUTAWAY_CANDIDATES_REQUEST = 'GET_PUTAWAY_CANDIDATES_REQUEST';
+export const GET_PUTAWAY_CANDIDATES_REQUEST_SUCCESS = 'GET_PUTAWAY_CANDIDATES_REQUEST_SUCCESS';
+export const CREATE_PUTAWAY_ORDER_REQUEST = 'CREATE_PUTAWAY_ORDER_REQUEST';
+export const CREATE_PUTAWAY_ORDER_REQUEST_SUCCESS = 'CREATE_PUTAWAY_ORDER_REQUEST_SUCCESS';
 export const SUBMIT_PUTAWAY_ITEM_BIN_LOCATION = 'SUBMIT_PUTAWAY_ITEM_BIN_LOCATION';
 export const SUBMIT_PUTAWAY_ITEM_BIN_LOCATION_SUCCESS = 'SUBMIT_PUTAWAY_ITEM_BIN_LOCATION_SUCCESS';
 
@@ -28,7 +12,6 @@ export function fetchPutAwayFromOrderAction(
     q: string|null,
     callback: (data: any) => void,
 ) {
-  console.log('action OK');
   return {
     type: FETCH_PUTAWAY_FROM_ORDER_REQUEST,
     payload: {q},
@@ -47,4 +30,25 @@ return{
   payload: {id, requestBody},
   callback,
 }
+}
+export function getCandidates(
+    locationId: string,
+    callback?: (data: any) => void,
+) {
+  return {
+    type: GET_PUTAWAY_CANDIDATES_REQUEST,
+    payload: {locationId},
+    callback,
+  };
+}
+
+export function createPutawayOderAction(
+    data: any,
+    callback?: (data: any) => void,
+) {
+  return {
+    type: CREATE_PUTAWAY_ORDER_REQUEST,
+    payload: {data},
+    callback,
+  };
 }
