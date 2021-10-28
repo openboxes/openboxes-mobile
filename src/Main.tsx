@@ -23,8 +23,8 @@ import showPopup from './components/Popup';
 import {colors, DefaultTheme} from "./constants";
 import Scan from "./screens/Scan";
 import PutawayList from "./screens/PutawayList";
-import PutawayDetails from "./screens/PutawayDetails";
 import PutawayItemDetail from "./screens/PutawayItemDetail";
+import PutawayDetail from "./screens/PutawayDetails";
 
 const Stack = createStackNavigator();
 
@@ -139,6 +139,7 @@ class Main extends Component<Props, State> {
             <Stack.Screen name="Products" component={Products} />
             <Stack.Screen name="PutawayList" component={PutawayList} />
             <Stack.Screen name="PutawayItemDetail" component={PutawayItemDetail} />
+            <Stack.Screen name="PutawayDetail" component={PutawayDetail} />
             {/*<Stack.Screen name="Drawer" component={DrawerNavigator} />*/}
             {/*<Stack.Screen name="Drawer" component={DrawerNavigator} />*/}
           </Stack.Navigator>
