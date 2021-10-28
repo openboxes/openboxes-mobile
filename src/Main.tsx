@@ -8,6 +8,7 @@ import OrderDetails from './screens/OrderDetails';
 import ProductDetails from './screens/ProductDetails';
 import Dashboard from './screens/Dashboard';
 import Products from './screens/Products';
+import PutawayItem from './screens/PutawayItem';
 import DrawerNavigator from './screens/DrawerNavigator';
 import PickOrderItem from './screens/PickList';
 import FullScreenLoadingIndicator from './components/FullScreenLoadingIndicator';
@@ -21,6 +22,8 @@ import {getSessionAction} from './redux/actions/main';
 import showPopup from './components/Popup';
 import {colors, DefaultTheme} from "./constants";
 import PutawayList from "./screens/PutawayList";
+import InternalTransfer from "./screens/InternalTransfer";
+import PutawayCandidates from "./screens/PutawayCandidates";
 // import PutawayDetails from "./screens/PutawayDetails";
 
 const Stack = createStackNavigator();
@@ -108,7 +111,7 @@ class Main extends Component<Props, State> {
             ref={NavigationService.navigationRef}
         >
           <Stack.Navigator
-            initialRouteName={loggedIn ? 'Login' : 'Drawer'}
+            initialRouteName={!loggedIn ? 'Login' : 'Drawer'}
             screenOptions={{
               headerRight: () => <Image
                   source={require('./assets/images/logo.png')}
@@ -133,6 +136,9 @@ class Main extends Component<Props, State> {
             <Stack.Screen name="Dashboard" component={Dashboard} />
             <Stack.Screen name="Products" component={Products} />
             <Stack.Screen name="PutawayList" component={PutawayList} />
+            <Stack.Screen name="InternalTransfer" component={InternalTransfer} />
+            <Stack.Screen name="PutawayCandidates" component={PutawayCandidates} />
+            <Stack.Screen name="PutawayItem" component={PutawayItem} />
             {/*<Stack.Screen name="PutawayDetails" component={PutawayDetails} />*/}
             {/*<Stack.Screen name="Drawer" component={DrawerNavigator} />*/}
             {/*<Stack.Screen name="Drawer" component={DrawerNavigator} />*/}

@@ -29,52 +29,53 @@ class PutawayList extends React.Component<Props, State> {
     }
 
     searchOrder = (query: string) => {
-        // const actionCallback = (data: any) => {
-        //     console.log(111111, data)
-        //     if (!data || data?.error) {
-        //         showPopup({
-        //             title: data.error.message ? 'Failed to fetch Order' : null,
-        //             message: data.error.message ?? 'Failed to fetch Order with:'+query,
-        //             positiveButton: {
-        //                 text: 'Retry',
-        //                 callback: () => {
-        //                     this.props.getOrdersAction(query, actionCallback);
-        //                 },
-        //             },
-        //             negativeButtonText: 'Cancel',
-        //         });
-        //     } else {
-        //         if (data.length == 0) {
-        //             showPopup({
-        //                 title: data.error.message ? 'Failed to fetch Order' : null,
-        //                 message: data.error.message ?? 'Failed to fetch Order with:'+query,
-        //                 positiveButton: {
-        //                     text: 'OK'
-        //                 },
-        //             });
-        //             this.setState({
-        //                 error: "No orders found",
-        //             })
-        //         } else if (data.length == 1) {
-        //             this.fetchPutAway(data[0])
-        //             // this.setState({showList: true})
-        //             // this.showPutAwayDetailsScreen(data[0])
-        //         } else {
-        //             console.debug("orders found::" + data.length)
-        //             this.setState({
-        //                 error: null,
-        //             })
-        //             //this.showPutAwayDetailsScreen(orders[0])
-        //         }
-        //     }
-        //     this.props.hideScreenLoading();
-        // };
-        // this.props.getOrdersAction(query, actionCallback);
-        this.fetchPutAway(query)
+        const actionCallback = (data: any) => {
+            if (!data || data?.error) {
+                showPopup({
+                    title: data.error.message ? 'Failed to fetch Order' : null,
+                    message: data.error.message ?? 'Failed to fetch Order with:'+query,
+                    positiveButton: {
+                        text: 'Retry',
+                        callback: () => {
+                            this.props.getOrdersAction(query, actionCallback);
+                        },
+                    },
+                    negativeButtonText: 'Cancel',
+                });
+            } else {
+                if (data.length == 0) {
+                    showPopup({
+                        title: data.error.message ? 'Failed to fetch Order' : null,
+                        message: data.error.message ?? 'Failed to fetch Order with:'+query,
+                        positiveButton: {
+                            text: 'OK'
+                        },
+                    });
+                    this.setState({
+                        error: "No orders found",
+                    })
+                } else if (data.length == 1) {
+                    console.log(333333333, data)
+                    this.fetchPutAway(data[0]['id'])
+                    // this.setState({showList: true})
+                    // this.showPutAwayDetailsScreen(data[0])
+                } else {
+                    console.debug("orders found::" + data.length)
+                    this.setState({
+                        error: null,
+                    })
+                    //this.showPutAwayDetailsScreen(orders[0])
+                }
+            }
+            this.props.hideScreenLoading();
+        };
+        this.props.getOrdersAction(query, actionCallback);
+        // this.fetchPutAway(query)
     }
 
     fetchPutAway =(query: any)=> {
         const actionCallback = (data: any) => {
+            console.log(55555555555, data)
             if (!data || data?.error) {
                 const title = data.error.message ? "Failed to fetch PutAway Detail" : null
                 const message = data.error.message ?? "Failed to fetch PutAway Detail with OrderNumber:"+query

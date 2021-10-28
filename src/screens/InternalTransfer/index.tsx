@@ -10,10 +10,22 @@ import {Props, State, DispatchProps} from  './types'
 import showPopup from '../../components/Popup';
 import InputBox from '../../components/InputBox';
 import {showScreenLoading, hideScreenLoading} from '../../redux/actions/main';
+import {stockTransfersAction} from '../../redux/actions/transfers';
 
 
 class InternalTransfer extends React.Component<Props, State> {
 
+  constructor(props: Props) {
+    super(props);
+
+    this.state = {
+        data: {}
+    }
+  }
+
+  handlePress =()=>{
+    this.props.stockTransfersAction(this.state.data)
+  }
 
   render() {
     return (
@@ -25,7 +37,7 @@ class InternalTransfer extends React.Component<Props, State> {
           <InputBox label={'Quantity to transfer'} showSelect={true}/>
         </View>
           <View style={styles.bottom}>
-            <TouchableOpacity style={styles.button}>
+            <TouchableOpacity style={styles.button} onPress={this.handlePress}>
               <Text>TRANSFER</Text>
             </TouchableOpacity>
           </View>
@@ -37,6 +49,7 @@ class InternalTransfer extends React.Component<Props, State> {
 const mapDispatchToProps: DispatchProps = {
   showScreenLoading,
   hideScreenLoading,
+  stockTransfersAction
 };
 
 export default connect(null, mapDispatchToProps)(InternalTransfer);

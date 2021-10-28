@@ -5,15 +5,17 @@ import {
 } from '../actions/products';
 import Location from "../../data/location/Location";
 import {Session} from "../../data/auth/Session";
-import {FETCH_PUTAWAY_FROM_ORDER_REQUEST_SUCCESS} from "../actions/putaways";
+import {FETCH_PUTAWAY_FROM_ORDER_REQUEST_SUCCESS, GET_PUTAWAY_CANDIDATES_REQUEST_SUCCESS} from "../actions/putaways";
 
 export interface State {
     putAway: any;
+    candidates: any
 
 }
 
 const initialState: State = {
     putAway: null,
+    candidates: []
 };
 
 function reducer(state = initialState, action: any) {
@@ -22,6 +24,12 @@ function reducer(state = initialState, action: any) {
             return {
                 ...state,
                 putAway: action.payload.data,
+            };
+        }
+        case GET_PUTAWAY_CANDIDATES_REQUEST_SUCCESS: {
+            return {
+                ...state,
+                candidates: action.payload,
             };
         }
 
