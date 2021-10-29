@@ -1,11 +1,12 @@
 import React from "react";
-import {View, Text, FlatList, ListRenderItem} from "react-native";
+import {View, Text, FlatList, TouchableOpacity} from "react-native";
 import InboundOrderProps from "./types";
 import {Card} from "react-native-paper";
 import styles from "./styles";
+import {useNavigation} from "@react-navigation/native";
 
 const InboundOrderList = ({data}: InboundOrderProps) => {
-
+    const navigation = useNavigation<any>();
 
     const RenderOrderData = ({title, subText}: any): JSX.Element => {
         return (
@@ -16,8 +17,16 @@ const InboundOrderList = ({data}: InboundOrderProps) => {
         )
     }
 
+    const navigateToInboundDetails = () => {
+        console.log("InboundDetails",data)
+        navigation.navigate("InboundDetails",{shipmentDetails : data[0] })
+    }
+
     const RenderListItem = ({item, index}: any): JSX.Element => {
-        return (<View style={styles.itemView} key={index}>
+        return (<TouchableOpacity
+            onPress={navigateToInboundDetails}
+            style={styles.itemView}
+            key={index}>
             <Card>
                 <Card.Content>
                     <View style={styles.rowItem}>
@@ -33,7 +42,7 @@ const InboundOrderList = ({data}: InboundOrderProps) => {
                     </View>
                 </Card.Content>
             </Card>
-        </View>);
+        </TouchableOpacity>);
     }
     return (
         <FlatList
