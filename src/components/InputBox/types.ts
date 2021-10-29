@@ -7,6 +7,7 @@ export interface OwnProps {
     disabled?: boolean
     keyboard?: any
     editable?: boolean
+    onEndEdit?: (text:string) => void
 }
 
 export interface StateProps {}
