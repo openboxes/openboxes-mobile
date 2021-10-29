@@ -4,4 +4,5 @@ export * from './locations';
 export * from './orders';
 export * from './putaway';
 export * from './transfer';
+export * from './inbound';
 

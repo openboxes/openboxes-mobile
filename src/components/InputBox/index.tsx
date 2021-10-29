@@ -8,7 +8,7 @@ const Edit = require("../../assets/images/edit.png")
 const Done = require( '../../assets/images/tick.png')
 const Dots = require('../../assets/images/dots.png')
 
-export default function ({refs, value, label, showSelect, disabled, onChange, keyboard}: Props) {
+export default function ({refs, value, label, showSelect, disabled, onChange, keyboard, editable= true}: Props) {
     const [edit, setEdit] = useState(disabled)
     const onEdit = () => {
         setEdit(!edit)
@@ -45,6 +45,7 @@ export default function ({refs, value, label, showSelect, disabled, onChange, ke
                             onSelect={(selectedItem, index) => {
                                 console.log(selectedItem, index)
                             }}
+                            disabled={!editable}
                             defaultValueByIndex={0}
                             renderDropdownIcon={renderIcon}
                             buttonStyle={styles.select}
@@ -53,10 +54,10 @@ export default function ({refs, value, label, showSelect, disabled, onChange, ke
                         />
                         : null
                 }
-                <TouchableOpacity
+                {editable ? <TouchableOpacity
                     onPress={onEdit}>
                     <Image source={edit ? Edit : Done}/>
-                </TouchableOpacity>
+                </TouchableOpacity> :null}
             </View>
         </View>
 

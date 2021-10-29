@@ -34,6 +34,9 @@ class PutawayList extends React.Component<Props, State> {
         }
 
     }
+    componentDidMount() {
+        this.searchOrder("")
+    }
 
     componentDidMount() {
         this.fetchPutAways(null);
@@ -134,11 +137,8 @@ class PutawayList extends React.Component<Props, State> {
 
     goToPutawayItemDetailScreen = (putAway: PutAway, putAwayItem: PutAwayItems) => {
         this.props.navigation.navigate('PutawayItemDetail', {
-            putAway,
+            putAway: putAway,
             putAwayItem: putAwayItem,
-            exit: () => {
-                this.props.navigation.navigate('PutawayList');
-            },
         });
     };
     onPutAwayTapped = (putAway: PutAway) => {
