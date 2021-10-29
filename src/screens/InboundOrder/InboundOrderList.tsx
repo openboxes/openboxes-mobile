@@ -21,7 +21,6 @@ const InboundOrderList = ({data}: InboundOrderProps) => {
             <Card>
                 <Card.Content>
                     <View style={styles.rowItem}>
-                        <Text style={styles.label}>{"Name: "}</Text>
                         <Text style={styles.value}>{item.name}</Text>
                     </View>
                     <View style={styles.rowItem}>

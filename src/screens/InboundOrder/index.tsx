@@ -19,11 +19,11 @@ const InboundOrder = () => {
             if (data?.error) {
                 showPopup({
                     title: data.error.message
-                        ? `In Bound order details`
+                        ? `Inbound order details`
                         : null,
                     message:
                         data.error.message ??
-                        `Failed to load Inbound order details value ${id}`,
+                        `Failed to load inbound order details value ${id}`,
                     positiveButton: {
                         text: 'Retry',
                         callback: () => {
@@ -35,7 +35,7 @@ const InboundOrder = () => {
             } else {
                 if (data && Object.keys(data).length !== 0) {
 
-                    state.inboundOrder = data.filter((item:any) =>{ return  item.status === "SHIPPED" })
+                    state.inboundOrder = data.filter((item:any) =>{ return  item.status === "SHIPPED" || item.status === "PARTIALLY_RECEIVED" })
                 }
                 setState({...state})
             }

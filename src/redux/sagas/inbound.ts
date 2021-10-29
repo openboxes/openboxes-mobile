@@ -6,7 +6,7 @@ import * as api from '../../apis';
 
 function* fetchInboundOrderList(action: any) {
     try {
-        yield put(showScreenLoading('Fetching Inbound Order List'));
+        yield put(showScreenLoading('Fetching inbound orders'));
         const response: any = yield call(api.fetchInboundOrderList, action.payload.id ?? "");
         console.log("Response", response)
         yield put({
