@@ -1,7 +1,11 @@
 import apiClient from '../utils/ApiClient';
 
-export function fetchPutAwayFromOrder(orderNumber: string) {
-    return apiClient.get(`/putaways/${orderNumber}`);
+export function fetchPutAwayFromOrder(q: string) {
+    if(q!=null && q!=""){
+        return apiClient.get(`/putaways?q=${q}`);
+    }else{
+        return apiClient.get(`/putaways`);
+    }
 }
 
 

@@ -8,6 +8,7 @@ export interface State {
     putAway: PutAway | null
     orderId: string | null,
     showList: boolean
+    showDetail: boolean
 }
 
 
@@ -29,7 +30,7 @@ export interface DispatchProps {
         callback: (data: any) => void
     ) => void;
     fetchPutAwayFromOrderAction: (
-        orderNumber: string | null,
+        q: string | null,
         callback: (data: any) => void
     ) => void;
 }
