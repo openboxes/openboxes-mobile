@@ -5,15 +5,33 @@ import {Card} from "react-native-paper";
 import styles from "./styles";
 
 const InboundOrderList = ({data}: InboundOrderProps) => {
-    const renderListItem = ({item, index}: any): JSX.Element => {
+
+
+    const RenderOrderData = ({title, subText}: any): JSX.Element => {
+        return (
+            <View style={styles.columnItem}>
+                <Text style={styles.label}>{title}</Text>
+                <Text style={styles.value}>{subText}</Text>
+            </View>
+        )
+    }
+
+    const RenderListItem = ({item, index}: any): JSX.Element => {
         return (<View style={styles.itemView} key={index}>
             <Card>
                 <Card.Content>
-                    <Text>{item.name}</Text>
-                    <Text>{item.status}</Text>
-                    <Text>{item.origin.name}</Text>
-                    <Text>{item.destination.name}</Text>
-                    <Text>{item.shipmentItems.length}</Text>
+                    <View style={styles.rowItem}>
+                        <Text style={styles.label}>{"Name: "}</Text>
+                        <Text style={styles.value}>{item.name}</Text>
+                    </View>
+                    <View style={styles.rowItem}>
+                        <RenderOrderData title={"Origin"} subText={item.origin.name}/>
+                        <RenderOrderData title={"Status"} subText={item.status}/>
+                    </View>
+                    <View style={styles.rowItem}>
+                        <RenderOrderData title={"Destination"} subText={item.destination.name}/>
+                        <RenderOrderData title={"Number of Items"} subText={item.shipmentItems.length}/>
+                    </View>
                 </Card.Content>
             </Card>
         </View>);
@@ -22,7 +40,7 @@ const InboundOrderList = ({data}: InboundOrderProps) => {
         <FlatList
             data={data}
             keyExtractor={(item, index) => item + index}
-            renderItem={renderListItem}/>
+            renderItem={RenderListItem}/>
     );
 }
 export default InboundOrderList;

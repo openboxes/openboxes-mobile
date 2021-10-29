@@ -4,6 +4,7 @@ import InboundOrderList from "./InboundOrderList";
 import {useDispatch} from "react-redux";
 import {fetchInboundOrderList} from "../../redux/actions/inboundorder";
 import showPopup from "../../components/Popup";
+import BarCodeSearchHeader from "../Products/BarCodeSearchHeader";
 
 const InboundOrder = () => {
     const dispatch = useDispatch();
@@ -33,7 +34,8 @@ const InboundOrder = () => {
                 });
             } else {
                 if (data && Object.keys(data).length !== 0) {
-                    state.inboundOrder = data
+
+                    state.inboundOrder = data.filter((item:any) =>{ return  item.status === "SHIPPED" })
                 }
                 setState({...state})
             }
@@ -41,9 +43,11 @@ const InboundOrder = () => {
         dispatch(fetchInboundOrderList(callback, id))
     }
 
-
     return (
         <View>
+            <BarCodeSearchHeader
+                onBarCodeSearchQuerySubmitted={getInboundOrderList}
+                searchBox={false}/>
             <InboundOrderList
                 data={state.inboundOrder}
             />
