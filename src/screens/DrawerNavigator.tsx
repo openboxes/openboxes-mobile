@@ -20,17 +20,8 @@ class DrawerNavigator extends Component {
                 />
             }}>
                 <Drawer.Screen
-                    name="ChooseCurrentLocation"
+                    name="Choose Current Location"
                     component={ChooseCurrentLocation}
-                    options={{
-                        // headerStyle: {
-                        //     backgroundColor: '#f4511e',
-                        // }
-                    }}
-                />
-                <Drawer.Screen
-                    name="Internal Transfer"
-                    component={InternalTransfer}
                     options={{
                         // headerStyle: {
                         //     backgroundColor: '#f4511e',

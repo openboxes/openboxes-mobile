@@ -30,7 +30,16 @@ class Dashboard extends React.Component<Props, State> {
                     }}>
                     <View style={styles.countLabelAndIconContainer}>
                         {/*<Icon name={Name.Boxes} size={14} />*/}
-                        <Text style={styles.countLabel}>Orders</Text>
+                        <Text style={styles.countLabel}>Picking</Text>
+                    </View>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.countContainer}
+                    onPress={() => {
+                        this.props.navigation.navigate('InboundOrderList');
+                    }}>
+                    <View style={styles.countLabelAndIconContainer}>
+                        <Text style={styles.countLabel}>Receiving</Text>
                     </View>
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -48,7 +57,7 @@ class Dashboard extends React.Component<Props, State> {
                         this.props.navigation.navigate('PutawayList');
                     }}>
                     <View style={styles.countLabelAndIconContainer}>
-                        <Text style={styles.countLabel}>Putaway List</Text>
+                        <Text style={styles.countLabel}>Putaways</Text>
                     </View>
                 </TouchableOpacity>
                 <TouchableOpacity
