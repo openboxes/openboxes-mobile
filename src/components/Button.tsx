@@ -16,6 +16,7 @@ export default function Button(props: Props) {
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'center',
+        marginTop: 8,
       }}>
       <PaperButton
         onPress={props.onPress}

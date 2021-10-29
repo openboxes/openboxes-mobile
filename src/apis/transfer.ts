@@ -5,3 +5,7 @@ export function updateStockTransfers( requestBody: any) {
     console.debug(requestBody)
     return apiClient.post(`/stockTransfers`, requestBody);
 }
+
+export function getStockMovements(id: string) {
+    return apiClient.get(`/stockMovements/`+id);
+}
