@@ -1,76 +1,180 @@
-import React from 'react';
-import {State, DispatchProps, Props} from './types';
+import React, {useEffect, useState} from 'react';
+import {DispatchProps} from './types';
 import styles from './styles';
-import Header from '../../components/Header';
-import {Button, ScrollView, Text, TextInput, View} from 'react-native';
+import {ScrollView, Text, TextInput, View} from 'react-native';
 import {pickListVMMapper} from './PickListVMMapper';
 import {showScreenLoading, hideScreenLoading} from '../../redux/actions/main';
-import {connect} from 'react-redux';
-import {ScreenContainer} from "react-native-screens";
+import {connect, useDispatch} from 'react-redux';
 import showPopup from "../../components/Popup";
 import {getPickListItemAction, submitPickListItem} from '../../redux/actions/orders';
 import {
-    searchProductByCodeAction
+    searchProductByCodeAction, searchProductGloballyAction
 } from '../../redux/actions/products';
 import {searchLocationByLocationNumber} from "../../redux/actions/locations";
+import {useRoute} from "@react-navigation/native";
+import Button from "../../components/Button";
+import useEventListener from "../../hooks/useEventListener";
+import InputBox from "../../components/InputBox";
 
 
-class PickOrderItem extends React.Component<Props, State> {
-    constructor(props: Props) {
-        super(props);
-        this.state = {
-            error: null,
-            pickListItem: null,
-            order: null,
-            productSearchQuery: "",
-            binLocationSearchQuery: "",
-            quantityPicked: "0",
-            product: null,
-            binLocation: null,
-        };
+const PickOrderItem = () => {
+    const route = useRoute();
+    const dispatch = useDispatch();
+    const barcodeData = useEventListener();
+    const [state, setState] = useState<any>({
+        error: "",
+        pickListItem: null,
+        order: null,
+        productSearchQuery: "",
+        binLocationSearchQuery: "",
+        quantityPicked: "0",
+        product: null,
+        productCode: "",
+        binLocation: null,
+    })
+    const vm = pickListVMMapper(route.params);
+    console.log("VM", vm)
+    useEffect(() => {
+        getPickListItem()
+
+    }, [])
+    useEffect(() => {
+        if (barcodeData && Object.keys(barcodeData).length !== 0) {
+            onBarCodeScanned(barcodeData.data)
+        }
+    }, [barcodeData])
+
+    const showErrorPopup = (data: any, query: any, actionCallback: any, searchBarcode: any) => {
+        showPopup({
+            title: data.error.message
+                ? `Failed to load search results with value = "${query}"`
+                : null,
+            message:
+                data.error.message ??
+                `Failed to load search results with value = "${query}"`,
+            positiveButton: {
+                text: 'Retry',
+                callback: () => {
+                    dispatch(searchBarcode(query, actionCallback));
+                },
+            },
+            negativeButtonText: 'Cancel',
+        });
     }
-
-    componentDidMount() {
-        this.getPickListItem()
-    }
-
-    // @ts-ignore
-    async getPickListItem(): Promise<PicklistItem> {
-        try {
-            // this.props.showProgressBar("Fetching PickList Item")
-            const {pickListItem} = this.props.route.params;
+    const onBarCodeScanned = (query: string) => {
+        // handleBarcodeScan(barcodeNo);
+        if (!query) {
+            showPopup({
+                message: 'Search query is empty',
+                positiveButton: {text: 'Ok'},
+            });
+            return;
+        }
+        if (query.includes("LOG-XXX")) {
             const actionCallback = (data: any) => {
+                if (data?.error) {
+                    showErrorPopup(data, query, actionCallback, searchProductGloballyAction)
+                } else {
+                    console.log(data)
+                    if (data.length == 0) {
+                        showPopup({
+                            message: `No search results found for product name "${query}"`,
+                            positiveButton: {text: 'Ok'},
+                        });
+                    } else {
+                        if (data && Object.keys(data).length !== 0) {
+                            if (state.pickListItem?.productCode !== data.data[0].productCode) {
+                                showPopup({
+                                    message: `You have scanned a wrong product barcode "${query}"`,
+                                    positiveButton: {text: 'Ok'},
+                                });
+                            } else {
+                                state.quantityPicked = (parseInt(state.quantityPicked, 10) + 1).toString();
+                                state.product = data.data[0]
+                                state.productSearchQuery = ""
+
+                            }
+                            setState({...state})
+                        }
+                    }
+                    dispatch(hideScreenLoading());
+                    ;
+                }
+            };
+            dispatch(searchProductGloballyAction(query, actionCallback));
+        } else {
+            const actionBinLocationCallback = (data: any) => {
+                if (data?.error) {
+                    showErrorPopup(data, query, actionBinLocationCallback, searchLocationByLocationNumber)
+                } else {
+                    if (data.length == 0) {
+                        showPopup({
+                            message: `No search results found for Location name "${query}"`,
+                            positiveButton: {text: 'Ok'},
+                        });
+                    } else {
+                        console.log(data)
+                        if (data && Object.keys(data).length !== 0) {
+                            if (state.binLocation === "" || state.binLocation === data.name) {
+                                state.binLocation = data;
+                                state.binLocationSearchQuery = "";
+                            }
+                            setState({...state})
+                        } else {
+                            showPopup({
+                                message: `You have scanned a wrong bin location barcode "${query}"`,
+                                positiveButton: {text: 'Ok'},
+                            });
+                        }
+                    }
+                    dispatch(hideScreenLoading());
+                }
+            };
+            dispatch(searchLocationByLocationNumber(query, actionBinLocationCallback));
+        }
+    };
+
+    const getPickListItem = async () => {
+        try {
+            // showProgressBar("Fetching PickList Item")
+            const {pickListItem}: any = route.params;
+            const actionCallback = (data: any) => {
+                console.log("getPickListItem", data)
                 if (data?.length == 0) {
-                    this.setState({
+                    setState({
+                        ...state,
                         pickListItem: data,
                         error: 'No Picklist found',
                     });
                 } else {
-                    this.setState({
+                    setState({
+                        ...state,
                         pickListItem: data,
-                        error: null,
+                        error: "",
                     });
                 }
             };
-            console.debug("this.props.pickListItem?.id::")
-            console.debug(this.props.pickListItem?.id)
+            console.debug("pickListItem?.id::")
             console.debug(pickListItem?.id)
-            this.props.getPickListItemAction(pickListItem?.id, actionCallback);
+            dispatch(getPickListItemAction(pickListItem?.id, actionCallback));
         } catch (e) {
 
         }
     }
 
-    formSubmit = () => {
+    const formSubmit = () => {
         try {
             let errorTitle = ""
             let errorMessage = ""
-            if (this.state.product == null) {
+            if (state.product == null) {
                 errorTitle = "Product Code!"
                 errorMessage = "Please scan Product Code."
-            } else if (this.state.quantityPicked == null || this.state.quantityPicked == "") {
+            } else if (state.quantityPicked == null || state.quantityPicked == "") {
                 errorTitle = "Quantity Pick!"
                 errorMessage = "Please pick some quantity."
+            } else if (vm.picklistItems.quantityPicked === state.quantityPicked) {
+                errorTitle = "Quantity Pick!"
+                errorMessage = "Quantity picked is not valid"
             }
             if (errorTitle != "") {
                 showPopup({
@@ -82,12 +186,12 @@ class PickOrderItem extends React.Component<Props, State> {
                 return Promise.resolve(null)
             }
             const requestBody = {
-                "product.id": this.state.product?.id,
-                "productCode": this.state.product?.productCode,
+                "product.id": state.product?.id,
+                "productCode": state.product?.productCode,
                 "inventoryItem.id": null,
-                "binLocation.id": this.state.binLocation ? this.state.binLocation?.id : null,
-                "binLocation.locationNumber": this.state.binLocation ? this.state.binLocation?.locationNumber : this.state.binLocationSearchQuery,
-                "quantityPicked": this.state.quantityPicked,
+                "binLocation.id": state.binLocation ? state.binLocation?.id : null,
+                "binLocation.locationNumber": state.binLocation ? state.binLocation?.locationNumber : state.binLocationSearchQuery,
+                "quantityPicked": state.quantityPicked,
                 "picker.id": null,
                 "datePicked": null,
                 "reasonCode": null,
@@ -98,22 +202,22 @@ class PickOrderItem extends React.Component<Props, State> {
                 console.debug("data after submit")
                 console.debug(data)
                 if (data?.length == 0) {
-                    // this.setState({
+                    // setState({
                     //     pickListItem: data,
                     //     error: 'No Picklist found',
                     // });
                 } else {
-                    // this.setState({
+                    // setState({
                     //     pickListItem: data,
                     //     error: null,
                     // });
                 }
             }
-            this.props.submitPickListItem(this.state.pickListItem?.id as string, requestBody, actionCallback);
+            submitPickListItem(state.pickListItem?.id as string, requestBody, actionCallback);
         } catch (e) {
             const title = e.message ? "Failed submit item" : null
             const message = e.message ?? "Failed submit item"
-            const shouldRetry = showPopup({
+            showPopup({
                 title: title,
                 message: message,
                 // positiveButtonText: "Retry",
@@ -124,280 +228,314 @@ class PickOrderItem extends React.Component<Props, State> {
         }
     }
 
-    productSearchQueryChange = (query: string) => {
-        this.setState({
+    const productSearchQueryChange = (query: string) => {
+        setState({
+            ...state,
             productSearchQuery: query
         })
+        onProductBarCodeSearchQuerySubmitted()
     }
 
-    onProductBarCodeSearchQuerySubmitted = () => {
+    const onProductBarCodeSearchQuerySubmitted = () => {
 
-            if (!this.state.productSearchQuery) {
+        if (!state.productSearchQuery) {
+            showPopup({
+                message: "Search query is empty",
+                positiveButton: {
+                    text: 'Ok'
+                }
+            })
+            return
+        }
+
+
+        const actionCallback = (data: any) => {
+            console.debug("product searched completed")
+            console.debug(data.data.length)
+            if (!data || data.data.length == 0) {
                 showPopup({
-                    message: "Search query is empty",
+                    message: "Product not found with ProductCode:" + state.productSearchQuery,
                     positiveButton: {
                         text: 'Ok'
                     }
                 })
                 return
+            } else if (data.data.length == 1) {
+                console.debug("data.length")
+                console.debug(data.length)
+                setState({
+                    ...state,
+                    product: data.data[0],
+                    quantityPicked: (parseInt(state.quantityPicked, 10) + 1).toString(),
+                    productSearchQuery: ""
+                })
             }
+        }
+        dispatch(searchProductByCodeAction(state.productSearchQuery, actionCallback));
 
 
-            const actionCallback = (data: any) => {
-                console.debug("product searched completed")
-                console.debug(data.data.length)
-                if (!data || data.data.length == 0) {
-                    showPopup({
-                        message: "Product not found with ProductCode:" + this.state.productSearchQuery,
-                        positiveButton: {
-                            text: 'Ok'
-                        }
-                    })
-                    return
-                } else if (data.data.length == 1) {
-                    console.debug("data.length")
-                    console.debug(data.length)
-                    this.setState({
-                        product: data.data[0],
-                        quantityPicked: parseInt(this.state.quantityPicked) + 1 + "",
-                        productSearchQuery: ""
-                    })
-                }
-            }
-            this.props.searchProductByCodeAction(this.state.productSearchQuery, actionCallback);
+        /*let searchedProducts = await searchProductCodeFromApi(state.productSearchQuery)
 
-
-            /*let searchedProducts = await searchProductCodeFromApi(this.state.productSearchQuery)
-
-            */
+        */
     }
 
-    onBinLocationBarCodeSearchQuerySubmitted = () => {
+    const onBinLocationBarCodeSearchQuerySubmitted = () => {
 
-            if (!this.state.binLocationSearchQuery) {
+        if (!state.binLocationSearchQuery) {
+            showPopup({
+                message: "Search query is empty",
+                positiveButton: {
+                    text: 'Ok'
+                }
+            })
+            return
+        }
+
+        const actionCallback = (location: any) => {
+            if (!location || location.error) {
                 showPopup({
-                    message: "Search query is empty",
+                    message: "Bin Location not found with LocationNumber:" + state.binLocationSearchQuery,
                     positiveButton: {
                         text: 'Ok'
                     }
                 })
                 return
+            } else if (location) {
+                setState({
+                    ...state,
+                    binLocation: location,
+                    binLocationSearchQuery: ""
+                })
             }
-
-            const actionCallback = (location: any) => {
-                if (!location || location.error) {
-                    showPopup({
-                        message: "Bin Location not found with LocationNumber:" + this.state.binLocationSearchQuery,
-                        positiveButton: {
-                            text: 'Ok'
-                        }
-                    })
-                    return
-                } else if (location) {
-                    this.setState({
-                        binLocation: location,
-                        binLocationSearchQuery: ""
-                    })
-                }
-            }
-            this.props.searchLocationByLocationNumber(this.state.binLocationSearchQuery, actionCallback)
+        }
+        dispatch(searchLocationByLocationNumber(state.binLocationSearchQuery, actionCallback))
     }
 
-    binLocationSearchQueryChange = (query: string) => {
-        this.setState({
+    const binLocationSearchQueryChange = (query: string) => {
+        setState({
+            ...state,
             binLocationSearchQuery: query
         })
+        onBinLocationBarCodeSearchQuerySubmitted()
     }
 
-    quantityPickedChange = (query: string) => {
-        this.setState({
+    const quantityPickedChange = (query: string) => {
+        setState({
+            ...state,
             quantityPicked: query
         })
     }
 
-    render() {
-        const vm = pickListVMMapper(this.props.route.params, this.state);
-        return (
-            <ScrollView>
+    const onChangeProduct = (text: string) => {
+        state.product.productCode = text
+        setState({...state})
+    }
 
-                    {/*<Header
+    const onChangeBin = (text: string) => {
+        state.binLocation.name = text
+        setState({...state})
+    }
+
+    return (
+        <ScrollView>
+
+            {/*<Header
                         title={vm.header}
                         backButtonVisible={true}
-                        onBackButtonPress={this.props.exit}
+                        onBackButtonPress={exit}
                     />*/}
-                    <View style={styles.contentContainer}>
-                        <View style={styles.topRow}>
-                            <Text style={styles.name}>{this.state.pickListItem?.["product.name"]}</Text>
-                        </View>
-                        <View style={styles.row}>
-                            <View style={styles.col40}>
-                                <Text style={styles.value}>Order Number</Text>
-                            </View>
-                            <View style={styles.col60}>
-                                <Text style={styles.value}>{vm.order.identifier}</Text>
-                            </View>
-                        </View>
-                        <View style={styles.row}>
-                            <View style={styles.col40}>
-                                <Text style={styles.value}>Destination</Text>
-                            </View>
-                            <View style={styles.col60}>
-                                <Text style={styles.value}>{vm.order.destination?.name}</Text>
-                            </View>
-                        </View>
-                        <View style={styles.row}>
-                            <View style={styles.col40}>
-                                <Text style={styles.value}>Product Code</Text>
-                            </View>
-                            <View style={styles.col60}>
-                                <Text style={styles.value}>{this.state.pickListItem?.productCode}</Text>
-                            </View>
-                        </View>
-                        <View style={styles.row}>
-                            <View style={styles.col40}>
-                                <Text style={styles.value}>Product Name</Text>
-                            </View>
-                            <View style={styles.col60}>
-                                <Text style={styles.value}>{this.state.pickListItem?.["product.name"]}</Text>
-                            </View>
-                        </View>
-                        <View style={styles.row}>
-                            <View style={styles.col40}>
-                                <Text style={styles.value}>Unit of Measure</Text>
-                            </View>
-                            <View style={styles.col60}>
-                                <Text style={styles.value}>{this.state.pickListItem?.unitOfMeasure}</Text>
-                            </View>
-                        </View>
-                        <View style={styles.row}>
-                            <View style={styles.col40}>
-                                <Text style={styles.value}>Lot Number</Text>
-                            </View>
-                            <View style={styles.col60}>
-                                <Text style={styles.value}>{this.state.pickListItem?.lotNumber}</Text>
-                            </View>
-                        </View>
-                        <View style={styles.row}>
-                            <View style={styles.col40}>
-                                <Text style={styles.value}>Expiration</Text>
-                            </View>
-                            <View style={styles.col60}>
-                                <Text style={styles.value}>{this.state.pickListItem?.expirationDate}</Text>
-                            </View>
-                        </View>
-                        <View style={styles.row}>
-                            <View style={styles.col40}>
-                                <Text style={styles.value}>Bin Location</Text>
-                            </View>
-                            <View style={styles.col60}>
-                                <Text style={styles.value}>{this.state.pickListItem?.["binLocation.name"]}</Text>
-                            </View>
-                        </View>
-                        <View style={styles.row}>
-                            <View style={styles.col40}>
-                                <Text style={styles.value}>Qty Requested</Text>
-                            </View>
-                            <View style={styles.col60}>
-                                <Text style={styles.value}>{this.state.pickListItem?.quantityRequested}</Text>
-                            </View>
-                        </View>
-                        <View style={styles.row}>
-                            <View style={styles.col40}>
-                                <Text style={styles.value}>Qty Remaining</Text>
-                            </View>
-                            <View style={styles.col60}>
-                                <Text style={styles.value}>{this.state.pickListItem?.quantityRemaining}</Text>
-                            </View>
-                        </View>
-                        <View style={styles.row}>
-                            <View style={styles.col40}>
-                                <Text style={styles.value}>Qty Picked</Text>
-                            </View>
-                            <View style={styles.col60}>
-                                <Text style={styles.value}>{this.state.pickListItem?.quantityPicked}</Text>
-                            </View>
-                        </View>
+            <View style={styles.contentContainer}>
+                <View style={styles.topRow}>
+                    <Text style={styles.name}>{state.pickListItem?.["product.name"]}</Text>
+                </View>
+                <View style={styles.row}>
+                    <View style={styles.col40}>
+                        <Text style={styles.value}>Order Number</Text>
+                    </View>
+                    <View style={styles.col60}>
+                        <Text style={styles.value}>{vm.order.identifier}</Text>
+                    </View>
+                </View>
+                <View style={styles.row}>
+                    <View style={styles.col40}>
+                        <Text style={styles.value}>Destination</Text>
+                    </View>
+                    <View style={styles.col60}>
+                        <Text style={styles.value}>{vm.order.destination?.name}</Text>
+                    </View>
+                </View>
+                <View style={styles.row}>
+                    <View style={styles.col40}>
+                        <Text style={styles.value}>Product Code</Text>
+                    </View>
+                    <View style={styles.col60}>
+                        <Text style={styles.value}>{state.pickListItem?.productCode}</Text>
+                    </View>
+                </View>
+                <View style={styles.row}>
+                    <View style={styles.col40}>
+                        <Text style={styles.value}>Product Name</Text>
+                    </View>
+                    <View style={styles.col60}>
+                        <Text style={styles.value}>{state.pickListItem?.["product.name"]}</Text>
+                    </View>
+                </View>
+                <View style={styles.row}>
+                    <View style={styles.col40}>
+                        <Text style={styles.value}>Unit of Measure</Text>
+                    </View>
+                    <View style={styles.col60}>
+                        <Text style={styles.value}>{state.pickListItem?.unitOfMeasure}</Text>
+                    </View>
+                </View>
+                <View style={styles.row}>
+                    <View style={styles.col40}>
+                        <Text style={styles.value}>Lot Number</Text>
+                    </View>
+                    <View style={styles.col60}>
+                        <Text style={styles.value}>{state.pickListItem?.lotNumber}</Text>
+                    </View>
+                </View>
+                <View style={styles.row}>
+                    <View style={styles.col40}>
+                        <Text style={styles.value}>Expiration</Text>
+                    </View>
+                    <View style={styles.col60}>
+                        <Text style={styles.value}>{state.pickListItem?.expirationDate}</Text>
+                    </View>
+                </View>
+                <View style={styles.row}>
+                    <View style={styles.col40}>
+                        <Text style={styles.value}>Bin Location</Text>
+                    </View>
+                    <View style={styles.col60}>
+                        <Text style={styles.value}>{state.pickListItem?.["binLocation.name"]}</Text>
+                    </View>
+                </View>
+                <View style={styles.row}>
+                    <View style={styles.col40}>
+                        <Text style={styles.value}>Qty Requested</Text>
+                    </View>
+                    <View style={styles.col60}>
+                        <Text style={styles.value}>{state.pickListItem?.quantityRequested}</Text>
+                    </View>
+                </View>
+                <View style={styles.row}>
+                    <View style={styles.col40}>
+                        <Text style={styles.value}>Qty Remaining</Text>
+                    </View>
+                    <View style={styles.col60}>
+                        <Text style={styles.value}>{state.pickListItem?.quantityRemaining}</Text>
+                    </View>
+                </View>
+                <View style={styles.row}>
+                    <View style={styles.col40}>
+                        <Text style={styles.value}>Qty Picked</Text>
+                    </View>
+                    <View style={styles.col60}>
+                        <Text style={styles.value}>{state.pickListItem?.quantityPicked}</Text>
+                    </View>
+                </View>
 
 
-                        <View style={styles.emptyRow}>
+                <View style={styles.emptyRow}>
 
-                        </View>
+                </View>
+                {/*
 
-
-                        <View style={styles.topRow}>
-                            <View style={styles.col40}>
-                                <Text style={styles.value}>Bin Location</Text>
-                            </View>
-                            <View style={styles.col60}>
-                                <TextInput
-                                    placeholder="Scan Bin Location"
-                                    onChangeText={this.binLocationSearchQueryChange}
-                                    value={this.state.binLocationSearchQuery}
-                                    style={styles.value}
-                                    onSubmitEditing={this.onBinLocationBarCodeSearchQuerySubmitted}
-                                />
-                                {this.state.binLocation != null ? <Text
-                                    style={styles.info}>{this.state.binLocation?.locationNumber}-{this.state.binLocation?.name}</Text> : null}
-                            </View>
-                            <View style={styles.width100}>
-                            </View>
-                        </View>
-                        <View style={styles.row}>
-                            <View style={styles.col40}>
-                                <Text style={styles.value}>Product Code</Text>
-                            </View>
-                            <View style={styles.col60}>
-                                <TextInput
-                                    placeholder="Scan Product"
-                                    onChangeText={this.productSearchQueryChange}
-                                    value={this.state.productSearchQuery}
-                                    style={styles.value}
-                                    onSubmitEditing={this.onProductBarCodeSearchQuerySubmitted}
-                                />
-                                {this.state.product != null ? <Text
-                                    style={styles.info}>{this.state.product?.productCode}-{this.state.product?.description}</Text> : null}
-                            </View>
-                        </View>
-                        <View style={styles.row}>
-                            <View style={styles.col40}>
-                                <Text style={styles.value}>Quantity Picked</Text>
-                            </View>
-                            <View style={styles.col60}>
-                                <TextInput
-                                    placeholder="Enter Picked Quantity"
-                                    onChangeText={this.quantityPickedChange}
-                                    value={this.state.quantityPicked}
-                                    style={styles.value}
-                                    // onSubmitEditing={this.onBarCodeSearchQuerySubmitted}
-                                />
-                            </View>
-                        </View>
-
-                        {/*<View style={styles.row}>
+                <View style={styles.topRow}>
+                    <View style={styles.col40}>
+                        <Text style={styles.value}>Bin Location</Text>
+                    </View>
+                    <View style={styles.col60}>
+                        <TextInput
+                            placeholder="Scan Bin Location"
+                            onChangeText={binLocationSearchQueryChange}
+                            value={state.binLocationSearchQuery}
+                            style={styles.value}
+                            onSubmitEditing={onBinLocationBarCodeSearchQuerySubmitted}
+                        />
+                        {state.binLocation != null ? <Text
+                            style={styles.info}>{state.binLocation?.locationNumber}-{state.binLocation?.name}</Text> : null}
+                    </View>
+                    <View style={styles.width100}>
+                    </View>
+                </View>
+                <View style={styles.row}>
+                    <View style={styles.col40}>
+                        <Text style={styles.value}>Product Code</Text>
+                    </View>
+                    <View style={styles.col60}>
+                        <TextInput
+                            placeholder="Scan Product"
+                            onChangeText={productSearchQueryChange}
+                            value={state.productSearchQuery}
+                            style={styles.value}
+                            onSubmitEditing={onProductBarCodeSearchQuerySubmitted}
+                        />
+                        {state.product != null ? <Text
+                            style={styles.info}>{state.product?.productCode}-{state.product?.description}</Text> : null}
+                    </View>
+                </View>
+                <View style={styles.row}>
+                    <View style={styles.col40}>
+                        <Text style={styles.value}>Quantity Picked</Text>
+                    </View>
+                    <View style={styles.col60}>
+                        <TextInput
+                            placeholder="Enter Picked Quantity"
+                            onChangeText={quantityPickedChange}
+                            value={state.quantityPicked}
+                            style={styles.value}
+                            // onSubmitEditing={onBarCodeSearchQuerySubmitted}
+                        />
+                    </View>
+                </View>*/}
+                <View style={styles.from}>
+                    <InputBox
+                        value={state.product?.productCode}
+                        disabled={true}
+                        onEndEdit={productSearchQueryChange}
+                        onChange={onChangeProduct}
+                        label={'Product Code'}/>
+                    <InputBox
+                        value={state.binLocation?.name}
+                        label={'From'}
+                        disabled={true}
+                        onEndEdit={binLocationSearchQueryChange}
+                        onChange={onChangeBin}
+                    />
+                    <InputBox
+                        label={'Quantity to transfer'}
+                        value={state.quantityPicked}
+                        onChange={quantityPickedChange}
+                        disabled={true}
+                        onEndEdit={quantityPickedChange}
+                        keyboard={"number-pad"}
+                        showSelect={true}/>
+                </View>
+                {/*<View style={styles.row}>
                             <View style={styles.col40}>
                                 <Text style={styles.label}>Qty Available</Text>
-                                <Text style={styles.value}>{this.state.pickListItem?.quantityAvailable}</Text>
+                                <Text style={styles.value}>{state.pickListItem?.quantityAvailable}</Text>
                             </View>
                             <View style={styles.col60}>
                                 <Text style={styles.label}>Qty Picked</Text>
                                 <TextInput style={styles.textInput} placeholder="Qty Picked"
-                                           value={this.state.pickListItem?.quantityPicked.toString()}/>
+                                           value={state.pickListItem?.quantityPicked.toString()}/>
                             </View>
                         </View>*/}
-                        <View>
-                            <Button
-                                title="Submit"
-                                style={{
-                                    marginTop: 8,
-                                }}
-                                onPress={this.formSubmit}
-                            />
-                        </View>
-                    </View>
+                <Button
+                    title="Submit"
+                    style={{
+                        marginTop: 8,
+                    }}
+                    onPress={formSubmit}
+                />
+            </View>
 
-            </ScrollView>
-        );
-    }
+        </ScrollView>
+    );
 }
 
 const mapDispatchToProps: DispatchProps = {

@@ -1,8 +1,8 @@
 import {DispatchProps, OwnProps, Props, StateProps, State} from "./types";
-import React from "react";
+import React, {ReactElement} from "react";
 // import Order from "../../../data/order/Order";
 import {getOrdersAction} from '../../redux/actions/orders';
-import {View, FlatList, ListRenderItemInfo, Text} from "react-native";
+import {View, FlatList, ListRenderItemInfo, Text, TouchableOpacity} from "react-native";
 import BarCodeSearchHeader from '../Products/BarCodeSearchHeader';
 
 import {connect} from "react-redux";
@@ -17,6 +17,8 @@ import {Order} from "../../data/order/Order";
 import PutAway from "../../data/putaway/PutAway";
 import {PicklistItem} from "../../data/picklist/PicklistItem";
 import PickListItem from "../OrderDetails/PickListItem";
+import OrdersList from "../Orders/OrdersList";
+import PutawayDetail from "../../components/PutawayDetail";
 
 
 class PutawayList extends React.Component<Props, State> {
@@ -27,9 +29,17 @@ class PutawayList extends React.Component<Props, State> {
             putAwayList: null,
             putAway: null,
             orderId: null,
-            showList: false
+            showList: false,
+            showDetail:false
         }
 
+    }
+    componentDidMount() {
+        this.searchOrder("")
+    }
+
+    componentDidMount() {
+        this.fetchPutAways(null);
     }
 
     searchOrder = (query: string) => {
@@ -74,20 +84,31 @@ class PutawayList extends React.Component<Props, State> {
         //     this.props.hideScreenLoading();
         // };
         // this.props.getOrdersAction(query, actionCallback);
-        this.fetchPutAway(query)
+        this.fetchPutAways(query)
     }
 
-    fetchPutAway =(query: any)=> {
+    fetchPutAways = (query: any) => {
         const actionCallback = (data: any) => {
             if (!data || data?.error) {
                 const title = data.error.message ? "Failed to fetch PutAway Detail" : null
-                const message = data.error.message ?? "Failed to fetch PutAway Detail with OrderNumber:"+query
+                const message = data.error.message ?? "Failed to fetch PutAway Detail with OrderNumber:" + query
                 return Promise.resolve(null)
             } else {
-                this.setState({
-                    showList: true,
-                    putAway: data
-                })
+                if (data?.length == 1){
+                    this.onPutAwayTapped(data[0])
+                    // this.setState({
+                    //     showList: true,
+                    //     putAway: data[0],
+                    //     putAwayList: data,
+                    //     showDetail: true
+                    // })
+                }else{
+                    this.setState({
+                        showList: true,
+                        putAwayList: data,
+                        putAway: null
+                    })
+                }
             }
             this.props.hideScreenLoading();
         };
@@ -116,8 +137,14 @@ class PutawayList extends React.Component<Props, State> {
 
     goToPutawayItemDetailScreen = (putAway: PutAway, putAwayItem: PutAwayItems) => {
         this.props.navigation.navigate('PutawayItemDetail', {
-            putAway,
+            putAway: putAway,
             putAwayItem: putAwayItem,
+        });
+    };
+    onPutAwayTapped = (putAway: PutAway) => {
+        this.props.navigation.navigate('PutawayDetail', {
+            // putAway,
+            putAway: putAway,
             exit: () => {
                 this.props.navigation.navigate('PutawayList');
             },
@@ -141,46 +168,67 @@ class PutawayList extends React.Component<Props, State> {
                 />
                 {
                     showList ?
-                        <View style={styles.contentContainer}>
-                            {/*<Text style={styles.name}>{vm.name}</Text>*/}
-                            <View style={styles.row}>
-                                <View style={styles.col50}>
-                                    <Text style={styles.label}>Status</Text>
-                                    <Text style={styles.value}>{this.state.putAway?.putawayStatus}</Text>
-                                </View>
-                                <View style={styles.col50}>
-                                    <Text style={styles.label}>PutAway Number</Text>
-                                    <Text style={styles.value}>{this.state.putAway?.putawayNumber}</Text>
-                                </View>
+                        (
 
-                            </View>
-                            <View style={styles.row}>
-                                <View style={styles.col50}>
-                                    <Text style={styles.label}>Origin</Text>
-                                    <Text
-                                        style={styles.value}>{this.state.putAway?.["origin.name"]}</Text>
-                                </View>
-                                <View style={styles.col50}>
-                                    <Text style={styles.label}>Destination</Text>
-                                    <Text
-                                        style={styles.value}>{this.state.putAway?.["destination.name"]}</Text>
-                                </View>
-                            </View>
-                            <FlatList
-                                data={this.state.putAway?.putawayItems}
-                                renderItem={(item: ListRenderItemInfo<PicklistItem>) => (
-                                    <PutAwayItem
-                                        item={item.item}
-                                        onItemTapped={() => this.goToPutawayItemDetailScreen(this.state.putAway, item.item)}
+                            <View style={styles.contentContainer}>
+                                <FlatList
+                                    data={this.state.putAwayList}
+                                    renderItem={(item: ListRenderItemInfo<PutAway>) =>
+                                        (
+                                            <TouchableOpacity
+                                                style={styles.listItemContainer}
+                                                onPress={() => this.onPutAwayTapped(item.item)}
+                                            >
+                                                <View style={styles.row}>
+                                                    <View style={styles.col50}>
+                                                        <Text style={styles.label}>Status</Text>
+                                                        <Text style={styles.value}>{item.item?.putawayStatus}</Text>
+                                                    </View>
+                                                    <View style={styles.col50}>
+                                                        <Text style={styles.label}>PutAway Number</Text>
+                                                        <Text style={styles.value}>{item.item?.putawayNumber}</Text>
+                                                    </View>
 
-                                    />
-                                )}
-                                // renderItem={(item: ListRenderItemInfo<PutAwayItems>) => renderPutAwayItem(item.item, () => this.onItemTapped(this.props.order, item.item))}
-                                // renderItem={this.renderItem}
-                                keyExtractor={item => item.id}
-                                style={styles.list}
-                            />
-                        </View>
+                                                </View>
+                                                <View style={styles.row}>
+                                                    <View style={styles.col50}>
+                                                        <Text style={styles.label}>Origin</Text>
+                                                        <Text
+                                                            style={styles.value}>{item.item?.["origin.name"]}</Text>
+                                                    </View>
+                                                    <View style={styles.col50}>
+                                                        <Text style={styles.label}>Destination</Text>
+                                                        <Text
+                                                            style={styles.value}>{item.item?.["destination.name"]}</Text>
+                                                    </View>
+                                                </View>
+
+                                            </TouchableOpacity>
+                                        )
+                                    }
+                                    // renderItem={(item: ListRenderItemInfo<PutAwayItems>) => renderPutAwayItem(item.item, () => this.onItemTapped(this.props.order, item.item))}
+                                    // renderItem={this.renderItem}
+                                    keyExtractor={item => item.id}
+                                    style={styles.list}
+                                />
+                                {/*<Text style={styles.name}>{vm.name}</Text>*/}
+
+                                {/*<FlatList
+                                    data={this.state.putAway?.putawayItems}
+                                    renderItem={(item: ListRenderItemInfo<PicklistItem>) => (
+                                        <PutAwayItem
+                                            item={item.item}
+                                            onItemTapped={() => this.goToPutawayItemDetailScreen(this.state.putAway, item.item)}
+
+                                        />
+                                    )}
+                                    // renderItem={(item: ListRenderItemInfo<PutAwayItems>) => renderPutAwayItem(item.item, () => this.onItemTapped(this.props.order, item.item))}
+                                    // renderItem={this.renderItem}
+                                    keyExtractor={item => item.id}
+                                    style={styles.list}
+                                />*/}
+                            </View>
+                        )
                         : null
                 }
             </View>
@@ -189,6 +237,36 @@ class PutawayList extends React.Component<Props, State> {
 
 }
 
+function renderPutAway(putAway: PutAway): ReactElement {
+    return (
+        <TouchableOpacity
+            style={styles.listItemContainer}>
+            <View style={styles.row}>
+                <View style={styles.col50}>
+                    <Text style={styles.label}>Status</Text>
+                    <Text style={styles.value}>{putAway?.putawayStatus}</Text>
+                </View>
+                <View style={styles.col50}>
+                    <Text style={styles.label}>PutAway Number</Text>
+                    <Text style={styles.value}>{putAway?.putawayNumber}</Text>
+                </View>
+
+            </View>
+            <View style={styles.row}>
+                <View style={styles.col50}>
+                    <Text style={styles.label}>Origin</Text>
+                    <Text
+                        style={styles.value}>{putAway?.["origin.name"]}</Text>
+                </View>
+                <View style={styles.col50}>
+                    <Text style={styles.label}>Destination</Text>
+                    <Text
+                        style={styles.value}>{putAway?.["destination.name"]}</Text>
+                </View>
+            </View>
+        </TouchableOpacity>
+    );
+}
 
 const mapStateToProps = (state: RootState) => ({
     putAway: state.putawayReducer.putAway,

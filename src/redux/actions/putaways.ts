@@ -25,13 +25,13 @@ export const SUBMIT_PUTAWAY_ITEM_BIN_LOCATION_SUCCESS = 'SUBMIT_PUTAWAY_ITEM_BIN
 
 
 export function fetchPutAwayFromOrderAction(
-    orderNumber: string|null,
+    q: string|null,
     callback: (data: any) => void,
 ) {
   console.log('action OK');
   return {
     type: FETCH_PUTAWAY_FROM_ORDER_REQUEST,
-    payload: {orderNumber},
+    payload: {q},
     callback,
   };
 }

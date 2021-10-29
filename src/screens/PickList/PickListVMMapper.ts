@@ -1,7 +1,7 @@
 import {PickListVm} from "./PickListVm";
 import {Props, State} from "./types";
 
-export function pickListVMMapper(props: Props, state: State): PickListVm {
+export function pickListVMMapper(props: any): PickListVm {
   return <PickListVm>{
     header: props.order?.name,
     picklistItems: props.pickListItem ? props.pickListItem : null,

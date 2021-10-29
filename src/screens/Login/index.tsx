@@ -65,7 +65,7 @@ const Login =()=>{
       password,
     );
     if (loginDisallowedReason) {
-      showPopup({message: loginDisallowedReason});
+      showPopup({message: loginDisallowedReason, positiveButton: "ok"});
     } else {
         onLogin(username, password);
     }

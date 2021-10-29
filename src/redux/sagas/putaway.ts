@@ -7,13 +7,13 @@ import {
 } from '../actions/putaways';
 import {hideScreenLoading, showScreenLoading} from '../actions/main';
 import * as api from '../../apis';
-import {GetPutAwayApiResponse, PostPutAwayItemApiResponse} from "../../data/putaway/PutAway";
+import {GetPutAwayApiResponse, GetPutAwaysApiResponse, PostPutAwayItemApiResponse} from "../../data/putaway/PutAway";
 
 
 function* fetchPutAwayFromOrder(action: any) {
     try {
         yield showScreenLoading('Fetching products');
-        const response: GetPutAwayApiResponse = yield call(api.fetchPutAwayFromOrder, action.payload.orderNumber);
+        const response: GetPutAwaysApiResponse = yield call(api.fetchPutAwayFromOrder, action.payload.q);
         yield put({
             type: FETCH_PUTAWAY_FROM_ORDER_REQUEST_SUCCESS,
             payload: response.data,
