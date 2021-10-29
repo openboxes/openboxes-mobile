@@ -10,12 +10,18 @@ export interface VM {
   productCode: string;
   description: string;
   pricePerUnit: number;
-  availability: ProductAvailability;
   details: DetailsItemVM[];
   category: ProductCategory;
   attributes: Attributes[];
   productType: ProductType;
   images: ProductImage[];
+  status:string,
+  quantityAllocated:number,
+  quantityAvailable:number,
+  quantityOnHand:number,
+  quantityOnOrder:number,
+  unitOfMeasure:string,
+  image?:any
 }
 
 export interface DetailsItemVM {

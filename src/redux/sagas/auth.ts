@@ -1,6 +1,8 @@
 import {takeLatest, put, call} from 'redux-saga/effects';
 import {LOGIN_REQUEST, LOGIN_REQUEST_SUCCESS} from '../actions/auth';
 import * as NavigationService from '../../NavigationService';
+import showPopup from '../../components/Popup';
+
 
 import * as api from '../../apis';
 import {
@@ -36,6 +38,19 @@ function* login(action: any) {
     yield put(hideScreenLoading());
   } catch (e) {
     console.log('function* auth', e.response);
+    yield put(hideScreenLoading());
+    if(e.response) {
+      console.debug("e.response status:"+e.response.status)
+      if (e.response.status == 401) {
+        showPopup({message: "Invalid Username and Password", positiveButton: "ok"});
+      } else if (e.response.status == 500) {
+        showPopup({message: "Something went wrong on server", positiveButton: "ok"});
+      } else if (e.response.status == 404) {
+        showPopup({message: "Server unavailable", positiveButton: "ok"});
+      }
+    }else {
+      showPopup({message: "Server unavailable", positiveButton: "ok"});
+    }
   }
 }
 

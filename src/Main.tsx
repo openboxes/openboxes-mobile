@@ -25,6 +25,7 @@ import Scan from "./screens/Scan";
 import PutawayList from "./screens/PutawayList";
 import PutawayDetails from "./screens/PutawayDetails";
 import PutawayItemDetail from "./screens/PutawayItemDetail";
+import InboundOrder from "./screens/InboundOrder";
 
 const Stack = createStackNavigator();
 
@@ -139,6 +140,7 @@ class Main extends Component<Props, State> {
             <Stack.Screen name="Products" component={Products} />
             <Stack.Screen name="PutawayList" component={PutawayList} />
             <Stack.Screen name="PutawayItemDetail" component={PutawayItemDetail} />
+            <Stack.Screen name="InboundOrderList" component={InboundOrder} />
             {/*<Stack.Screen name="Drawer" component={DrawerNavigator} />*/}
             {/*<Stack.Screen name="Drawer" component={DrawerNavigator} />*/}
           </Stack.Navigator>
