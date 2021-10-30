@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {Props, State} from './types'
-import {TextInput, View, Text, Image, Button} from "react-native";
+import {TextInput, View, Text, Image, Button,Alert} from "react-native";
 import SelectDropdown from 'react-native-select-dropdown'
 import {RootState} from "../../redux/reducers";
 import {DispatchProps} from "./types";
@@ -56,7 +56,9 @@ class PutawayItem extends Component <Props, State> {
             "sortBy": null
         }
 
-        createPutawayOderAction(data)
+        createPutawayOderAction(data, ()=>{
+            Alert.alert("Order created successfully");
+        })
     }
 
     render() {

@@ -29,7 +29,7 @@ export function getCandidates(
 
 export function createPutawayOderAction(
     data: any,
-    callback?: (data: any) => void,
+    callback?: () => void,
 ) {
   return {
     type: CREATE_PUTAWAY_ORDER_REQUEST,
