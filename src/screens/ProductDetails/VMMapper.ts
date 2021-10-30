@@ -14,7 +14,7 @@ export function vmMapper(product: Product, state: State): VM {
     category: product?.category??  { id: '', name: '', parentCategory: null },
     status: product?.status ?? 'Not Available',
     quantityAllocated: product.quantityAllocated ?? 0,
-    quantityAvailable: product.quantityAvailableToPromise ?? 0,
+    quantityAvailable: product.quantityAvailable ?? 0,
     quantityOnHand: product.quantityOnHand ?? 0,
     quantityOnOrder: product.quantityOnOrder ?? 0,
     unitOfMeasure: product.unitOfMeasure ?? 'EA',
@@ -23,7 +23,7 @@ export function vmMapper(product: Product, state: State): VM {
       {code: '', value: '', name: ''},
     ],
     productType: product.productType ?? {name: ''},
-   image: product.image ?? { id: '', name: '', uri: 'https://reactnative.dev/img/tiny_logo.png' },
+    imageUrl: product.defaultImageUrl ?? 'https://i.stack.imgur.com/y9DpT.jpg',
     images: product.images ?? [
       {
         id: '',

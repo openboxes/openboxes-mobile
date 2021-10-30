@@ -21,6 +21,7 @@ export interface VM {
   quantityOnHand:number,
   quantityOnOrder:number,
   unitOfMeasure:string,
+  imageUrl:string
   image?:any
 }
 

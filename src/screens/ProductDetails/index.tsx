@@ -92,7 +92,7 @@ class ProductDetails extends React.Component<Props, State> {
                     <Text style={styles.title}>{vm.productCode}</Text>
                     <Image
                         style={styles.tinyLogo}
-                        source={{uri: vm.image.uri}}
+                        source={{uri: vm.imageUrl}}
                     />
                     <ScrollView>
                         <Text style={styles.boxHeading}>Availability</Text>

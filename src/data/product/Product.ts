@@ -16,10 +16,11 @@ export default interface Product {
   productType: ProductType,
   images: ProductImage[],
   quantityAllocated:number,
-  quantityAvailableToPromise:number,
+  quantityAvailable:number,
   quantityOnHand:number,
   quantityOnOrder:number,
   status?:string
-  unitOfMeasure:string
+  unitOfMeasure:string,
+  defaultImageUrl:string,
   image?:any
 }
