@@ -27,6 +27,7 @@ import PutawayList from "./screens/PutawayList";
 import PutawayItemDetail from "./screens/PutawayItemDetail";
 import PutawayDetail from "./screens/PutawayDetails";
 import InboundOrder from "./screens/InboundOrder";
+import InboundDetails from "./screens/InboundDetails";
 
 const Stack = createStackNavigator();
 
@@ -144,6 +145,7 @@ class Main extends Component<Props, State> {
             <Stack.Screen name="InboundOrderDetails" component={InboundOrderDetails} />
             <Stack.Screen name="PutawayDetail" component={PutawayDetail} />
             <Stack.Screen name="InboundOrderList" component={InboundOrder} />
+            <Stack.Screen name="InboundDetails" component={InboundDetails} />
             {/*<Stack.Screen name="Drawer" component={DrawerNavigator} />*/}
             {/*<Stack.Screen name="Drawer" component={DrawerNavigator} />*/}
           </Stack.Navigator>
