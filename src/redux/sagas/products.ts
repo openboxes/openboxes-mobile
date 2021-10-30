@@ -130,18 +130,19 @@ function* getProductById(action: any) {
   try {
     yield showScreenLoading('Fetching product by ID');
     const response = yield call(api.getProductById, action.payload.id);
+    console.log(44444444444444)
     yield put({
       type: GET_PRODUCT_BY_ID_REQUEST_SUCCESS,
       payload: response.data,
     });
-    yield action.callback(response.data);
+    // yield action.callback(response.data);
     yield hideScreenLoading();
   } catch (e) {
     console.log('function* getProductById', e.message);
-    yield action.callback({
-      error: true,
-      message: e.message,
-    });
+    // yield action.callback({
+    //   error: true,
+    //   message: e.message,
+    // });
   }
 }
 

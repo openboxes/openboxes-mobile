@@ -17,7 +17,7 @@ import FullScreenLoadingIndicator from './components/FullScreenLoadingIndicator'
 import {RootState} from './redux/reducers';
 import {connect} from 'react-redux';
 import SplashScreen from 'react-native-splash-screen'
-import {Image, View} from 'react-native';
+import {Image, SafeAreaView } from 'react-native';
 import Location from './data/location/Location';
 import {Session} from './data/auth/Session';
 import {getSessionAction} from './redux/actions/main';
@@ -103,12 +103,7 @@ class Main extends Component<Props, State> {
   render() {
     const {loggedIn} = this.props;
     return (
-      <View
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          flex: 1,
-        }}>
+      <SafeAreaView style={{flex: 1}}>
         <FullScreenLoadingIndicator
           visible={this.props.fullScreenLoadingIndicator.visible}
           message={this.props.fullScreenLoadingIndicator.message}
@@ -156,7 +151,7 @@ class Main extends Component<Props, State> {
             {/*<Stack.Screen name="Drawer" component={DrawerNavigator} />*/}
           </Stack.Navigator>
         </NavigationContainer>
-      </View>
+      </SafeAreaView >
     );
   }
 }

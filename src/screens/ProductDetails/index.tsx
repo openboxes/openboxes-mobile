@@ -3,6 +3,7 @@ import {Image, ScrollView, Text, View, Button, KeyboardAvoidingView, Platform} f
 import styles from './styles';
 import {device} from '../../constants'
 import PrintModal from '../../components/PrintModal';
+import Refresh from '../../components/Refresh';
 import {Props, State, DispatchProps} from './types';
 import {vmMapper} from './VMMapper';
 import {getProductByIdAction } from "../../redux/actions/products";
@@ -21,15 +22,25 @@ class ProductDetails extends React.Component<Props, State> {
         }
     }
 
+    componentWillMount() {
+        this.getProduct()
+    }
+
+    getProduct =()=>{
+        const {product} = this.props.route.params
+        this.props.getProductByIdAction(product.id)
+    }
+
     closeModal = () => {
         this.setState({visible: false})
     }
 
     handleClick = () => {
         const {product} = this.props.route.params
-        this.props.getProductByIdAction(product.productCode, (data) => {
-            this.setState({visible: true})
-        })
+        //this.props.getProductByIdAction(product.productCode, (data) => {
+        //    this.setState({visible: true})
+        //})
+        this.setState({visible: true})
     }
 
 
@@ -74,147 +85,158 @@ class ProductDetails extends React.Component<Props, State> {
     }
 
     render() {
-        const vm = vmMapper(this.state.productDetails, this.state);
+        // const product = this.props.products.find((value: any)=>{
+        //     return value.id === this.props.route.params.product.id
+        // })
+
+        const product = this.props.selectedProduct
+        const vm = vmMapper({product});
+        //const vm = vmMapper(this.state.productDetails, this.state);
+        // const {product} = this.props.route.params
         const {visible} = this.state;
         return (
-            <View
-                style={{
-                    flexDirection: 'column',
-                    flex: 1
-                }}>
-                <PrintModal
-                    visible={visible}
-                    closeModal={this.closeModal}
-                    product={vm}
-                />
-                <View style={styles.contentContainer}>
-                    <Text style={styles.name}>{vm.name}</Text>
-                    <Text style={styles.title}>{vm.productCode}</Text>
-                    <Image
-                        style={styles.tinyLogo}
-                        source={{uri: vm.image.uri}}
+            <Refresh onRefresh={this.getProduct}>
+                <View
+                    style={{
+                        flexDirection: 'column',
+                        flex: 1
+                    }}>
+                    <PrintModal
+                        visible={visible}
+                        closeModal={this.closeModal}
+                        product={vm}
                     />
-                    <ScrollView>
-                        <Text style={styles.boxHeading}>Availability</Text>
-                        <View style={styles.container}>
-                            <View style={styles.row}>
-                                <View style={styles.label}>
-                                    <Text>{'Status'}</Text>
-                                </View>
-                                <View style={styles.value}>
-                                    <Text style={styles.textAlign}>
-                                        {vm.status}{' '}
-                                    </Text>
-                                </View>
-                            </View>
-                            <View style={styles.row}>
-                                <View style={styles.label}>
-                                    <Text>{'On Hand Quantity'}</Text>
-                                </View>
-                                <View style={styles.value}>
-                                    <Text style={styles.textAlign}>
-                                        {vm.quantityOnHand}{' '}
-                                        {vm.unitOfMeasure}
-                                    </Text>
-                                </View>
-                            </View>
-                            <View style={styles.row}>
-                                <View style={styles.label}>
-                                    <Text>{'Available to Promise'}</Text>
-                                </View>
-                                <View style={styles.value}>
-                                    <Text style={styles.textAlign}>
-                                        {vm.quantityAvailable}{' '}
-                                        {vm.unitOfMeasure}
-                                    </Text>
-                                </View>
-                            </View>
-                            <View style={styles.row}>
-                                <View style={styles.label}>
-                                    <Text>{'Allocated to Order'}</Text>
-                                </View>
-                                <View style={styles.value}>
-                                    <Text style={styles.textAlign}>
-                                        {vm.quantityAllocated}{' '}
-                                        {vm.unitOfMeasure}
-                                    </Text>
-                                </View>
-                            </View>
-                            <View style={styles.row}>
-                                <View style={styles.label}>
-                                    <Text>{'On Order'}</Text>
-                                </View>
-                                <View style={styles.value}>
-                                    <Text style={styles.textAlign}>
-                                        {vm.quantityOnOrder}{' '}
-                                        {vm.unitOfMeasure}
-                                    </Text>
-                                </View>
-                            </View>
-                        </View>
-
-                        <Text style={styles.boxHeading}>Details</Text>
-                        <View style={styles.container}>
-                            <View style={styles.row}>
-                                <View style={styles.label}>
-                                    <Text>{'Product Code'}</Text>
-                                </View>
-                                <View style={styles.value}>
-                                    <Text style={styles.textAlign}>
-                                        {vm.productCode}{' '}
-                                    </Text>
-                                </View>
-                            </View>
-                            <View style={styles.row}>
-                                <View style={styles.label}>
-                                    <Text>{'Category'}</Text>
-                                </View>
-                                <View style={styles.value}>
-                                    <Text style={styles.textAlign}>
-                                        {vm.category.name}{' '}
-                                    </Text>
-                                </View>
-                            </View>
-                            {vm?.attributes?.map((item,index )=> {
-                                return (
-                                    <View key={index} style={styles.row}>
-                                        <Text style={styles.label}>{item.name}</Text>
-                                        <Text style={styles.value}>{item.value}</Text>
-                                    </View>
-                                );
-                            })}
-                            <View style={styles.row}>
-                                <View style={styles.label}>
-                                    <Text>{'Product Type'}</Text>
-                                </View>
-                                <View style={styles.value}>
-                                    <Text style={styles.textAlign}>{vm.productType.name}</Text>
-                                </View>
-                            </View>
-                            <View style={styles.row}>
-                                <View style={styles.label}>
-                                    <Text>{'Price per unit'}</Text>
-                                </View>
-                                <View style={styles.value}>
-                                    <Text style={styles.textAlign}>{vm.pricePerUnit}</Text>
-                                </View>
-                            </View>
-                        </View>
-                        <Button
-                            title={'Print Barcode Label'}
-                            onPress={this.handleClick}
+                    <View style={styles.contentContainer}>
+                        <Text style={styles.name}>{vm.name}</Text>
+                        <Text style={styles.title}>{vm.productCode}</Text>
+                        <Image
+                            style={styles.tinyLogo}
+                            source={{uri: vm.image.uri}}
                         />
-                    </ScrollView>
+                        <ScrollView>
+                            <Text style={styles.boxHeading}>Availability</Text>
+                            <View style={styles.container}>
+                                <View style={styles.row}>
+                                    <View style={styles.label}>
+                                        <Text>{'Status'}</Text>
+                                    </View>
+                                    <View style={styles.value}>
+                                        <Text style={styles.textAlign}>
+                                            {vm.status}{' '}
+                                        </Text>
+                                    </View>
+                                </View>
+                                <View style={styles.row}>
+                                    <View style={styles.label}>
+                                        <Text>{'On Hand Quantity'}</Text>
+                                    </View>
+                                    <View style={styles.value}>
+                                        <Text style={styles.textAlign}>
+                                            {vm.quantityOnHand}{' '}
+                                            {vm.unitOfMeasure}
+                                        </Text>
+                                    </View>
+                                </View>
+                                <View style={styles.row}>
+                                    <View style={styles.label}>
+                                        <Text>{'Available to Promise'}</Text>
+                                    </View>
+                                    <View style={styles.value}>
+                                        <Text style={styles.textAlign}>
+                                            {vm.quantityAvailable}{' '}
+                                            {vm.unitOfMeasure}
+                                        </Text>
+                                    </View>
+                                </View>
+                                <View style={styles.row}>
+                                    <View style={styles.label}>
+                                        <Text>{'Allocated to Order'}</Text>
+                                    </View>
+                                    <View style={styles.value}>
+                                        <Text style={styles.textAlign}>
+                                            {vm.quantityAllocated}{' '}
+                                            {vm.unitOfMeasure}
+                                        </Text>
+                                    </View>
+                                </View>
+                                <View style={styles.row}>
+                                    <View style={styles.label}>
+                                        <Text>{'On Order'}</Text>
+                                    </View>
+                                    <View style={styles.value}>
+                                        <Text style={styles.textAlign}>
+                                            {vm.quantityOnOrder}{' '}
+                                            {vm.unitOfMeasure}
+                                        </Text>
+                                    </View>
+                                </View>
+                            </View>
+
+                            <Text style={styles.boxHeading}>Details</Text>
+                            <View style={styles.container}>
+                                <View style={styles.row}>
+                                    <View style={styles.label}>
+                                        <Text>{'Product Code'}</Text>
+                                    </View>
+                                    <View style={styles.value}>
+                                        <Text style={styles.textAlign}>
+                                            {vm.productCode}{' '}
+                                        </Text>
+                                    </View>
+                                </View>
+                                <View style={styles.row}>
+                                    <View style={styles.label}>
+                                        <Text>{'Category'}</Text>
+                                    </View>
+                                    <View style={styles.value}>
+                                        <Text style={styles.textAlign}>
+                                            {vm.category.name}{' '}
+                                        </Text>
+                                    </View>
+                                </View>
+                                {vm?.attributes?.map((item,index )=> {
+                                    return (
+                                        <View key={index} style={styles.row}>
+                                            <Text style={styles.label}>{item.name}</Text>
+                                            <Text style={styles.value}>{item.value}</Text>
+                                        </View>
+                                    );
+                                })}
+                                <View style={styles.row}>
+                                    <View style={styles.label}>
+                                        <Text>{'Product Type'}</Text>
+                                    </View>
+                                    <View style={styles.value}>
+                                        <Text style={styles.textAlign}>{vm.productType.name}</Text>
+                                    </View>
+                                </View>
+                                <View style={styles.row}>
+                                    <View style={styles.label}>
+                                        <Text>{'Price per unit'}</Text>
+                                    </View>
+                                    <View style={styles.value}>
+                                        <Text style={styles.textAlign}>{vm.pricePerUnit}</Text>
+                                    </View>
+                                </View>
+                            </View>
+                            <Button
+                                title={'Print Barcode Label'}
+                                onPress={this.handleClick}
+                            />
+                        </ScrollView>
+                    </View>
                 </View>
-            </View>
+            </Refresh>
         );
     }
 }
-
+const mapStateToProps = (state: RootState) => ({
+    selectedProduct: state.productsReducer.selectedProduct,
+});
 const mapDispatchToProps: DispatchProps = {
     getProductByIdAction,
     showScreenLoading,
     hideScreenLoading
 };
 
-export default connect(null, mapDispatchToProps)(ProductDetails);
+export default connect(mapStateToProps, mapDispatchToProps)(ProductDetails);

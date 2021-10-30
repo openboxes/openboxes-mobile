@@ -77,12 +77,12 @@ function* createPutawayOder(action: any){
     try {
         yield showScreenLoading('Get Candidates');
         const response = yield call(api.createPutawayOder, action.payload.data);
-        console.log(2222222,response.data)
         yield put({
             type: CREATE_PUTAWAY_ORDER_REQUEST_SUCCESS,
             payload: response.data,
         });
         yield hideScreenLoading()
+        yield action.callback()
     }catch (e){
         console.log('function* createPutawayOder', e.message);
     }

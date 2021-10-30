@@ -10,13 +10,13 @@ export interface OwnProps {
 }
 
 export interface StateProps {
-  //no-op
+  selectedProduct:any
 }
 
 export interface DispatchProps {
   getProductByIdAction: (
       id: any,
-      callback: (data: any) => void,
+      callback?: (data: any) => void,
   )=> void,
   showScreenLoading:()=> void,
   hideScreenLoading:()=> void
