@@ -90,7 +90,7 @@ export function searchProductSByCategoryAction(
 
 export function getProductByIdAction(
     id: any,
-    callback: (data: any) => void,
+    callback?: (data: any) => void,
 ) {
   return {
     type: GET_PRODUCT_BY_ID_REQUEST,

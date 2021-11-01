@@ -10,13 +10,14 @@ import Dashboard from './screens/Dashboard';
 import InternalTransfer from './screens/InternalTransfer';
 import InboundOrderDetails from "./screens/InboundOrderDetails";
 import Products from './screens/Products';
+import PutawayItem from './screens/PutawayItem';
 import DrawerNavigator from './screens/DrawerNavigator';
 import PickOrderItem from './screens/PickList';
 import FullScreenLoadingIndicator from './components/FullScreenLoadingIndicator';
 import {RootState} from './redux/reducers';
 import {connect} from 'react-redux';
 import SplashScreen from 'react-native-splash-screen'
-import {Image, View} from 'react-native';
+import {Image, SafeAreaView } from 'react-native';
 import Location from './data/location/Location';
 import {Session} from './data/auth/Session';
 import {getSessionAction} from './redux/actions/main';
@@ -28,6 +29,8 @@ import PutawayItemDetail from "./screens/PutawayItemDetail";
 import PutawayDetail from "./screens/PutawayDetails";
 import InboundOrder from "./screens/InboundOrder";
 import InboundDetails from "./screens/InboundDetails";
+import PutawayCandidates from "./screens/PutawayCandidates";
+// import PutawayDetails from "./screens/PutawayDetails";
 
 const Stack = createStackNavigator();
 
@@ -100,12 +103,7 @@ class Main extends Component<Props, State> {
   render() {
     const {loggedIn} = this.props;
     return (
-      <View
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          flex: 1,
-        }}>
+      <SafeAreaView style={{flex: 1}}>
         <FullScreenLoadingIndicator
           visible={this.props.fullScreenLoadingIndicator.visible}
           message={this.props.fullScreenLoadingIndicator.message}
@@ -141,6 +139,9 @@ class Main extends Component<Props, State> {
             <Stack.Screen name="Scan" component={Scan} />
             <Stack.Screen name="Products" component={Products} />
             <Stack.Screen name="PutawayList" component={PutawayList} />
+            <Stack.Screen name="PutawayCandidates" component={PutawayCandidates} />
+            <Stack.Screen name="PutawayItem" component={PutawayItem} />
+            {/*<Stack.Screen name="PutawayDetails" component={PutawayDetails} />*/}
             <Stack.Screen name="PutawayItemDetail" component={PutawayItemDetail} />
             <Stack.Screen name="InboundOrderDetails" component={InboundOrderDetails} />
             <Stack.Screen name="PutawayDetail" component={PutawayDetail} />
@@ -150,7 +151,7 @@ class Main extends Component<Props, State> {
             {/*<Stack.Screen name="Drawer" component={DrawerNavigator} />*/}
           </Stack.Navigator>
         </NavigationContainer>
-      </View>
+      </SafeAreaView >
     );
   }
 }

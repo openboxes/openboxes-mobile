@@ -10,10 +10,12 @@ export interface State {
   products: any;
   currentBarcodeLabel: any,
   printModalVisible: boolean
+  selectedProduct: any
 }
 
 const initialState: State = {
   products: [],
+  selectedProduct: null,
   currentBarcodeLabel: null,
   printModalVisible: false
 };
@@ -23,13 +25,14 @@ function reducer(state = initialState, action: any) {
     case GET_PRODUCTS_REQUEST_SUCCESS: {
       return {
         ...state,
-        // products: [...action.payload.data],
+        products: [...action.payload],
       };
     }
     case GET_PRODUCT_BY_ID_REQUEST_SUCCESS: {
       return {
         ...state,
         printModalVisible: true,
+        selectedProduct: {...action.payload},
         currentBarcodeLabel: {...action.payload.barcodeLabels[0]},
       };
     }
