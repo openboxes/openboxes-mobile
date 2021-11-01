@@ -1,34 +1,29 @@
 import React from 'react';
 import {Image, ScrollView, Text, View, Button, KeyboardAvoidingView, Platform} from 'react-native';
 import styles from './styles';
-import {device} from '../../constants'
 import PrintModal from '../../components/PrintModal';
 import Refresh from '../../components/Refresh';
 import {Props, State, DispatchProps} from './types';
 import {vmMapper} from './VMMapper';
-import {getProductByIdAction } from "../../redux/actions/products";
+import {getProductByIdAction} from "../../redux/actions/products";
 import {showScreenLoading, hideScreenLoading} from '../../redux/actions/main';
 import {connect} from "react-redux";
 import showPopup from "../../components/Popup";
-import Product from '../../data/product/Product';
 import {RootState} from "../../redux/reducers";
 
 class ProductDetails extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
         this.state = {
-            visible:false,
-            productDetails:{},
+            visible: false,
+            productDetails: {},
         }
     }
 
-    componentWillMount() {
-        this.getProduct()
-    }
 
-    getProduct =()=>{
+    getProduct = () => {
         const {product} = this.props.route.params
-        this.props.getProductByIdAction(product.id)
+        this.getProductDetails(product.id)
     }
 
     closeModal = () => {
@@ -38,14 +33,13 @@ class ProductDetails extends React.Component<Props, State> {
     handleClick = () => {
         const {product} = this.props.route.params
         this.props.getProductByIdAction(product.productCode, (data) => {
-           this.setState({visible: true})
+            this.setState({visible: true})
         })
     }
 
 
     componentDidMount() {
-        const {product} = this.props.route.params
-        this.getProductDetails(product.id)
+        this.getProduct()
     }
 
     getProductDetails(id: string) {
@@ -76,7 +70,7 @@ class ProductDetails extends React.Component<Props, State> {
                     negativeButtonText: 'Cancel',
                 });
             } else {
-               this.setState({productDetails:data})
+                this.setState({productDetails: data})
             }
         };
         this.props.hideScreenLoading();
@@ -84,15 +78,7 @@ class ProductDetails extends React.Component<Props, State> {
     }
 
     render() {
-
-        // const product = this.props.products.find((value: any)=>{
-        //     return value.id === this.props.route.params.product.id
-        // })
-
-        const product = this.props.selectedProduct
-        const vm = vmMapper({product});
-        //const vm = vmMapper(this.state.productDetails, this.state);
-        // const {product} = this.props.route.params
+        const vm = vmMapper(this.state.productDetails, this.state);
         const product = this.props.selectedProduct
         const {visible} = this.state;
         return (
@@ -105,7 +91,7 @@ class ProductDetails extends React.Component<Props, State> {
                     <PrintModal
                         visible={visible}
                         closeModal={this.closeModal}
-                        product={vm}
+                        product={product}
                     />
                     <View style={styles.contentContainer}>
                         <Text style={styles.name}>{vm.name}</Text>
@@ -195,7 +181,7 @@ class ProductDetails extends React.Component<Props, State> {
                                         </Text>
                                     </View>
                                 </View>
-                                {vm?.attributes?.map((item,index )=> {
+                                {vm?.attributes?.map((item, index) => {
                                     return (
                                         <View key={index} style={styles.row}>
                                             <Text style={styles.label}>{item.name}</Text>
@@ -231,6 +217,7 @@ class ProductDetails extends React.Component<Props, State> {
         );
     }
 }
+
 const mapStateToProps = (state: RootState) => ({
     selectedProduct: state.productsReducer.selectedProduct,
 });
