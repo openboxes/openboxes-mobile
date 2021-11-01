@@ -37,10 +37,9 @@ class ProductDetails extends React.Component<Props, State> {
 
     handleClick = () => {
         const {product} = this.props.route.params
-        //this.props.getProductByIdAction(product.productCode, (data) => {
-        //    this.setState({visible: true})
-        //})
-        this.setState({visible: true})
+        this.props.getProductByIdAction(product.productCode, (data) => {
+           this.setState({visible: true})
+        })
     }
 
 
@@ -85,6 +84,7 @@ class ProductDetails extends React.Component<Props, State> {
     }
 
     render() {
+
         // const product = this.props.products.find((value: any)=>{
         //     return value.id === this.props.route.params.product.id
         // })
@@ -93,6 +93,7 @@ class ProductDetails extends React.Component<Props, State> {
         const vm = vmMapper({product});
         //const vm = vmMapper(this.state.productDetails, this.state);
         // const {product} = this.props.route.params
+        const product = this.props.selectedProduct
         const {visible} = this.state;
         return (
             <Refresh onRefresh={this.getProduct}>
