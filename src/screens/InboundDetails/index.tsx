@@ -42,7 +42,6 @@ const InboundDetails = () => {
                 if (data && Object.keys(data).length !== 0) {
                     state.inboundDetail = data
                     state.inboundData = InboundVMMapper(state)
-                    console.log(" state.inboundData", state.inboundData)
                 }
                 setState({...state})
             }
@@ -54,6 +53,7 @@ const InboundDetails = () => {
     return (
         <InboundOrderContainer
             data={state.inboundData?.sectionData??[]}
+            shipmentId={state.inboundData?.shipmentId}
             shipmentData={shipmentDetails}
         />
     );

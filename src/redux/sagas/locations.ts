@@ -6,7 +6,7 @@ import {
   GET_LOCATIONS_REQUEST_SUCCESS,
   SET_CURRENT_LOCATION_REQUEST,
   SET_CURRENT_LOCATION_REQUEST_SUCCESS,
-  GET_LOCATION_FROM_NUMBER
+  GET_LOCATION_FROM_NUMBER, GET_INTERNAL_LOCATION_FROM_NUMBER, GET_INTERNAL_LOCATIONS_SUCCESS
 } from '../actions/locations';
 
 function* getLocations(action: any) {
@@ -68,10 +68,28 @@ function* searchLocationByLocationNumber(action: any) {
     });
   }
 }
-
+function* getInternalLocations(action: any) {
+  try {
+    yield showScreenLoading('Fetching InternalLocations');
+    const response = yield call(api.internalLocations,action.payload.location);
+    yield put({
+      type: GET_INTERNAL_LOCATIONS_SUCCESS,
+      payload: response.data,
+    });
+    yield action.callback(response);
+    yield hideScreenLoading();
+  } catch (e) {
+    console.log('function* getInternalLocations', e);
+    yield action.callback({
+      error: true,
+      message: e.message,
+    });
+  }
+}
 
 export default function* watcher() {
   yield takeLatest(GET_LOCATIONS_REQUEST, getLocations);
   yield takeLatest(SET_CURRENT_LOCATION_REQUEST, setCurrentLocation);
   yield takeLatest(GET_LOCATION_FROM_NUMBER, searchLocationByLocationNumber);
+  yield takeLatest(GET_INTERNAL_LOCATION_FROM_NUMBER,getInternalLocations)
 }

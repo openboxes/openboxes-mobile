@@ -2,7 +2,10 @@ import {takeLatest, put, call} from 'redux-saga/effects';
 import {
     FETCH_INBOUND_ORDER_LIST_SUCCESS,
     FETCH_INBOUND_ORDER_LIST_REQUEST,
-    FETCH_PARTIAL_RECEIVING_SUCCESS, FETCH_PARTIAL_RECEIVING_REQUEST
+    FETCH_PARTIAL_RECEIVING_SUCCESS,
+    FETCH_PARTIAL_RECEIVING_REQUEST,
+    SUBMIT_PARTIAL_RECEIVING_REQUEST,
+    SUBMIT_PARTIAL_RECEIVING_SUCCESS
 } from "../actions/inboundorder";
 import {hideScreenLoading, showScreenLoading} from '../actions/main';
 import * as api from '../../apis';
@@ -21,6 +24,25 @@ function* fetchInboundOrderList(action: any) {
         yield put(hideScreenLoading());
     } catch (e) {
         console.log('function* fetchInboundOrder', e.message);
+        console.log(e.response);
+        yield put(hideScreenLoading());
+    }
+}
+
+
+function* submitPartialReceiving(action: any) {
+    try {
+        yield put(showScreenLoading('Submit Receive orders'));
+        const response: any = yield call(api.submitPartialReceiving, action.payload.id, action.payload.body);
+        yield put({
+            type: SUBMIT_PARTIAL_RECEIVING_SUCCESS,
+            payload: response.data,
+        });
+        if (action.callback)
+            yield action.callback(response);
+        yield put(hideScreenLoading());
+    } catch (e) {
+        console.log('function* submitPartialReceiving', e.message);
         console.log(e.response);
         yield put(hideScreenLoading());
     }
@@ -48,4 +70,5 @@ function* fetchPartialReceiving(action: any) {
 export default function* watcher() {
     yield takeLatest(FETCH_INBOUND_ORDER_LIST_REQUEST, fetchInboundOrderList)
     yield takeLatest(FETCH_PARTIAL_RECEIVING_REQUEST, fetchPartialReceiving);
+    yield takeLatest(SUBMIT_PARTIAL_RECEIVING_REQUEST, submitPartialReceiving);
 }

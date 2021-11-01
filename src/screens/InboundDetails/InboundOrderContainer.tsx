@@ -5,7 +5,7 @@ import styles from "./styles";
 import {Card} from "react-native-paper";
 import InboundDetailProps from "./types";
 
-const InboundOrderContainer = ({data, shipmentData}: InboundDetailProps) => {
+const InboundOrderContainer = ({data,shipmentId, shipmentData}: InboundDetailProps) => {
     const navigation = useNavigation<any>();
 
     const RenderData = ({title, subText}: any): JSX.Element => {
@@ -17,8 +17,8 @@ const InboundOrderContainer = ({data, shipmentData}: InboundDetailProps) => {
         )
     }
 
-    const navigateToInboundOrderDetails = () => {
-        navigation.navigate("InboundOrderDetails")
+    const navigateToInboundOrderDetails = (item: any) => {
+        navigation.navigate("InboundReceiveDetail", {shipmentItem: item,shipmentData:shipmentData,shipmentId:shipmentId})
     }
 
     const renderShipmentItem = (): JSX.Element => {
@@ -54,9 +54,10 @@ const InboundOrderContainer = ({data, shipmentData}: InboundDetailProps) => {
         } else return "Pending";
     }
 
-    const renderListItem = ({item}: any): JSX.Element => {
+    const renderListItem = (item:any , index: any) => {
         return (<TouchableOpacity
-            onPress={navigateToInboundOrderDetails}
+            key={index}
+            onPress={() => navigateToInboundOrderDetails(item)}
             style={styles.itemView}>
             <Card>
                 <Card.Content>
@@ -80,7 +81,7 @@ const InboundOrderContainer = ({data, shipmentData}: InboundDetailProps) => {
     return (
         <SectionList
             ListHeaderComponent={renderShipmentItem}
-            renderItem={renderListItem}
+            renderItem={({ item, index, section })  => renderListItem(item, index)}
             renderSectionHeader={({section: {title}}) => (
                 <Text style={styles.headerTitle}>{title}</Text>
             )}

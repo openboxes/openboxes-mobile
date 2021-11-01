@@ -8,7 +8,7 @@ import OrderDetails from './screens/OrderDetails';
 import ProductDetails from './screens/ProductDetails';
 import Dashboard from './screens/Dashboard';
 import InternalTransfer from './screens/InternalTransfer';
-import InboundOrderDetails from "./screens/InboundOrderDetails";
+import InboundReceiveDetail from "./screens/InboundReceiveDetail";
 import Products from './screens/Products';
 import DrawerNavigator from './screens/DrawerNavigator';
 import PickOrderItem from './screens/PickList';
@@ -142,10 +142,10 @@ class Main extends Component<Props, State> {
             <Stack.Screen name="Products" component={Products} />
             <Stack.Screen name="PutawayList" component={PutawayList} />
             <Stack.Screen name="PutawayItemDetail" component={PutawayItemDetail} />
-            <Stack.Screen name="InboundOrderDetails" component={InboundOrderDetails} />
             <Stack.Screen name="PutawayDetail" component={PutawayDetail} />
             <Stack.Screen name="InboundOrderList" component={InboundOrder} />
             <Stack.Screen name="InboundDetails" component={InboundDetails} />
+            <Stack.Screen name="InboundReceiveDetail" component={InboundReceiveDetail} />
             {/*<Stack.Screen name="Drawer" component={DrawerNavigator} />*/}
             {/*<Stack.Screen name="Drawer" component={DrawerNavigator} />*/}
           </Stack.Navigator>
