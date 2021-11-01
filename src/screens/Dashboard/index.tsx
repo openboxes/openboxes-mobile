@@ -69,6 +69,15 @@ class Dashboard extends React.Component<Props, State> {
                         <Text style={styles.countLabel}>Scan</Text>
                     </View>
                 </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.countContainer}
+                    onPress={() => {
+                        this.props.navigation.navigate('CreateLpn');
+                    }}>
+                    <View style={styles.countLabelAndIconContainer}>
+                        <Text style={styles.countLabel}>Create LPN</Text>
+                    </View>
+                </TouchableOpacity>
             </View>
         );
     }
