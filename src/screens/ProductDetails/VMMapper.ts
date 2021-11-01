@@ -22,9 +22,9 @@ export function vmMapper(product: Product, state: State): VM {
       {code: '', value: '', name: ''},
       {code: '', value: '', name: ''},
     ],
-    productType: product.productType ?? {name: ''},
-   image: product.image ?? { id: '', name: '', uri: 'https://reactnative.dev/img/tiny_logo.png' },
-    images: product.images ?? [
+    productType: product?.productType ?? {name: ''},
+    image: product?.image ?? { id: '', name: '', uri: 'https://reactnative.dev/img/tiny_logo.png' },
+    images: product?.images ?? [
       {
         id: '',
         name: '',
@@ -43,23 +43,23 @@ function getDetails(product: Product): DetailsItemVM[] {
 
 function getDetailsCodeItem(product: Product): DetailsItemVM {
   return {
-    key: '',
-    name: '',
+    key: 'productCode',
+    name: 'Product Code',
     value: product.productCode,
   };
 }
 
 function getDetailsCategoryItem(product: Product): DetailsItemVM {
   return {
-    key: '',
-    name: '',
+    key: 'category',
+    name: 'Category',
     value: getCategoryText(product.category),
   };
 }
 
 function getCategoryText(category: ProductCategory): string {
   const prefix = category?.parentCategory
-    ? `${getCategoryText(category.parentCategory)} > `
+    ? `${getCategoryText(category?.parentCategory)} > `
     : '';
-  return `${prefix}${category?.name ?? ""}`;
+  return `${prefix}${category?.name}`;
 }

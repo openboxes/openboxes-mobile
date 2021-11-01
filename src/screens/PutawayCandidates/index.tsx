@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {Props, State} from './types'
-import {FlatList, ListRenderItemInfo, View, Text, TouchableOpacity} from "react-native";
-import Product from "../../data/product/Product";
+import {FlatList, Text, TouchableOpacity} from "react-native";
+import Refresh from '../../components/Refresh'
 import {RootState} from "../../redux/reducers";
 import {DispatchProps} from "./types";
 import styles from './styles'
@@ -12,6 +12,10 @@ import {getCandidates} from "../../redux/actions/putaways";
 class PutawayCandidates extends Component <Props> {
 
     componentWillMount() {
+        this.getScreenData()
+    }
+
+    getScreenData =()=>{
         const {SelectedLocation} = this.props
         this.props.getCandidates(SelectedLocation.id)
     }
@@ -35,11 +39,14 @@ class PutawayCandidates extends Component <Props> {
     render() {
         const {candidates} = this.props
         return (
-            <FlatList
-                data={candidates}
-                renderItem={({item}) => this.renderItem(item)}
-                keyExtractor={(item,index) => index}
-            />
+            <Refresh onRefresh={this.getScreenData}>
+                <FlatList
+                    data={candidates}
+                    renderItem={({item}) => this.renderItem(item)}
+                    keyExtractor={(item,index) => index}
+                />
+            </Refresh>
+
         )
     }
 }
