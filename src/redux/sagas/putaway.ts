@@ -12,8 +12,6 @@ import {
 import {hideScreenLoading, showScreenLoading} from '../actions/main';
 import * as api from '../../apis';
 import {GetPutAwayApiResponse, GetPutAwaysApiResponse, PostPutAwayItemApiResponse} from "../../data/putaway/PutAway";
-import * as api from '../../apis';
-
 
 function* fetchPutAwayFromOrder(action: any) {
     try {

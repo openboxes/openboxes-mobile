@@ -16,7 +16,7 @@ export interface State {
 
 const initialState: State = {
     putAway: null,
-    putAwayItem: null
+    putAwayItem: null,
     candidates: []
 };
 
