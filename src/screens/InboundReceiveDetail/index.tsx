@@ -5,7 +5,7 @@ import {Image, ScrollView, Text, View} from 'react-native';
 import InputBox from '../../components/InputBox';
 import Button from "../../components/Button";
 import showPopup from "../../components/Popup";
-import {useRoute} from "@react-navigation/native";
+import {useNavigation, useRoute} from "@react-navigation/native";
 import Radio from "../../components/Radio";
 import {submitPartialReceiving} from "../../redux/actions/inboundorder";
 import SelectDropdown from "react-native-select-dropdown";
@@ -16,10 +16,11 @@ import {RootState} from "../../redux/reducers";
 const InboundReceiveDetail = () => {
     const dispatch = useDispatch();
     const route = useRoute();
-    const {shipmentItem, shipmentData,shipmentId}: any = route.params
+    const {shipmentItem, shipmentData, shipmentId}: any = route.params
     const [cancelRemaining, setCancelRemaining] = useState(false)
+    const navigation = useNavigation();
     const location = useSelector((state: RootState) => state.mainReducer.currentLocation)
-    console.log("AAAAA",shipmentItem)
+    console.log("AAAAA", shipmentItem)
     const [state, setState] = useState<any>({
         comments: "",
         internalLocation: [],
@@ -108,18 +109,37 @@ const InboundReceiveDetail = () => {
                 });
             } else {
                 if (data && Object.keys(data).length !== 0) {
-                    console.log("Kumaran", data)
                     if (data.receiptId !== "" && data.receipt != "") {
                         const receiptStatus = {
                             "receiptStatus": "COMPLETED"
                         }
-                        dispatch(submitPartialReceiving(id, receiptStatus));
+                        dispatch(submitPartialReceiving(id, receiptStatus, onComplete));
                     }
                 }
                 setState({...state})
             }
         }
         dispatch(submitPartialReceiving(id, requestBody, callback));
+    }
+
+    const onComplete = (data: any) => {
+        if (data?.error) {
+            showPopup({
+                title: data.error.message
+                    ? `In Bound order details`
+                    : null,
+                message:
+                    data.error.message ??
+                    `Failed to load Inbound order details`,
+                positiveButton: {
+                    text: 'Ok',
+                }
+            });
+        } else {
+            if (data && Object.keys(data).length !== 0) {
+                navigation.goBack();
+            }
+        }
     }
     const RenderData = ({title, subText}: any): JSX.Element => {
         return (

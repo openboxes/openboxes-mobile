@@ -9,6 +9,7 @@ import {
 } from "../actions/inboundorder";
 import {hideScreenLoading, showScreenLoading} from '../actions/main';
 import * as api from '../../apis';
+import showPopup from "../../components/Popup";
 
 
 function* fetchInboundOrderList(action: any) {
@@ -44,6 +45,13 @@ function* submitPartialReceiving(action: any) {
     } catch (e) {
         console.log('function* submitPartialReceiving', e.message);
         console.log(e.response);
+        if (e.response.status == 401) {
+            showPopup({message: "Invalid id", positiveButton: "ok"});
+        } else if (e.response.status == 500) {
+            showPopup({message: "Something went wrong on server", positiveButton: "ok"});
+        } else if (e.response.status == 404) {
+            showPopup({message: "Server unavailable", positiveButton: "ok"});
+        }
         yield put(hideScreenLoading());
     }
 }
