@@ -1,4 +1,6 @@
 export const SAVE_OR_UPDATE_LPN = 'SAVE_OR_UPDATE_LPN';
+export const FETCH_CONTAINER_DETAIL = 'FETCH_CONTAINER_DETAIL';
+export const FETCH_CONTAINER_DETAIL_RESPONSE_SUCCESS = 'FETCH_CONTAINER_DETAIL_RESPONSE_SUCCESS';
 
 export function saveAndUpdateLpn(
     requestBody: any,
@@ -10,4 +12,16 @@ export function saveAndUpdateLpn(
         payload: {requestBody},
         callback,
     };
+}
+
+export function fetchContainer(
+    id: string,
+    callback: (data: any) => void,
+){
+    console.debug("id::"+id)
+    return{
+        type: FETCH_CONTAINER_DETAIL,
+        payload: {id},
+        callback
+    }
 }
