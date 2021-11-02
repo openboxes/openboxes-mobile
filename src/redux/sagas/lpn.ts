@@ -5,7 +5,7 @@ import {GET_LOCATIONS_REQUEST_SUCCESS} from "../actions/locations";
 
 function* saveAndUpdateLpn(action: any) {
     try {
-        console.debug("sagas saveAndUpdateLpn")
+        console.log("sagas saveAndUpdateLpn")
         const response: any = yield call(
             api.saveAndUpdateLpn,
             action.payload.requestBody,

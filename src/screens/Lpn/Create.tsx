@@ -4,14 +4,12 @@ import {getStockMovements} from "../../redux/actions/orders";
 import {saveAndUpdateLpn} from "../../redux/actions/lpn";
 import {DispatchProps, Props} from "./Types";
 import {connect} from "react-redux";
-import {FlatList, ListRenderItemInfo, Text, TouchableOpacity, View} from "react-native";
-import Theme from "../../utils/Theme";
+import {Image, View} from "react-native";
 import {Order} from "../../data/order/Order";
-import {Picker} from '@react-native-picker/picker';
 import styles from "./styles";
 import InputBox from "../../components/InputBox";
-import {TextInput} from "react-native-paper";
 import Button from "../../components/Button";
+import SelectDropdown from "react-native-select-dropdown";
 
 
 export interface State {
@@ -20,6 +18,8 @@ export interface State {
     stockMovement: Order | null,
     name: string | null
     containerNumber: string | null
+    stockMovementList: string[] | []
+    stockMovementId: string | any
 }
 
 class CreateLpn extends React.Component<Props, State> {
@@ -27,10 +27,12 @@ class CreateLpn extends React.Component<Props, State> {
         super(props);
         this.state = {
             stockMovements: null,
+            stockMovementList: [],
             open: false,
             stockMovement: null,
             name: null,
-            containerNumber: null
+            containerNumber: null,
+            stockMovementId: null
         }
     }
 
@@ -52,7 +54,14 @@ class CreateLpn extends React.Component<Props, State> {
             } else {
                 console.debug(">>>>>>>>>>>>>>>>")
                 // console.debug(data)
+
+                let stockMovementList: string[] = [];
+                console.log(data)
+                data.map((item: any) => {
+                    stockMovementList.push(item.name)
+                })
                 this.setState({
+                    stockMovementList: stockMovementList,
                     stockMovements: data
                 })
             }
@@ -66,7 +75,7 @@ class CreateLpn extends React.Component<Props, State> {
             "name": this.state.name,
             "containerNumber": this.state.containerNumber,
             "containerType.id": null,
-            "shipment.id": this.state.stockMovement?.id
+            "shipment.id": this.state.stockMovementId
         }
 
         const actionCallback = (data: any) => {
@@ -74,7 +83,7 @@ class CreateLpn extends React.Component<Props, State> {
             console.debug(data)
 
         }
-        console.debug("Save LPN")
+        console.debug("Save LPN", requestBody)
         this.props.saveAndUpdateLpn(requestBody, actionCallback);
     }
 
@@ -90,6 +99,12 @@ class CreateLpn extends React.Component<Props, State> {
         })
     }
 
+    renderIcon = () => {
+        return (
+            <Image style={styles.arrowDownIcon} source={require('../../assets/images/arrow-down.png')}/>
+        )
+    }
+
     render() {
         // const {open, value, stockMovements} = this.state;
         // const [selectedLanguage, setSelectedLanguage] = this.state;
@@ -102,16 +117,19 @@ class CreateLpn extends React.Component<Props, State> {
                         onChange={this.onChangeName}
                         disabled={true}
                         label={'Name'}/>
-                    <Picker
-                        selectedValue={this.state.stockMovement}
-                        onValueChange={(itemValue, itemIndex) => this.setState({stockMovement: itemValue})}
-                    >
-                        {this.state.stockMovements?.map(st => (
-                            <Picker.Item label={st.name} value={st.id}/>
-                        ))}
-                        {/*<Picker.Item label="Java" value="java" />*/}
-                        {/*<Picker.Item label="JavaScript" value="js" />*/}
-                    </Picker>
+                    <SelectDropdown
+                        data={this.state.stockMovementList}
+                        onSelect={(selectedItem, index) => {
+                            console.log(selectedItem, index)
+                            const stockMovement = this.state.stockMovements?.find(i => i.name === selectedItem);
+                            this.setState({stockMovement: selectedItem, stockMovementId: stockMovement?.id})
+                        }}
+                        defaultValueByIndex={0}
+                        renderDropdownIcon={this.renderIcon}
+                        buttonStyle={styles.select}
+                        buttonTextAfterSelection={(selectedItem, index) => selectedItem}
+                        rowTextForSelection={(item, index) => item}
+                    />
                     <InputBox
                         value={this.state.containerNumber}
                         disabled={true}
@@ -131,8 +149,6 @@ class CreateLpn extends React.Component<Props, State> {
             </View>
         )
     }
-
-
 
 
 }

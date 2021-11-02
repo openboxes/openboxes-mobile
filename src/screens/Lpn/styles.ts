@@ -9,6 +9,20 @@ export default StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 20,
   },
+  select:{
+    width: "100%",
+    borderWidth: 2,
+    height: 40,
+    alignSelf: 'center',
+    borderColor:'grey',
+    backgroundColor:'white',
+    borderRadius:5,
+    marginTop:10,
+  },
+  arrowDownIcon:{
+    height: 15,
+    width:15,
+  },
   from:{
     flex: 1
   },
