@@ -3,6 +3,8 @@ import * as api from "../../apis";
 import {FETCH_CONTAINER_DETAIL, FETCH_CONTAINER_DETAIL_RESPONSE_SUCCESS, SAVE_OR_UPDATE_LPN} from "../actions/lpn";
 import {GET_LOCATIONS_REQUEST_SUCCESS} from "../actions/locations";
 import {ContainerResponse} from "../../data/container/Container";
+import showPopup from "../../components/Popup";
+import {handleError} from "./error";
 
 function* saveAndUpdateLpn(action: any) {
     try {
@@ -15,16 +17,13 @@ function* saveAndUpdateLpn(action: any) {
         yield action.callback(response.data);
     } catch (e) {
         console.log('function* saveAndUpdateLpn', e.message);
-        yield action.callback({
-            error: true,
-            message: e.message,
-        });
+        handleError(e)
     }
 }
 
 function* fetchContainer(action: any) {
     try {
-        console.log("sagas fetchContainer:"+action.payload.id)
+        console.log("sagas fetchContainer:" + action.payload.id)
         const response: ContainerResponse = yield call(
             api.fetchContainer,
             action.payload.id,

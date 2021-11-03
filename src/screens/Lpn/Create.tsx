@@ -10,7 +10,9 @@ import styles from "./styles";
 import InputBox from "../../components/InputBox";
 import Button from "../../components/Button";
 import SelectDropdown from "react-native-select-dropdown";
-import {getShipmentPacking, getContainerType} from "../../redux/actions/packing";
+import {getShipmentPacking, getShipmentOrigin} from "../../redux/actions/packing";
+import {RootState} from "../../redux/reducers";
+import Location from "../../data/location/Location";
 
 
 export interface State {
@@ -33,13 +35,14 @@ class CreateLpn extends React.Component<Props, State> {
             stockMovement: null,
             name: null,
             containerNumber: null,
-            stockMovementId: null
+            stockMovementId: null,
+
         }
     }
 
     componentDidMount() {
         console.debug("Did mount with stockmovement")
-        this.fetchContainerType()
+        this.getShipmentOrigin()
     }
 
     fetchContainerList = () => {
@@ -72,7 +75,8 @@ class CreateLpn extends React.Component<Props, State> {
         this.props.getShipmentPacking("OUTBOUND", actionCallback);
     }
 
-    fetchContainerType = () => {
+    getShipmentOrigin = () => {
+        const {currentLocation} = this.props
         const actionCallback = (data: any) => {
             if (data?.error) {
                 showPopup({
@@ -97,8 +101,8 @@ class CreateLpn extends React.Component<Props, State> {
                 })
             }
         }
-        console.debug("Calling stockmovements")
-        this.props.getContainerType(actionCallback);
+        console.debug("Calling getShipmentOrigin",currentLocation?.id, currentLocation)
+        this.props.getShipmentOrigin(currentLocation?.id ?? "1", actionCallback);
     }
 
     saveLpn = () => {
@@ -184,10 +188,13 @@ class CreateLpn extends React.Component<Props, State> {
 
 }
 
+const mapStateToProps = (state: RootState) => ({
+    currentLocation: state.mainReducer.currentLocation,
+});
 const mapDispatchToProps: DispatchProps = {
     getShipmentPacking,
-    getContainerType,
+    getShipmentOrigin,
     saveAndUpdateLpn
 }
 
-export default connect(null, mapDispatchToProps)(CreateLpn);
+export default connect(mapStateToProps, mapDispatchToProps)(CreateLpn);
