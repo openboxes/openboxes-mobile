@@ -2,7 +2,7 @@ export interface OwnProps {
     label: string,
     showSelect?: boolean
     refs?: any
-    value?: string
+    value?: string|any
     onChange?: (text:string) => void;
     disabled?: boolean
     keyboard?: any

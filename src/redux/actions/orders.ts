@@ -1,4 +1,5 @@
 export const GET_ORDERS_REQUEST = 'GET_ORDERS_REQUEST';
+export const GET_STOCK_MOVEMENT_LIST = 'GET_STOCK_MOVEMENT_LIST';
 export const GET_ORDERS_REQUEST_SUCCESS = 'GET_ORDERS_REQUEST_SUCCESS';
 export const GET_ORDERS_REQUEST_FAIL = 'GET_ORDERS_REQUEST_FAIL';
 
@@ -50,6 +51,14 @@ export function submitPickListItem(
   return {
     type: SUBMIT_PICKLIST_ITEM_PICKUP_REQUEST,
     payload: {id, requestBody},
+    callback,
+  };
+}
+
+export function getStockMovements(direction: string | null, status: string | null, callback: (products: any) => void) {
+  return {
+    type: GET_STOCK_MOVEMENT_LIST,
+    payload: {direction, status},
     callback,
   };
 }
