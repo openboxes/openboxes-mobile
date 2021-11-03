@@ -117,6 +117,7 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
   };
 
   setCurrentLocation = async (orgName: string, location: Location) => {
+    console.log(55, location)
     showPopup({
       message: `Do you want to select current location as ${location.name}?`,
       positiveButton: {
