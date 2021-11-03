@@ -151,7 +151,6 @@ const Packing = () => {
             } else {
                 if (data && Object.keys(data).length !== 0) {
                     console.log(data);
-                    submitShipmentDetail(state.shipmentId)
                 }
             }
         }
@@ -208,7 +207,7 @@ const Packing = () => {
     }
 
     const moveToLPN = () => {
-
+        submitShipmentDetail(state.shipmentId)
     }
 
     return (
