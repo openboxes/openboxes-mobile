@@ -22,7 +22,7 @@ import Location from './data/location/Location';
 import {Session} from './data/auth/Session';
 import {getSessionAction} from './redux/actions/main';
 import showPopup from './components/Popup';
-import {colors, DefaultTheme} from "./constants";
+import {colors} from "./constants";
 import Scan from "./screens/Scan";
 import PutawayList from "./screens/PutawayList";
 import PutawayDetails from "./screens/PutawayDetails";
