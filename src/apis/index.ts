@@ -7,3 +7,4 @@ export * from './transfer';
 export * from './inbound';
 export * from './lpn';
 
+export * from './transfers';
