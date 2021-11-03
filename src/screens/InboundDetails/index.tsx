@@ -1,26 +1,32 @@
-import {View} from "react-native";
 import React, {useEffect, useState} from "react";
 import {useDispatch} from "react-redux";
-import {fetchInboundOrderList, fetchPartialReceiving} from "../../redux/actions/inboundorder";
+import { fetchPartialReceiving} from "../../redux/actions/inboundorder";
 import showPopup from "../../components/Popup";
 import InboundOrderContainer from "./InboundOrderContainer";
-import {useRoute} from "@react-navigation/native";
+import {useNavigation, useRoute} from "@react-navigation/native";
 import {InboundDetailOwnProps} from "./types";
 import InboundVMMapper from "./InboundVMMapper";
 
 const InboundDetails = () => {
     const dispatch = useDispatch();
     const route = useRoute();
+    const navigation = useNavigation();
     const {shipmentDetails}: any = route.params
     const [state, setState] = useState<InboundDetailOwnProps>({
         inboundDetail: null,
         inboundData: null
     })
+
     useEffect(() => {
-        getPartialReceiving(shipmentDetails.id)
-    }, [shipmentDetails])
+        const unsubscribe = navigation.addListener('focus', () => {
+            getPartialReceiving(shipmentDetails.id)
+        });
+        return unsubscribe;
+    }, [navigation]);
+
 
     const getPartialReceiving = (id: string = "") => {
+        console.log("Reload")
         const callback = (data: any) => {
             if (data?.error) {
                 showPopup({
@@ -42,7 +48,6 @@ const InboundDetails = () => {
                 if (data && Object.keys(data).length !== 0) {
                     state.inboundDetail = data
                     state.inboundData = InboundVMMapper(state)
-                    console.log(" state.inboundData", state.inboundData)
                 }
                 setState({...state})
             }
@@ -53,7 +58,8 @@ const InboundDetails = () => {
 
     return (
         <InboundOrderContainer
-            data={state.inboundData?.sectionData??[]}
+            data={state.inboundData?.sectionData ?? []}
+            shipmentId={state.inboundData?.shipmentId}
             shipmentData={shipmentDetails}
         />
     );
