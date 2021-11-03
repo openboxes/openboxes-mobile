@@ -76,7 +76,12 @@ class Dashboard extends React.Component<Props, State> {
                     }}>
                     <View style={styles.countLabelAndIconContainer}>
                         <Text style={styles.countLabel}>Create LPN</Text>
-                        this.props.navigation.navigate('InternalTransfer');
+                    </View>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.countContainer}
+                    onPress={() => {
+                        this.props.navigation.navigate('CreateLpn');
                     }}>
                     <View style={styles.countLabelAndIconContainer}>
                         <Text style={styles.countLabel}>Internal Transfer</Text>
@@ -105,12 +110,16 @@ class Dashboard extends React.Component<Props, State> {
     }
 }
 
-const mapStateToProps = (state: RootState) => ({
-    //no-op
-});
+const mapStateToProps = (state: RootState) => (
+    {
+        //no-op
+    }
+);
 
-const mapDispatchToProps: DispatchProps = {
-    //no-op
-};
+const mapDispatchToProps: DispatchProps =
+    {
+        //no-op
+    }
+;
 
 export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);

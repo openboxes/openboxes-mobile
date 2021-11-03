@@ -4,8 +4,6 @@ import {FETCH_CONTAINER_DETAIL, FETCH_CONTAINER_DETAIL_RESPONSE_SUCCESS, SAVE_OR
 import {GET_LOCATIONS_REQUEST_SUCCESS} from "../actions/locations";
 import {ContainerResponse} from "../../data/container/Container";
 import {SUBMIT_PUTAWAY_ITEM_BIN_LOCATION_SUCCESS} from "../actions/putaways";
-import {SAVE_OR_UPDATE_LPN} from "../actions/lpn";
-import {GET_LOCATIONS_REQUEST_SUCCESS} from "../actions/locations";
 
 function* saveAndUpdateLpn(action: any) {
     try {
@@ -49,6 +47,4 @@ function* fetchContainer(action: any) {
 export default function* watcher() {
     yield takeLatest(SAVE_OR_UPDATE_LPN, saveAndUpdateLpn);
     yield takeLatest(FETCH_CONTAINER_DETAIL, fetchContainer);
-export default function* watcher() {
-    yield takeLatest(SAVE_OR_UPDATE_LPN, saveAndUpdateLpn);
 }
