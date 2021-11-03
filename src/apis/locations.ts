@@ -11,9 +11,11 @@ export function setCurrentLocation(location: any) {
     return apiClient.put(`/chooseLocation/${location.id}`);
 }
 
-export function searchLocationByLocationNumber(locationNumber: string) {
-    return apiClient.get(`/locations/${locationNumber}`);
-
+export function searchLocationByLocationNumber(locationNumber: string){
+  return apiClient.get(`/locations/${locationNumber}`);
+}
+export function getBinLocations(){
+  return apiClient.get(`/internalLocations`);
 }
 
 export function internalLocations(id: string) {
