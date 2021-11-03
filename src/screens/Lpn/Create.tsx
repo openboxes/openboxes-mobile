@@ -10,6 +10,7 @@ import styles from "./styles";
 import InputBox from "../../components/InputBox";
 import Button from "../../components/Button";
 import SelectDropdown from "react-native-select-dropdown";
+import {getShipmentPacking, getContainerType} from "../../redux/actions/packing";
 
 
 export interface State {
@@ -38,10 +39,40 @@ class CreateLpn extends React.Component<Props, State> {
 
     componentDidMount() {
         console.debug("Did mount with stockmovement")
-        this.fetchStockMovement()
+        this.fetchContainerType()
     }
 
-    fetchStockMovement = () => {
+    fetchContainerList = () => {
+
+        const actionCallback = (data: any) => {
+            if (data?.error) {
+                showPopup({
+                    title: data.error.message ? 'Container' : null,
+                    message: data.error.message ?? 'Failed to fetch Container List',
+                    positiveButton: {
+                        text: 'Ok'
+                    }
+                });
+            } else {
+                console.debug(">>>>>>>>>>>>>>>>")
+                // console.debug(data)
+
+                let stockMovementList: string[] = [];
+                console.log(data)
+                // data.map((item: any) => {
+                //     stockMovementList.push(item.name)
+                // })
+                // this.setState({
+                //     stockMovementList: stockMovementList,
+                //     stockMovements: data
+                // })
+            }
+        }
+        console.debug("Calling getShipmentPacking")
+        this.props.getShipmentPacking("OUTBOUND", actionCallback);
+    }
+
+    fetchContainerType = () => {
         const actionCallback = (data: any) => {
             if (data?.error) {
                 showPopup({
@@ -67,14 +98,14 @@ class CreateLpn extends React.Component<Props, State> {
             }
         }
         console.debug("Calling stockmovements")
-        this.props.getStockMovements("OUTBOUND", "PICKED", actionCallback);
+        this.props.getContainerType(actionCallback);
     }
 
     saveLpn = () => {
         const requestBody = {
             "name": this.state.name,
             "containerNumber": this.state.containerNumber,
-            "containerType.id": null,
+            "containerType.id": "2",
             "shipment.id": this.state.stockMovementId
         }
 
@@ -154,7 +185,8 @@ class CreateLpn extends React.Component<Props, State> {
 }
 
 const mapDispatchToProps: DispatchProps = {
-    getStockMovements,
+    getShipmentPacking,
+    getContainerType,
     saveAndUpdateLpn
 }
 

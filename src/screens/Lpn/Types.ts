@@ -9,7 +9,8 @@ export interface StateProps {
 
 
 export interface DispatchProps {
-    getStockMovements: (direction: string, status: string, callback: (data: any) => void) => void;
+    getContainerType: (callback: (data: any) => void) => void;
+    getShipmentPacking: (id: any, callback: (data: any) => void) => void;
     saveAndUpdateLpn: (requestBody: any, callback: (data: any) => void) => void;
 }
 
