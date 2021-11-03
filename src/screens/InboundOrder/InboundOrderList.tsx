@@ -18,7 +18,6 @@ const InboundOrderList = ({data}: InboundOrderProps) => {
     }
 
     const navigateToInboundDetails = () => {
-        console.log("InboundDetails",data)
         navigation.navigate("InboundDetails",{shipmentDetails : data[0] })
     }
 

@@ -3,6 +3,7 @@ import {InboundVM} from "./InboundVM";
 
 type InboundDetailProps = {
     data: any
+    shipmentId:any,
     shipmentData: any
 }
 
