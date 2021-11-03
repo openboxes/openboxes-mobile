@@ -38,9 +38,6 @@ export default function ({refs, value, label, showSelect, disabled, onChange, ke
                             onEndEdit(e.nativeEvent.text)
                         }}}
                     style={styles.input}
-                    right={!showSelect ?
-                        <TextInput.Icon name={Dots}/>
-                        : null}
                 />
                 {
                     showSelect ?
