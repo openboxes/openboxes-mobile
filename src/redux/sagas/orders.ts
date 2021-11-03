@@ -4,7 +4,7 @@ import {
   GET_ORDERS_REQUEST_SUCCESS,
   GET_PICKLIST_REQUEST,
   GET_PICKLIST_ITEM_REQUEST,
-  SUBMIT_PICKLIST_ITEM_PICKUP_REQUEST
+  SUBMIT_PICKLIST_ITEM_PICKUP_REQUEST, GET_STOCK_MOVEMENT_LIST
 } from '../actions/orders';
 import {hideScreenLoading, showScreenLoading} from '../actions/main';
 import * as api from '../../apis';
@@ -17,6 +17,25 @@ function* getOrders(action: any) {
   try {
     yield showScreenLoading('Fetching products');
     const response: GetOrdersApiResponse = yield call(api.getOrders, action.payload);
+    yield put({
+      type: GET_ORDERS_REQUEST_SUCCESS,
+      payload: response.data,
+    });
+    yield action.callback(response.data);
+    yield hideScreenLoading();
+  } catch (e) {
+    console.log('function* getProducts', e.message);
+    yield action.callback({
+      error: true,
+      message: e.message,
+    });
+  }
+}
+
+function* getStockMovement(action: any) {
+  try {
+    yield showScreenLoading('Fetching getStockMovement');
+    const response: GetOrdersApiResponse = yield call(api.getStockMovement, action.payload.direction, action.payload.status );
     yield put({
       type: GET_ORDERS_REQUEST_SUCCESS,
       payload: response.data,
@@ -97,4 +116,5 @@ export default function* watcher() {
   yield takeLatest(GET_PICKLIST_REQUEST, getPickList);
   yield takeLatest(GET_PICKLIST_ITEM_REQUEST, getPickListItem);
   yield takeLatest(SUBMIT_PICKLIST_ITEM_PICKUP_REQUEST, submitPickListItem);
+  yield takeLatest(GET_STOCK_MOVEMENT_LIST, getStockMovement);
 }
