@@ -61,7 +61,7 @@ function* submitShipmentItems(action: any) {
 
 export default function* watcher() {
     yield takeLatest(GET_SHIPMENT_PACKING_REQUEST, getShipmentPacking);
-    yield takeLatest(GET_CONTAINER_DETAILS_REQUEST, getShipmentPacking);
+    yield takeLatest(GET_CONTAINER_DETAILS_REQUEST, getContainerDetail);
     yield takeLatest(GET_SUBMIT_SHIPMENT_DETAILS_REQUEST, submitShipmentItems);
 
 
