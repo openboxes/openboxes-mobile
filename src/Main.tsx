@@ -31,6 +31,7 @@ import InboundOrder from "./screens/InboundOrder";
 import InboundDetails from "./screens/InboundDetails";
 import PutawayDetail from "./screens/PutawayDetails";
 import CreateLpn from "./screens/Lpn/Create";
+import LpnDetail from "./screens/LpnDetail/Index";
 import PutawayCandidates from "./screens/PutawayCandidates";
 // import PutawayDetails from "./screens/PutawayDetails";
 
@@ -149,6 +150,7 @@ class Main extends Component<Props, State> {
             <Stack.Screen name="InboundOrderList" component={InboundOrder} />
             <Stack.Screen name="InboundDetails" component={InboundDetails} />
             <Stack.Screen name="CreateLpn" component={CreateLpn} />
+            <Stack.Screen name="LpnDetail" component={LpnDetail} />
             <Stack.Screen name="InboundReceiveDetail" component={InboundReceiveDetail} />
             {/*<Stack.Screen name="Drawer" component={DrawerNavigator} />*/}
             {/*<Stack.Screen name="Drawer" component={DrawerNavigator} />*/}
