@@ -2,7 +2,8 @@ import {takeLatest, put, call} from 'redux-saga/effects';
 import {
     GET_CONTAINER_DETAILS_REQUEST, GET_CONTAINER_DETAILS_SUCCESS,
     GET_SHIPMENT_PACKING_REQUEST,
-    GET_SHIPMENT_PACKING_SUCCESS, GET_SUBMIT_SHIPMENT_DETAILS_SUCCESS
+    GET_SHIPMENT_PACKING_SUCCESS,
+    GET_SUBMIT_SHIPMENT_DETAILS_REQUEST, GET_SUBMIT_SHIPMENT_DETAILS_SUCCESS
 } from '../actions/packing';
 import {
     hideScreenLoading,
@@ -61,5 +62,7 @@ function* submitShipmentItems(action: any) {
 export default function* watcher() {
     yield takeLatest(GET_SHIPMENT_PACKING_REQUEST, getShipmentPacking);
     yield takeLatest(GET_CONTAINER_DETAILS_REQUEST, getShipmentPacking);
+    yield takeLatest(GET_SUBMIT_SHIPMENT_DETAILS_REQUEST, submitShipmentItems);
+
 
 }

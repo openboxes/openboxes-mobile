@@ -8,7 +8,7 @@ import {hideScreenLoading} from '../../redux/actions/main';
 import useEventListener from "../../hooks/useEventListener";
 import {searchProductGloballyAction} from "../../redux/actions/products";
 import Button from "../../components/Button"
-import {getShipmentPacking} from "../../redux/actions/packing";
+import {getShipmentPacking, getContainerDetails, submitShipmentDetails} from "../../redux/actions/packing";
 
 
 const Packing = () => {
@@ -23,6 +23,9 @@ const Packing = () => {
         quantityToPack: "0",
         error: null,
         searchProductCode: null,
+        containerId: "",
+        shipmentDetails: null,
+        shipmentId:"ff8081817c6fb108017c709dde9a000c"
     })
 
     useEffect(() => {
@@ -115,16 +118,82 @@ const Packing = () => {
             } else {
                 if (data && Object.keys(data).length !== 0) {
                     console.log(data)
-                    state.shipmentNumber = data.shipmentNumber
+                    state.shipmentDetails = data[0]
+                    state.shipmentNumber = data[0].shipmentNumber
+                    state.containerId = data[0].id
+                    getContainerDetail(data[0].id)
                 }
                 setState({...state})
             }
         }
         dispatch(getShipmentPacking(id, callback))
     }
+
+
+    const getContainerDetail = (id: string = "") => {
+        const callback = (data: any) => {
+            if (data?.error) {
+                showPopup({
+                    title: data.error.message
+                        ? `Container details`
+                        : null,
+                    message:
+                        data.error.message ??
+                        `Failed to load Container details value ${id}`,
+                    positiveButton: {
+                        text: 'Retry',
+                        callback: () => {
+                            dispatch(getContainerDetails(id));
+                        },
+                    },
+                    negativeButtonText: 'Cancel',
+                });
+            } else {
+                if (data && Object.keys(data).length !== 0) {
+                    console.log(data);
+                    submitShipmentDetail(state.shipmentId)
+                }
+            }
+        }
+        dispatch(getContainerDetails(id))
+    }
+
+
+    const submitShipmentDetail = (id: string) => {
+        const request = {
+            "container.id": state.containerId
+        }
+        const callback = (data: any) => {
+            if (data?.error) {
+                showPopup({
+                    title: data.error.message
+                        ? `Shipment details`
+                        : null,
+                    message:
+                        data.error.message ??
+                        `Failed to submit shipment details`,
+                    positiveButton: {
+                        text: 'Retry',
+                        callback: () => {
+                            dispatch(submitShipmentDetails(id, request));
+                        },
+                    },
+                    negativeButtonText: 'Cancel',
+                });
+            } else {
+                if (data && Object.keys(data).length !== 0) {
+                    console.log(data);
+
+                }
+                setState({...state})
+            }
+        }
+        dispatch(submitShipmentDetails(id, request))
+    }
     const onChangeLPNNumber = (text: string) => {
         setState({...state, quantityUnpacked: text})
     }
+
     const onChangeQuantityPacked = (text: string) => {
         setState({...state, quantityToPack: text})
     }
@@ -141,6 +210,7 @@ const Packing = () => {
     const moveToLPN = () => {
 
     }
+
     return (
         <View style={styles.container}>
             <View style={styles.from}>
