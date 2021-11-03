@@ -8,6 +8,12 @@ import transfer from './transfer';
 import inbound from './inbound'
 import lpn from './lpn'
 import transfers from './transfers';
+import inbound from './inbound';
+import packing from './packing'
+
+export default function* root() {
+    const sagas = [auth, products, locations, orders, putaway, transfer, transfers, inbound, packing];
+    yield all(sagas.map(fork));
 
 export default function* root() {
   const sagas = [auth, products, locations, orders, putaway, transfer, transfers, lpn,inbound];

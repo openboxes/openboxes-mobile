@@ -91,6 +91,15 @@ class Dashboard extends React.Component<Props, State> {
                         <Text style={styles.countLabel}>Putaway Candidates</Text>
                     </View>
                 </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.countContainer}
+                    onPress={() => {
+                        this.props.navigation.navigate('Packing');
+                    }}>
+                    <View style={styles.countLabelAndIconContainer}>
+                        <Text style={styles.countLabel}>Packing</Text>
+                    </View>
+                </TouchableOpacity>
             </View>
         );
     }
