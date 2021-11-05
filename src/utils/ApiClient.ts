@@ -5,8 +5,8 @@ import {environment} from './Environment';
 import * as NavigationService from "../NavigationService"
 import {store} from "../../App";
 import {hideScreenLoading} from "../redux/actions/main";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 const logger = createLogger('ApiClient.ts');
-
 
 const apiClient = axios.create({
   baseURL: environment.API_BASE_URL,

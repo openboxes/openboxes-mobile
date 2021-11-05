@@ -125,7 +125,6 @@ function* submitShipmentItems(action: any) {
             type: GET_SUBMIT_SHIPMENT_DETAILS_SUCCESS,
             payload: response.data,
         });
-        console.log(response)
         yield hideScreenLoading();
     } catch (e) {
         console.log('function* submitShipmentItems', e.response);
