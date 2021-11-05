@@ -23,12 +23,13 @@ function* getOrders(action: any) {
     });
     yield action.callback(response.data);
     yield hideScreenLoading();
-  } catch (e) {
-    console.log('function* getProducts', e.message);
-    yield action.callback({
-      error: true,
-      message: e.message,
-    });
+  } catch (error) {
+    if (error.code != 401) {
+      yield action.callback({
+        error: true,
+        message: error.message,
+      });
+    }
   }
 }
 
@@ -62,12 +63,13 @@ function* getPickList(action: any) {
       payload: response.data,
     });
     yield action.callback(response.data);
-  } catch (e) {
-    console.log('function* getPickList', e.message);
-    yield action.callback({
-      error: true,
-      message: e.message,
-    });
+  } catch (error) {
+    if (error.code != 401) {
+      yield action.callback({
+        error: true,
+        message: error.message,
+      });
+    }
   }
 }
 function* getPickListItem(action: any) {
@@ -81,12 +83,13 @@ function* getPickListItem(action: any) {
       payload: response.data,
     });
     yield action.callback(response.data);
-  } catch (e) {
-    console.log('function* getProducts', e.message);
-    yield action.callback({
-      error: true,
-      message: e.message,
-    });
+  } catch (error) {
+    if (error.code != 401) {
+      yield action.callback({
+        error: true,
+        message: error.message,
+      });
+    }
   }
 }
 
@@ -102,12 +105,13 @@ function* submitPickListItem(action: any) {
       payload: response.data,
     });
     yield action.callback(response.data);
-  } catch (e) {
-    console.log('function* getProducts', e.message);
-    yield action.callback({
-      error: true,
-      message: e.message,
-    });
+  } catch (error) {
+    if (error.code != 401) {
+      yield action.callback({
+        error: true,
+        message: error.message,
+      });
+    }
   }
 }
 

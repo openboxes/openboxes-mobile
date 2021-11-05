@@ -28,12 +28,13 @@ function* getProducts(action: any) {
         });
         yield action.callback(response.data);
         yield hideScreenLoading();
-    } catch (e) {
-        console.log('function* getProducts', e.message);
-        yield action.callback({
-            error: true,
-            message: e.message,
-        });
+    } catch (error) {
+        if (error.code != 401) {
+            yield action.callback({
+                error: true,
+                message: error.message,
+            });
+        }
     }
 }
 
@@ -49,12 +50,13 @@ function* searchProductsByName(action: any) {
         });
         yield action.payload.callback(data);
         yield hideScreenLoading();
-    } catch (e) {
-        console.log('function* searchProducts', e.message);
-        yield action.callback({
-            error: true,
-            message: e.message,
-        });
+    } catch (error) {
+        if (error.code != 401) {
+            yield action.callback({
+                error: true,
+                message: error.message,
+            });
+        }
     }
 }
 
@@ -73,12 +75,13 @@ function* searchProductByCode(action: any) {
         });
         yield action.callback(data);
         yield hideScreenLoading();
-    } catch (e) {
-        console.log('function* searchProducts', e.message);
-        yield action.callback({
-            error: true,
-            message: e.message,
-        });
+    } catch (error) {
+        if (error.code != 401) {
+            yield action.callback({
+                error: true,
+                message: error.message,
+            });
+        }
     }
 }
 
@@ -94,12 +97,13 @@ function* searchProductGlobally(action: any) {
         });
         yield action.callback(data);
         yield hideScreenLoading();
-    } catch (e) {
-        console.log('function* searchProductGlobally', e);
-        yield action.callback({
-            error: true,
-            message: e.message,
-        });
+    } catch (error) {
+        if (error.code != 401) {
+            yield action.callback({
+                error: true,
+                message: error.message,
+            });
+        }
     }
 }
 
@@ -118,12 +122,13 @@ function* searchProductsByCategory(action: any) {
         });
         yield action.callback(data);
         yield hideScreenLoading();
-    } catch (e) {
-        console.log('function* searchProductsByCategory', e);
-        yield action.callback({
-            error: true,
-            message: e.message,
-        });
+    } catch (error) {
+        if (error.code != 401) {
+            yield action.callback({
+                error: true,
+                message: error.message,
+            });
+        }
     }
 }
 
@@ -137,13 +142,13 @@ function* getProductById(action: any) {
         });
         yield action.callback(response.data);
         yield put(hideScreenLoading());
-    } catch (e) {
-        console.log('function* getProductById', e.message)
-        yield put(hideScreenLoading());
-        yield action.callback({
-          error: true,
-          message: e.message,
-        });
+    } catch (error) {
+        if (error.code != 401) {
+            yield action.callback({
+                error: true,
+                message: error.message,
+            });
+        }
     }
 }
 

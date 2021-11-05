@@ -23,12 +23,13 @@ function* fetchPutAwayFromOrder(action: any) {
         });
         yield action.callback(response.data);
         yield hideScreenLoading();
-    } catch (e) {
-        console.log('function* fetchPutAwayFromOrder', e.message);
-        yield action.callback({
-            error: true,
-            message: e.message,
-        });
+    } catch (error) {
+        if (error.code != 401) {
+            yield action.callback({
+                error: true,
+                message: error.message,
+            });
+        }
     }
 }
 
@@ -46,12 +47,13 @@ function* submitPutawayItem(action: any) {
             payload: response.data,
         });
         yield action.callback(response.data);
-    } catch (e) {
-        console.log('function* submitPutawayItem', e.message);
-        yield action.callback({
-            error: true,
-            message: e.message,
-        });
+    } catch (error) {
+        if (error.code != 401) {
+            yield action.callback({
+                error: true,
+                message: error.message,
+            });
+        }
     }
 }
 
