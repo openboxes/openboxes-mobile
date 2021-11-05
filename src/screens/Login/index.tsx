@@ -135,7 +135,7 @@ const Login = () => {
                     }}
                 />
                 <Button
-                    title="Choose Url"
+                    title="Settings"
                     onPress={()=>{NavigationService.navigate("Settings")}}
                     style={{
                         marginTop: 8,
