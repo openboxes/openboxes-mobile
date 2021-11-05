@@ -41,6 +41,7 @@ import OutboundStockList from "./screens/OutboundStockList";
 import OutboundStockDetails from "./screens/OutboundStockDetails";
 import ProductSummary from "./screens/ProductSummary";
 import AdjustStock from "./screens/AdjustStock";
+import ApiClient from "./utils/ApiClient";
 // import PutawayDetails from "./screens/PutawayDetails";
 
 const Stack = createStackNavigator();
@@ -79,10 +80,11 @@ class Main extends Component<Props, State> {
   }
 
   componentWillMount() {
-    AsyncStorage.getItem('launched').then((value)=>{
-      console.log('value')
+    AsyncStorage.getItem('API_URL').then((value)=>{
       if(!value){
         NavigationService.navigate("Settings")
+      }else{
+        ApiClient.setBaseUrl(value)
       }
     })
   }

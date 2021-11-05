@@ -1,29 +1,41 @@
 import React, {FC, useEffect, useState} from 'react'
-import {View, TextInput, Text,Button} from "react-native";
+import {View, TextInput, Text, Button} from "react-native";
 import {Props} from './types'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {environment} from "../../utils/Environment";
+import * as NavigationService from "../../NavigationService";
+import ApiClient from "../../utils/ApiClient";
 
 const Settings: FC<Props> = ({}) => {
     const [value, setValue] = useState('')
 
     useEffect(() => {
-        const setUrl = async () => {
-            const API_URL = await AsyncStorage.getItem('API_URL') || environment.API_BASE_URL
-            setValue(API_URL)
-        }
-        setUrl()
+        AsyncStorage.getItem('API_URL').then((url) => {
+            setValue(url || environment.API_BASE_URL)
+        })
     }, [])
 
+    const handlePress = () => {
+        ApiClient.setBaseUrl(value)
+        AsyncStorage.setItem('API_URL', value).then(() => {
+            NavigationService.navigate("Login")
+        })
+    }
 
     return (
         <View style={{flex: 1, padding: 10}}>
             <View style={{width: '100%', marginBottom: 50}}>
                 <Text>URL</Text>
-                <TextInput value={value} style={{borderWidth: 1, paddingHorizontal: 10, marginTop: 5}}/>
+                <TextInput
+                    style={{borderWidth: 1, paddingHorizontal: 10, marginTop: 5}}
+                    value={value}
+                    onChangeText={(text) => {
+                        setValue(text)
+                    }}
+                />
             </View>
             <Button
-                onPress={()=>{}}
+                onPress={handlePress}
                 title="Go"
             />
         </View>
