@@ -24,10 +24,11 @@ function* saveAndUpdateLpn(action: any) {
 function* fetchContainer(action: any) {
     try {
         console.log("sagas fetchContainer:" + action.payload.id)
-        const response: ContainerResponse = yield call(
+        const response = yield call(
             api.fetchContainer,
             action.payload.id,
         );
+        console.log(response)
         yield put({
             type: FETCH_CONTAINER_DETAIL_RESPONSE_SUCCESS,
             payload: response.data,

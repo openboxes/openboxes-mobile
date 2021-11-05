@@ -101,7 +101,7 @@ class CreateLpn extends React.Component<Props, State> {
                 })
             }
         }
-        console.debug("Calling getShipmentOrigin",currentLocation?.id, currentLocation)
+        console.debug("Calling getShipmentOrigin", currentLocation?.id, currentLocation)
         this.props.getShipmentOrigin(currentLocation?.id ?? "", actionCallback);
     }
 
@@ -112,11 +112,37 @@ class CreateLpn extends React.Component<Props, State> {
             "containerType.id": "2",
             "shipment.id": this.state.stockMovementId
         }
-
         const actionCallback = (data: any) => {
-            console.debug("data after submit")
-            console.debug(data)
-
+            if (data?.error) {
+                showPopup({
+                    title: data.error.message
+                        ? `Failed to Save`
+                        : null,
+                    message:
+                        data.error.message ??
+                        `Failed to Save`,
+                    positiveButton: {
+                        text: 'Retry',
+                        callback: () => {
+                            this.props.saveAndUpdateLpn(requestBody, actionCallback);
+                        },
+                    },
+                    negativeButtonText: 'Cancel',
+                });
+            } else {
+                // if (data.length == 0) {
+                //     showPopup({
+                //         message: `No search results`,
+                //         positiveButton: {text: 'Ok'},
+                //     });
+                // } else
+                if (data && Object.keys(data).length !== 0) {
+                    console.log(data);
+                    console.debug("data after submit")
+                    console.debug(data)
+                    this.props.navigation.navigate("LpnDetail", {id: data.id})
+                }
+            }
         }
         console.debug("Save LPN", requestBody)
         this.props.saveAndUpdateLpn(requestBody, actionCallback);
@@ -163,12 +189,12 @@ class CreateLpn extends React.Component<Props, State> {
                     <InputBox
                         value={this.state.name}
                         onChange={this.onChangeName}
-                        disabled={false}
+                        editable={false}
                         label={'Name'}/>
                     <InputBox
                         value={this.state.containerNumber}
-                        disabled={false}
                         onChange={this.onChangeContainerNumber}
+                        editable={false}
                         label={'Container Number'}/>
                 </View>
                 <View style={styles.bottom}>

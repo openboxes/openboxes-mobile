@@ -12,7 +12,7 @@ export const handleError = (error: any) => {
                 message = "Something went wrong on server"
                 break
             case 404:
-                message = "Server unavailable"
+                message = "Object not found"
                 break
             default:
                 message = "Server unavailable";

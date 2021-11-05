@@ -4,11 +4,24 @@ import {View, TouchableOpacity, Text, Image} from 'react-native';
 import {TextInput} from 'react-native-paper';
 import SelectDropdown from 'react-native-select-dropdown'
 import {Props} from "./types";
+import AutoComplete from "../AutoComplete/AutoComplete";
+
 const Edit = require("../../assets/images/edit.png")
-const Done = require( '../../assets/images/tick.png')
+const Done = require('../../assets/images/tick.png')
 const Dots = require('../../assets/images/dots.png')
 
-export default function ({refs, value, label, showSelect, disabled, onChange, keyboard, editable = true, onEndEdit}: Props) {
+export default function ({
+                             refs,
+                             value,
+                             label,
+                             showSelect,
+                             disabled,
+                             onChange,
+                             editable = true,
+                             onEndEdit,
+                             style,
+                             data
+                         }: Props) {
     const [edit, setEdit] = useState(disabled)
     const onEdit = () => {
         setEdit(!edit)
@@ -24,20 +37,24 @@ export default function ({refs, value, label, showSelect, disabled, onChange, ke
     return (
         <View style={styles.container}>
             <View style={styles.row}>
-                <TextInput
-                    mode={"outlined"}
-                    ref={refs}
+                <AutoComplete
+                    data={data}
+                    menuStyle={{backgroundColor: 'white'}}
+                    refs={refs}
                     label={label}
-                    placeholder={label}
                     value={value}
-                    disabled={edit||false}
-                    keyboardType={keyboard||"default"}
-                    onChangeText={onChange}
-                    onEndEditing={(e) =>{
+                    disabled={edit || false}
+                    onChange={onChange}
+                    onEndEdit={(e) => {
                         if (onEndEdit) {
-                            onEndEdit(e.nativeEvent.text)
-                        }}}
-                    style={styles.input}
+                            onEndEdit(e)
+                        }
+                    }}
+                    inputStyle={style}
+                    edit={edit}
+                    // left={}
+                    // right={}
+                    // menuStyle={}
                 />
                 {
                     showSelect ?
@@ -55,10 +72,11 @@ export default function ({refs, value, label, showSelect, disabled, onChange, ke
                         />
                         : null
                 }
-                {editable?<TouchableOpacity
+                {editable ? <TouchableOpacity
+                    style={styles.editIcon}
                     onPress={onEdit}>
                     <Image source={edit ? Edit : Done}/>
-                </TouchableOpacity>: null}
+                </TouchableOpacity> : null}
             </View>
         </View>
 

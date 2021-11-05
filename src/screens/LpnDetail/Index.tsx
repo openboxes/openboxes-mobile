@@ -3,13 +3,8 @@ import {DispatchProps, Props} from "./Types";
 import {Container} from "../../data/container/Container";
 import {FlatList, ListRenderItemInfo, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import Theme from "../../utils/Theme";
-import PutAwayItems from "../../data/putaway/PutAwayItems";
-import PutAwayItem from "../../components/PutAwayItem";
-import ShipmentItems from "../../data/inbound/ShipmentItems";
-import PutAway from "../../data/putaway/PutAway";
 import {ContainerShipmentItem} from "../../data/container/ContainerShipmentItem";
-import {getStockMovements} from "../../redux/actions/orders";
-import {fetchContainer, saveAndUpdateLpn} from "../../redux/actions/lpn";
+import {fetchContainer} from "../../redux/actions/lpn";
 import {connect} from "react-redux";
 
 export interface State {
@@ -27,12 +22,13 @@ class LpnDetail extends React.Component<Props, State> {
     componentDidMount() {
         console.debug("Did mount with Container details")
         const {id} = this.props.route.params
-        console.debug("id::::>"+id)
+        console.debug("id::::>" + id)
         this.fetchContainerDetail(id)
     }
 
-    fetchContainerDetail = (id: string) => {
+    fetchContainerDetail = (id: string ) => {
         const actionCallback = (data: any) => {
+            console.log("Details Data",data)
             this.setState({
                 container: data,
             });
@@ -83,7 +79,8 @@ class LpnDetail extends React.Component<Props, State> {
                                         </View>
                                         <View style={styles.col50}>
                                             <Text style={styles.label}>Product</Text>
-                                            <Text style={styles.value}>{shipmentItem.item?.inventoryItem?.product?.name}</Text>
+                                            <Text
+                                                style={styles.value}>{shipmentItem.item?.inventoryItem?.product?.name}</Text>
                                         </View>
 
                                     </View>

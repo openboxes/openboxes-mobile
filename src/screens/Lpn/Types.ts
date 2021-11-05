@@ -1,7 +1,8 @@
 import Location from "../../data/location/Location";
 
 export interface OwnProps {
-
+    navigation: any;
+    route: any;
 }
 
 export interface StateProps {
