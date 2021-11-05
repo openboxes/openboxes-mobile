@@ -5,6 +5,7 @@ import {FlatList, ListRenderItemInfo, StyleSheet, Text, TouchableOpacity, View} 
 import Theme from "../../utils/Theme";
 import {ContainerShipmentItem} from "../../data/container/ContainerShipmentItem";
 import {fetchContainer} from "../../redux/actions/lpn";
+import {getShipmentPacking} from "../../redux/actions/packing";
 import {connect} from "react-redux";
 
 export interface State {
@@ -23,17 +24,21 @@ class LpnDetail extends React.Component<Props, State> {
         console.debug("Did mount with Container details")
         const {id} = this.props.route.params
         console.debug("id::::>" + id)
-        this.fetchContainerDetail(id)
+        this.fetchContainerDetail()
     }
 
-    fetchContainerDetail = (id: string ) => {
+    fetchContainerDetail = (id: string = "ff80818179f42048017af259eb060121") => {
         const actionCallback = (data: any) => {
-            console.log("Details Data",data)
+            console.log("Details Data", data)
             this.setState({
                 container: data,
             });
         }
-        this.props.fetchContainer(id, actionCallback);
+        this.props.getShipmentPacking(id, actionCallback);
+    }
+
+    onTapped = (shipmentItem: ListRenderItemInfo<ContainerShipmentItem>) => {
+        this.props.navigation.navigate("Packing", {shipment: shipmentItem})
     }
 
     render() {
@@ -43,8 +48,8 @@ class LpnDetail extends React.Component<Props, State> {
             >
                 <View style={styles.row}>
                     <View style={styles.col50}>
-                        <Text style={styles.label}>Id</Text>
-                        <Text style={styles.value}>{this.state.container?.id}</Text>
+                        <Text style={styles.label}>Shipment Number</Text>
+                        <Text style={styles.value}>{this.state.container?.shipmentNumber}</Text>
                     </View>
                     <View style={styles.col50}>
                         <Text style={styles.label}>Name</Text>
@@ -63,6 +68,12 @@ class LpnDetail extends React.Component<Props, State> {
                         <Text style={styles.value}>{this.state.container?.containerType?.name}</Text>
                     </View>
                 </View>
+                <View style={styles.row}>
+                    <View style={styles.col50}>
+                        <Text style={styles.label}>Number of Items</Text>
+                        <Text style={styles.value}>{this.state.container?.shipmentItems?.length}</Text>
+                    </View>
+                </View>
                 {
                     <FlatList
                         data={this.state.container?.shipmentItems}
@@ -70,12 +81,13 @@ class LpnDetail extends React.Component<Props, State> {
                             (
                                 <TouchableOpacity
                                     style={styles.listItemContainer}
-                                    // onPress={() => this.onPutAwayTapped(item.item)}
+                                    onPress={() => this.onTapped(shipmentItem)}
                                 >
                                     <View style={styles.row}>
                                         <View style={styles.col50}>
-                                            <Text style={styles.label}>Id</Text>
-                                            <Text style={styles.value}>{shipmentItem.item.id}</Text>
+                                            <Text style={styles.label}>Product Code</Text>
+                                            <Text
+                                                style={styles.value}>{shipmentItem.item?.inventoryItem?.product?.productCode}</Text>
                                         </View>
                                         <View style={styles.col50}>
                                             <Text style={styles.label}>Product</Text>
@@ -86,14 +98,9 @@ class LpnDetail extends React.Component<Props, State> {
                                     </View>
                                     <View style={styles.row}>
                                         <View style={styles.col50}>
-                                            <Text style={styles.label}>Shipment</Text>
+                                            <Text style={styles.label}>Quantity</Text>
                                             <Text
-                                                style={styles.value}>{shipmentItem.item.shipment?.name}</Text>
-                                        </View>
-                                        <View style={styles.col50}>
-                                            <Text style={styles.label}>Recipient</Text>
-                                            <Text
-                                                style={styles.value}>{shipmentItem.item.recipient?.firstName} {shipmentItem.item.recipient?.lastName}</Text>
+                                                style={styles.value}>{shipmentItem.item.quantity}</Text>
                                         </View>
                                     </View>
                                 </TouchableOpacity>
@@ -113,7 +120,8 @@ class LpnDetail extends React.Component<Props, State> {
 }
 
 const mapDispatchToProps: DispatchProps = {
-    fetchContainer
+    fetchContainer,
+    getShipmentPacking
 }
 
 export default connect(null, mapDispatchToProps)(LpnDetail);
