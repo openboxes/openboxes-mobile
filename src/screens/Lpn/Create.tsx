@@ -93,7 +93,7 @@ class CreateLpn extends React.Component<Props, State> {
                 let stockMovementList: string[] = [];
                 console.log(data)
                 data.map((item: any) => {
-                    stockMovementList.push(item.name)
+                    stockMovementList.push(item.shipmentNumber)
                 })
                 this.setState({
                     stockMovementList: stockMovementList,
@@ -102,7 +102,7 @@ class CreateLpn extends React.Component<Props, State> {
             }
         }
         console.debug("Calling getShipmentOrigin",currentLocation?.id, currentLocation)
-        this.props.getShipmentOrigin(currentLocation?.id ?? "1", actionCallback);
+        this.props.getShipmentOrigin(currentLocation?.id ?? "", actionCallback);
     }
 
     saveLpn = () => {
@@ -147,16 +147,11 @@ class CreateLpn extends React.Component<Props, State> {
         return (
             <View style={styles.container}>
                 <View style={styles.from}>
-                    <InputBox
-                        value={this.state.name}
-                        onChange={this.onChangeName}
-                        disabled={true}
-                        label={'Name'}/>
                     <SelectDropdown
                         data={this.state.stockMovementList}
                         onSelect={(selectedItem, index) => {
                             console.log(selectedItem, index)
-                            const stockMovement = this.state.stockMovements?.find(i => i.name === selectedItem);
+                            const stockMovement = this.state.stockMovements?.find(i => i.shipmentNumber === selectedItem);
                             this.setState({stockMovement: selectedItem, stockMovementId: stockMovement?.id})
                         }}
                         defaultValueByIndex={0}
@@ -166,8 +161,13 @@ class CreateLpn extends React.Component<Props, State> {
                         rowTextForSelection={(item, index) => item}
                     />
                     <InputBox
+                        value={this.state.name}
+                        onChange={this.onChangeName}
+                        disabled={false}
+                        label={'Name'}/>
+                    <InputBox
                         value={this.state.containerNumber}
-                        disabled={true}
+                        disabled={false}
                         onChange={this.onChangeContainerNumber}
                         label={'Container Number'}/>
                 </View>
