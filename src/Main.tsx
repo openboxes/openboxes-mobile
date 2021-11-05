@@ -36,6 +36,7 @@ import LpnDetail from "./screens/LpnDetail/Index";
 import PutawayCandidates from "./screens/PutawayCandidates";
 import Packing from "./screens/Packing";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import ApiClient from "./utils/ApiClient";
 // import PutawayDetails from "./screens/PutawayDetails";
 
 const Stack = createStackNavigator();
@@ -74,10 +75,11 @@ class Main extends Component<Props, State> {
   }
 
   componentWillMount() {
-    AsyncStorage.getItem('launched').then((value)=>{
-      console.log('value')
+    AsyncStorage.getItem('API_URL').then((value)=>{
       if(!value){
         NavigationService.navigate("Settings")
+      }else{
+        ApiClient.setBaseUrl(value)
       }
     })
   }
