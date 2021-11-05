@@ -11,7 +11,7 @@ import {colors} from "./src/constants";
 
 const saga = createSageMiddleware();
 
-const store = createStore(rootRducer, applyMiddleware(saga));
+export const store = createStore(rootRducer, applyMiddleware(saga));
 
 saga.run(watchers);
 

@@ -20,12 +20,13 @@ function* getLocations(action: any) {
     });
     yield action.callback(response.data);
     yield hideScreenLoading();
-  } catch (e) {
-    console.log('function* getLocations', e);
-    yield action.callback({
-      error: true,
-      message: e.message,
-    });
+  } catch (error) {
+    if (error.code != 401) {
+      yield action.callback({
+        error: true,
+        message: error.message,
+      });
+    }
   }
 }
 
@@ -42,12 +43,14 @@ function* setCurrentLocation(action: any) {
     });
     yield action.callback(action.payload.location);
     yield hideScreenLoading();
-  } catch (e) {
-    yield hideScreenLoading();
-    yield action.callback({
-      error: true,
-      message: e.message,
-    });
+  } catch (error) {
+    yield hideScreenLoading()
+    if (error.code != 401) {
+      yield action.callback({
+        error: true,
+        message: error.message,
+      });
+    }
   }
 }
 
@@ -61,12 +64,13 @@ function* searchLocationByLocationNumber(action: any) {
     });
     yield action.callback(response.data);
     yield hideScreenLoading();
-  } catch (e) {
-    console.log('function* getLocations', e);
-    yield action.callback({
-      error: true,
-      message: e.message,
-    });
+  } catch (error) {
+    if (error.code != 401) {
+      yield action.callback({
+        error: true,
+        message: error.message,
+      });
+    }
   }
 }
 

@@ -32,7 +32,7 @@ export interface  DispatchProps {
   ) => void;
 }
 
-export type Types = OwnProps & StateProps & DispatchProps;
+export type Props = OwnProps & StateProps & DispatchProps;
 
 export interface State {
   error: string | null;
