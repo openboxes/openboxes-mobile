@@ -58,7 +58,7 @@ const ProductSummary = () => {
 
     const navigateToDetails = (item: any) => {
         const product = {
-            id: item.productId
+            id: item.productCode
         }
         navigation.navigate("ProductDetails", {product: product});
     }
