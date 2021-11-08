@@ -21,3 +21,9 @@ export function getBinLocations(){
 export function internalLocations(id: string) {
     return apiClient.get(`/internalLocations/?location.id=${id}`);
 }
+
+
+export function fetchProductSummary(id: string) {
+    console.log(id)
+    return apiClient.get(`/locations/${id}/productSummary`);
+}
