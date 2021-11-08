@@ -4,7 +4,7 @@ import {getStockMovements} from "../../redux/actions/orders";
 import {saveAndUpdateLpn} from "../../redux/actions/lpn";
 import {DispatchProps, Props} from "./Types";
 import {connect} from "react-redux";
-import {Image, View} from "react-native";
+import {Image, Text, View} from "react-native";
 import {Order} from "../../data/order/Order";
 import styles from "./styles";
 import InputBox from "../../components/InputBox";
@@ -140,7 +140,7 @@ class CreateLpn extends React.Component<Props, State> {
                     console.log(data);
                     console.debug("data after submit")
                     console.debug(data)
-                    this.props.navigation.navigate("LpnDetail", {id: data.id})
+                    this.props.navigation.navigate("LpnDetail", {id: data.id,shipmentNumber:this.state.stockMovement})
                 }
             }
         }
@@ -173,6 +173,7 @@ class CreateLpn extends React.Component<Props, State> {
         return (
             <View style={styles.container}>
                 <View style={styles.from}>
+                    <Text style={styles.label}>Shipment Number</Text>
                     <SelectDropdown
                         data={this.state.stockMovementList}
                         onSelect={(selectedItem, index) => {
