@@ -1,5 +1,15 @@
 import React from 'react';
-import {Image, ScrollView, Text, View, Button, KeyboardAvoidingView, Platform} from 'react-native';
+import {
+    Image,
+    ScrollView,
+    Text,
+    View,
+    Button,
+    KeyboardAvoidingView,
+    Platform,
+    FlatList,
+    TouchableOpacity
+} from 'react-native';
 import styles from './styles';
 import PrintModal from '../../components/PrintModal';
 import Refresh from '../../components/Refresh';
@@ -10,6 +20,8 @@ import {showScreenLoading, hideScreenLoading} from '../../redux/actions/main';
 import {connect} from "react-redux";
 import showPopup from "../../components/Popup";
 import {RootState} from "../../redux/reducers";
+import {Card} from "react-native-paper";
+import RenderData from "../../components/RenderData";
 
 class ProductDetails extends React.Component<Props, State> {
     constructor(props: Props) {
@@ -23,6 +35,7 @@ class ProductDetails extends React.Component<Props, State> {
 
     getProduct = () => {
         const {product} = this.props.route.params
+        console.log(product)
         this.getProductDetails(product.id)
     }
 
@@ -53,6 +66,7 @@ class ProductDetails extends React.Component<Props, State> {
         }
 
         const actionCallback = (data: any) => {
+            console.log(JSON.stringify(data))
             if (data?.error) {
                 showPopup({
                     title: data.error.message
@@ -76,6 +90,32 @@ class ProductDetails extends React.Component<Props, State> {
         this.props.hideScreenLoading();
         this.props.getProductByIdAction(id, actionCallback);
     }
+
+
+    navigateToDetails = (item: any) => {
+        // this.props.navigation.navigate("");
+    }
+
+
+    renderListItem = (item: any, index: any) =>  (
+        <TouchableOpacity
+            key={index}
+            onPress={() => this.navigateToDetails(item)}
+            style={styles.itemView}>
+            <Card>
+                <Card.Content>
+                    <View style={styles.rowItem}>
+                        <RenderData title={"Bin Location"} subText={item?.binLocation?.name ?? "Default"}/>
+                        <RenderData title={"Quantity OnHand"} subText={item.quantityOnHand ?? 0}/>
+                    </View>
+                    <View style={styles.rowItem}>
+                        <RenderData title={"Lot Number"} subText={item?.inventoryItem?.lotNumber ?? "Default"}/>
+                        <RenderData title={"Quantity Available"} subText={item.quantityAvailable ?? 0}/>
+                    </View>
+                </Card.Content>
+            </Card>
+        </TouchableOpacity>
+    )
 
     render() {
         const vm = vmMapper(this.state.productDetails, this.state);
@@ -109,7 +149,7 @@ class ProductDetails extends React.Component<Props, State> {
                                     </View>
                                     <View style={styles.value}>
                                         <Text style={styles.textAlign}>
-                                            {vm.status}{' '}
+                                            {vm.status}
                                         </Text>
                                     </View>
                                 </View>
@@ -119,7 +159,7 @@ class ProductDetails extends React.Component<Props, State> {
                                     </View>
                                     <View style={styles.value}>
                                         <Text style={styles.textAlign}>
-                                            {vm.quantityOnHand}{' '}
+                                            {vm.quantityOnHand}
                                             {vm.unitOfMeasure}
                                         </Text>
                                     </View>
@@ -130,7 +170,7 @@ class ProductDetails extends React.Component<Props, State> {
                                     </View>
                                     <View style={styles.value}>
                                         <Text style={styles.textAlign}>
-                                            {vm.quantityAvailable}{' '}
+                                            {vm.quantityAvailable}
                                             {vm.unitOfMeasure}
                                         </Text>
                                     </View>
@@ -141,7 +181,7 @@ class ProductDetails extends React.Component<Props, State> {
                                     </View>
                                     <View style={styles.value}>
                                         <Text style={styles.textAlign}>
-                                            {vm.quantityAllocated}{' '}
+                                            {vm.quantityAllocated}
                                             {vm.unitOfMeasure}
                                         </Text>
                                     </View>
@@ -152,7 +192,7 @@ class ProductDetails extends React.Component<Props, State> {
                                     </View>
                                     <View style={styles.value}>
                                         <Text style={styles.textAlign}>
-                                            {vm.quantityOnOrder}{' '}
+                                            {vm.quantityOnOrder}
                                             {vm.unitOfMeasure}
                                         </Text>
                                     </View>
@@ -167,7 +207,7 @@ class ProductDetails extends React.Component<Props, State> {
                                     </View>
                                     <View style={styles.value}>
                                         <Text style={styles.textAlign}>
-                                            {vm.productCode}{' '}
+                                            {vm.productCode}
                                         </Text>
                                     </View>
                                 </View>
@@ -177,7 +217,7 @@ class ProductDetails extends React.Component<Props, State> {
                                     </View>
                                     <View style={styles.value}>
                                         <Text style={styles.textAlign}>
-                                            {vm.category.name}{' '}
+                                            {vm.category.name}
                                         </Text>
                                     </View>
                                 </View>
@@ -206,6 +246,11 @@ class ProductDetails extends React.Component<Props, State> {
                                     </View>
                                 </View>
                             </View>
+                            <Text style={styles.boxHeading}>Available Items</Text>
+                            {vm?.availableItems?.map((item, index) => {
+                                    return this.renderListItem(item, index)
+                                }
+                            )}
                             <Button
                                 title={'Print Barcode Label'}
                                 onPress={this.handleClick}

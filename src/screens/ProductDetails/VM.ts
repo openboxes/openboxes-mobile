@@ -22,6 +22,7 @@ export interface VM {
   quantityOnOrder:number,
   unitOfMeasure:string,
   image?:any
+  availableItems:[]
 }
 
 export interface DetailsItemVM {
