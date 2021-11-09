@@ -58,7 +58,7 @@ const ProductSummary = () => {
 
     const navigateToDetails = (item: any) => {
         const product = {
-            id: item.productId
+            id: item.productCode
         }
         navigation.navigate("ProductDetails", {product: product});
     }
@@ -73,10 +73,9 @@ const ProductSummary = () => {
                 <Card.Content>
                     <View style={styles.rowItem}>
                         <RenderData title={"Product Code"} subText={item.productCode}/>
-                        <RenderData title={"Product Id"} subText={item.productId}/>
+                        <RenderData title={"Quantity OnHand"} subText={item.quantityOnHand}/>
                     </View>
                     <View style={styles.rowItem}>
-                        <RenderData title={"Quantity OnHand"} subText={item.quantityOnHand}/>
                         <RenderData title={"Product Name"} subText={item.productName}/>
                     </View>
                 </Card.Content>
