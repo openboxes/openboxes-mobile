@@ -93,7 +93,7 @@ class ProductDetails extends React.Component<Props, State> {
 
 
     navigateToDetails = (item: any) => {
-        // this.props.navigation.navigate("");
+        this.props.navigation.navigate("AdjustStock",{item});
     }
 
 

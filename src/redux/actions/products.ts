@@ -36,8 +36,8 @@ export const PRINT_LABEL_REQUEST = 'PRINT_LABEL_REQUEST';
 export const PRINT_LABEL_REQUEST_SUCCESS = 'PRINT_LABEL_REQUEST_SUCCESS';
 export const PRINT_LABEL_REQUEST_FAIL = 'PRINT_LABEL_REQUEST_FAIL';
 
-
-
+export const STOCK_ADJUSTMENT_REQUEST = 'STOCK_ADJUSTMENT_REQUEST'
+export const STOCK_ADJUSTMENT_REQUEST_SUCCESS = "STOCK_ADJUSTMENT_REQUEST_SUCCESS"
 export function getProductsAction(callback?: (products: any) => void) {
   return {
     type: GET_PRODUCTS_REQUEST,
@@ -105,6 +105,18 @@ export function printLabelAction(
 ) {
   return {
     type: PRINT_LABEL_REQUEST,
+    payload: {data},
+    callback,
+  };
+}
+
+
+export function stockAdjustments(
+    data: any,
+    callback?: (data: any) => void,
+) {
+  return {
+    type: STOCK_ADJUSTMENT_REQUEST,
     payload: {data},
     callback,
   };
