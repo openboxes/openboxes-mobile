@@ -1,22 +1,17 @@
 import React, {useEffect, useState} from 'react';
-import {Text, TouchableOpacity, View} from 'react-native';
-import Header from '../../components/Header';
+import {Text, View} from 'react-native';
 import styles from './styles';
-// import Header from '../../components/Header';
-import {connect, useDispatch} from 'react-redux';
-// import Icon, {Name} from '../../Icon';
-
-import {RootState} from '../../redux/reducers';
+import {useDispatch} from 'react-redux';
 import {useNavigation} from "@react-navigation/native";
 import useEventListener from "../../hooks/useEventListener";
 import {Order} from "../../data/order/Order";
 import Product from "../../data/product/Product";
-import Products from "../Products";
 import showPopup from "../../components/Popup";
 import {
     searchProductGloballyAction,
 } from '../../redux/actions/products';
-import {showScreenLoading, hideScreenLoading} from '../../redux/actions/main';
+import { hideScreenLoading} from '../../redux/actions/main';
+import {getInternalLocationDetails} from "../../redux/actions/locations";
 
 const Scan = () => {
     const barcodeData = useEventListener();
@@ -43,50 +38,88 @@ const Scan = () => {
             });
             return;
         }
-
-        const actionCallback = (data: any) => {
-            if (data?.error) {
-                showPopup({
-                    title: data.error.message
-                        ? `Failed to load search results with value = "${query}"`
-                        : null,
-                    message:
-                        data.error.message ??
-                        `Failed to load search results with value = "${query}"`,
-                    positiveButton: {
-                        text: 'Retry',
-                        callback: () => {
-                           dispatch(searchProductGloballyAction(query, actionCallback));
+        if (query.includes("LOG-XXX")) {
+            const actionCallback = (data: any) => {
+                if (data?.error) {
+                    showPopup({
+                        title: data.error.message
+                            ? `Failed to load search results with value = "${query}"`
+                            : null,
+                        message:
+                            data.error.message ??
+                            `Failed to load search results with value = "${query}"`,
+                        positiveButton: {
+                            text: 'Retry',
+                            callback: () => {
+                                dispatch(searchProductGloballyAction(query, actionCallback));
+                            },
                         },
-                    },
-                    negativeButtonText: 'Cancel',
-                });
-            } else {
-                if (data.length == 0) {
-                    setState({...state,
-                        searchProductCode: {
-                            query: query,
-                            results: null,
-                        },
-                        error: `No search results found for product name "${query}"`,
+                        negativeButtonText: 'Cancel',
                     });
                 } else {
-                    setState({...state,
-                        searchProductCode: {
-                            query: query,
-                            results: data,
-                        },
-                        error: null,
-                    });
-                    if (data && Object.keys(data).length !== 0) {
-                        navigateToProduct(data.data[0])
+                    if (data.length == 0) {
+                        setState({
+                            ...state,
+                            searchProductCode: {
+                                query: query,
+                                results: null,
+                            },
+                            error: `No search results found for product name "${query}"`,
+                        });
+                    } else {
+                        setState({
+                            ...state,
+                            searchProductCode: {
+                                query: query,
+                                results: data,
+                            },
+                            error: null,
+                        });
+                        if (data && Object.keys(data).length !== 0) {
+                            navigateToProduct(data.data[0])
+                        }
                     }
+                    hideScreenLoading();
                 }
-                hideScreenLoading();
-            }
-        };
+            };
+            dispatch(searchProductGloballyAction(query, actionCallback));
+        }else {
 
-        dispatch( searchProductGloballyAction(query, actionCallback));
+            const actionLocationCallback = (data: any) => {
+                if (data?.error) {
+                    showPopup({
+                        title: data.error.message
+                            ? `Failed to load search results with value = "${query}"`
+                            : null,
+                        message:
+                            data.error.message ??
+                            `Failed to load search results with value = "${query}"`,
+                        positiveButton: {
+                            text: 'Retry',
+                            callback: () => {
+                                dispatch(getInternalLocationDetails(query, actionLocationCallback));
+                            },
+                        },
+                        negativeButtonText: 'Cancel',
+                    });
+                } else {
+                    if (data.length == 0) {
+                        showPopup({
+                            message: `No search results found for Location name "${query}"`,
+                            positiveButton: {text: 'Ok'},
+                        });
+                    } else {
+                        console.log(data)
+                        if (data && Object.keys(data).length !== 0) {
+                                state.locationData = data;
+                            setState({...state})
+                        }
+                    }
+                    dispatch(hideScreenLoading());
+                }
+            };
+            dispatch(getInternalLocationDetails(query, actionLocationCallback));
+        }
     };
     const navigateToOrder = (order: Order) => {
         // navigation.navigate(`OrderDetails`, {

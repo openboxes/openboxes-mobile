@@ -2,13 +2,19 @@ import {hideScreenLoading, showScreenLoading} from '../actions/main';
 import {call, put, takeLatest} from 'redux-saga/effects';
 import * as api from '../../apis';
 import {
-  GET_LOCATIONS_REQUEST,
-  GET_LOCATIONS_REQUEST_SUCCESS,
-  SET_CURRENT_LOCATION_REQUEST,
-  SET_CURRENT_LOCATION_REQUEST_SUCCESS,
- GET_INTERNAL_LOCATION_FROM_NUMBER, GET_INTERNAL_LOCATIONS_SUCCESS,
-  GET_LOCATION_FROM_NUMBER, GET_BIN_LOCATIONS_REQUEST, GET_BIN_LOCATIONS_REQUEST_SUCCESS
+    GET_LOCATIONS_REQUEST,
+    GET_LOCATIONS_REQUEST_SUCCESS,
+    SET_CURRENT_LOCATION_REQUEST,
+    SET_CURRENT_LOCATION_REQUEST_SUCCESS,
+    GET_INTERNAL_LOCATION_FROM_NUMBER,
+    GET_INTERNAL_LOCATIONS_SUCCESS,
+    GET_LOCATION_FROM_NUMBER,
+    GET_BIN_LOCATIONS_REQUEST,
+    GET_BIN_LOCATIONS_REQUEST_SUCCESS,
+    GET_INTERNAL_LOCATIONS_DETAIL_SUCCESS,
+    GET_INTERNAL_LOCATION_DETAIL
 } from '../actions/locations';
+import {internalLocationsDetails} from "../../apis";
 
 function* getLocations(action: any) {
   try {
@@ -92,6 +98,26 @@ function* getInternalLocations(action: any) {
     });
   }
 }
+
+function* getInternalLocationsDetails(action: any) {
+    try {
+        yield showScreenLoading('Fetching getInternalLocationsDetails');
+        const response = yield call(api.internalLocationsDetails, action.payload.location);
+        yield put({
+            type: GET_INTERNAL_LOCATIONS_DETAIL_SUCCESS,
+            payload: response.data,
+        });
+        yield action.callback(response);
+        yield hideScreenLoading();
+    } catch (e) {
+        console.log('function* getInternalLocationsDetails', e);
+        yield action.callback({
+            error: true,
+            message: e.message,
+        });
+    }
+}
+
 function* getBinLocations() {
   try {
     yield showScreenLoading('Getting Bin locations');
@@ -108,9 +134,10 @@ function* getBinLocations() {
 
 
 export default function* watcher() {
-  yield takeLatest(GET_LOCATIONS_REQUEST, getLocations);
-  yield takeLatest(SET_CURRENT_LOCATION_REQUEST, setCurrentLocation);
-  yield takeLatest(GET_LOCATION_FROM_NUMBER, searchLocationByLocationNumber);
-  yield takeLatest(GET_INTERNAL_LOCATION_FROM_NUMBER,getInternalLocations)
-  yield takeLatest(GET_BIN_LOCATIONS_REQUEST, getBinLocations);
+    yield takeLatest(GET_LOCATIONS_REQUEST, getLocations);
+    yield takeLatest(SET_CURRENT_LOCATION_REQUEST, setCurrentLocation);
+    yield takeLatest(GET_LOCATION_FROM_NUMBER, searchLocationByLocationNumber);
+    yield takeLatest(GET_INTERNAL_LOCATION_FROM_NUMBER, getInternalLocations)
+    yield takeLatest(GET_BIN_LOCATIONS_REQUEST, getBinLocations);
+    yield takeLatest(GET_INTERNAL_LOCATION_DETAIL, getInternalLocationsDetails)
 }

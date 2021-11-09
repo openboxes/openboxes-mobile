@@ -14,6 +14,9 @@ export const GET_LOCATION_FROM_NUMBER = 'GET_LOCATION_FROM_NUMBER';
 export const GET_INTERNAL_LOCATION_FROM_NUMBER = 'GET_INTERNAL_LOCATION_FROM_NUMBER'
 export const GET_INTERNAL_LOCATIONS_SUCCESS = 'GET_INTERNAL_LOCATIONS_SUCCESS';
 
+export const GET_INTERNAL_LOCATION_DETAIL = "GET_INTERNAL_LOCATION_DETAIL"
+export const GET_INTERNAL_LOCATIONS_DETAIL_SUCCESS = "GET_INTERNAL_LOCATIONS_DETAIL_SUCCESS"
+
 export function getLocationsAction(callback: (products: any) => void) {
   return {
     type: GET_LOCATIONS_REQUEST,
@@ -50,10 +53,18 @@ export function searchLocationByLocationNumber(
 }
 
 
-export function getInternalLocations(location:string, callback: (data: any) => void,){
-  return {
-    type: GET_INTERNAL_LOCATION_FROM_NUMBER,
-    payload: {location},
-    callback,
-  };
+export function getInternalLocations(location: string, callback: (data: any) => void,) {
+    return {
+        type: GET_INTERNAL_LOCATION_FROM_NUMBER,
+        payload: {location},
+        callback,
+    };
+}
+
+export function getInternalLocationDetails(location: string, callback: (data: any) => void,) {
+    return {
+        type: GET_INTERNAL_LOCATION_DETAIL,
+        payload: {location},
+        callback,
+    };
 }
