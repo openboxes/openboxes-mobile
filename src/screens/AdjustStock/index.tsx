@@ -121,10 +121,10 @@ const AdjustStock = () => {
         const request ={
             "location.id": location.id,
             "product.id": item.product.id,
-            "inventoryItem.id": item.inventoryItem.id,
-            "binLocation.id": item.binLocation.id,
+            "inventoryItem.id": item?.inventoryItem?.id ?? "",
+            "binLocation.id": item?.binLocation?.id ?? "",
             "quantityAvailable":item.quantityAvailableToPromise,
-            "reasonCode": state.reasonCode,
+            "reasonCode": state?.reasonCode?.id ?? "CORRECTION",
             "quantityAdjusted":state.quantityAdjusted,
             "comments":state.comments
         }
