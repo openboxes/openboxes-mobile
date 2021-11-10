@@ -112,8 +112,7 @@ const Scan = () => {
                     } else {
                         console.log(data)
                         if (data && Object.keys(data).length !== 0) {
-                            state.locationData = data.data;
-                            setState({...state})
+                            navigateToLocationDetails(query)
                         }
                     }
                     dispatch(hideScreenLoading());
@@ -136,30 +135,16 @@ const Scan = () => {
             navigation.navigate('ProductDetails', {product})
         }
     }
-
+    const navigateToLocationDetails = (id: string | undefined) => {
+        if (id) { // @ts-ignore
+            navigation.navigate('InternalLocationDetail', {id})
+        }
+    }
     return (
         <View style={styles.screenContainer}>
             <View style={styles.countLabelAndIconContainer}>
                 {barcodeData && <Text style={styles.countLabel}>{JSON.stringify(barcodeData?.data)}</Text>}
             </View>
-            {state.locationData &&
-            <View>
-                <View style={styles.rowItem}>
-                    <RenderItem title={'Bin Location Number'} subTitle={state.locationData?.locationNumber ?? ''}/>
-                    <RenderItem title={'Bin Location Name'} subTitle={state.locationData?.name ?? ''} />
-                </View>
-                <View style={styles.rowItem}>
-                    <RenderItem title={'Location Type'}   subTitle={state.locationData?.locationType.name ?? ''}/>
-                    <RenderItem title={'Facility Number'} subTitle={state.locationData?.parentLocation.locationNumber ?? ''}/>
-                </View>
-                <View style={styles.rowItem}>
-                    <RenderItem title={'Facility Name'} subTitle={state.locationData?.parentLocation?.name ?? ''} />
-                    <RenderItem title={'Zone Name'} subTitle={state.locationData?.zoneName ?? ''} />
-                </View>
-                <View style={styles.rowItem}>
-                    <RenderItem title={'Number of items'}  subTitle={state.locationData?.availableItems?.length ?? ''} />
-                </View>
-            </View>}
         </View>);
 
 }
