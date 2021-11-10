@@ -22,20 +22,13 @@ const Scan = () => {
         searchProductCode: null,
 
     });
+
+
     useEffect(() => {
         if (barcodeData && Object.keys(barcodeData).length !== 0) {
             onBarCodeScanned(barcodeData.data)
         }
     }, [barcodeData])
-    const RenderData = ({title, subText}: any): JSX.Element => {
-        return (
-            <View style={styles.columnItem}>
-                <Text style={styles.label}>{title}</Text>
-                <Text style={styles.value}>{subText}</Text>
-            </View>
-        )
-    }
-
 
     const onBarCodeScanned = (query: string) => {
         // handleBarcodeScan(barcodeNo);
@@ -129,21 +122,21 @@ const Scan = () => {
             dispatch(getInternalLocationDetails(query, actionLocationCallback));
         }
     };
-    const navigateToOrder = (order: Order) => {
-        // navigation.navigate(`OrderDetails`, {
-        //     order,
-        //     pickList: null,
-        //     exit: () => {
-        //         navigation.navigate('Dashboard');
-        //     },
-        // })
+
+    const RenderItem = ({title, subTitle}:any) => {
+        return(
+        <View style={styles.columnItem}>
+            <Text style={styles.label}>{title}</Text>
+            <Text style={styles.value}>{subTitle}</Text>
+        </View>)
     }
+
     const navigateToProduct = (product: Product | undefined) => {
         if (product) { // @ts-ignore
             navigation.navigate('ProductDetails', {product})
         }
-
     }
+
     return (
         <View style={styles.screenContainer}>
             <View style={styles.countLabelAndIconContainer}>
@@ -152,52 +145,19 @@ const Scan = () => {
             {state.locationData &&
             <View>
                 <View style={styles.rowItem}>
-                    <View style={styles.columnItem}>
-                        <Text style={styles.label}>{'Bin Location Number'}</Text>
-                        <Text style={styles.value}>
-                            {state.locationData?.locationNumber ?? ''}
-                        </Text>
-                    </View>
-                    <View style={styles.columnItem}>
-                        <Text style={styles.label}>{'Bin Location Name'}</Text>
-                        <Text style={styles.value}>{state.locationData?.name ?? ''}</Text>
-                    </View>
+                    <RenderItem title={'Bin Location Number'} subTitle={state.locationData?.locationNumber ?? ''}/>
+                    <RenderItem title={'Bin Location Name'} subTitle={state.locationData?.name ?? ''} />
                 </View>
                 <View style={styles.rowItem}>
-                    <View style={styles.columnItem}>
-                        <Text style={styles.label}>{'Location Type'}</Text>
-                        <Text style={styles.value}>
-                            {state.locationData?.locationType.name ?? ''}
-                        </Text>
-                    </View>
-                    <View style={styles.columnItem}>
-                        <Text style={styles.label}>{'Facility Number'}</Text>
-                        <Text style={styles.value}>
-                            {state.locationData?.parentLocation.locationNumber ?? ''}
-                        </Text>
-                    </View>
+                    <RenderItem title={'Location Type'}   subTitle={state.locationData?.locationType.name ?? ''}/>
+                    <RenderItem title={'Facility Number'} subTitle={state.locationData?.parentLocation.locationNumber ?? ''}/>
                 </View>
                 <View style={styles.rowItem}>
-                    <View style={styles.columnItem}>
-                        <Text style={styles.label}>{'Facility Name'}</Text>
-                        <Text style={styles.value}>
-                            {state.locationData?.parentLocation?.name ?? ''}
-                        </Text>
-                    </View>
-                    <View style={styles.columnItem}>
-                        <Text style={styles.label}>{'Zone Name'}</Text>
-                        <Text style={styles.value}>
-                            {state.locationData?.zoneName ?? ''}
-                        </Text>
-                    </View>
+                    <RenderItem title={'Facility Name'} subTitle={state.locationData?.parentLocation?.name ?? ''} />
+                    <RenderItem title={'Zone Name'} subTitle={state.locationData?.zoneName ?? ''} />
                 </View>
                 <View style={styles.rowItem}>
-                    <View style={styles.columnItem}>
-                        <Text style={styles.label}>{'Number of items'}</Text>
-                        <Text style={styles.value}>
-                            {state.locationData?.availableItems?.length ?? ''}
-                        </Text>
-                    </View>
+                    <RenderItem title={'Number of items'}  subTitle={state.locationData?.availableItems?.length ?? ''} />
                 </View>
             </View>}
         </View>);
