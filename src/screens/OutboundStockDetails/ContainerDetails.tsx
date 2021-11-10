@@ -22,11 +22,11 @@ class ContainerDetails extends Component<Props> {
                 <View style={styles.row}>
                     <View style={styles.col50}>
                         <Text style={styles.label}>Container name</Text>
-                        <Text style={styles.value}>{item.name}</Text>
+                        <Text style={styles.value}>{item.id ? item.name : 'Unpacked'}</Text>
                     </View>
                     <View style={styles.col50}>
                         <Text style={styles.label}>Container number</Text>
-                        <Text style={styles.value}>{item?.containerNumber}</Text>
+                        <Text style={styles.value}>{item.id ? item?.containerNumber : 'UNPACKED'}</Text>
                     </View>
                 </View>
                 <View style={styles.row}>
