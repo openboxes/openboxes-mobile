@@ -10,23 +10,31 @@ import showPopup from "../../components/Popup";
 import {
     searchProductGloballyAction,
 } from '../../redux/actions/products';
-import { hideScreenLoading} from '../../redux/actions/main';
+import {hideScreenLoading} from '../../redux/actions/main';
 import {getInternalLocationDetails} from "../../redux/actions/locations";
 
 const Scan = () => {
     const barcodeData = useEventListener();
     const navigation = useNavigation();
     const dispatch = useDispatch();
-    const [state,setState]= useState<any>(   {
+    const [state, setState] = useState<any>({
         error: null,
         searchProductCode: null,
 
     });
     useEffect(() => {
         if (barcodeData && Object.keys(barcodeData).length !== 0) {
-           onBarCodeScanned(barcodeData.data)
+            onBarCodeScanned(barcodeData.data)
         }
-    },[barcodeData])
+    }, [barcodeData])
+    const RenderData = ({title, subText}: any): JSX.Element => {
+        return (
+            <View style={styles.columnItem}>
+                <Text style={styles.label}>{title}</Text>
+                <Text style={styles.value}>{subText}</Text>
+            </View>
+        )
+    }
 
 
     const onBarCodeScanned = (query: string) => {
@@ -83,7 +91,7 @@ const Scan = () => {
                 }
             };
             dispatch(searchProductGloballyAction(query, actionCallback));
-        }else {
+        } else {
 
             const actionLocationCallback = (data: any) => {
                 if (data?.error) {
@@ -111,7 +119,7 @@ const Scan = () => {
                     } else {
                         console.log(data)
                         if (data && Object.keys(data).length !== 0) {
-                                state.locationData = data;
+                            state.locationData = data.data;
                             setState({...state})
                         }
                     }
@@ -131,19 +139,68 @@ const Scan = () => {
         // })
     }
     const navigateToProduct = (product: Product | undefined) => {
-        if(product)
-            { // @ts-ignore
-                navigation.navigate('ProductDetails', {product})
-            }
+        if (product) { // @ts-ignore
+            navigation.navigate('ProductDetails', {product})
+        }
 
     }
     return (
         <View style={styles.screenContainer}>
             <View style={styles.countLabelAndIconContainer}>
-                { barcodeData && <Text style={styles.countLabel}>{JSON.stringify(barcodeData?.data)}</Text>}
+                {barcodeData && <Text style={styles.countLabel}>{JSON.stringify(barcodeData?.data)}</Text>}
             </View>
-        </View>
-    );
+            {state.locationData &&
+            <View>
+                <View style={styles.rowItem}>
+                    <View style={styles.columnItem}>
+                        <Text style={styles.label}>{'Bin Location Number'}</Text>
+                        <Text style={styles.value}>
+                            {state.locationData?.locationNumber ?? ''}
+                        </Text>
+                    </View>
+                    <View style={styles.columnItem}>
+                        <Text style={styles.label}>{'Bin Location Name'}</Text>
+                        <Text style={styles.value}>{state.locationData?.name ?? ''}</Text>
+                    </View>
+                </View>
+                <View style={styles.rowItem}>
+                    <View style={styles.columnItem}>
+                        <Text style={styles.label}>{'Location Type'}</Text>
+                        <Text style={styles.value}>
+                            {state.locationData?.locationType.name ?? ''}
+                        </Text>
+                    </View>
+                    <View style={styles.columnItem}>
+                        <Text style={styles.label}>{'Facility Number'}</Text>
+                        <Text style={styles.value}>
+                            {state.locationData?.parentLocation.locationNumber ?? ''}
+                        </Text>
+                    </View>
+                </View>
+                <View style={styles.rowItem}>
+                    <View style={styles.columnItem}>
+                        <Text style={styles.label}>{'Facility Name'}</Text>
+                        <Text style={styles.value}>
+                            {state.locationData?.parentLocation?.name ?? ''}
+                        </Text>
+                    </View>
+                    <View style={styles.columnItem}>
+                        <Text style={styles.label}>{'Zone Name'}</Text>
+                        <Text style={styles.value}>
+                            {state.locationData?.zoneName ?? ''}
+                        </Text>
+                    </View>
+                </View>
+                <View style={styles.rowItem}>
+                    <View style={styles.columnItem}>
+                        <Text style={styles.label}>{'Number of items'}</Text>
+                        <Text style={styles.value}>
+                            {state.locationData?.availableItems?.length ?? ''}
+                        </Text>
+                    </View>
+                </View>
+            </View>}
+        </View>);
 
 }
 
