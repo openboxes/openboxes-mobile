@@ -62,16 +62,11 @@ class OutboundStockList extends React.Component<Props, State> {
         this.props.getShipmentsReadyToBePacked(SelectedLocation.id, "PENDING", actionCallback)
     }
 
-    // showPutAwayListScreen =()=> {
-    //   console.debug(">>>>> showPutAwayListScreen")
-    //   this.setState({
-    //     navigationState: new NavigationStateHere()
-    //   })
-    // }
 
-    // showPutAwayDetailsScreen = (order: Order) => {
-    //     this.props.navigation.navigate('PutAwayDetails', {orderId: order.id})
-    // }
+
+    showShipmentReadyToPackScreen = (shipment: Shipment) => {
+        this.props.navigation.navigate('OutboundStockDetails', {shipmentId: shipment.id})
+    }
 
     // renderItem = (item: ListRenderItemInfo<PutAwayItems>) => {
     //     return (
@@ -109,7 +104,7 @@ class OutboundStockList extends React.Component<Props, State> {
                             (
                                 <TouchableOpacity
                                     style={styles.listItemContainer}
-                                    // onPress={() => this.onPutAwayTapped(item.item)}
+                                    onPress={() => this.showShipmentReadyToPackScreen(shipment.item)}
                                 >
                                     <View style={styles.row}>
                                         <View style={styles.col50}>

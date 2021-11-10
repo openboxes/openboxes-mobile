@@ -2,7 +2,7 @@ import {takeLatest, put, call} from 'redux-saga/effects';
 import {
     GET_CONTAINER_DETAILS_REQUEST, GET_CONTAINER_DETAILS_SUCCESS,
     GET_SHIPMENT_PACKING_REQUEST,
-    GET_SHIPMENT_PACKING_SUCCESS, GET_SHIPMENTS_READY_TO_BE_PACKED,
+    GET_SHIPMENT_PACKING_SUCCESS, GET_SHIPMENT_READY_TO_BE_PACKED, GET_SHIPMENTS_READY_TO_BE_PACKED,
     GET_SUBMIT_SHIPMENT_DETAILS_REQUEST, GET_SUBMIT_SHIPMENT_DETAILS_SUCCESS
 } from '../actions/packing';
 import {
@@ -10,12 +10,28 @@ import {
     showScreenLoading,
 } from '../actions/main';
 import * as api from '../../apis';
-import ShipmentsReadyToPackedResponse from "../../data/container/Shipment";
+import ShipmentsReadyToPackedResponse, {ShipmentReadyToPackedResponse} from "../../data/container/Shipment";
 
 function* getShipmentsReadyToBePacked(action: any) {
     try {
         yield showScreenLoading(" Shipment Packing");
         const response: ShipmentsReadyToPackedResponse = yield call(api.getShipmentsReadyToBePacked, action.payload.locationId, action.payload.shipmentStatusCode);
+        yield put({
+            type: GET_SHIPMENT_PACKING_SUCCESS,
+            payload: response.data,
+        });
+        yield action.callback(response.data);
+        console.log(response)
+        yield hideScreenLoading();
+    } catch (e) {
+        console.log('function* getShipmentPacking', e.response);
+    }
+}
+
+function* getShipmentReadyToBePacked(action: any) {
+    try {
+        yield showScreenLoading(" Shipment Packing details");
+        const response: ShipmentReadyToPackedResponse = yield call(api.getShipmentReadyToBePacked, action.payload.id);
         yield put({
             type: GET_SHIPMENT_PACKING_SUCCESS,
             payload: response.data,
@@ -78,6 +94,7 @@ function* submitShipmentItems(action: any) {
 
 export default function* watcher() {
     yield takeLatest(GET_SHIPMENTS_READY_TO_BE_PACKED, getShipmentsReadyToBePacked);
+    yield takeLatest(GET_SHIPMENT_READY_TO_BE_PACKED, getShipmentReadyToBePacked);
     yield takeLatest(GET_SHIPMENT_PACKING_REQUEST, getShipmentPacking);
     yield takeLatest(GET_CONTAINER_DETAILS_REQUEST, getContainerDetail);
     yield takeLatest(GET_SUBMIT_SHIPMENT_DETAILS_REQUEST, submitShipmentItems);
