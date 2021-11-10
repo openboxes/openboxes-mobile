@@ -170,15 +170,15 @@ const AdjustStock = () => {
         return (<View
             style={styles.itemView}>
             <View style={styles.rowItem}>
-                <RenderData title={"Product Name"} subText={item?.product.name}/>
                 <RenderData title={"Product Code"} subText={item.product.productCode}/>
+                <RenderData title={"Product Name"} subText={item?.product.name}/>
             </View>
             <View style={styles.rowItem}>
                 <RenderData title={"Lot Number"} subText={item.inventoryItem.lotNumber ?? "Default"}/>
-                <RenderData title={"Bin Location"} subText={item.binLocation ?? "Default"}/>
+                <RenderData title={"Expiration Date"} subText={item.inventoryItem.expirationDate ?? "Never"}/>
             </View>
             <View style={styles.rowItem}>
-                <RenderData title={"Expiration Date"} subText={item.inventoryItem.expirationDate ?? "Never"}/>
+                <RenderData title={"Bin Location"} subText={item.binLocation ?? "Default"}/>
                 <RenderData title={"Quantity Available"} subText={item.quantityAvailableToPromise}/>
             </View>
         </View>);
@@ -193,6 +193,12 @@ const AdjustStock = () => {
         <ScrollView style={styles.container}>
             <RenderItem/>
             <View style={styles.from}>
+                <InputBox
+                    label={'Quantity Adjusted'}
+                    value={state.quantityAdjusted}
+                    onChange={onChangeQuantity}
+                    disabled={true}
+                    keyboard={"number-pad"}/>
                 <Text style={styles.value}>{"Reason Code"}</Text>
                 <SelectDropdown
                     data={state.reasonCodeList}
@@ -207,12 +213,6 @@ const AdjustStock = () => {
                     buttonTextAfterSelection={(selectedItem, index) => selectedItem}
                     rowTextForSelection={(item, index) => item}
                 />
-                <InputBox
-                    label={'Quantity Adjusted'}
-                    value={state.quantityAdjusted}
-                    onChange={onChangeQuantity}
-                    disabled={true}
-                    keyboard={"number-pad"}/>
                 <InputBox
                     value={state.comments}
                     onChange={onChangeComment}
