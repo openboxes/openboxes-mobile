@@ -7,6 +7,13 @@ export default StyleSheet.create({
         flexDirection: 'column',
         flex: 1,
     },
+    boxHeading: {
+        fontSize: 15,
+        color: Theme.colors.text,
+        fontWeight: 'bold',
+        marginTop: 8,
+        marginStart: 10,
+    },
     countLabelAndIconContainer: {
         display: 'flex',
         flexDirection: 'row',
@@ -18,7 +25,12 @@ export default StyleSheet.create({
         fontSize: 16,
         marginStart: 4,
     },
-
+    itemView: {
+        marginStart: 10,
+        marginEnd: 10,
+        marginTop: 5,
+        marginBottom:10
+    },
     rowItem: {
         flexDirection: 'row',
         borderColor: Theme.colors.background,

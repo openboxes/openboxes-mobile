@@ -61,10 +61,10 @@ export function getInternalLocations(location: string, callback: (data: any) => 
     };
 }
 
-export function getInternalLocationDetails(location: string, callback: (data: any) => void,) {
+export function getInternalLocationDetails(id: string,location: string, callback: (data: any) => void,) {
     return {
         type: GET_INTERNAL_LOCATION_DETAIL,
-        payload: {location},
+        payload: {id,location},
         callback,
     };
 }

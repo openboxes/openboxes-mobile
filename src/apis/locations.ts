@@ -23,8 +23,8 @@ export function internalLocations(id: string) {
 }
 
 
-export function internalLocationsDetails(id: string) {
-    return apiClient.get(`internalLocations/${id}/details`);
+export function internalLocationsDetails(id: string,location:string) {
+    return apiClient.get(`internalLocations/${id}/details?location.id=${location}`);
 }
 export function fetchProductSummary(id: string) {
     console.log(id)

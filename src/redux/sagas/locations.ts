@@ -14,7 +14,6 @@ import {
     GET_INTERNAL_LOCATIONS_DETAIL_SUCCESS,
     GET_INTERNAL_LOCATION_DETAIL
 } from '../actions/locations';
-import {internalLocationsDetails} from "../../apis";
 
 function* getLocations(action: any) {
   try {
@@ -102,7 +101,7 @@ function* getInternalLocations(action: any) {
 function* getInternalLocationsDetails(action: any) {
     try {
         yield showScreenLoading('Fetching getInternalLocationsDetails');
-        const response = yield call(api.internalLocationsDetails, action.payload.location);
+        const response = yield call(api.internalLocationsDetails, action.payload.id,action.payload.location);
         yield put({
             type: GET_INTERNAL_LOCATIONS_DETAIL_SUCCESS,
             payload: response.data,

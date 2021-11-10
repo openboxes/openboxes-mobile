@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {Text, View} from 'react-native';
 import styles from './styles';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {useNavigation} from "@react-navigation/native";
 import useEventListener from "../../hooks/useEventListener";
 import {Order} from "../../data/order/Order";
@@ -12,11 +12,13 @@ import {
 } from '../../redux/actions/products';
 import {hideScreenLoading} from '../../redux/actions/main';
 import {getInternalLocationDetails} from "../../redux/actions/locations";
+import {RootState} from "../../redux/reducers";
 
 const Scan = () => {
     const barcodeData = useEventListener();
     const navigation = useNavigation();
     const dispatch = useDispatch();
+    const location = useSelector((state: RootState) => state.mainReducer.currentLocation)
     const [state, setState] = useState<any>({
         error: null,
         searchProductCode: null,
@@ -98,7 +100,7 @@ const Scan = () => {
                         positiveButton: {
                             text: 'Retry',
                             callback: () => {
-                                dispatch(getInternalLocationDetails(query, actionLocationCallback));
+                                dispatch(getInternalLocationDetails(query,location.id, actionLocationCallback));
                             },
                         },
                         negativeButtonText: 'Cancel',
@@ -118,7 +120,7 @@ const Scan = () => {
                     dispatch(hideScreenLoading());
                 }
             };
-            dispatch(getInternalLocationDetails(query, actionLocationCallback));
+            dispatch(getInternalLocationDetails(query,location.id, actionLocationCallback));
         }
     };
 
