@@ -31,6 +31,7 @@ const PickOrderItem = () => {
         product: null,
         productCode: "",
         binLocation: null,
+        binLocationName:""
     })
     const vm = pickListVMMapper(route.params);
     console.log("VM", vm)
@@ -91,6 +92,7 @@ const PickOrderItem = () => {
                             } else {
                                 state.quantityPicked = (parseInt(state.quantityPicked, 10) + 1).toString();
                                 state.product = data.data[0]
+                                state.productCode = data.data[0].productCode
                                 state.productSearchQuery = ""
 
                             }
@@ -187,7 +189,7 @@ const PickOrderItem = () => {
             }
             const requestBody = {
                 "product.id": state.product?.id,
-                "productCode": state.product?.productCode,
+                "productCode": state.productCode,
                 "inventoryItem.id": null,
                 "binLocation.id": state.binLocation ? state.binLocation?.id : null,
                 "binLocation.locationNumber": state.binLocation ? state.binLocation?.locationNumber : state.binLocationSearchQuery,
@@ -238,7 +240,7 @@ const PickOrderItem = () => {
 
     const onProductBarCodeSearchQuerySubmitted = () => {
 
-        if (!state.productSearchQuery) {
+        if (!state.productCode) {
             showPopup({
                 message: "Search query is empty",
                 positiveButton: {
@@ -254,10 +256,15 @@ const PickOrderItem = () => {
             console.debug(data.data.length)
             if (!data || data.data.length == 0) {
                 showPopup({
-                    message: "Product not found with ProductCode:" + state.productSearchQuery,
+                    message: "Product not found with ProductCode:" + state.productCode,
                     positiveButton: {
                         text: 'Ok'
                     }
+                })
+                setState({
+                    ...state,
+                    productCode:"",
+                    productSearchQuery: ""
                 })
                 return
             } else if (data.data.length == 1) {
@@ -271,7 +278,7 @@ const PickOrderItem = () => {
                 })
             }
         }
-        dispatch(searchProductByCodeAction(state.productSearchQuery, actionCallback));
+        dispatch(searchProductByCodeAction(state.productCode, actionCallback));
 
 
         /*let searchedProducts = await searchProductCodeFromApi(state.productSearchQuery)
@@ -281,7 +288,7 @@ const PickOrderItem = () => {
 
     const onBinLocationBarCodeSearchQuerySubmitted = () => {
 
-        if (!state.binLocationSearchQuery) {
+        if (!state.binLocationName) {
             showPopup({
                 message: "Search query is empty",
                 positiveButton: {
@@ -294,10 +301,15 @@ const PickOrderItem = () => {
         const actionCallback = (location: any) => {
             if (!location || location.error) {
                 showPopup({
-                    message: "Bin Location not found with LocationNumber:" + state.binLocationSearchQuery,
+                    message: "Bin Location not found with LocationNumber:" + state.binLocationName,
                     positiveButton: {
                         text: 'Ok'
                     }
+                })
+                setState({
+                    ...state,
+                    binLocationName: "",
+                    binLocationSearchQuery: ""
                 })
                 return
             } else if (location) {
@@ -308,7 +320,7 @@ const PickOrderItem = () => {
                 })
             }
         }
-        dispatch(searchLocationByLocationNumber(state.binLocationSearchQuery, actionCallback))
+        dispatch(searchLocationByLocationNumber(state.binLocationName, actionCallback))
     }
 
     const binLocationSearchQueryChange = (query: string) => {
@@ -327,12 +339,12 @@ const PickOrderItem = () => {
     }
 
     const onChangeProduct = (text: string) => {
-        state.product.productCode = text
+        state.productCode = text
         setState({...state})
     }
 
     const onChangeBin = (text: string) => {
-        state.binLocation.name = text
+        state.binLocationName = text
         setState({...state})
     }
 
@@ -493,13 +505,13 @@ const PickOrderItem = () => {
                 </View>*/}
                 <View style={styles.from}>
                     <InputBox
-                        value={state.product?.productCode}
+                        value={state.productCode}
                         disabled={true}
                         onEndEdit={productSearchQueryChange}
                         onChange={onChangeProduct}
                         label={'Product Code'}/>
                     <InputBox
-                        value={state.binLocation?.name}
+                        value={state.binLocationName}
                         label={'From'}
                         disabled={true}
                         onEndEdit={binLocationSearchQueryChange}
