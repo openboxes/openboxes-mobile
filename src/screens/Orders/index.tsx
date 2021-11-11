@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './styles';
 import {connect} from 'react-redux';
-import {View} from 'react-native';
+import {View, Text} from 'react-native';
 import showPopup from '../../components/Popup';
 import {DispatchProps, State, Props} from './types';
 import OrdersList from './OrdersList';
@@ -18,6 +18,7 @@ class Index extends React.Component<Props, State> {
     this.state = {
       error: null,
       allOrders: null,
+      resultCount: 0,
     };
   }
 
@@ -40,22 +41,21 @@ class Index extends React.Component<Props, State> {
           negativeButtonText: 'Cancel',
         });
       } else {
-        // if (!data) {
-        //   this.props.exit();
-        //   return;
-        // }
         if (data?.length == 0) {
           this.setState({
-            error: 'No products found',
+            error: 'No outbound orders found',
             allOrders: data,
+            resultCount: 0
           });
-        } else if(data.length == 1){
-          this.goToOrderDetailsScreen(data[0])
-        }else {
+        } else {
           this.setState({
             error: null,
             allOrders: data,
+            resultCount: data.length,
           });
+          if (data.length == 1) {
+            this.goToOrderDetailsScreen(data[0]);
+          }
         }
       }
 
@@ -90,7 +90,9 @@ class Index extends React.Component<Props, State> {
         <BarCodeSearchHeader
             onBarCodeSearchQuerySubmitted={this.searchOrders}
             placeHolder={'Search Orders by Name'}
+            autoSearch={true}
             searchBox={false}/>
+        <Text style={styles.label}>Returned {this.state.resultCount} results</Text>
         <View style={styles.content}>
           <OrdersList
             orders={this.state.allOrders}

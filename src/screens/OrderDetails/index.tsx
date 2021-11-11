@@ -57,8 +57,8 @@ class OrderDetails extends React.Component<Props, State> {
         <View style={styles.contentContainer}>
           <View style={styles.row}>
             <View style={styles.col50}>
-              <Text style={styles.label}>Order Number</Text>
-              <Text style={styles.value}>{vm.id}-{vm.identifier}</Text>
+              <Text style={styles.label}>Identifier</Text>
+              <Text style={styles.value}>{vm.identifier}</Text>
             </View>
             <View style={styles.col50}>
               <Text style={styles.label}>Name</Text>
@@ -67,12 +67,12 @@ class OrderDetails extends React.Component<Props, State> {
           </View>
           <View style={styles.row}>
             <View style={styles.col50}>
-              <Text style={styles.label}>Status</Text>
-              <Text style={styles.value}>{vm.status}</Text>
-            </View>
-            <View style={styles.col50}>
               <Text style={styles.label}>Origin</Text>
               <Text style={styles.value}>{vm.origin.locationNumber}-{vm.origin.name}</Text>
+            </View>
+            <View style={styles.col50}>
+              <Text style={styles.label}>Status</Text>
+              <Text style={styles.value}>{vm.status}</Text>
             </View>
           </View>
           <View style={styles.row}>

@@ -4,7 +4,7 @@ export function getOrders(value: string | null) {
   console.debug("value::"+value)
   let url = '/stockMovements?exclude=lineItems&direction=OUTBOUND'
   if(value!=null){
-    url += "&orderNumber="+value
+    url += "&identifier="+value
   }
   return apiClient.get(url);
 }
