@@ -4,12 +4,15 @@ import {getStockMovements} from "../../redux/actions/orders";
 import {saveAndUpdateLpn} from "../../redux/actions/lpn";
 import {DispatchProps, Props} from "./Types";
 import {connect} from "react-redux";
-import {Image, View} from "react-native";
+import {Image, Text, View} from "react-native";
 import {Order} from "../../data/order/Order";
 import styles from "./styles";
 import InputBox from "../../components/InputBox";
 import Button from "../../components/Button";
 import SelectDropdown from "react-native-select-dropdown";
+import {getShipmentPacking, getShipmentOrigin} from "../../redux/actions/packing";
+import {RootState} from "../../redux/reducers";
+import Location from "../../data/location/Location";
 
 
 export interface State {
@@ -32,16 +35,48 @@ class CreateLpn extends React.Component<Props, State> {
             stockMovement: null,
             name: null,
             containerNumber: null,
-            stockMovementId: null
+            stockMovementId: null,
+
         }
     }
 
     componentDidMount() {
         console.debug("Did mount with stockmovement")
-        this.fetchStockMovement()
+        this.getShipmentOrigin()
     }
 
-    fetchStockMovement = () => {
+    fetchContainerList = () => {
+
+        const actionCallback = (data: any) => {
+            if (data?.error) {
+                showPopup({
+                    title: data.error.message ? 'Container' : null,
+                    message: data.error.message ?? 'Failed to fetch Container List',
+                    positiveButton: {
+                        text: 'Ok'
+                    }
+                });
+            } else {
+                console.debug(">>>>>>>>>>>>>>>>")
+                // console.debug(data)
+
+                let stockMovementList: string[] = [];
+                console.log(data)
+                // data.map((item: any) => {
+                //     stockMovementList.push(item.name)
+                // })
+                // this.setState({
+                //     stockMovementList: stockMovementList,
+                //     stockMovements: data
+                // })
+            }
+        }
+        console.debug("Calling getShipmentPacking")
+        this.props.getShipmentPacking("OUTBOUND", actionCallback);
+    }
+
+    getShipmentOrigin = () => {
+        const {currentLocation} = this.props
         const actionCallback = (data: any) => {
             if (data?.error) {
                 showPopup({
@@ -58,7 +93,7 @@ class CreateLpn extends React.Component<Props, State> {
                 let stockMovementList: string[] = [];
                 console.log(data)
                 data.map((item: any) => {
-                    stockMovementList.push(item.name)
+                    stockMovementList.push(item.shipmentNumber)
                 })
                 this.setState({
                     stockMovementList: stockMovementList,
@@ -66,22 +101,48 @@ class CreateLpn extends React.Component<Props, State> {
                 })
             }
         }
-        console.debug("Calling stockmovements")
-        this.props.getStockMovements("OUTBOUND", "PICKED", actionCallback);
+        console.debug("Calling getShipmentOrigin", currentLocation?.id, currentLocation)
+        this.props.getShipmentOrigin(currentLocation?.id ?? "", actionCallback);
     }
 
     saveLpn = () => {
         const requestBody = {
             "name": this.state.name,
             "containerNumber": this.state.containerNumber,
-            "containerType.id": null,
+            "containerType.id": "2",
             "shipment.id": this.state.stockMovementId
         }
-
         const actionCallback = (data: any) => {
-            console.debug("data after submit")
-            console.debug(data)
-
+            if (data?.error) {
+                showPopup({
+                    title: data.error.message
+                        ? `Failed to Save`
+                        : null,
+                    message:
+                        data.error.message ??
+                        `Failed to Save`,
+                    positiveButton: {
+                        text: 'Retry',
+                        callback: () => {
+                            this.props.saveAndUpdateLpn(requestBody, actionCallback);
+                        },
+                    },
+                    negativeButtonText: 'Cancel',
+                });
+            } else {
+                // if (data.length == 0) {
+                //     showPopup({
+                //         message: `No search results`,
+                //         positiveButton: {text: 'Ok'},
+                //     });
+                // } else
+                if (data && Object.keys(data).length !== 0) {
+                    console.log(data);
+                    console.debug("data after submit")
+                    console.debug(data)
+                    this.props.navigation.navigate("LpnDetail", {id: data.id,shipmentNumber:this.state.stockMovement})
+                }
+            }
         }
         console.debug("Save LPN", requestBody)
         this.props.saveAndUpdateLpn(requestBody, actionCallback);
@@ -112,16 +173,12 @@ class CreateLpn extends React.Component<Props, State> {
         return (
             <View style={styles.container}>
                 <View style={styles.from}>
-                    <InputBox
-                        value={this.state.name}
-                        onChange={this.onChangeName}
-                        disabled={true}
-                        label={'Name'}/>
+                    <Text style={styles.label}>Shipment Number</Text>
                     <SelectDropdown
                         data={this.state.stockMovementList}
                         onSelect={(selectedItem, index) => {
                             console.log(selectedItem, index)
-                            const stockMovement = this.state.stockMovements?.find(i => i.name === selectedItem);
+                            const stockMovement = this.state.stockMovements?.find(i => i.shipmentNumber === selectedItem);
                             this.setState({stockMovement: selectedItem, stockMovementId: stockMovement?.id})
                         }}
                         defaultValueByIndex={0}
@@ -131,9 +188,14 @@ class CreateLpn extends React.Component<Props, State> {
                         rowTextForSelection={(item, index) => item}
                     />
                     <InputBox
+                        value={this.state.name}
+                        onChange={this.onChangeName}
+                        editable={false}
+                        label={'Name'}/>
+                    <InputBox
                         value={this.state.containerNumber}
-                        disabled={true}
                         onChange={this.onChangeContainerNumber}
+                        editable={false}
                         label={'Container Number'}/>
                 </View>
                 <View style={styles.bottom}>
@@ -153,9 +215,13 @@ class CreateLpn extends React.Component<Props, State> {
 
 }
 
+const mapStateToProps = (state: RootState) => ({
+    currentLocation: state.mainReducer.currentLocation,
+});
 const mapDispatchToProps: DispatchProps = {
-    getStockMovements,
+    getShipmentPacking,
+    getShipmentOrigin,
     saveAndUpdateLpn
 }
 
-export default connect(null, mapDispatchToProps)(CreateLpn);
+export default connect(mapStateToProps, mapDispatchToProps)(CreateLpn);

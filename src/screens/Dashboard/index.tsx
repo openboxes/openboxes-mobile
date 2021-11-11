@@ -78,7 +78,9 @@ class Dashboard extends React.Component<Props, State> {
                         <Text style={styles.countLabel}>Create LPN</Text>
                     </View>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => {
+                <TouchableOpacity
+                    style={styles.countContainer}
+                    onPress={() => {
                     this.props.navigation.navigate('InternalTransfer');
                 }}>
                     <View style={styles.countLabelAndIconContainer}>

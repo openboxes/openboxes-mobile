@@ -3,14 +3,11 @@ import {DispatchProps, Props} from "./Types";
 import {Container} from "../../data/container/Container";
 import {FlatList, ListRenderItemInfo, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import Theme from "../../utils/Theme";
-import PutAwayItems from "../../data/putaway/PutAwayItems";
-import PutAwayItem from "../../components/PutAwayItem";
-import ShipmentItems from "../../data/inbound/ShipmentItems";
-import PutAway from "../../data/putaway/PutAway";
 import {ContainerShipmentItem} from "../../data/container/ContainerShipmentItem";
-import {getStockMovements} from "../../redux/actions/orders";
-import {fetchContainer, saveAndUpdateLpn} from "../../redux/actions/lpn";
+import {fetchContainer} from "../../redux/actions/lpn";
+import {getShipmentPacking} from "../../redux/actions/packing";
 import {connect} from "react-redux";
+import styles from "./styles";
 
 export interface State {
     container: Container | null
@@ -27,17 +24,24 @@ class LpnDetail extends React.Component<Props, State> {
     componentDidMount() {
         console.debug("Did mount with Container details")
         const {id} = this.props.route.params
-        console.debug("id::::>"+id)
+        console.debug("id::::>" + id)
         this.fetchContainerDetail(id)
     }
 
     fetchContainerDetail = (id: string) => {
         const actionCallback = (data: any) => {
+            console.log("Details Data", data)
+            const {shipmentNumber} = this.props.route.params
+            data.shipmentNumber = shipmentNumber;
             this.setState({
                 container: data,
             });
         }
         this.props.fetchContainer(id, actionCallback);
+    }
+
+    onTapped = (shipmentItem: ListRenderItemInfo<ContainerShipmentItem>) => {
+        this.props.navigation.navigate("Packing", {shipment: shipmentItem})
     }
 
     render() {
@@ -47,8 +51,8 @@ class LpnDetail extends React.Component<Props, State> {
             >
                 <View style={styles.row}>
                     <View style={styles.col50}>
-                        <Text style={styles.label}>Id</Text>
-                        <Text style={styles.value}>{this.state.container?.id}</Text>
+                        <Text style={styles.label}>Shipment Number</Text>
+                        <Text style={styles.value}>{this.state.container?.shipmentNumber}</Text>
                     </View>
                     <View style={styles.col50}>
                         <Text style={styles.label}>Name</Text>
@@ -67,6 +71,12 @@ class LpnDetail extends React.Component<Props, State> {
                         <Text style={styles.value}>{this.state.container?.containerType?.name}</Text>
                     </View>
                 </View>
+                <View style={styles.row}>
+                    <View style={styles.col50}>
+                        <Text style={styles.label}>Number of Items</Text>
+                        <Text style={styles.value}>{this.state.container?.shipmentItems?.length}</Text>
+                    </View>
+                </View>
                 {
                     <FlatList
                         data={this.state.container?.shipmentItems}
@@ -74,29 +84,26 @@ class LpnDetail extends React.Component<Props, State> {
                             (
                                 <TouchableOpacity
                                     style={styles.listItemContainer}
-                                    // onPress={() => this.onPutAwayTapped(item.item)}
+                                    onPress={() => this.onTapped(shipmentItem)}
                                 >
                                     <View style={styles.row}>
                                         <View style={styles.col50}>
-                                            <Text style={styles.label}>Id</Text>
-                                            <Text style={styles.value}>{shipmentItem.item.id}</Text>
+                                            <Text style={styles.label}>Product Code</Text>
+                                            <Text
+                                                style={styles.value}>{shipmentItem.item?.inventoryItem?.product?.productCode}</Text>
                                         </View>
                                         <View style={styles.col50}>
                                             <Text style={styles.label}>Product</Text>
-                                            <Text style={styles.value}>{shipmentItem.item?.inventoryItem?.product?.name}</Text>
+                                            <Text
+                                                style={styles.value}>{shipmentItem.item?.inventoryItem?.product?.name}</Text>
                                         </View>
 
                                     </View>
                                     <View style={styles.row}>
                                         <View style={styles.col50}>
-                                            <Text style={styles.label}>Shipment</Text>
+                                            <Text style={styles.label}>Quantity</Text>
                                             <Text
-                                                style={styles.value}>{shipmentItem.item.shipment?.name}</Text>
-                                        </View>
-                                        <View style={styles.col50}>
-                                            <Text style={styles.label}>Recipient</Text>
-                                            <Text
-                                                style={styles.value}>{shipmentItem.item.recipient?.firstName} {shipmentItem.item.recipient?.lastName}</Text>
+                                                style={styles.value}>{shipmentItem.item.quantity}</Text>
                                         </View>
                                     </View>
                                 </TouchableOpacity>
@@ -116,82 +123,9 @@ class LpnDetail extends React.Component<Props, State> {
 }
 
 const mapDispatchToProps: DispatchProps = {
-    fetchContainer
+    fetchContainer,
+    getShipmentPacking
 }
 
 export default connect(null, mapDispatchToProps)(LpnDetail);
 
-const styles = StyleSheet.create({
-    contentContainer: {
-        display: "flex",
-        flex: 1,
-        flexDirection: "column",
-        padding: 8,
-    },
-    list: {
-        width: '100%',
-    },
-    listItemContainer: {
-        display: 'flex',
-        flexDirection: 'column',
-        flex: 1,
-        borderRadius: Theme.roundness,
-        borderColor: Theme.colors.backdrop,
-        borderWidth: 1,
-        margin: 4,
-        padding: 4,
-        justifyContent: 'center',
-    },
-    listItemNameContainer: {
-        display: 'flex',
-        flexDirection: 'column',
-        flex: 0,
-        marginStart: 4,
-    },
-    listItemNameLabel: {
-        fontSize: 12,
-        color: Theme.colors.placeholder,
-    },
-    listItemName: {
-        fontSize: 16,
-        color: Theme.colors.text,
-    },
-    listItemCategoryContainer: {
-        display: 'flex',
-        flexDirection: 'column',
-        flex: 0,
-        marginStart: 4,
-        marginTop: 4,
-    },
-    listItemCategoryLabel: {
-        fontSize: 12,
-        color: Theme.colors.placeholder,
-    },
-    listItemCategory: {
-        fontSize: 16,
-        color: Theme.colors.text,
-    },
-    row: {
-        flexDirection: 'row',
-        borderColor: Theme.colors.background,
-        // borderBottomWidth: 1,
-        marginTop: 1,
-        padding: 2,
-        width: '100%',
-    },
-    col50: {
-        display: 'flex',
-        flexDirection: 'column',
-        flex: 0,
-        marginStart: 4,
-        width: '50%',
-    },
-    label: {
-        fontSize: 12,
-        color: Theme.colors.placeholder,
-    },
-    value: {
-        fontSize: 16,
-        color: Theme.colors.text,
-    },
-});

@@ -1,5 +1,6 @@
 import {StyleSheet} from 'react-native';
 import {colors, ratio} from "../../constants";
+import Theme from "../../utils/Theme";
 
 export default StyleSheet.create({
   container: {
@@ -62,5 +63,9 @@ export default StyleSheet.create({
     shadowOpacity: 1,
     shadowRadius: 5,
     elevation: 10,
-  }
+  },
+  label: {
+    fontSize: 12,
+    color: Theme.colors.placeholder,
+  },
 });
