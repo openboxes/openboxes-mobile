@@ -90,6 +90,7 @@ class Index extends React.Component<Props, State> {
         <BarCodeSearchHeader
             onBarCodeSearchQuerySubmitted={this.searchOrders}
             placeHolder={'Search Orders by Name'}
+            autoSearch={true}
             searchBox={false}/>
         <View style={styles.content}>
           <OrdersList

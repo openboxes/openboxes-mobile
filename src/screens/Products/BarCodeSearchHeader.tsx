@@ -11,6 +11,7 @@ export interface Props {
   subtitle?: string | null;
   searchBox: boolean;
   onBarCodeSearchQuerySubmitted: (query: string) => void;
+  autoSearch: boolean | false
 }
 
 interface State {
@@ -40,9 +41,14 @@ export default class ProductsSearchCodeHeader extends React.Component<
   }
 
   onSearchQueryChange(query: string) {
+    console.debug("query::"+query)
     this.setState({
       searchQuery: query,
     });
+    if(this.props.autoSearch){
+      this.props.onBarCodeSearchQuerySubmitted(query);
+    }
+
   }
 
   onBarCodeSearchQuerySubmitted() {
