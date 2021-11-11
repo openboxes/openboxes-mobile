@@ -1,10 +1,29 @@
 {
+  "private": true,
+  "name": "openboxes-mobile",
+  "version": "1.0.0",
+  "engines": {
+    "node": "12.14.1",
+    "npm": "6"
+  },
   "scripts": {
     "start": "react-native start",
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "web": "expo start --web",
-    "eject": "expo eject"
+    "eject": "expo eject",
+    "lint": "eslint ./app",
+    "fixcode": "eslint --fix ./app"
+  },
+  "lint-staged": {
+    "app/**/*.js": [
+      "npm run fixcode"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
   },
   "dependencies": {
     "expo": "39.0.5",
@@ -50,9 +69,12 @@
     "@types/react-native": "0.63.52",
     "@types/react-redux": "7.1.16",
     "@types/react-test-renderer": "17.0.1",
-    "typescript": "4.2.3"
-  },
-  "private": true,
-  "name": "openboxes-mobile",
-  "version": "1.0.0"
+    "typescript": "4.2.3",
+    "prettier": "^2.3.0",
+    "eslint": "7.14.0",
+    "eslint-config-prettier": "^6.15.0",
+    "eslint-plugin-prettier": "^3.1.2",
+    "husky": "^3.0.3",
+    "lint-staged": "^9.2.1"
+  }
 }
