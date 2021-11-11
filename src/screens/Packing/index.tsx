@@ -9,27 +9,31 @@ import useEventListener from "../../hooks/useEventListener";
 import {searchProductGloballyAction} from "../../redux/actions/products";
 import Button from "../../components/Button"
 import {getShipmentPacking, getContainerDetails, submitShipmentDetails} from "../../redux/actions/packing";
+import {useRoute} from "@react-navigation/native";
 
 
 const Packing = () => {
     const barcodeData = useEventListener();
     const dispatch = useDispatch();
+    const route = useRoute();
+    const {shipment}: any = route.params
     const [state, setState] = useState<any>({
         product: "",
-        productCode: "",
-        shipmentNumber: "",
+        productCode: shipment.item.inventoryItem?.product?.productCode.toString(),
+        shipmentNumber: shipment.item.shipment.shipmentNumber,
         lpnNumber: "",
-        quantityUnpacked: "0",
+        quantityUnpacked: shipment.item.quantityRemaining.toString(),
         quantityToPack: "0",
         error: null,
         searchProductCode: null,
         containerId: "",
         shipmentDetails: null,
-        shipmentId:"ff8081817c6fb108017c709dde9a000c"
+        shipmentId: ""
     })
+    console.log("shipment",  shipment.item.inventoryItem?.product?.productCode.toString())
 
     useEffect(() => {
-        getShipmentDetails()
+        getShipmentDetails(shipment.item.shipment.id)
     }, [])
 
 
@@ -97,7 +101,7 @@ const Packing = () => {
         }
     }
 
-    const getShipmentDetails = (id: string = "250SMG") => {
+    const getShipmentDetails = (id: string = "ff80818179f42048017af259eb060121") => {
         const callback = (data: any) => {
             if (data?.error) {
                 showPopup({
@@ -116,12 +120,13 @@ const Packing = () => {
                     negativeButtonText: 'Cancel',
                 });
             } else {
+                console.log("getShipmentDetails", data)
                 if (data && Object.keys(data).length !== 0) {
-                    console.log(data)
-                    state.shipmentDetails = data[0]
-                    state.shipmentNumber = data[0].shipmentNumber
-                    state.containerId = data[0].id
-                    getContainerDetail(data[0].id)
+                    console.log(data.shipmentNumber)
+                    state.shipmentDetails = data
+                    state.shipmentNumber = data.shipmentNumber
+                    state.containerId = shipment.item.container.id
+                    getContainerDetail(shipment.item.container.id)
                 }
                 setState({...state})
             }
@@ -150,7 +155,7 @@ const Packing = () => {
                 });
             } else {
                 if (data && Object.keys(data).length !== 0) {
-                    console.log(data);
+                    console.log("getContainerDetail", data);
                 }
             }
         }
@@ -226,7 +231,7 @@ const Packing = () => {
                     disabled={true}
                     editable={true}/>
                 <InputBox
-                    value={state.product.productCode}
+                    value={state.productCode}
                     disabled={true}
                     editable={true}
                     onChange={onChangeProductCode}

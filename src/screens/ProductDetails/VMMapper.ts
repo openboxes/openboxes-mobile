@@ -31,6 +31,7 @@ export function vmMapper(product: Product, state: State): VM {
         url: '',
       },
     ],
+    availableItems: product.availableItems
   };
 }
 

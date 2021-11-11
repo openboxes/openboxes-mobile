@@ -22,4 +22,5 @@ export default interface Product {
   status?:string
   unitOfMeasure:string
   image?:any
+  availableItems:any
 }

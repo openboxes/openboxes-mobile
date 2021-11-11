@@ -12,7 +12,7 @@ import {
     SEARCH_PRODUCTS_BY_CATEGORY_REQUEST_SUCCESS,
     GET_PRODUCT_BY_ID_REQUEST,
     GET_PRODUCT_BY_ID_REQUEST_SUCCESS,
-    PRINT_LABEL_REQUEST, PRINT_LABEL_REQUEST_SUCCESS,
+    PRINT_LABEL_REQUEST, PRINT_LABEL_REQUEST_SUCCESS, STOCK_ADJUSTMENT_REQUEST, STOCK_ADJUSTMENT_REQUEST_SUCCESS,
 } from '../actions/products';
 
 import * as api from '../../apis';
@@ -172,6 +172,25 @@ function* printLabel(action: any) {
     }
 }
 
+function* stockAdjustments(action: any) {
+    try {
+        yield put(showScreenLoading('stock Adjustments'));
+        const response = yield call(api.stockAdjustments, action.payload.data);
+        yield put({
+            type: STOCK_ADJUSTMENT_REQUEST_SUCCESS,
+            payload: response,
+        });
+        yield action.callback(response);
+        yield put(hideScreenLoading());
+    } catch (e) {
+        console.log('function* stockAdjustments', e.response);
+        yield put(hideScreenLoading());
+        // yield action.callback({
+        //   error: true,
+        //   message: e.message,
+        // });
+    }
+}
 export default function* watcher() {
     yield takeLatest(GET_PRODUCTS_REQUEST, getProducts);
     yield takeLatest(SEARCH_PRODUCTS_BY_NAME_REQUEST, searchProductsByName);
@@ -183,4 +202,6 @@ export default function* watcher() {
     );
     yield takeLatest(GET_PRODUCT_BY_ID_REQUEST, getProductById);
     yield takeLatest(PRINT_LABEL_REQUEST, printLabel);
+    yield takeLatest(STOCK_ADJUSTMENT_REQUEST, stockAdjustments);
+
 }

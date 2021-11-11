@@ -1,15 +1,19 @@
 export interface OwnProps {
     label: string,
-    showSelect?: boolean
     refs?: any
+    edit: boolean | any
     value?: string | any
-    onChange?: any
     disabled?: boolean
     keyboard?: any
-    editable?: boolean
     onEndEdit?: (text: string) => void
-    style?: any
     data?: any
+    containerStyle?: any
+    onChange: (text: string) => void;
+    icon?: string
+    inputStyle?: any
+    menuStyle?: any
+    right?: () => void
+    left?: () => void
 }
 
 export interface StateProps {
