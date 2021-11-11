@@ -121,7 +121,7 @@ class Dashboard extends React.Component<Props, State> {
                     }}>
                     <View style={styles.countLabelAndIconContainer}>
                         <Text style={styles.countLabel}>Ready to be Packed</Text>
-                    }}>
+                    </View>
                 </TouchableOpacity>
             </View>
         )
