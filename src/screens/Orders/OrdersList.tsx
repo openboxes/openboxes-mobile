@@ -35,18 +35,18 @@ function renderOrder(order: Order, onOrderTapped: () => void): ReactElement {
       onPress={() => onOrderTapped()}>
       <View style={styles.row}>
         <View style={styles.col50}>
-          <Text style={styles.label}>Identifire</Text>
+          <Text style={styles.label}>Identifier</Text>
           <Text style={styles.value}>{order.identifier}</Text>
         </View>
         <View style={styles.col50}>
-          <Text style={styles.label}>Name</Text>
-          <Text style={styles.value}>{order.name}</Text>
+          <Text style={styles.label}>Status Code</Text>
+          <Text style={styles.value}>{order.statusCode}</Text>
         </View>
       </View>
       <View style={styles.row}>
         <View style={styles.col50}>
-          <Text style={styles.label}>Status Code</Text>
-          <Text style={styles.value}>{order.statusCode}</Text>
+          <Text style={styles.label}>Name</Text>
+          <Text style={styles.value}>{order.name}</Text>
         </View>
         <View style={styles.col50}>
           <Text style={styles.label}>Requested Delivery Date</Text>
