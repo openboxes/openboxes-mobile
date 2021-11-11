@@ -7,6 +7,6 @@ export function saveAndUpdateLpn(requestBody: any){
 }
 
 export function fetchContainer(id: string){
-    console.debug("fetchContainer id"+id)
-    return apiClient.post(`/generic/container/`+id);
+    console.debug("fetchContainer id "+id)
+    return apiClient.get(`/generic/container/`+id);
 }

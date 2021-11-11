@@ -78,7 +78,9 @@ class Dashboard extends React.Component<Props, State> {
                         <Text style={styles.countLabel}>Create LPN</Text>
                     </View>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => {
+                <TouchableOpacity
+                    style={styles.countContainer}
+                    onPress={() => {
                     this.props.navigation.navigate('InternalTransfer');
                 }}>
                     <View style={styles.countLabelAndIconContainer}>
@@ -106,11 +108,20 @@ class Dashboard extends React.Component<Props, State> {
                 <TouchableOpacity
                     style={styles.countContainer}
                     onPress={() => {
+                        this.props.navigation.navigate('Product Summary');
+                    }}>
+                    <View style={styles.countLabelAndIconContainer}>
+                        <Text style={styles.countLabel}>Product Summary</Text>
+                    </View>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.countContainer}
+                    onPress={() => {
                         this.props.navigation.navigate('OutboundStockList');
                     }}>
                     <View style={styles.countLabelAndIconContainer}>
                         <Text style={styles.countLabel}>Ready to be Packed</Text>
-                    </View>
+                    }}>
                 </TouchableOpacity>
             </View>
         )

@@ -1,15 +1,19 @@
+import Location from "../../data/location/Location";
 
 export interface OwnProps {
-
+    navigation: any;
+    route: any;
 }
 
 export interface StateProps {
     //no-op
+    currentLocation?: Location | null;
 }
 
 
 export interface DispatchProps {
-    getStockMovements: (direction: string, status: string, callback: (data: any) => void) => void;
+    getShipmentOrigin: (id : string, callback: (data: any) => void) => void;
+    getShipmentPacking: (id: any, callback: (data: any) => void) => void;
     saveAndUpdateLpn: (requestBody: any, callback: (data: any) => void) => void;
 }
 

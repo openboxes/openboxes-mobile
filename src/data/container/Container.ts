@@ -6,6 +6,7 @@ import {ContainerShipmentItem} from "./ContainerShipmentItem";
 export interface Container{
     "id": string,
     "name": string,
+    shipmentNumber: string,
     "containerNumber": null,
     "containerType":ContainerType,
     "recipient": Person,

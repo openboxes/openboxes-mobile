@@ -2,7 +2,7 @@ import {StyleSheet} from 'react-native';
 
 export default StyleSheet.create({
     container: {
-        marginBottom: 15
+        marginBottom: 10,
     },
     row: {
         flexDirection: 'row',
@@ -24,7 +24,6 @@ export default StyleSheet.create({
         flex: 1,
         marginTop:5,
         height: 40,
-        marginRight: 10,
         borderColor:'grey',
     },
     select:{
@@ -36,10 +35,14 @@ export default StyleSheet.create({
         backgroundColor:'white',
         borderRadius:5,
         marginLeft: 10,
+        marginRight:10,
         marginTop:10,
     },
     arrowDownIcon:{
         height: 15,
         width:15,
+    },
+    editIcon:{
+        marginStart:10,
     }
 });

@@ -5,6 +5,7 @@ import {PicklistItem} from "../picklist/PicklistItem";
 export interface Order {
   id: string
   name: string
+  shipmentNumber: string
   description?: string | null
   identifier?: string | null
   statusCode?: string | null

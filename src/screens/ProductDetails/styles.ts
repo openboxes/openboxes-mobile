@@ -11,6 +11,21 @@ export default StyleSheet.create({
   title:{
 
   },
+  itemView: {
+    marginStart: 10,
+    marginEnd: 10,
+    marginTop: 5,
+    marginBottom:10
+  },
+  rowItem: {
+    flexDirection: 'row',
+    borderColor: Theme.colors.background,
+    marginTop: 1,
+    padding: 2,
+    marginStart: 4,
+    width: '100%',
+    alignItems:"center"
+  },
   name: {
     fontSize: 17,
     color: Theme.colors.text,

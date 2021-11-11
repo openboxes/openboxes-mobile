@@ -1,9 +1,20 @@
 import {takeLatest, put, call} from 'redux-saga/effects';
 import {
-    GET_CONTAINER_DETAILS_REQUEST, GET_CONTAINER_DETAILS_SUCCESS,
+    GET_CONTAINER_DETAILS_REQUEST,
+    GET_CONTAINER_DETAILS_SUCCESS,
+    GET_SHIPMENT_ORIGIN_REQUEST,
+    GET_SHIPMENT_ORIGIN_SUCCESS,
     GET_SHIPMENT_PACKING_REQUEST,
-    GET_SHIPMENT_PACKING_SUCCESS, GET_SHIPMENT_READY_TO_BE_PACKED, GET_SHIPMENTS_READY_TO_BE_PACKED,
-    GET_SUBMIT_SHIPMENT_DETAILS_REQUEST, GET_SUBMIT_SHIPMENT_DETAILS_SUCCESS
+    GET_SHIPMENT_PACKING_SUCCESS, 
+    GET_SHIPMENT_READY_TO_BE_PACKED,
+    GET_SHIPMENTS_READY_TO_BE_PACKED,
+    GET_SUBMIT_SHIPMENT_DETAILS_REQUEST, 
+    GET_SUBMIT_SHIPMENT_DETAILS_SUCCESS
+    GET_SHIPMENT_PACKING_SUCCESS,
+    GET_SHIPMENT_TYPE_REQUEST,
+    GET_SHIPMENT_TYPE_SUCCESS,
+    GET_SUBMIT_SHIPMENT_DETAILS_REQUEST,
+    GET_SUBMIT_SHIPMENT_DETAILS_SUCCESS
 } from '../actions/packing';
 import {
     hideScreenLoading,
@@ -60,14 +71,47 @@ function* getShipmentPacking(action: any) {
     }
 }
 
+
+function* getShipmentOriginById(action: any) {
+    try {
+        yield showScreenLoading("Shipment Origin");
+        const response = yield call(api.getShipmentOrigin, action.payload.id);
+        yield put({
+            type: GET_SHIPMENT_ORIGIN_SUCCESS,
+            payload: response.data,
+        });
+        yield action.callback(response.data);
+        console.log(response)
+        yield hideScreenLoading();
+    } catch (e) {
+        console.log('function* getShipmentOrigin', e.response);
+    }
+}
+
 function* getContainerDetail(action: any) {
     try {
-        yield showScreenLoading(" Container Details ");
+        yield showScreenLoading("Container Details");
         const response = yield call(api.getContainerDetails, action.payload.id);
         yield put({
             type: GET_CONTAINER_DETAILS_SUCCESS,
             payload: response.data,
         });
+        console.log(response)
+        yield hideScreenLoading();
+    } catch (e) {
+        console.log('function* getContainerDetails', e.response);
+    }
+}
+
+function* getContainerType(action: any) {
+    try {
+        yield showScreenLoading("Container Details");
+        const response = yield call(api.getContainerType);
+        yield put({
+            type: GET_SHIPMENT_TYPE_SUCCESS,
+            payload: response.data,
+        });
+        yield action.callback(response.data);
         console.log(response)
         yield hideScreenLoading();
     } catch (e) {
@@ -98,6 +142,6 @@ export default function* watcher() {
     yield takeLatest(GET_SHIPMENT_PACKING_REQUEST, getShipmentPacking);
     yield takeLatest(GET_CONTAINER_DETAILS_REQUEST, getContainerDetail);
     yield takeLatest(GET_SUBMIT_SHIPMENT_DETAILS_REQUEST, submitShipmentItems);
-
-
+    yield takeLatest(GET_SHIPMENT_ORIGIN_REQUEST, getShipmentOriginById)
+    yield takeLatest(GET_SHIPMENT_TYPE_REQUEST, getContainerType)
 }
