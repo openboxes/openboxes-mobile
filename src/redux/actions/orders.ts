@@ -45,7 +45,7 @@ export function getPickListItemAction(
 export function submitPickListItem(
     id: string,
     requestBody: any,
-    callback: (products: any) => void,
+    callback: (data: any) => void,
 ) {
   console.log('action OK');
   return {
