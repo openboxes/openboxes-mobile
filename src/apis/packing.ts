@@ -6,6 +6,11 @@ export function getShipmentsReadyToBePacked(locationId: string, shipmentStatusCo
     return apiClient.get(`/shipments?origin.id=` + locationId + `&shipmentStatusCode=`+shipmentStatusCode);
 }
 
+export function getShipmentReadyToBePacked(id: string) {
+    console.debug("shipment details with id::><><><:" + id)
+    return apiClient.get(`/shipments/`+id);
+}
+
 export function getShipmentPacking(id: string) {
     console.debug("id::><><><:" + id)
     return apiClient.get(`/shipments/${id}`);

@@ -13,7 +13,7 @@ export interface Shipment{
     actualDeliveryDate: string,
     shippedCount: number,
     receivedCount: number,
-    shipmentItems: ShipmentItems,
+    shipmentItems: ShipmentItems[],
     containers: Container[],
     origin: Location,
     destination: Location,
@@ -21,5 +21,8 @@ export interface Shipment{
 
 export default interface ShipmentsReadyToPackedResponse{
     data: Shipment[]
+}
+export  interface ShipmentReadyToPackedResponse{
+    data: Shipment
 }
 

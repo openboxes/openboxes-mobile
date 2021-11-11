@@ -1,4 +1,5 @@
 export const GET_SHIPMENTS_READY_TO_BE_PACKED = "GET_SHIPMENTS_READY_TO_BE_PACKED"
+export const GET_SHIPMENT_READY_TO_BE_PACKED = "GET_SHIPMENT_READY_TO_BE_PACKED"
 export const GET_SHIPMENT_PACKING_REQUEST = "GET_SHIPMENT_PACKING_REQUEST"
 export const GET_SHIPMENT_PACKING_SUCCESS = 'GET_SHIPMENT_PACKING_SUCCESS';
 
@@ -11,6 +12,13 @@ export const getShipmentsReadyToBePacked = (locationId: string, shipmentStatusCo
     return {
         type: GET_SHIPMENTS_READY_TO_BE_PACKED,
         payload: {locationId, shipmentStatusCode},
+        callback
+    };
+}
+export const getShipmentReadyToBePacked = (id: string, callback: (shipments: any) => void) => {
+    return {
+        type: GET_SHIPMENT_READY_TO_BE_PACKED,
+        payload: {id},
         callback
     };
 }
