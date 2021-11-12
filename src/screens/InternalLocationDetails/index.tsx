@@ -86,7 +86,22 @@ const InternalLocationDetails = () => {
             </View>)
     }
     const navigateToDetails = (item: any) => {
-        navigation.navigate("AdjustStock",{item});
+        const stockItem={
+            product:{
+                productCode:item['product.productCode'],
+                name:item['product.name'],
+            },
+            inventoryItem:{
+                lotNumber:item['inventoryItem.lotNumber'],
+                expirationDate:item['inventoryItem.expirationDate'],
+                            },
+            binLocation:{
+                name:item[ 'binLocation.name'],
+                id:item[ 'binLocation.id'],
+            },
+            quantityAvailableToPromise:item.quantityAvailable
+        }
+        navigation.navigate("AdjustStock",{item:stockItem});
     }
 
 

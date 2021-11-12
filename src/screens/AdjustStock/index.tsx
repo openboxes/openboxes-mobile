@@ -83,6 +83,7 @@ const AdjustStock = () => {
     const dispatch = useDispatch();
     const route = useRoute();
     const {item}: any = route.params
+    console.log(item)
     const navigation = useNavigation();
     const location = useSelector((state: RootState) => state.mainReducer.currentLocation)
     console.log(JSON.stringify(item))
@@ -170,15 +171,15 @@ const AdjustStock = () => {
         return (<View
             style={styles.itemView}>
             <View style={styles.rowItem}>
-                <RenderData title={"Product Code"} subText={item.product.productCode}/>
+                <RenderData title={"Product Code"} subText={item?.product.productCode}/>
                 <RenderData title={"Product Name"} subText={item?.product.name}/>
             </View>
             <View style={styles.rowItem}>
-                <RenderData title={"Lot Number"} subText={item.inventoryItem.lotNumber ?? "Default"}/>
-                <RenderData title={"Expiration Date"} subText={item.inventoryItem.expirationDate ?? "Never"}/>
+                <RenderData title={"Lot Number"} subText={item?.inventoryItem.lotNumber ?? "Default"}/>
+                <RenderData title={"Expiration Date"} subText={item?.inventoryItem.expirationDate ?? "Never"}/>
             </View>
             <View style={styles.rowItem}>
-                <RenderData title={"Bin Location"} subText={item.binLocation ?? "Default"}/>
+                <RenderData title={"Bin Location"} subText={item?.binLocation?.name ?? "Default"}/>
                 <RenderData title={"Quantity Available"} subText={item.quantityAvailableToPromise}/>
             </View>
         </View>);
