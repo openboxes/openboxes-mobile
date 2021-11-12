@@ -96,9 +96,7 @@ class OutboundStockDetails extends React.Component<Props, State> {
                         renderItem={(container: ListRenderItemInfo<Container>) => (
                             <ContainerDetails
                                 item={container.item}
-                                // onPress={() => {
-                                //     this.onItemTapped(item.item);
-                                // }}
+                               navigation={this.props.navigation}
                             />
                         )}
                         keyExtractor={item => `${item.id}`}

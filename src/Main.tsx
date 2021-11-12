@@ -38,6 +38,7 @@ import OutboundStockList from "./screens/OutboundStockList";
 import OutboundStockDetails from "./screens/OutboundStockDetails";
 import ProductSummary from "./screens/ProductSummary";
 import AdjustStock from "./screens/AdjustStock";
+import ShipItemDetails from "./screens/ShipItemDetails";
 // import PutawayDetails from "./screens/PutawayDetails";
 
 const Stack = createStackNavigator();
@@ -162,6 +163,7 @@ class Main extends Component<Props, State> {
             <Stack.Screen name="OutboundStockList" component={OutboundStockList} />
             <Stack.Screen name="OutboundStockDetails" component={OutboundStockDetails} />
             <Stack.Screen name="AdjustStock" component={AdjustStock} />
+            <Stack.Screen name="ShipmentDetails" component={ShipItemDetails} />
             {/*<Stack.Screen name="Drawer" component={DrawerNavigator} />*/}
             {/*<Stack.Screen name="Drawer" component={DrawerNavigator} />*/}
           </Stack.Navigator>
