@@ -18,4 +18,29 @@ export default StyleSheet.create({
     fontSize: 16,
     marginStart: 4,
   },
+
+  rowItem: {
+    flexDirection: 'row',
+    borderColor: Theme.colors.background,
+    marginTop: 1,
+    padding: 2,
+    marginStart: 4,
+    width: '100%',
+    alignItems:"center"
+  },
+  columnItem: {
+    display: 'flex',
+    flexDirection: 'column',
+    flex: 0,
+    width: '50%',
+  },
+  label: {
+    fontSize: 12,
+    color: Theme.colors.placeholder,
+  },
+  value: {
+    fontSize: 16,
+    color: Theme.colors.text,
+    width:"90%"
+  },
 });

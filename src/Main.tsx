@@ -34,6 +34,7 @@ import CreateLpn from "./screens/Lpn/Create";
 import LpnDetail from "./screens/LpnDetail/Index";
 import PutawayCandidates from "./screens/PutawayCandidates";
 import Packing from "./screens/Packing";
+import InternalLocationDetails from "./screens/InternalLocationDetails";
 import OutboundStockList from "./screens/OutboundStockList";
 import OutboundStockDetails from "./screens/OutboundStockDetails";
 import ProductSummary from "./screens/ProductSummary";
@@ -162,6 +163,7 @@ class Main extends Component<Props, State> {
             <Stack.Screen name="OutboundStockList" component={OutboundStockList} />
             <Stack.Screen name="OutboundStockDetails" component={OutboundStockDetails} />
             <Stack.Screen name="AdjustStock" component={AdjustStock} />
+            <Stack.Screen name="InternalLocationDetail" component={InternalLocationDetails} />
             {/*<Stack.Screen name="Drawer" component={DrawerNavigator} />*/}
             {/*<Stack.Screen name="Drawer" component={DrawerNavigator} />*/}
           </Stack.Navigator>

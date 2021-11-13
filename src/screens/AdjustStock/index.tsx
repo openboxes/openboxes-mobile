@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import styles from './styles';
-import {Image, ScrollView, Text, View} from 'react-native';
+import {Image, ScrollView, Text, View, Alert} from 'react-native';
 import InputBox from '../../components/InputBox';
 import Button from "../../components/Button";
 import showPopup from "../../components/Popup";
@@ -83,6 +83,7 @@ const AdjustStock = () => {
     const dispatch = useDispatch();
     const route = useRoute();
     const {item}: any = route.params
+    console.log(item)
     const navigation = useNavigation();
     const location = useSelector((state: RootState) => state.mainReducer.currentLocation)
     console.log(JSON.stringify(item))
@@ -142,43 +143,41 @@ const AdjustStock = () => {
         const callback = (data: any) => {
             if (data?.error) {
                 showPopup({
-                    title: data.error.message
-                        ? `stock Adjustments`
-                        : null,
+                    title: `Unable to save stock adjustment`,
                     message:
-                        data.error.message ??
-                        `Failed to update`,
+                        data.message ??
+                        `Unexpected error occurred on the server`,
                     positiveButton: {
                         text: 'Retry',
                         callback: () => {
-                            dispatch(stockAdjustments( requestBody, callback));
+                            dispatch(stockAdjustments(requestBody, callback));
                         },
                     },
                     negativeButtonText: 'Cancel',
                 });
             } else {
                 if (data && Object.keys(data).length !== 0) {
-
+                    Alert.alert("Saved stock adjustment");
+                    navigation.goBack();
                 }
             }
         }
-        dispatch(stockAdjustments( requestBody, callback));
-
+        dispatch(stockAdjustments(requestBody, callback));
     }
 
     const RenderItem = (): JSX.Element => {
         return (<View
             style={styles.itemView}>
             <View style={styles.rowItem}>
-                <RenderData title={"Product Code"} subText={item.product.productCode}/>
+                <RenderData title={"Product Code"} subText={item?.product.productCode}/>
                 <RenderData title={"Product Name"} subText={item?.product.name}/>
             </View>
             <View style={styles.rowItem}>
-                <RenderData title={"Lot Number"} subText={item.inventoryItem.lotNumber ?? "Default"}/>
-                <RenderData title={"Expiration Date"} subText={item.inventoryItem.expirationDate ?? "Never"}/>
+                <RenderData title={"Lot Number"} subText={item?.inventoryItem.lotNumber ?? "Default"}/>
+                <RenderData title={"Expiration Date"} subText={item?.inventoryItem.expirationDate ?? "Never"}/>
             </View>
             <View style={styles.rowItem}>
-                <RenderData title={"Bin Location"} subText={item.binLocation ?? "Default"}/>
+                <RenderData title={"Bin Location"} subText={item?.binLocation?.name ?? "Default"}/>
                 <RenderData title={"Quantity Available"} subText={item.quantityAvailableToPromise}/>
             </View>
         </View>);
@@ -197,7 +196,8 @@ const AdjustStock = () => {
                     label={'Quantity Adjusted'}
                     value={state.quantityAdjusted}
                     onChange={onChangeQuantity}
-                    disabled={true}
+                    disabled={false}
+                    editable={false}
                     keyboard={"number-pad"}/>
                 <Text style={styles.value}>{"Reason Code"}</Text>
                 <SelectDropdown
@@ -216,8 +216,8 @@ const AdjustStock = () => {
                 <InputBox
                     value={state.comments}
                     onChange={onChangeComment}
-                    disabled={true}
-                    editable={true}
+                    disabled={false}
+                    editable={false}
                     label={'Comments'}/>
             </View>
             <View style={styles.bottom}>

@@ -11,7 +11,10 @@ import {
     GET_LOCATION_FROM_NUMBER,
     GET_BIN_LOCATIONS_REQUEST,
     GET_BIN_LOCATIONS_REQUEST_SUCCESS,
-    GET_PRODUCT_SUMMARY_FROM_LOCATION, GET_PRODUCT_SUMMARY_FROM_LOCATION_SUCCESS
+    GET_INTERNAL_LOCATIONS_DETAIL_SUCCESS,
+    GET_INTERNAL_LOCATION_DETAIL,
+    GET_PRODUCT_SUMMARY_FROM_LOCATION,
+    GET_PRODUCT_SUMMARY_FROM_LOCATION_SUCCESS
 } from '../actions/locations';
 
 function* getLocations(action: any) {
@@ -97,6 +100,25 @@ function* getInternalLocations(action: any) {
     }
 }
 
+function* getInternalLocationsDetails(action: any) {
+    try {
+        yield showScreenLoading('Fetching getInternalLocationsDetails');
+        const response = yield call(api.internalLocationsDetails, action.payload.id,action.payload.location);
+        yield put({
+            type: GET_INTERNAL_LOCATIONS_DETAIL_SUCCESS,
+            payload: response.data,
+        });
+        yield action.callback(response);
+        yield hideScreenLoading();
+    } catch (e) {
+        console.log('function* getInternalLocationsDetails', e);
+        yield action.callback({
+            error: true,
+            message: e.message,
+        });
+    }
+}
+
 function* getBinLocations() {
     try {
         yield showScreenLoading('Getting Bin locations');
@@ -138,4 +160,5 @@ export default function* watcher() {
     yield takeLatest(GET_INTERNAL_LOCATION_FROM_NUMBER, getInternalLocations)
     yield takeLatest(GET_BIN_LOCATIONS_REQUEST, getBinLocations);
     yield takeLatest(GET_PRODUCT_SUMMARY_FROM_LOCATION, fetchProductSummary);
+    yield takeLatest(GET_INTERNAL_LOCATION_DETAIL, getInternalLocationsDetails)
 }
