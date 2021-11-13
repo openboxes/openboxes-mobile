@@ -18,17 +18,17 @@ import {
 } from '../actions/locations';
 
 function* getLocations(action: any) {
-    try {
-        yield showScreenLoading('Fetching locations');
-        const response = yield call(api.getLocations);
-        yield put({
-            type: GET_LOCATIONS_REQUEST_SUCCESS,
-            payload: response.data,
-        });
-        yield action.callback(response.data);
-        yield hideScreenLoading();
-    } catch (error) {
-        if (error.code != 401) {
+  try {
+    yield showScreenLoading('Fetching locations');
+    const response = yield call(api.getLocations);
+    yield put({
+      type: GET_LOCATIONS_REQUEST_SUCCESS,
+      payload: response.data,
+    });
+    yield action.callback(response.data);
+    yield hideScreenLoading();
+  } catch (error) {
+    if (error.code != 401) {
       yield action.callback({
         error: true,
         message: error.message,
@@ -38,21 +38,21 @@ function* getLocations(action: any) {
 }
 
 function* setCurrentLocation(action: any) {
-    try {
-        yield showScreenLoading('Setting current location');
-        const response = yield call(
-            api.setCurrentLocation,
-            action.payload.location,
-        );
-        yield put({
-            type: SET_CURRENT_LOCATION_REQUEST_SUCCESS,
-            payload: action.payload,
-        });
-        yield action.callback(action.payload.location);
-        yield hideScreenLoading();
-    } catch (error) {
-        yield hideScreenLoading()
-        if (error.code != 401) {
+  try {
+    yield showScreenLoading('Setting current location');
+    const response = yield call(
+      api.setCurrentLocation,
+      action.payload.location,
+    );
+    yield put({
+      type: SET_CURRENT_LOCATION_REQUEST_SUCCESS,
+      payload: action.payload,
+    });
+    yield action.callback(action.payload.location);
+    yield hideScreenLoading();
+  } catch (error) {
+    yield hideScreenLoading()
+    if (error.code != 401) {
       yield action.callback({
         error: true,
         message: error.message,
@@ -62,17 +62,17 @@ function* setCurrentLocation(action: any) {
 }
 
 function* searchLocationByLocationNumber(action: any) {
-    try {
-        yield showScreenLoading('Fetching locations with locationNumber:' + action.payload.locationNumber);
-        const response = yield call(api.searchLocationByLocationNumber, action.payload.locationNumber);
-        yield put({
-            type: GET_LOCATIONS_REQUEST_SUCCESS,
-            payload: response.data,
-        });
-        yield action.callback(response.data);
-        yield hideScreenLoading();
-    } catch (error) {
-        if (error.code != 401) {
+  try {
+    yield showScreenLoading('Fetching locations with locationNumber:'+action.payload.locationNumber);
+    const response = yield call(api.searchLocationByLocationNumber, action.payload.locationNumber);
+    yield put({
+      type: GET_LOCATIONS_REQUEST_SUCCESS,
+      payload: response.data,
+    });
+    yield action.callback(response.data);
+    yield hideScreenLoading();
+  } catch (error) {
+    if (error.code != 401) {
       yield action.callback({
         error: true,
         message: error.message,

@@ -25,6 +25,7 @@ import showPopup from './components/Popup';
 import {colors} from "./constants";
 import Scan from "./screens/Scan";
 import PutawayList from "./screens/PutawayList";
+import Settings from "./screens/Settings";
 import PutawayDetails from "./screens/PutawayDetails";
 import PutawayItemDetail from "./screens/PutawayItemDetail";
 import InboundOrder from "./screens/InboundOrder";
@@ -34,11 +35,13 @@ import CreateLpn from "./screens/Lpn/Create";
 import LpnDetail from "./screens/LpnDetail/Index";
 import PutawayCandidates from "./screens/PutawayCandidates";
 import Packing from "./screens/Packing";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import InternalLocationDetails from "./screens/InternalLocationDetails";
 import OutboundStockList from "./screens/OutboundStockList";
 import OutboundStockDetails from "./screens/OutboundStockDetails";
 import ProductSummary from "./screens/ProductSummary";
 import AdjustStock from "./screens/AdjustStock";
+import ApiClient from "./utils/ApiClient";
 // import PutawayDetails from "./screens/PutawayDetails";
 
 const Stack = createStackNavigator();
@@ -63,13 +66,27 @@ interface DispatchProps {
 
 type Props = OwnProps & StateProps & DispatchProps;
 
-interface State {}
+interface State {
+  launched: boolean
+}
 
 class Main extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
-    this.state = {};
+    this.state = {
+      launched: false
+    };
+  }
+
+  componentWillMount() {
+    AsyncStorage.getItem('API_URL').then((value)=>{
+      if(!value){
+        NavigationService.navigate("Settings")
+      }else{
+        ApiClient.setBaseUrl(value)
+      }
+    })
   }
 
   shouldComponentUpdate(nextProps: Props) {
@@ -107,10 +124,12 @@ class Main extends Component<Props, State> {
 
   componentDidMount() {
     SplashScreen.hide()
+    AsyncStorage.setItem('launched', 'true')
   }
 
   render() {
     const {loggedIn} = this.props;
+    const initialRouteName =  !loggedIn ? 'Login' : 'Drawer'
     return (
       <SafeAreaView style={{flex: 1}}>
         <FullScreenLoadingIndicator
@@ -121,7 +140,7 @@ class Main extends Component<Props, State> {
             ref={NavigationService.navigationRef}
         >
           <Stack.Navigator
-            initialRouteName={!loggedIn ? 'Login' : 'Drawer'}
+            initialRouteName={initialRouteName}
             screenOptions={{
               headerRight: () => <Image
                   source={require('./assets/images/logo.png')}
@@ -160,6 +179,7 @@ class Main extends Component<Props, State> {
             <Stack.Screen name="CreateLpn" component={CreateLpn} />
             <Stack.Screen name="LpnDetail" component={LpnDetail} />
             <Stack.Screen name="InboundReceiveDetail" component={InboundReceiveDetail} />
+            <Stack.Screen name="Settings" component={Settings} />
             <Stack.Screen name="OutboundStockList" component={OutboundStockList} />
             <Stack.Screen name="OutboundStockDetails" component={OutboundStockDetails} />
             <Stack.Screen name="AdjustStock" component={AdjustStock} />
