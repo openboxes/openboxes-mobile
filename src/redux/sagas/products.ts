@@ -174,7 +174,7 @@ function* printLabel(action: any) {
 
 function* stockAdjustments(action: any) {
     try {
-        yield put(showScreenLoading('stock Adjustments'));
+        yield put(showScreenLoading('Saving stock adjustment'));
         const response = yield call(api.stockAdjustments, action.payload.data);
         yield put({
             type: STOCK_ADJUSTMENT_REQUEST_SUCCESS,
@@ -183,12 +183,12 @@ function* stockAdjustments(action: any) {
         yield action.callback(response);
         yield put(hideScreenLoading());
     } catch (e) {
-        console.log('function* stockAdjustments', e.response);
+        console.log('function* stockAdjustments', e);
         yield put(hideScreenLoading());
-        // yield action.callback({
-        //   error: true,
-        //   message: e.message,
-        // });
+        yield action.callback({
+          error: true,
+          message: e.message,
+        });
     }
 }
 export default function* watcher() {

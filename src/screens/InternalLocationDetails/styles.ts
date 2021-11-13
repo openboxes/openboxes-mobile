@@ -36,7 +36,7 @@ export default StyleSheet.create({
         borderColor: Theme.colors.background,
         marginTop: 1,
         padding: 2,
-        marginStart: 4,
+        marginStart: 10,
         width: '100%',
         alignItems:"center"
     },
