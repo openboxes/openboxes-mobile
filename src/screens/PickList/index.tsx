@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {DispatchProps} from './types';
 import styles from './styles';
-import {ScrollView, Text, TextInput, View} from 'react-native';
+import {ScrollView, Text, TextInput, TouchableOpacity, View} from 'react-native';
 import {pickListVMMapper} from './PickListVMMapper';
 import {showScreenLoading, hideScreenLoading} from '../../redux/actions/main';
 import {connect, useDispatch} from 'react-redux';
@@ -31,6 +31,7 @@ const PickOrderItem = () => {
         product: null,
         productCode: "",
         binLocation: null,
+        binLocationName:""
     })
     const vm = pickListVMMapper(route.params);
     console.log("VM", vm)
@@ -91,6 +92,7 @@ const PickOrderItem = () => {
                             } else {
                                 state.quantityPicked = (parseInt(state.quantityPicked, 10) + 1).toString();
                                 state.product = data.data[0]
+                                state.productCode = data.data[0].productCode
                                 state.productSearchQuery = ""
 
                             }
@@ -166,10 +168,10 @@ const PickOrderItem = () => {
         try {
             let errorTitle = ""
             let errorMessage = ""
-            if (state.product == null) {
+            /*if (state.product == null) {
                 errorTitle = "Product Code!"
                 errorMessage = "Please scan Product Code."
-            } else if (state.quantityPicked == null || state.quantityPicked == "") {
+            } else */if (state.quantityPicked == null || state.quantityPicked == "") {
                 errorTitle = "Quantity Pick!"
                 errorMessage = "Please pick some quantity."
             } else if (vm.picklistItems.quantityPicked === state.quantityPicked) {
@@ -186,11 +188,11 @@ const PickOrderItem = () => {
                 return Promise.resolve(null)
             }
             const requestBody = {
-                "product.id": state.product?.id,
-                "productCode": state.product?.productCode,
+                "product.id": state.pickListItem.product?.id,
+                "productCode": state.pickListItem.product.productCode,
                 "inventoryItem.id": null,
-                "binLocation.id": state.binLocation ? state.binLocation?.id : null,
-                "binLocation.locationNumber": state.binLocation ? state.binLocation?.locationNumber : state.binLocationSearchQuery,
+                "binLocation.id": state.pickListItem.binLocation ? state.pickListItem.binLocation?.id : null,
+                "binLocation.locationNumber": state.pickListItem.binLocation ? state.pickListItem.binLocation?.locationNumber : state.binLocationSearchQuery,
                 "quantityPicked": state.quantityPicked,
                 "picker.id": null,
                 "datePicked": null,
@@ -238,7 +240,7 @@ const PickOrderItem = () => {
 
     const onProductBarCodeSearchQuerySubmitted = () => {
 
-        if (!state.productSearchQuery) {
+        if (!state.productCode) {
             showPopup({
                 message: "Search query is empty",
                 positiveButton: {
@@ -254,10 +256,15 @@ const PickOrderItem = () => {
             console.debug(data.data.length)
             if (!data || data.data.length == 0) {
                 showPopup({
-                    message: "Product not found with ProductCode:" + state.productSearchQuery,
+                    message: "Product not found with ProductCode:" + state.productCode,
                     positiveButton: {
                         text: 'Ok'
                     }
+                })
+                setState({
+                    ...state,
+                    productCode:"",
+                    productSearchQuery: ""
                 })
                 return
             } else if (data.data.length == 1) {
@@ -271,7 +278,7 @@ const PickOrderItem = () => {
                 })
             }
         }
-        dispatch(searchProductByCodeAction(state.productSearchQuery, actionCallback));
+        dispatch(searchProductByCodeAction(state.productCode, actionCallback));
 
 
         /*let searchedProducts = await searchProductCodeFromApi(state.productSearchQuery)
@@ -281,7 +288,7 @@ const PickOrderItem = () => {
 
     const onBinLocationBarCodeSearchQuerySubmitted = () => {
 
-        if (!state.binLocationSearchQuery) {
+        if (!state.binLocationName) {
             showPopup({
                 message: "Search query is empty",
                 positiveButton: {
@@ -294,10 +301,15 @@ const PickOrderItem = () => {
         const actionCallback = (location: any) => {
             if (!location || location.error) {
                 showPopup({
-                    message: "Bin Location not found with LocationNumber:" + state.binLocationSearchQuery,
+                    message: "Bin Location not found with LocationNumber:" + state.binLocationName,
                     positiveButton: {
                         text: 'Ok'
                     }
+                })
+                setState({
+                    ...state,
+                    binLocationName: "",
+                    binLocationSearchQuery: ""
                 })
                 return
             } else if (location) {
@@ -308,7 +320,7 @@ const PickOrderItem = () => {
                 })
             }
         }
-        dispatch(searchLocationByLocationNumber(state.binLocationSearchQuery, actionCallback))
+        dispatch(searchLocationByLocationNumber(state.binLocationName, actionCallback))
     }
 
     const binLocationSearchQueryChange = (query: string) => {
@@ -327,12 +339,12 @@ const PickOrderItem = () => {
     }
 
     const onChangeProduct = (text: string) => {
-        state.product.productCode = text
+        state.productCode = text
         setState({...state})
     }
 
     const onChangeBin = (text: string) => {
-        state.binLocation.name = text
+        state.binLocationName = text
         setState({...state})
     }
 
@@ -344,103 +356,68 @@ const PickOrderItem = () => {
                         backButtonVisible={true}
                         onBackButtonPress={exit}
                     />*/}
-            <View style={styles.contentContainer}>
-                <View style={styles.topRow}>
-                    <Text style={styles.name}>{state.pickListItem?.["product.name"]}</Text>
-                </View>
+            <TouchableOpacity
+                style={styles.listItemContainer}>
                 <View style={styles.row}>
-                    <View style={styles.col40}>
-                        <Text style={styles.value}>Order Number</Text>
-                    </View>
-                    <View style={styles.col60}>
+                    <View style={styles.col50}>
+                        <Text style={styles.label}>Order Number</Text>
                         <Text style={styles.value}>{vm.order.identifier}</Text>
                     </View>
-                </View>
-                <View style={styles.row}>
-                    <View style={styles.col40}>
-                        <Text style={styles.value}>Destination</Text>
-                    </View>
-                    <View style={styles.col60}>
+                    <View style={styles.col50}>
+                        <Text style={styles.label}>Destination</Text>
                         <Text style={styles.value}>{vm.order.destination?.name}</Text>
                     </View>
                 </View>
                 <View style={styles.row}>
-                    <View style={styles.col40}>
-                        <Text style={styles.value}>Product Code</Text>
-                    </View>
-                    <View style={styles.col60}>
+                    <View style={styles.col50}>
+                        <Text style={styles.label}>Product Code</Text>
                         <Text style={styles.value}>{state.pickListItem?.productCode}</Text>
                     </View>
-                </View>
-                <View style={styles.row}>
-                    <View style={styles.col40}>
-                        <Text style={styles.value}>Product Name</Text>
-                    </View>
-                    <View style={styles.col60}>
+                    <View style={styles.col50}>
+                        <Text style={styles.label}>Product Name</Text>
                         <Text style={styles.value}>{state.pickListItem?.["product.name"]}</Text>
                     </View>
                 </View>
                 <View style={styles.row}>
-                    <View style={styles.col40}>
-                        <Text style={styles.value}>Unit of Measure</Text>
+                    <View style={styles.col50}>
+                        <Text style={styles.label}>Lot Number</Text>
+                        <Text style={styles.value}>{state.pickListItem?.lotNumber ? state.pickListItem?.lotNumber : 'Default'}</Text>
                     </View>
-                    <View style={styles.col60}>
-                        <Text style={styles.value}>{state.pickListItem?.unitOfMeasure}</Text>
-                    </View>
-                </View>
-                <View style={styles.row}>
-                    <View style={styles.col40}>
-                        <Text style={styles.value}>Lot Number</Text>
-                    </View>
-                    <View style={styles.col60}>
-                        <Text style={styles.value}>{state.pickListItem?.lotNumber}</Text>
+                    <View style={styles.col50}>
+                        <Text style={styles.label}>Expiration Date</Text>
+                        <Text style={styles.value}>{state.pickListItem?.expirationDate ? state.pickListItem?.expirationDate : 'N/A'}</Text>
                     </View>
                 </View>
                 <View style={styles.row}>
-                    <View style={styles.col40}>
-                        <Text style={styles.value}>Expiration</Text>
+                    <View style={styles.col50}>
+                        <Text style={styles.label}>Bin Location</Text>
+                        <Text style={styles.value}>{state.pickListItem?.["binLocation.name"] ? state.pickListItem?.["binLocation.name"] : 'Default'}</Text>
                     </View>
-                    <View style={styles.col60}>
-                        <Text style={styles.value}>{state.pickListItem?.expirationDate}</Text>
-                    </View>
-                </View>
-                <View style={styles.row}>
-                    <View style={styles.col40}>
-                        <Text style={styles.value}>Bin Location</Text>
-                    </View>
-                    <View style={styles.col60}>
-                        <Text style={styles.value}>{state.pickListItem?.["binLocation.name"]}</Text>
-                    </View>
-                </View>
-                <View style={styles.row}>
-                    <View style={styles.col40}>
-                        <Text style={styles.value}>Qty Requested</Text>
-                    </View>
-                    <View style={styles.col60}>
+                    <View style={styles.col50}>
+                        <Text style={styles.label}>Quantity Requested</Text>
                         <Text style={styles.value}>{state.pickListItem?.quantityRequested}</Text>
                     </View>
+
                 </View>
                 <View style={styles.row}>
-                    <View style={styles.col40}>
-                        <Text style={styles.value}>Qty Remaining</Text>
+                    <View style={styles.col50}>
+                        <Text style={styles.label}>Quantity Picked</Text>
+                        <Text style={styles.value}>{state.pickListItem?.quantityPicked}</Text>
                     </View>
-                    <View style={styles.col60}>
+                    <View style={styles.col50}>
+                        <Text style={styles.label}>Quantity Remaining</Text>
                         <Text style={styles.value}>{state.pickListItem?.quantityRemaining}</Text>
                     </View>
                 </View>
-                <View style={styles.row}>
-                    <View style={styles.col40}>
-                        <Text style={styles.value}>Qty Picked</Text>
-                    </View>
-                    <View style={styles.col60}>
-                        <Text style={styles.value}>{state.pickListItem?.quantityPicked}</Text>
-                    </View>
-                </View>
+            </TouchableOpacity>
+            <View style={styles.contentContainer}>
+                {/*<View style={styles.topRow}>
+                    <Text style={styles.name}>{state.pickListItem?.["product.name"]}</Text>
+                </View>*/}
 
 
-                <View style={styles.emptyRow}>
 
-                </View>
+
                 {/*
 
                 <View style={styles.topRow}>
@@ -493,26 +470,37 @@ const PickOrderItem = () => {
                 </View>*/}
                 <View style={styles.from}>
                     <InputBox
-                        value={state.product?.productCode}
+                        value={state.pickListItem?.productCode}
                         disabled={true}
-                        onEndEdit={productSearchQueryChange}
-                        onChange={onChangeProduct}
+                        editable={false}
+                        // onEndEdit={productSearchQueryChange}
+                        // onChange={onChangeProduct}
                         label={'Product Code'}/>
                     <InputBox
-                        value={state.binLocation?.name}
-                        label={'From'}
+                        value={state.pickListItem?.["binLocation.name"]}
+                        label={'Bin Location' }
                         disabled={true}
-                        onEndEdit={binLocationSearchQueryChange}
-                        onChange={onChangeBin}
+                        // onEndEdit={binLocationSearchQueryChange}
+                        // onChange={onChangeBin}
+                        editable={false}
                     />
                     <InputBox
-                        label={'Quantity to transfer'}
+                        value={state.pickListItem?.lotNumber}
+                        label={'Lot Number' }
+                        disabled={true}
+                        // onEndEdit={binLocationSearchQueryChange}
+                        // onChange={onChangeBin}
+                        editable={false}
+                    />
+                    <InputBox
+                        label={'Quantity to Pick'}
                         value={state.quantityPicked}
                         onChange={quantityPickedChange}
-                        disabled={true}
+                        disabled={false}
+                        editable={false}
                         onEndEdit={quantityPickedChange}
                         keyboard={"number-pad"}
-                        showSelect={true}/>
+                        showSelect={false}/>
                 </View>
                 {/*<View style={styles.row}>
                             <View style={styles.col40}>
@@ -526,7 +514,7 @@ const PickOrderItem = () => {
                             </View>
                         </View>*/}
                 <Button
-                    title="Submit"
+                    title="Pick Item"
                     style={{
                         marginTop: 8,
                     }}

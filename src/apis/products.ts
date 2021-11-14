@@ -50,3 +50,6 @@ export function getProductById(id: any) {
 export function printLabel(data: any) {
   return apiClient.post(`/products/${data.productId}/labels/${data.barcodeId}`);
 }
+export function stockAdjustments(requestBody: any) {
+  return apiClient.post(`/stockAdjustments`,requestBody);
+}

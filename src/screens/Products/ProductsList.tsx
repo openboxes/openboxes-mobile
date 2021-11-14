@@ -37,6 +37,10 @@ function renderProduct(
       style={styles.listItemContainer}
       onPress={() => onProductTapped()}>
       <View style={styles.listItemNameContainer}>
+        <Text style={styles.listItemNameLabel}>Product Code</Text>
+        <Text style={styles.listItemName}>{product.productCode}</Text>
+      </View>
+      <View style={styles.listItemNameContainer}>
         <Text style={styles.listItemNameLabel}>Name</Text>
         <Text style={styles.listItemName}>{product.name}</Text>
       </View>
