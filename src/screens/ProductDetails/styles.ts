@@ -112,10 +112,6 @@ export default StyleSheet.create({
   textAlign: {
     textAlign: 'right',
   },
-  tinyLogo: {
-    width: '100%',
-    height: '20%',
-  },
   logo: {
     width: 66,
     height: 58,
