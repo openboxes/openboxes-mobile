@@ -2,7 +2,10 @@ import apiClient from '../utils/ApiClient';
 
 export function getOrders(value: string | null) {
   console.debug("value::"+value)
-  let url = '/stockMovements?exclude=lineItems&direction=OUTBOUND'
+  let url = '/stockMovements?exclude=lineItems&direction=OUTBOUND&status=PICKING'
+  if (global.location) {
+    url += "&origin.id=" + global.location.id
+  }
   if(value!=null){
     url += "&identifier="+value
   }
