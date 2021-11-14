@@ -8,6 +8,9 @@ export interface OwnProps {
   keyboard?: any;
   editable?: boolean;
   onEndEdit?: (text: string) => void;
+  data: Array<any>;
+  selectedData?: Function,
+  getMoreData?: Function
 }
 
 export interface StateProps {}

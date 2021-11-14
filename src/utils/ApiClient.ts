@@ -2,11 +2,10 @@ import axios, {AxiosError, AxiosRequestConfig, AxiosResponse} from 'axios';
 // import {logout} from '../redux/Dispatchers';
 import {createLogger} from './Logger';
 import {environment} from './Environment';
-import * as NavigationService from "../NavigationService"
-import {store} from "../../App";
-import {hideScreenLoading} from "../redux/actions/main";
+import * as NavigationService from '../NavigationService';
+import {store} from '../../App';
+import {hideScreenLoading} from '../redux/actions/main';
 const logger = createLogger('ApiClient.ts');
-
 
 const apiClient = axios.create({
   baseURL: environment.API_BASE_URL,
@@ -54,9 +53,9 @@ const handleApiFailure = async (error: AxiosError) => {
   const code = error.response?.status;
   switch (code) {
     case 401:
-        store.dispatch(hideScreenLoading())
-        NavigationService.navigate('Login')
-        message = message ?? 'Unauthorized';
+      store.dispatch(hideScreenLoading());
+      NavigationService.navigate('Login');
+      message = message ?? 'Unauthorized';
       break;
     case 403:
       message = message ?? 'Access Denied';
@@ -79,5 +78,5 @@ const handleApiFailure = async (error: AxiosError) => {
 
 // apiClient.interceptors.request.use(handleApiRequest);
 // apiClient.interceptors.response.use(handleApiSuccess, handleApiFailure);
-apiClient.interceptors.response.use(handleApiSuccess,handleApiFailure);
+apiClient.interceptors.response.use(handleApiSuccess, handleApiFailure);
 export default apiClient;
