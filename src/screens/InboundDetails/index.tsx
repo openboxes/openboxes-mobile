@@ -31,11 +31,11 @@ const InboundDetails = () => {
             if (data?.error) {
                 showPopup({
                     title: data.error.message
-                        ? `In Bound order details`
+                        ? `Inbound order details`
                         : null,
                     message:
                         data.error.message ??
-                        `Failed to load Inbound order details value ${id}`,
+                        `Failed to load inbound order details value ${id}`,
                     positiveButton: {
                         text: 'Retry',
                         callback: () => {

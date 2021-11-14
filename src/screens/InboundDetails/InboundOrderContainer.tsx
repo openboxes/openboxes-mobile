@@ -27,14 +27,15 @@ const InboundOrderContainer = ({data,shipmentId, shipmentData}: InboundDetailPro
             <Card>
                 <Card.Content>
                     <View style={styles.rowItem}>
-                        <Text style={styles.value}>{shipmentData?.name}</Text>
-                    </View>
-                    <View style={styles.rowItem}>
-                        <RenderData title={"Origin"} subText={shipmentData?.origin.name}/>
+                        <RenderData title={"Shipment Number"} subText={shipmentData?.shipmentNumber}/>
                         <RenderData title={"Status"} subText={shipmentData?.status}/>
                     </View>
                     <View style={styles.rowItem}>
+                        <RenderData title={"Origin"} subText={shipmentData?.origin.name}/>
                         <RenderData title={"Destination"} subText={shipmentData?.destination.name}/>
+                    </View>
+                    <View style={styles.rowItem}>
+                        <RenderData title={"Description"} subText={shipmentData?.name}/>
                         <RenderData title={"Number of Items"} subText={shipmentData?.shipmentItems.length}/>
                     </View>
                     <View style={styles.rowItem}>
