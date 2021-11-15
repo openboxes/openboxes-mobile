@@ -5,7 +5,7 @@ import Button from '../../components/Button';
 
 import SelectDropdown from 'react-native-select-dropdown';
 import InputBox from '../../components/InputBox';
-import {useRoute} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {useDispatch} from 'react-redux';
 import useEventListener from '../../hooks/useEventListener';
 import showPopup from '../../components/Popup';
@@ -14,6 +14,7 @@ import {
     getShipmentPacking,
     submitShipmentDetails,
 } from '../../redux/actions/packing';
+import {navigate} from "../../NavigationService";
 
 const renderIcon = () => {
     return (
@@ -27,6 +28,7 @@ const renderIcon = () => {
 const ShipItemDetails = () => {
     const route = useRoute();
     const dispatch = useDispatch();
+    const navigation = useNavigation()
     const {item}: any = route.params
     const [state, setState] = useState<any>({
         error: '',
@@ -93,6 +95,7 @@ const ShipItemDetails = () => {
                     console.log(data);
                 }
                 setState({...state});
+                navigation.goBack();
             }
         };
         dispatch(submitShipmentDetails(id, request,callback));
