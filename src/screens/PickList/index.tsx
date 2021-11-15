@@ -21,7 +21,7 @@ import {
     searchProductGloballyAction,
 } from '../../redux/actions/products';
 import {searchLocationByLocationNumber} from '../../redux/actions/locations';
-import {useRoute} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import Button from '../../components/Button';
 import useEventListener from '../../hooks/useEventListener';
 import InputBox from '../../components/InputBox';
@@ -29,6 +29,7 @@ import InputBox from '../../components/InputBox';
 const PickOrderItem = () => {
     const route = useRoute();
     const dispatch = useDispatch();
+    const navigation = useNavigation()
     const barcodeData = useEventListener();
     const [state, setState] = useState<any>({
         error: '',
@@ -229,8 +230,21 @@ const PickOrderItem = () => {
             const actionCallback = (data: any) => {
                 console.debug('data after submit');
                 console.debug(data);
-                           };
-           dispatch( submitPickListItem(
+                if (data?.error) {
+                    showPopup({
+                        title: data.error.message
+                            ? `Failed to load results`
+                            : null,
+                        message:
+                            data.error.message ??
+                            `Failed to load results`,
+                        negativeButtonText: 'Cancel',
+                    });
+                } else {
+                    navigation.goBack()
+                }
+            };
+            dispatch(submitPickListItem(
                 state.pickListItem?.id as string,
                 requestBody,
                 actionCallback,
