@@ -56,9 +56,10 @@ export const getContainerDetails = (id: string, callback?: (products: any) => vo
     }
 }
 
-export const submitShipmentDetails = (id: string, requestBody: any) => {
+export const submitShipmentDetails = (id: string, requestBody: any, callback?: (products: any) => void) => {
     return {
         type: GET_SUBMIT_SHIPMENT_DETAILS_REQUEST,
-        payload: {id, requestBody}
+        payload: {id, requestBody},
+        callback
     }
 }

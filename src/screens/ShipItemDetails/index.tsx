@@ -83,7 +83,7 @@ const ShipItemDetails = () => {
                     positiveButton: {
                         text: 'Retry',
                         callback: () => {
-                            dispatch(submitShipmentDetails(id, request));
+                            dispatch(submitShipmentDetails(id, request,callback));
                         },
                     },
                     negativeButtonText: 'Cancel',
@@ -95,7 +95,7 @@ const ShipItemDetails = () => {
                 setState({...state});
             }
         };
-        dispatch(submitShipmentDetails(id, request));
+        dispatch(submitShipmentDetails(id, request,callback));
     };
 
     const getContainerDetail = (id: string = '') => {

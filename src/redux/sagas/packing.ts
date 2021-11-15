@@ -121,12 +121,14 @@ function* getContainerType(action: any) {
 function* submitShipmentItems(action: any) {
     try {
         yield showScreenLoading(" submit Shipment Items Details ");
-        const response = yield call(api.submitShipmentItems, action.payload.id, action.payload.body);
+        console.log( action.payload)
+        const response = yield call(api.submitShipmentItems, action.payload.id, action.payload.requestBody);
         yield put({
             type: GET_SUBMIT_SHIPMENT_DETAILS_SUCCESS,
-            payload: response.data,
+            payload: response,
         });
         console.log(response)
+        yield action.callback(response);
         yield hideScreenLoading();
     } catch (e) {
         console.log('function* submitShipmentItems', e.response);
