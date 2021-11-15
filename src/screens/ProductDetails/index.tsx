@@ -4,7 +4,6 @@ import {
     ScrollView,
     Text,
     View,
-    Button,
     KeyboardAvoidingView,
     Platform,
     FlatList,
@@ -22,6 +21,7 @@ import showPopup from "../../components/Popup";
 import {RootState} from "../../redux/reducers";
 import {Card} from "react-native-paper";
 import RenderData from "../../components/RenderData";
+import Button from "../../components/Button";
 
 class ProductDetails extends React.Component<Props, State> {
     constructor(props: Props) {

@@ -7,17 +7,19 @@ import useEventListener from '../../hooks/useEventListener';
 import {Order} from '../../data/order/Order';
 import Product from '../../data/product/Product';
 import showPopup from '../../components/Popup';
-import {searchProductGloballyAction} from '../../redux/actions/products';
+import {getProductByIdAction, searchProductGloballyAction} from '../../redux/actions/products';
 import {hideScreenLoading} from '../../redux/actions/main';
 import {getInternalLocationDetails} from '../../redux/actions/locations';
 import {Card} from 'react-native-paper';
 import {RootState} from '../../redux/reducers';
+import Button from '../../components/Button';
+import PrintModal from "../../components/PrintModal";
 
 const InternalLocationDetails = () => {
   const barcodeData = useEventListener();
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  const route = useRoute();
+    const route = useRoute();
   const location = useSelector(
     (state: RootState) => state.mainReducer.currentLocation,
   );
@@ -25,6 +27,8 @@ const InternalLocationDetails = () => {
     error: null,
     searchProductCode: null,
     locationData: null,
+    visible:false,
+    productDetails:null
   });
 
   useEffect(() => {
@@ -117,6 +121,50 @@ const InternalLocationDetails = () => {
     navigation.navigate('AdjustStock', {item: stockItem});
   };
 
+ const getProductDetails=(id: string)=> {
+    if (!id) {
+      showPopup({
+        message: 'Product id is empty',
+        positiveButton: {text: 'Ok'},
+      });
+      return;
+    }
+
+    const actionCallback = (data: any) => {
+      console.log(JSON.stringify(data))
+      if (data?.error) {
+        showPopup({
+          title: data.error.message
+              ? `Failed to load product details with value = "${id}"`
+              : null,
+          message:
+              data.error.message ??
+              `Failed to load product details with value = "${id}"`,
+          positiveButton: {
+            text: 'Retry',
+            callback: () => {
+              dispatch(getProductByIdAction(id, actionCallback));
+            },
+          },
+          negativeButtonText: 'Cancel',
+        });
+      } else {
+        setState({...state,productDetails: data})
+        setState({...state,visible: true})
+      }
+    };
+    dispatch(getProductByIdAction(id, actionCallback));
+  }
+
+ const handleClick = () => {
+   console.log(state.locationData?.availableItems[0]["product.productCode"])
+   getProductDetails(state.locationData?.availableItems[0]["product.productCode"])
+
+  }
+  const closeModal = () => {
+    setState({...state,visible: false})
+  }
+
   const renderListItem = (item: any, index: any) => (
     <TouchableOpacity
       key={index}
@@ -189,8 +237,18 @@ const InternalLocationDetails = () => {
           {state.locationData?.availableItems?.map((item: any, index: any) => {
             return renderListItem(item, index);
           })}
+          <View style={styles.bottom}>
+            <Button
+                title={'Print Barcode Label'}
+                onPress={handleClick} />
+          </View>
         </View>
       )}
+      <PrintModal
+          visible={state.visible}
+          closeModal={closeModal}
+          product={state.productDetails}
+        />
     </View>
   );
 };

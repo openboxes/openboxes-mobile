@@ -1,11 +1,18 @@
 import {StyleSheet} from 'react-native';
 import Theme from '../../utils/Theme';
+import {ratio} from "../../constants";
 
 export default StyleSheet.create({
     screenContainer: {
         display: 'flex',
         flexDirection: 'column',
         flex: 1,
+    },
+    bottom: {
+        width: '100%',
+        alignItems: "center",
+        justifyContent: "center",
+        height: ratio.height * 100,
     },
     boxHeading: {
         fontSize: 15,

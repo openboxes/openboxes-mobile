@@ -28,8 +28,14 @@ export default StyleSheet.create({
     },
     image: {
         width: ratio.width * 250,
-        height: ratio.height * 200,
+        height: ratio.height * 150,
         resizeMode: "stretch"
+    },
+    bottom: {
+        width: '100%',
+        alignItems: "center",
+        justifyContent: "center",
+        height: ratio.height * 100,
     },
     form: {
         flex:1,
