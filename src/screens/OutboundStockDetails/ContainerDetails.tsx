@@ -16,8 +16,8 @@ interface Props {
 class ContainerDetails extends Component<Props> {
 
     onItemTapped=(item:any)=>{
-        console.log("ShipmentDetails1",item,item.item.shipment.shipmentNumber)
-        this.props.navigation.navigate("ShipmentDetails", {id:item.item.shipment.shipmentNumber})
+        console.log("ShipmentDetails1",item,item.item)
+        this.props.navigation.navigate("ShipmentDetails", {item:item.item})
     }
 
     render() {

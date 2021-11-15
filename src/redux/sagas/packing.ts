@@ -93,6 +93,7 @@ function* getContainerDetail(action: any) {
             type: GET_CONTAINER_DETAILS_SUCCESS,
             payload: response.data,
         });
+        yield action.callback(response.data);
         console.log(response)
         yield hideScreenLoading();
     } catch (e) {
