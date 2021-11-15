@@ -162,7 +162,7 @@ const InternalLocationDetails = () => {
     <View style={styles.screenContainer}>
       {state.locationData && (
         <View>
-          <Text style={styles.boxHeading}>Details test</Text>
+          <Text style={styles.boxHeading}>Details</Text>
           <View style={styles.rowItem}>
             <RenderItem
               title={'Bin Location Name'}
