@@ -6,12 +6,12 @@ import {StyleSheet} from 'react-native';
 import {Platform, StatusBar} from 'react-native';
 // import {setStatusBarBackgroundColor} from 'expo-status-bar';
 
-
 export interface Props {
   subtitle?: string | null;
+  placeholder?: string;
   searchBox: boolean;
   onBarCodeSearchQuerySubmitted: (query: string) => void;
-  autoSearch: boolean | false
+  autoSearch: boolean | false;
 }
 
 interface State {
@@ -41,14 +41,13 @@ export default class ProductsSearchCodeHeader extends React.Component<
   }
 
   onSearchQueryChange(query: string) {
-    console.debug("query::"+query)
+    console.debug('query::' + query);
     this.setState({
       searchQuery: query,
     });
-    if(this.props.autoSearch){
+    if (this.props.autoSearch) {
       this.props.onBarCodeSearchQuerySubmitted(query);
     }
-
   }
 
   onBarCodeSearchQuerySubmitted() {
@@ -59,7 +58,9 @@ export default class ProductsSearchCodeHeader extends React.Component<
     return (
       <Searchbar
         theme={{}}
-        placeholder="Search by barcode"
+        placeholder={
+          this.props.placeholder ? this.props.placeholder : 'Search by barcode'
+        }
         onChangeText={this.onSearchQueryChange}
         value={this.state.searchQuery}
         style={styles.searchBar}
