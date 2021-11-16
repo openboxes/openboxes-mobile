@@ -9,7 +9,7 @@ import {useNavigation, useRoute} from '@react-navigation/native';
 import {useDispatch} from 'react-redux';
 import showPopup from '../../components/Popup';
 import {
-    getShipmentOrigin,
+    getShipmentPacking,
     submitShipmentDetails,
 } from '../../redux/actions/packing';
 
@@ -52,7 +52,7 @@ const ShipItemDetails = () => {
                     positiveButton: {
                         text: 'Retry',
                         callback: () => {
-                            dispatch(getShipmentOrigin(id, callback));
+                            dispatch(getShipmentPacking(id, callback));
                         },
                     },
                     negativeButtonText: 'Cancel',
@@ -62,7 +62,7 @@ const ShipItemDetails = () => {
                 if (data && Object.keys(data).length !== 0) {
                     state.shipmentDetails = data;
                     let containerList: any = []
-                    data[0].availableContainers.map((dataItem: any) => {
+                    data.availableContainers.map((dataItem: any) => {
                         containerList.push(dataItem.name)
                     })
                     state.containerList = containerList;
@@ -72,7 +72,7 @@ const ShipItemDetails = () => {
                 setState({...state});
             }
         };
-        dispatch(getShipmentOrigin(id, callback));
+        dispatch(getShipmentPacking(id, callback));
     };
 
     const submitShipmentDetail = (id: string) => {
@@ -155,7 +155,7 @@ const ShipItemDetails = () => {
                     data={state.containerList}
                     onSelect={(selectedItem, index) => {
                         state.containerId = selectedItem
-                        const container = state.shipmentDetails[0].availableContainers[index];
+                        const container = state.shipmentDetails.availableContainers[index];
                         setState({...state,containerId : selectedItem,container:container})
                         console.log(selectedItem, index);
                     }}
