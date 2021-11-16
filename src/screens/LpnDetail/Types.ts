@@ -15,6 +15,7 @@ export interface StateProps {
 export interface DispatchProps {
     fetchContainer: (id: string, callback: (data: any) => void) => void;
     getShipmentPacking: (id: string, callback: (data: any) => void) => void;
+    getProductByIdAction: (id: string, callback: (data: any) => void) => void;
 }
 
 export type Props = OwnProps & StateProps & DispatchProps;
