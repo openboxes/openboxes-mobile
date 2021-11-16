@@ -52,7 +52,7 @@ class PutawayItem extends Component <Props, State> {
                     "quantity": this.state.quantity
                 }
             ],
-            "orderedBy.id": currentLocation.id,
+            "orderedBy.id": "",
             "sortBy": null
         }
 

@@ -220,7 +220,7 @@ const PutawayItemDetail = () => {
                     "quantity": state.putAwayItem?.quantity
                 }
             ],
-            "orderedBy.id": location.id,
+            "orderedBy.id": "",
             "sortBy": null
         }
         const actionCallback = (data: any) => {
