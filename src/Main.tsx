@@ -42,6 +42,7 @@ import OutboundStockList from './screens/OutboundStockList';
 import OutboundStockDetails from './screens/OutboundStockDetails';
 import ProductSummary from './screens/ProductSummary';
 import AdjustStock from './screens/AdjustStock';
+import ShipItemDetails from './screens/ShipItemDetails';
 import ApiClient from './utils/ApiClient';
 // import PutawayDetails from "./screens/PutawayDetails";
 
