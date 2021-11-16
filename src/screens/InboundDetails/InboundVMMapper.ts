@@ -15,7 +15,7 @@ function getSectionData(containers: InboundContainer[] | undefined): SectionData
     if (containers)
         for (const container of containers) {
             const data = {
-                title: container["container.name"] ?? "",
+                title: container["container.name"] ?? "Unpacked Items",
                 data: container.shipmentItems ?? []
             }
             sectionData.push(data);

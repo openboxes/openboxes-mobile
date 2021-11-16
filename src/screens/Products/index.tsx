@@ -9,7 +9,7 @@ import CentralMessage from './CentralMessage';
 import FloatingActionButtonMenu from './FloatingActionButtonMenu';
 import ProductCategoryPickerPopup from './ProductCategoryPickerPopup';
 import {ProductCategory} from '../../data/product/category/ProductCategory';
-import {DispatchProps, Types, State} from './types';
+import {DispatchProps, Props, State} from './types';
 // import {VM} from './VM';
 import vmMapper from './VMMapper';
 import ProductsSearchCodeHeader from './ProductsSearchCodeHeader';
@@ -24,8 +24,8 @@ import {
 import {showScreenLoading, hideScreenLoading} from '../../redux/actions/main';
 import {RootState} from '../../redux/reducers';
 
-class Products extends React.Component<Types, State> {
-    constructor(props: Types) {
+class Products extends React.Component<Props, State> {
+    constructor(props: Props) {
         super(props);
         this.state = {
             searchGlobally: null,

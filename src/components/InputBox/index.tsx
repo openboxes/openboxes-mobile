@@ -23,6 +23,7 @@ export default function ({
                              data
                          }: Props) {
     const [edit, setEdit] = useState(disabled)
+    console.log('input box', value)
     const onEdit = () => {
         setEdit(!edit)
     }

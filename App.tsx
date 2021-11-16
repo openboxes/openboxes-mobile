@@ -6,8 +6,8 @@ import createSageMiddleware from 'redux-saga';
 import rootRducer from './src/redux/reducers';
 import watchers from './src/redux/sagas';
 import Main from './src/Main';
-import {StatusBar} from "react-native";
-import {colors} from "./src/constants";
+import {StatusBar} from 'react-native';
+import {colors} from './src/constants';
 
 const saga = createSageMiddleware();
 
@@ -20,9 +20,9 @@ export default class App extends Component {
     return (
       <Provider store={store}>
         <StatusBar
-            backgroundColor={colors.headerColor}
-            hidden={false}
-            barStyle="light-content"
+          backgroundColor={colors.headerColor}
+          hidden={false}
+          barStyle="light-content"
         />
         <Main />
       </Provider>

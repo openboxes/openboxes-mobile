@@ -1,8 +1,8 @@
+/* eslint-disable react-native/no-inline-styles */
 import React from 'react';
 import {StyleSheet, View, ViewProps} from 'react-native';
 import {Button as PaperButton} from 'react-native-paper';
-import {colors} from "../constants";
-
+import {colors} from '../constants';
 export interface Props extends ViewProps {
   title: string;
   onPress?: () => void;
@@ -30,22 +30,22 @@ export default function Button(props: Props) {
   );
 }
 const styles = StyleSheet.create({
-    label: {
-        color: 'white',
-        fontSize: 15,
-        alignSelf: 'center',
-        fontWeight: '600',
-        width: '100%',
-        textAlign: 'center',
-    },
-    viewStyle: {
-        width: '80%',
-        height: 45,
-        marginTop: 25,
-        backgroundColor:colors.headerColor,
-        alignSelf: 'center',
-        justifyContent: 'center',
-        display: 'flex',
-        flexDirection: 'column',
-    },
+  label: {
+    color: 'white',
+    fontSize: 15,
+    alignSelf: 'center',
+    fontWeight: '600',
+    width: '100%',
+    textAlign: 'center',
+  },
+  viewStyle: {
+    width: '80%',
+    height: 45,
+    marginTop: 25,
+    backgroundColor: colors.headerColor,
+    alignSelf: 'center',
+    justifyContent: 'center',
+    display: 'flex',
+    flexDirection: 'column',
+  },
 });
