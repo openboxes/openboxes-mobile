@@ -10,9 +10,16 @@ import ShipmentItemList from "./ContainerItem";
 interface Props {
     item: Container;
     onPress: any | null;
+    navigation: any | null;
 }
 
 class ContainerDetails extends Component<Props> {
+
+    onItemTapped=(item:any)=>{
+        console.log("ShipmentDetails1",item,item.item)
+        this.props.navigation.navigate("ShipmentDetails", {item:item.item})
+    }
+
     render() {
         const {item} = this.props;
         return (
@@ -40,9 +47,9 @@ class ContainerDetails extends Component<Props> {
                     renderItem={(shipmentItem: ListRenderItemInfo<ShipmentItems>) => (
                         <ShipmentItemList
                             item={shipmentItem.item}
-                            // onPress={() => {
-                            //     this.onItemTapped(item.item);
-                            // }}
+                            onPress={() => {
+                                this.onItemTapped(shipmentItem);
+                            }}
                         />
                     )}
                     keyExtractor={item => `${item.id}`}
