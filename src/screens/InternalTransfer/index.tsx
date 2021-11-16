@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {connect, useDispatch} from 'react-redux';
+import {connect, useDispatch, useSelector} from 'react-redux';
 import styles from './styles';
 import Location from '../../data/location/Location';
 import _, {Dictionary} from 'lodash';
@@ -15,11 +15,13 @@ import {searchProductGloballyAction} from "../../redux/actions/products";
 import {searchLocationByLocationNumber} from "../../redux/actions/locations"
 import Button from "../../components/Button";
 import {updateStockTransfer} from "../../redux/actions/transfers";
+import {RootState} from "../../redux/reducers";
 
 
 const InternalTransfer = () => {
     const barcodeData = useEventListener();
     const dispatch = useDispatch();
+    const location = useSelector((state: RootState) => state.mainReducer.currentLocation)
     const [state, setState] = useState<any>({
         productCode: "",
         product:"",
@@ -146,13 +148,13 @@ const InternalTransfer = () => {
             "status": "COMPLETED",
             "stockTransferNumber": "",
             "description": "Test stock transfer from bin with quantity =",
-            "origin.id": "1",
-            "destination.id": "1",
+            "origin.id": location.id,
+            "destination.id": location.id,
             "stockTransferItems": [
                 {
                     "product.id":state.product.id,
                     "inventoryItem.id": "",
-                    "location.id": "1",
+                    "location.id": location.id,
                     "originBinLocation.id": state.fromData.id,
                     "destinationBinLocation.id": state.toData.id,
                     "quantity": state.quantity

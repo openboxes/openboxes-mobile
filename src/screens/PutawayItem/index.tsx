@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {Props, State} from './types'
-import {TextInput, View, Text, Image, Button,Alert} from "react-native";
+import {TextInput, View, Text, Image, Button, Alert} from "react-native";
 import SelectDropdown from 'react-native-select-dropdown'
 import {RootState} from "../../redux/reducers";
 import {DispatchProps} from "./types";
@@ -31,7 +31,7 @@ class PutawayItem extends Component <Props, State> {
     create = () => {
         const {SelectedLocation, createPutawayOderAction} = this.props
         const {item} = this.props.route.params
-
+        const {currentLocation} = this.props
         const data = {
             "putawayNumber": "",
             "putawayStatus": "PENDING",
@@ -52,7 +52,7 @@ class PutawayItem extends Component <Props, State> {
                     "quantity": this.state.quantity
                 }
             ],
-            "orderedBy.id": "1",
+            "orderedBy.id": currentLocation.id,
             "sortBy": null
         }
 
@@ -99,7 +99,9 @@ class PutawayItem extends Component <Props, State> {
                                 style={styles.quantityInput}
                                 keyboardType='number-pad'
                                 value={quantity}
-                                onChangeText={(quantity)=>{this.setState({quantity})}}
+                                onChangeText={(quantity) => {
+                                    this.setState({quantity})
+                                }}
                             />
                             <Text style={styles.quantityText}>{`/ ${item.quantity}`}</Text>
                         </View>
@@ -119,6 +121,7 @@ class PutawayItem extends Component <Props, State> {
 
 const mapStateToProps = (state: RootState) => ({
     locations: state.locationsReducer.locations,
+    currentLocation: state.mainReducer.currentLocation,
     SelectedLocation: state.locationsReducer.SelectedLocation,
 });
 
