@@ -48,16 +48,18 @@ export const getShipmentOrigin = (id: any, callback: (products: any) => void) =>
         callback
     };
 }
-export const getContainerDetails = (id: string) => {
+export const getContainerDetails = (id: string, callback?: (products: any) => void) => {
     return {
         type: GET_CONTAINER_DETAILS_REQUEST,
-        payload: {id}
+        payload: {id},
+        callback
     }
 }
 
-export const submitShipmentDetails = (id: string, requestBody: any) => {
+export const submitShipmentDetails = (id: string, requestBody: any, callback?: (products: any) => void) => {
     return {
         type: GET_SUBMIT_SHIPMENT_DETAILS_REQUEST,
-        payload: {id, requestBody}
+        payload: {id, requestBody},
+        callback
     }
 }

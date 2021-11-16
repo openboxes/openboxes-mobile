@@ -207,10 +207,8 @@ class Main extends Component<Props, State> {
               component={OutboundStockDetails}
             />
             <Stack.Screen name="AdjustStock" component={AdjustStock} />
-            <Stack.Screen
-              name="InternalLocationDetail"
-              component={InternalLocationDetails}
-            />
+            <Stack.Screen name="ShipmentDetails" component={ShipItemDetails} />
+            <Stack.Screen name="InternalLocationDetail" component={InternalLocationDetails} />
             {/*<Stack.Screen name="Drawer" component={DrawerNavigator} />*/}
             {/*<Stack.Screen name="Drawer" component={DrawerNavigator} />*/}
           </Stack.Navigator>
