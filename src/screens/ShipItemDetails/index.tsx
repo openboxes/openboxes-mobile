@@ -7,14 +7,11 @@ import SelectDropdown from 'react-native-select-dropdown';
 import InputBox from '../../components/InputBox';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {useDispatch} from 'react-redux';
-import useEventListener from '../../hooks/useEventListener';
 import showPopup from '../../components/Popup';
 import {
-    getContainerDetails, getShipmentOrigin,
-    getShipmentPacking,
+    getShipmentOrigin,
     submitShipmentDetails,
 } from '../../redux/actions/packing';
-import {navigate} from "../../NavigationService";
 
 const renderIcon = () => {
     return (
@@ -36,6 +33,7 @@ const ShipItemDetails = () => {
         product: null,
         productCode: '',
         shipmentDetails: null,
+        container:null,
         containerId: '',
         containerList: ""
     });
@@ -43,7 +41,6 @@ const ShipItemDetails = () => {
     useEffect(() => {
         console.log(" Shipment Details", route.params)
         getShipmentDetails(item.shipment.shipmentNumber)
-        getContainerDetail()
     }, [])
     const getShipmentDetails = (id: string) => {
         const callback = (data: any) => {
@@ -63,8 +60,14 @@ const ShipItemDetails = () => {
             } else {
                 console.log('getShipmentDetails', data);
                 if (data && Object.keys(data).length !== 0) {
-                    console.log(data.shipmentNumber);
                     state.shipmentDetails = data;
+                    let containerList: any = []
+                    data[0].availableContainers.map((dataItem: any) => {
+                        containerList.push(dataItem.name)
+                    })
+                    state.containerList = containerList;
+                    setState({...state})
+                    console.log('getContainerDetail', data);
                 }
                 setState({...state});
             }
@@ -74,7 +77,7 @@ const ShipItemDetails = () => {
 
     const submitShipmentDetail = (id: string) => {
         const request = {
-            'container.id': state.containerId,
+            'container.id': state.container.id,
             "quantityToPack": state.quantityPicked
         };
         const callback = (data: any) => {
@@ -95,43 +98,12 @@ const ShipItemDetails = () => {
                     console.log(data);
                 }
                 setState({...state});
-                navigation.goBack();
+                navigation.navigate('OutboundStockDetails', {shipmentId: item.shipment.id})
             }
         };
         dispatch(submitShipmentDetails(id, request,callback));
     };
 
-    const getContainerDetail = (id: string = '') => {
-        const callback = (data: any) => {
-            if (data?.error) {
-                showPopup({
-                    title: data.error.message ? 'Container details' : null,
-                    message:
-                        data.error.message ??
-                        `Failed to load Container details value ${id}`,
-                    positiveButton: {
-                        text: 'Retry',
-                        callback: () => {
-                            dispatch(getContainerDetails(id, callback));
-                        },
-                    },
-                    negativeButtonText: 'Cancel',
-                });
-            } else {
-                if (data && Object.keys(data).length !== 0) {
-                    let containerList: any = []
-                    data.map((dataItem: any) => {
-                        containerList.push(dataItem.id)
-                    })
-                    state.containerList = containerList;
-                    setState({...state})
-                    console.log('getContainerDetail', data);
-
-                }
-            }
-        };
-        dispatch(getContainerDetails(id, callback));
-    };
     const quantityPickedChange = (query: string) => {
         setState({
             ...state,
@@ -183,7 +155,8 @@ const ShipItemDetails = () => {
                     data={state.containerList}
                     onSelect={(selectedItem, index) => {
                         state.containerId = selectedItem
-                        setState({...state})
+                        const container = state.shipmentDetails[0].availableContainers[index];
+                        setState({...state,containerId : selectedItem,container:container})
                         console.log(selectedItem, index);
                     }}
                     defaultValueByIndex={0}
@@ -207,7 +180,7 @@ const ShipItemDetails = () => {
                 <Button
                     title="PACK ITEM"
                     onPress={() => {
-                        submitShipmentDetail(item.shipment.id)
+                        submitShipmentDetail(item.id)
                     }}
                 />
             </View>
