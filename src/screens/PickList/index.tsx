@@ -241,7 +241,12 @@ const PickOrderItem = () => {
                         negativeButtonText: 'Cancel',
                     });
                 } else {
-                    navigation.goBack()
+                    const {order, pickListItem}: any = route.params;
+                    // @ts-ignore
+                    navigation.navigate('OrderDetails', {
+                        order,
+                        pickList: pickListItem
+                    })
                 }
             };
             dispatch(submitPickListItem(
