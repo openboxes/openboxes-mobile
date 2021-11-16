@@ -44,9 +44,9 @@ function* submitPutawayItem(action: any) {
         );
         yield put({
             type: SUBMIT_PUTAWAY_ITEM_BIN_LOCATION_SUCCESS,
-            payload: response.data,
+            payload: response,
         });
-        yield action.callback(response.data);
+        yield action.callback(response);
     } catch (error) {
         if (error.code != 401) {
             yield action.callback({
@@ -68,10 +68,6 @@ function* getCandidates(action: any) {
         yield hideScreenLoading();
     } catch (e) {
         console.log('function* getCandidates', e.message);
-        // yield action.callback({
-        //     error: true,
-        //     message: e.message,
-        // });
     }
 }
 
