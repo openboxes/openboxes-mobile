@@ -5,7 +5,7 @@ import {Props} from "./types";
 import styles from "./styles";
 
 const AutoComplete = ({
-                          value: origValue,
+                          value,
                           label,
                           refs,
                           edit,
@@ -22,7 +22,7 @@ const AutoComplete = ({
                           left = () => {
                           },
                       }: Props) => {
-    const [value, setValue] = useState(origValue);
+    // const [inputValue, setInputValue] = useState(value);
     const [menuVisible, setMenuVisible] = useState(false);
     const [filteredData, setFilteredData] = useState([]);
 
@@ -52,7 +52,7 @@ const AutoComplete = ({
                         setFilteredData(data);
                     }
                     setMenuVisible(true);
-                    setValue(text);
+                    // setInputValue(text);
                 }}
                 value={value}
                 mode={"outlined"}
@@ -75,7 +75,7 @@ const AutoComplete = ({
                             style={[styles.menuItem, menuStyle]}
                             // icon={icon}
                             onPress={() => {
-                                setValue(datum);
+                                value=datum;
                                 setMenuVisible(false);
                             }}
                             title={datum}

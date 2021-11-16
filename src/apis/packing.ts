@@ -28,7 +28,7 @@ export const getContainerType = () => {
     return apiClient.get(`generic/containerType`);
 
 }
+
 export const submitShipmentItems = (id: string, requestBody: any) => {
     return apiClient.post(`/shipmentItems/${id}`, requestBody);
-
 }

@@ -139,6 +139,7 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
                 negativeButtonText: 'Cancel',
               });
             } else {
+              global.location = location;
               this.props.navigation.navigate('Dashboard');
             }
           };

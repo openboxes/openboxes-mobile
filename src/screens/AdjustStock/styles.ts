@@ -58,6 +58,7 @@ export default StyleSheet.create({
     value: {
         fontSize: 16,
         color: Theme.colors.text,
+        marginTop:10,
         width: "90%"
     },
 });

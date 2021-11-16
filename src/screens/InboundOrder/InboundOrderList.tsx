@@ -29,14 +29,15 @@ const InboundOrderList = ({data}: InboundOrderProps) => {
             <Card>
                 <Card.Content>
                     <View style={styles.rowItem}>
-                        <Text style={styles.value}>{item.name}</Text>
-                    </View>
-                    <View style={styles.rowItem}>
-                        <RenderOrderData title={"Origin"} subText={item.origin.name}/>
+                        <RenderOrderData title={"Identifier"} subText={item.shipmentNumber}/>
                         <RenderOrderData title={"Status"} subText={item.status}/>
                     </View>
                     <View style={styles.rowItem}>
+                        <RenderOrderData title={"Origin"} subText={item.origin.name}/>
                         <RenderOrderData title={"Destination"} subText={item.destination.name}/>
+                    </View>
+                    <View style={styles.rowItem}>
+                        <RenderOrderData title={"Description"} subText={item.name}/>
                         <RenderOrderData title={"Number of Items"} subText={item.shipmentItems.length}/>
                     </View>
                 </Card.Content>

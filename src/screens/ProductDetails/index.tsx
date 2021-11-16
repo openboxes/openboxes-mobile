@@ -122,7 +122,7 @@ class ProductDetails extends React.Component<Props, State> {
         const product = this.props.selectedProduct
         const {visible} = this.state;
         return (
-            <Refresh onRefresh={this.getProduct}>
+
                 <View
                     style={{
                         flexDirection: 'column',
@@ -134,131 +134,146 @@ class ProductDetails extends React.Component<Props, State> {
                         product={product}
                     />
                     <View style={styles.contentContainer}>
-                        <Text style={styles.name}>{vm.name}</Text>
-                        <Text style={styles.title}>{vm.productCode}</Text>
-                        <Image
-                            style={styles.tinyLogo}
-                            source={{uri: vm.image.uri}}
-                        />
+
+                        <Refresh onRefresh={this.getProduct}>
+                            <View style={styles.header}>
+                                <View style={styles.rowItem}>
+                                    <View style={{ width: '75%' }}>
+                                        <Text style={styles.name}>{vm.productCode}</Text>
+                                        <Text style={styles.name}>{vm.name}</Text>
+                                    </View>
+                                    <View style={{ width: '25%', alignItems: 'flex-end', flex: 1 }}>
+                                        <Image
+                                            style={{ width: 50, height: 50, resizeMode: 'contain'}}
+                                            source={{uri: vm.defaultImageUrl}}
+                                        />
+                                    </View>
+                                </View>
+                            </View>
+                        </Refresh>
                         <ScrollView>
                             <Text style={styles.boxHeading}>Availability</Text>
-                            <View style={styles.container}>
-                                <View style={styles.row}>
-                                    <View style={styles.label}>
-                                        <Text>{'Status'}</Text>
-                                    </View>
-                                    <View style={styles.value}>
-                                        <Text style={styles.textAlign}>
-                                            {vm.status}
-                                        </Text>
-                                    </View>
-                                </View>
-                                <View style={styles.row}>
-                                    <View style={styles.label}>
-                                        <Text>{'On Hand Quantity'}</Text>
-                                    </View>
-                                    <View style={styles.value}>
-                                        <Text style={styles.textAlign}>
-                                            {vm.quantityOnHand}
-                                            {vm.unitOfMeasure}
-                                        </Text>
-                                    </View>
-                                </View>
-                                <View style={styles.row}>
-                                    <View style={styles.label}>
-                                        <Text>{'Available to Promise'}</Text>
-                                    </View>
-                                    <View style={styles.value}>
-                                        <Text style={styles.textAlign}>
-                                            {vm.quantityAvailable}
-                                            {vm.unitOfMeasure}
-                                        </Text>
-                                    </View>
-                                </View>
-                                <View style={styles.row}>
-                                    <View style={styles.label}>
-                                        <Text>{'Allocated to Order'}</Text>
-                                    </View>
-                                    <View style={styles.value}>
-                                        <Text style={styles.textAlign}>
-                                            {vm.quantityAllocated}
-                                            {vm.unitOfMeasure}
-                                        </Text>
-                                    </View>
-                                </View>
-                                <View style={styles.row}>
-                                    <View style={styles.label}>
-                                        <Text>{'On Order'}</Text>
-                                    </View>
-                                    <View style={styles.value}>
-                                        <Text style={styles.textAlign}>
-                                            {vm.quantityOnOrder}
-                                            {vm.unitOfMeasure}
-                                        </Text>
-                                    </View>
-                                </View>
-                            </View>
-
-                            <Text style={styles.boxHeading}>Details</Text>
-                            <View style={styles.container}>
-                                <View style={styles.row}>
-                                    <View style={styles.label}>
-                                        <Text>{'Product Code'}</Text>
-                                    </View>
-                                    <View style={styles.value}>
-                                        <Text style={styles.textAlign}>
-                                            {vm.productCode}
-                                        </Text>
-                                    </View>
-                                </View>
-                                <View style={styles.row}>
-                                    <View style={styles.label}>
-                                        <Text>{'Category'}</Text>
-                                    </View>
-                                    <View style={styles.value}>
-                                        <Text style={styles.textAlign}>
-                                            {vm.category.name}
-                                        </Text>
-                                    </View>
-                                </View>
-                                {vm?.attributes?.map((item, index) => {
-                                    return (
-                                        <View key={index} style={styles.row}>
-                                            <Text style={styles.label}>{item.name}</Text>
-                                            <Text style={styles.value}>{item.value}</Text>
+                            <Card>
+                                <View style={styles.container}>
+                                    <View style={styles.row}>
+                                        <View style={styles.label}>
+                                            <Text>{'Status'}</Text>
                                         </View>
-                                    );
-                                })}
-                                <View style={styles.row}>
-                                    <View style={styles.label}>
-                                        <Text>{'Product Type'}</Text>
+                                        <View style={styles.value}>
+                                            <Text style={styles.textAlign}>
+                                                {vm.status}
+                                            </Text>
+                                        </View>
                                     </View>
-                                    <View style={styles.value}>
-                                        <Text style={styles.textAlign}>{vm.productType.name}</Text>
+                                    <View style={styles.row}>
+                                        <View style={styles.label}>
+                                            <Text>{'Quantity On Hand'}</Text>
+                                        </View>
+                                        <View style={styles.value}>
+                                            <Text style={styles.textAlign}>
+                                                {vm.quantityOnHand}
+                                                {vm.unitOfMeasure}
+                                            </Text>
+                                        </View>
+                                    </View>
+                                    <View style={styles.row}>
+                                        <View style={styles.label}>
+                                            <Text>{'Quantity Available'}</Text>
+                                        </View>
+                                        <View style={styles.value}>
+                                            <Text style={styles.textAlign}>
+                                                {vm.quantityAvailable}
+                                                {vm.unitOfMeasure}
+                                            </Text>
+                                        </View>
+                                    </View>
+                                    <View style={styles.row}>
+                                        <View style={styles.label}>
+                                            <Text>{'Allocated to Order'}</Text>
+                                        </View>
+                                        <View style={styles.value}>
+                                            <Text style={styles.textAlign}>
+                                                {vm.quantityAllocated}
+                                                {vm.unitOfMeasure}
+                                            </Text>
+                                        </View>
+                                    </View>
+                                    <View style={styles.row}>
+                                        <View style={styles.label}>
+                                            <Text>{'On Order'}</Text>
+                                        </View>
+                                        <View style={styles.value}>
+                                            <Text style={styles.textAlign}>
+                                                {vm.quantityOnOrder}
+                                                {vm.unitOfMeasure}
+                                            </Text>
+                                        </View>
                                     </View>
                                 </View>
-                                <View style={styles.row}>
-                                    <View style={styles.label}>
-                                        <Text>{'Price per unit'}</Text>
+                            </Card>
+                            <Text style={styles.boxHeading}>Details</Text>
+                            <Card>
+                                <View style={styles.container}>
+                                    <View style={styles.row}>
+                                        <View style={styles.label}>
+                                            <Text>{'Product Code'}</Text>
+                                        </View>
+                                        <View style={styles.value}>
+                                            <Text style={styles.textAlign}>
+                                                {vm.productCode}
+                                            </Text>
+                                        </View>
                                     </View>
-                                    <View style={styles.value}>
-                                        <Text style={styles.textAlign}>{vm.pricePerUnit}</Text>
+                                    <View style={styles.row}>
+                                        <View style={styles.label}>
+                                            <Text>{'Category'}</Text>
+                                        </View>
+                                        <View style={styles.value}>
+                                            <Text style={styles.textAlign}>
+                                                {vm.category.name}
+                                            </Text>
+                                        </View>
+                                    </View>
+                                    {vm?.attributes?.map((item, index) => {
+                                        return (
+                                            <View key={index} style={styles.row}>
+                                                <Text style={styles.label}>{item.name}</Text>
+                                                <Text style={styles.value}>{item.value}</Text>
+                                            </View>
+                                        );
+                                    })}
+                                    <View style={styles.row}>
+                                        <View style={styles.label}>
+                                            <Text>{'Product Type'}</Text>
+                                        </View>
+                                        <View style={styles.value}>
+                                            <Text style={styles.textAlign}>{vm.productType.name}</Text>
+                                        </View>
+                                    </View>
+                                    <View style={styles.row}>
+                                        <View style={styles.label}>
+                                            <Text>{'Price per unit'}</Text>
+                                        </View>
+                                        <View style={styles.value}>
+                                            <Text style={styles.textAlign}>{vm.pricePerUnit}</Text>
+                                        </View>
                                     </View>
                                 </View>
-                            </View>
+                            </Card>
                             <Text style={styles.boxHeading}>Available Items</Text>
-                            {vm?.availableItems?.map((item, index) => {
-                                    return this.renderListItem(item, index)
-                                }
-                            )}
-                            <Button
-                                title={'Print Barcode Label'}
-                                onPress={this.handleClick}
-                            />
+                            <Card>
+                                {vm?.availableItems?.map((item, index) => {
+                                        return this.renderListItem(item, index)
+                                    }
+                                )}
+                                <Button
+                                    title={'Print Barcode Label'}
+                                    onPress={this.handleClick}
+                                />
+                            </Card>
                         </ScrollView>
                     </View>
                 </View>
-            </Refresh>
         );
     }
 }
