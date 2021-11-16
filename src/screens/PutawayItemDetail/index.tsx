@@ -5,18 +5,20 @@ import styles from './styles';
 import showPopup from "../../components/Popup";
 import {searchLocationByLocationNumber} from "../../redux/actions/locations";
 import {hideScreenLoading, showScreenLoading} from "../../redux/actions/main";
-import {connect, useDispatch} from "react-redux";
+import {connect, useDispatch, useSelector} from "react-redux";
 import {submitPutawayItem} from "../../redux/actions/putaways";
 import {useRoute} from "@react-navigation/native";
 import Button from "../../components/Button";
 import useEventListener from "../../hooks/useEventListener";
 import {searchProductGloballyAction} from "../../redux/actions/products";
 import InputBox from "../../components/InputBox";
+import {RootState} from "../../redux/reducers";
 
 const PutawayItemDetail = () => {
     const route = useRoute();
     const barcodeData = useEventListener();
     const dispatch = useDispatch();
+    const location = useSelector((state: RootState) => state.mainReducer.currentLocation)
     const [state, setState] = useState<any>({
         error: null,
         putAway: null,
@@ -218,7 +220,7 @@ const PutawayItemDetail = () => {
                     "quantity": state.putAwayItem?.quantity
                 }
             ],
-            "orderedBy.id": "1",
+            "orderedBy.id": "",
             "sortBy": null
         }
         const actionCallback = (data: any) => {
