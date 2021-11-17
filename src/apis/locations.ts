@@ -26,6 +26,10 @@ export function internalLocationsDetails(id: string,location:string) {
   return apiClient.get(`/internalLocations/${id}/details?location.id=${location}`);
 }
 
+export function internalLocationDetails(id: string) {
+  return apiClient.get(`/internalLocations/${id}/details`);
+}
+
 export function fetchProductSummary(id: string) {
   return apiClient.get(`/locations/${id}/productSummary`);
 }

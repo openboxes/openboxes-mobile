@@ -20,6 +20,9 @@ export const GET_PRODUCT_SUMMARY_FROM_LOCATION_SUCCESS = "GET_PRODUCT_SUMMARY_FR
 export const GET_INTERNAL_LOCATION_DETAIL = "GET_INTERNAL_LOCATION_DETAIL"
 export const GET_INTERNAL_LOCATIONS_DETAIL_SUCCESS = "GET_INTERNAL_LOCATIONS_DETAIL_SUCCESS"
 
+export const GET_INTERNAL_LOCATION_DETAIL_REQUEST = "GET_INTERNAL_LOCATION_DETAIL_REQUEST"
+export const GET_INTERNAL_LOCATION_DETAIL_SUCCESS = "GET_INTERNAL_LOCATION_DETAIL_SUCCESS"
+
 export function getLocationsAction(callback: (products: any) => void) {
     return {
         type: GET_LOCATIONS_REQUEST,
@@ -69,6 +72,14 @@ export function getInternalLocationDetails(id: string,location: string, callback
     return {
         type: GET_INTERNAL_LOCATION_DETAIL,
         payload: {id, location},
+        callback,
+    };
+}
+
+export function getInternalLocationDetail(id: string, callback: (data: any) => void,) {
+    return {
+        type: GET_INTERNAL_LOCATION_DETAIL_REQUEST,
+        payload: {id},
         callback,
     };
 }

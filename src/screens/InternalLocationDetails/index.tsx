@@ -5,9 +5,8 @@ import {useDispatch, useSelector} from 'react-redux';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import useEventListener from '../../hooks/useEventListener';
 import showPopup from '../../components/Popup';
-import {getProductByIdAction} from '../../redux/actions/products';
 import {hideScreenLoading} from '../../redux/actions/main';
-import {getInternalLocationDetails} from '../../redux/actions/locations';
+import {getInternalLocationDetail, getInternalLocationDetails} from '../../redux/actions/locations';
 import {Card} from 'react-native-paper';
 import {RootState} from '../../redux/reducers';
 import Button from '../../components/Button';
@@ -26,7 +25,7 @@ const InternalLocationDetails = () => {
     searchProductCode: null,
     locationData: null,
     visible:false,
-    productDetails:null
+    locationDetails:null
   });
 
   useEffect(() => {
@@ -73,7 +72,6 @@ const InternalLocationDetails = () => {
             positiveButton: {text: 'Ok'},
           });
         } else {
-          console.log(data);
           if (data && Object.keys(data).length !== 0) {
             state.locationData = data.data;
             setState({...state});
@@ -119,10 +117,10 @@ const InternalLocationDetails = () => {
     navigation.navigate('AdjustStock', {item: stockItem});
   };
 
- const getProductDetails=(id: string)=> {
+ const getLocationDetails=(id: string)=> {
     if (!id) {
       showPopup({
-        message: 'Product id is empty',
+        message: 'id is empty',
         positiveButton: {text: 'Ok'},
       });
       return;
@@ -133,30 +131,30 @@ const InternalLocationDetails = () => {
       if (data?.error) {
         showPopup({
           title: data.error.message
-              ? `Failed to load product details with value = "${id}"`
+              ? `Failed to load details with value = "${id}"`
               : null,
           message:
               data.error.message ??
-              `Failed to load product details with value = "${id}"`,
+              `Failed to load details with value = "${id}"`,
           positiveButton: {
             text: 'Retry',
             callback: () => {
-              dispatch(getProductByIdAction(id, actionCallback));
+              dispatch(getInternalLocationDetail(id, actionCallback));
             },
           },
           negativeButtonText: 'Cancel',
         });
       } else {
-        setState({...state,productDetails: data})
-        setState({...state,visible: true})
+        data.data.product = {id: data.data.id}
+        setState({...state,locationDetails: data.data,visible: true})
       }
     };
-    dispatch(getProductByIdAction(id, actionCallback));
+    dispatch(getInternalLocationDetail(id, actionCallback));
   }
 
  const handleClick = () => {
    console.log(state.locationData?.availableItems[0]["product.productCode"])
-   getProductDetails(state.locationData?.availableItems[0]["product.productCode"])
+   getLocationDetails(state.locationData?.name)
 
   }
   const closeModal = () => {
@@ -245,7 +243,8 @@ const InternalLocationDetails = () => {
       <PrintModal
           visible={state.visible}
           closeModal={closeModal}
-          product={state.productDetails}
+          product={state.locationDetails?.product}
+          defaultBarcodeLabelUrl={state.locationDetails?.defaultBarcodeLabelUrl}
         />
     </View>
   );

@@ -8,7 +8,7 @@ export interface OwnProps {
 }
 
 export interface StateProps {
-    currentBarcodeLabel: any,
+    defaultBarcodeLabelUrl: any,
     printModalVisible: boolean
 }
 

@@ -24,11 +24,12 @@ const arrowDown = require('../../assets/images/arrow-down.png');
 
 function PrintModal(props: Props) {
   const [label,setLabel] = useState<any>("1")
+  console.log("PRint",props)
   const handleClick = () => {
-    const {printLabelAction, currentBarcodeLabel, product} = props;
+    const {printLabelAction, defaultBarcodeLabelUrl, product} = props;
     printLabelAction({
       productId: product.id,
-      barcodeId: currentBarcodeLabel['id'],
+      barcodeId: defaultBarcodeLabelUrl['id'],
     });
   };
 
@@ -44,7 +45,7 @@ function PrintModal(props: Props) {
         <View style={styles.modalView}>
           <Image
             style={styles.image}
-            source={{uri: props?.currentBarcodeLabel?.url}}
+            source={{uri: props?.defaultBarcodeLabelUrl?.url}}
           />
           {/*<View style={styles.form}>*/}
           {/*    <View style={styles.sizeBox}>*/}
@@ -94,7 +95,6 @@ function PrintModal(props: Props) {
 }
 
 const mapStateToProps = (state: RootState) => ({
-  currentBarcodeLabel: state.productsReducer.currentBarcodeLabel,
   printModalVisible: state.productsReducer.printModalVisible,
 });
 
