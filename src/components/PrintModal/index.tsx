@@ -6,7 +6,6 @@ import {
   Pressable,
   View,
   TextInput,
-  Button,
 } from 'react-native';
 import SelectDropdown from 'react-native-select-dropdown';
 import styles from './styles';
@@ -16,19 +15,28 @@ import {printLabelAction} from '../../redux/actions/products';
 import {connect} from 'react-redux';
 import productsReducer from '../../redux/reducers/productsReducer';
 import {RootState} from '../../redux/reducers';
+import InputBox from "../InputBox";
+import Button from "../../components/Button";
 
 const arrowDown = require('../../assets/images/arrow-down.png');
 
 // const arrowUp = require('../../assets/images/arrow-down.png')
 
 function PrintModal(props: Props) {
+  const [label,setLabel] = useState<any>("1")
+  console.log("PRint",props)
   const handleClick = () => {
-    const {printLabelAction, currentBarcodeLabel, product} = props;
+    const {printLabelAction, defaultBarcodeLabelUrl, product,type} = props;
     printLabelAction({
       productId: product.id,
-      barcodeId: currentBarcodeLabel['id'],
+      type:type,
+      barcodeId: defaultBarcodeLabelUrl['id'],
     });
   };
+
+  const onChangeLabel = (text: string) => {
+    setLabel(text)
+  }
   return (
     <Modal
       animationType="slide"
@@ -38,7 +46,7 @@ function PrintModal(props: Props) {
         <View style={styles.modalView}>
           <Image
             style={styles.image}
-            source={{uri: props?.currentBarcodeLabel?.url}}
+            source={{uri: props?.defaultBarcodeLabelUrl?.url}}
           />
           {/*<View style={styles.form}>*/}
           {/*    <View style={styles.sizeBox}>*/}
@@ -67,11 +75,17 @@ function PrintModal(props: Props) {
           {/*    </View>*/}
 
           {/*</View>*/}
-          <Button
-            style={{padding: 10}}
-            title={'Print Label'}
-            onPress={handleClick}
-          />
+          <InputBox
+              value={label}
+              disabled={false}
+              editable={false}
+              onChange={onChangeLabel}
+              label={'Number of Labels'}/>
+          <View style={styles.bottom}>
+            <Button
+                title={'Print Label'}
+                onPress={handleClick} />
+          </View>
           <Pressable style={styles.buttonClose} onPress={props.closeModal}>
             <Text style={styles.textStyle}>X</Text>
           </Pressable>
@@ -82,7 +96,6 @@ function PrintModal(props: Props) {
 }
 
 const mapStateToProps = (state: RootState) => ({
-  currentBarcodeLabel: state.productsReducer.currentBarcodeLabel,
   printModalVisible: state.productsReducer.printModalVisible,
 });
 

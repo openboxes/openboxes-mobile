@@ -48,7 +48,7 @@ export function getProductById(id: any) {
   return apiClient.get(`/products/${id}/details`);
 }
 export function printLabel(data: any) {
-  return apiClient.post(`/products/${data.productId}/labels/${data.barcodeId}`);
+  return apiClient.post(`/${data.type}/${data.productId}/labels/${data.barcodeId}`);
 }
 export function stockAdjustments(requestBody: any) {
   return apiClient.post(`/stockAdjustments`,requestBody);

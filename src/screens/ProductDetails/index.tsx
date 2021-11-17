@@ -1,15 +1,11 @@
 /* eslint-disable react-native/no-inline-styles */
 import React from 'react';
 import {
-  Image,
-  ScrollView,
-  Text,
-  View,
-  Button,
-  KeyboardAvoidingView,
-  Platform,
-  FlatList,
-  TouchableOpacity,
+    Image,
+    ScrollView,
+    Text,
+    View,
+    TouchableOpacity,
 } from 'react-native';
 import styles from './styles';
 import PrintModal from '../../components/PrintModal';
@@ -23,6 +19,7 @@ import showPopup from '../../components/Popup';
 import {RootState} from '../../redux/reducers';
 import {Card} from 'react-native-paper';
 import RenderData from '../../components/RenderData';
+import Button from "../../components/Button";
 
 class ProductDetails extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -140,6 +137,8 @@ class ProductDetails extends React.Component<Props, State> {
           visible={visible}
           closeModal={this.closeModal}
           product={product}
+          type={"products"}
+          defaultBarcodeLabelUrl={product?.defaultBarcodeLabelUrl}
         />
         <View style={styles.contentContainer}>
           <Refresh onRefresh={this.getProduct}>
