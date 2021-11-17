@@ -243,6 +243,7 @@ const InternalLocationDetails = () => {
       <PrintModal
           visible={state.visible}
           closeModal={closeModal}
+          type={"internalLocations"}
           product={state.locationDetails?.product}
           defaultBarcodeLabelUrl={state.locationDetails?.defaultBarcodeLabelUrl}
         />

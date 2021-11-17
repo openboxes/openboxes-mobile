@@ -5,6 +5,7 @@ export interface OwnProps {
     visible: boolean
     closeModal: ()=> void,
     product: any
+    type:string
 }
 
 export interface StateProps {

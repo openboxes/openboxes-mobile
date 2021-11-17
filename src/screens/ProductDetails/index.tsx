@@ -137,6 +137,7 @@ class ProductDetails extends React.Component<Props, State> {
           visible={visible}
           closeModal={this.closeModal}
           product={product}
+          type={"products"}
           defaultBarcodeLabelUrl={product?.defaultBarcodeLabelUrl}
         />
         <View style={styles.contentContainer}>

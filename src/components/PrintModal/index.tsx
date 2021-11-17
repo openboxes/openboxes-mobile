@@ -26,9 +26,10 @@ function PrintModal(props: Props) {
   const [label,setLabel] = useState<any>("1")
   console.log("PRint",props)
   const handleClick = () => {
-    const {printLabelAction, defaultBarcodeLabelUrl, product} = props;
+    const {printLabelAction, defaultBarcodeLabelUrl, product,type} = props;
     printLabelAction({
       productId: product.id,
+      type:type,
       barcodeId: defaultBarcodeLabelUrl['id'],
     });
   };
