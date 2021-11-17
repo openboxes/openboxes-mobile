@@ -1,19 +1,14 @@
-import {DispatchProps, OwnProps, Props, StateProps, State} from "./types";
-import React, {ReactElement} from "react";
+import {DispatchProps, Props, State} from "./types";
+import React from "react";
 // import Order from "../../../data/order/Order";
-import {getOrdersAction} from '../../redux/actions/orders';
-import {View, FlatList, ListRenderItemInfo, Text, TouchableOpacity} from "react-native";
-import BarCodeSearchHeader from '../Products/BarCodeSearchHeader';
+import {Text, View} from "react-native";
 
-import {connect, useSelector} from "react-redux";
-import {showScreenLoading, hideScreenLoading} from '../../redux/actions/main';
+import {connect} from "react-redux";
+import {hideScreenLoading, showScreenLoading} from '../../redux/actions/main';
 import {RootState} from "../../redux/reducers";
-import showPopup from "../../components/Popup";
 import styles from "./styles";
-import {getShipmentReadyToBePacked, getShipmentsReadyToBePacked} from "../../redux/actions/packing";
-import {Shipment} from "../../data/container/Shipment";
-import Header from "../../components/Header";
-import {Container} from "../../data/container/Container";
+import {getShipmentReadyToBePacked} from "../../redux/actions/packing";
+import OutboundVMMapper from "./OutboubVmMapper";
 import ContainerDetails from "./ContainerDetails";
 
 
@@ -22,7 +17,8 @@ class OutboundStockDetails extends React.Component<Props, State> {
         super(props)
         this.state = {
             error: null,
-            shipment: null
+            shipment: null,
+            shipmentData: null
         }
 
     }
@@ -42,7 +38,8 @@ class OutboundStockDetails extends React.Component<Props, State> {
                 return Promise.resolve(null)
             } else {
                 this.setState({
-                    shipment: data
+                    shipment: data,
+                    shipmentData: OutboundVMMapper(data)
                 })
             }
             this.props.hideScreenLoading();
@@ -91,16 +88,8 @@ class OutboundStockDetails extends React.Component<Props, State> {
                             <Text style={styles.value}>{this.state.shipment?.shipmentItems.length}</Text>
                         </View>
                     </View>
-                    <FlatList
-                        data={this.state.shipment?.containers}
-                        renderItem={(container: ListRenderItemInfo<Container>) => (
-                            <ContainerDetails
-                                item={container.item}
-                               navigation={this.props.navigation}
-                            />
-                        )}
-                        keyExtractor={item => `${item.id}`}
-                        style={styles.list}
+                    <ContainerDetails
+                        item={this.state.shipmentData?.sectionData?? []}
                     />
                 </View>
             </View>
