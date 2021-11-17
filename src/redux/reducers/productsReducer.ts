@@ -33,7 +33,7 @@ function reducer(state = initialState, action: any) {
         ...state,
         printModalVisible: true,
         selectedProduct: {...action.payload},
-        currentBarcodeLabel: {...action.payload.barcodeLabels[0]},
+        currentBarcodeLabel: {...action.payload.defaultBarcodeLabel},
       };
     }
     case PRINT_LABEL_REQUEST_SUCCESS: {
