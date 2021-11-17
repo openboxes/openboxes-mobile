@@ -4,7 +4,7 @@ import {Container} from "../../data/container/Container";
 import {FlatList, ListRenderItemInfo, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import Theme from "../../utils/Theme";
 import {ContainerShipmentItem} from "../../data/container/ContainerShipmentItem";
-import {fetchContainer} from "../../redux/actions/lpn";
+import {fetchContainer, getContainer} from "../../redux/actions/lpn";
 import {getShipmentPacking} from "../../redux/actions/packing";
 import {connect} from "react-redux";
 import styles from "./styles";
@@ -16,7 +16,7 @@ import {getProductByIdAction} from "../../redux/actions/products";
 export interface State {
     container: Container | null
     visible: boolean
-    productDetails: null
+    containerDetails: any
 }
 
 class LpnDetail extends React.Component<Props, State> {
@@ -25,14 +25,14 @@ class LpnDetail extends React.Component<Props, State> {
         this.state = {
             container: null,
             visible: false,
-            productDetails: null
+            containerDetails: null
         }
     }
 
-    getProductDetails = (id: string) => {
+    getContainerDetails = (id: string) => {
         if (!id) {
             showPopup({
-                message: 'Product id is empty',
+                message: 'id is empty',
                 positiveButton: {text: 'Ok'},
             });
             return;
@@ -43,27 +43,31 @@ class LpnDetail extends React.Component<Props, State> {
             if (data?.error) {
                 showPopup({
                     title: data.error.message
-                        ? `Failed to load product details with value = "${id}"`
+                        ? `Failed to load details with value = "${id}"`
                         : null,
                     message:
                         data.error.message ??
-                        `Failed to load product details with value = "${id}"`,
+                        `Failed to load details with value = "${id}"`,
                     positiveButton: {
                         text: 'Retry',
                         callback: () => {
-                            this.props.getProductByIdAction(id, actionCallback);
+                            this.props.getContainer(id, actionCallback);
                         },
                     },
                     negativeButtonText: 'Cancel',
                 });
             } else {
-                this.setState({productDetails: data, visible: true})
+                const {id} = this.props.route.params
+                data.product = {id}
+                this.setState({containerDetails: data, visible: true})
             }
         };
-        this.props.getProductByIdAction(id, actionCallback);
+        this.props.getContainer(id, actionCallback);
     }
     handleClick = () => {
-        this.getProductDetails("LOG-XXX-BAR-001")
+        const {id} = this.props.route.params
+        console.debug("id::::>" + id)
+        this.getContainerDetails(id)
 
     }
     closeModal = () => {
@@ -169,7 +173,9 @@ class LpnDetail extends React.Component<Props, State> {
                 <PrintModal
                     visible={this.state.visible}
                     closeModal={this.closeModal}
-                    product={this.state.productDetails}
+                    type={"containers"}
+                    product={this.state.containerDetails?.product}
+                    defaultBarcodeLabelUrl={this.state.containerDetails?.defaultBarcodeLabelUrl}
                 />
             </View>
 
@@ -180,7 +186,7 @@ class LpnDetail extends React.Component<Props, State> {
 const mapDispatchToProps: DispatchProps = {
     fetchContainer,
     getShipmentPacking,
-    getProductByIdAction,
+    getContainer,
 }
 
 export default connect(null, mapDispatchToProps)(LpnDetail);
