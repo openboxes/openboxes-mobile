@@ -1,11 +1,9 @@
-import React, {Component} from 'react';
+import React from 'react';
 import styles from './styles';
-import {FlatList, ListRenderItemInfo, Text, TouchableOpacity, View} from 'react-native';
-import {PicklistItem} from "../../data/picklist/PicklistItem";
+import {SectionList, Text, TouchableOpacity, View} from 'react-native';
 import {Container} from "../../data/container/Container";
-import ContainerItem from "./ContainerItem";
-import ShipmentItems from "../../data/inbound/ShipmentItems";
-import ShipmentItemList from "./ContainerItem";
+import {useNavigation} from "@react-navigation/native";
+import {Card} from "react-native-paper";
 
 interface Props {
     item: Container;
@@ -13,52 +11,55 @@ interface Props {
     navigation: any | null;
 }
 
-class ContainerDetails extends Component<Props> {
+const ContainerDetails = ({item}: any) => {
+    const navigation = useNavigation<any>();
 
-    onItemTapped=(item:any)=>{
-        console.log("ShipmentDetails1",item,item.item)
-        this.props.navigation.navigate("ShipmentDetails", {item:item.item})
-    }
-
-    render() {
-        const {item} = this.props;
+    const RenderData = ({title, subText}: any): JSX.Element => {
         return (
-            <TouchableOpacity
-                style={styles.listItemContainer}
-                onPress={this.props.onPress}>
-                <View style={styles.row}>
-                    <View style={styles.col50}>
-                        <Text style={styles.label}>Container name</Text>
-                        <Text style={styles.value}>{item.id ? item.name : 'Unpacked'}</Text>
-                    </View>
-                    <View style={styles.col50}>
-                        <Text style={styles.label}>Container number</Text>
-                        <Text style={styles.value}>{item.id ? item?.containerNumber : 'UNPACKED'}</Text>
-                    </View>
-                </View>
-                <View style={styles.row}>
-                    <View style={styles.col50}>
-                        <Text style={styles.label}>Number of items</Text>
-                        <Text style={styles.value}>{item.shipmentItems.length}</Text>
-                    </View>
-                </View>
-                <FlatList
-                    data={item.shipmentItems}
-                    renderItem={(shipmentItem: ListRenderItemInfo<ShipmentItems>) => (
-                        <ShipmentItemList
-                            item={shipmentItem.item}
-                            onPress={() => {
-                                this.onItemTapped(shipmentItem);
-                            }}
-                        />
-                    )}
-                    keyExtractor={item => `${item.id}`}
-                    style={styles.list}
-                />
-
-            </TouchableOpacity>
-        );
+            <View style={styles.columnItem}>
+                <Text style={styles.label}>{title}</Text>
+                <Text style={styles.value}>{subText}</Text>
+            </View>
+        )
     }
-}
 
-export default ContainerDetails;
+    const navigateToInboundOrderDetails = (item: any) => {
+        navigation.navigate("ShipmentDetails", {item: item.item})
+    }
+
+
+    const renderListItem = (item: any, index: any) => {
+        return (<TouchableOpacity
+            key={index}
+            onPress={() => navigateToInboundOrderDetails(item)}
+            style={styles.itemView}>
+            <Card>
+                <Card.Content>
+                    <View style={styles.rowItem}>
+                        <RenderData title={"Product Code"} subText={item.inventoryItem.product?.productCode}/>
+                        <RenderData title={"Product Name"} subText={item.inventoryItem.product?.name}/>
+                    </View>
+                    <View style={styles.rowItem}>
+                        <RenderData title={"Lot Number"} subText={item.inventoryItem.lotNumber ?? 'Default'}/>
+                        <RenderData title={"Expiration Date"} subText={item.inventoryItem.expirationDate ?? 'N/A'}/>
+                    </View>
+                    <View style={styles.rowItem}>
+                        <RenderData title={"Quantity"} subText={item.quantity}/>
+                    </View>
+                </Card.Content>
+            </Card>
+        </TouchableOpacity>)
+    }
+
+    return (
+        <SectionList
+            renderItem={({item, index, section}) => renderListItem(item, index)}
+            renderSectionHeader={({section: {title}}) => (
+                <Text style={styles.headerTitle}>{title}</Text>
+            )}
+            sections={item}
+            keyExtractor={(item, index) => item + index}
+        />
+    );
+}
+export default ContainerDetails
