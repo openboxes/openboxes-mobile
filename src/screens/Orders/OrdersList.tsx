@@ -1,5 +1,4 @@
 import {
-  FlatList,
   ListRenderItemInfo,
   StyleSheet,
   Text,
@@ -9,6 +8,7 @@ import {
 import React, {ReactElement} from 'react';
 import Theme from '../../utils/Theme';
 import {Order} from '../../data/order/Order';
+import { SwipeListView } from 'react-native-swipe-list-view';
 
 export interface Props {
   orders: Order[] | null;
@@ -16,16 +16,31 @@ export interface Props {
 }
 
 export default function OrdersList(props: Props) {
-  return props.orders ? (
-    <FlatList
-      data={props.orders}
-      renderItem={(item: ListRenderItemInfo<Order>) =>
-        renderOrder(item.item, () => props.onOrderTapped(item.item))
-      }
-      keyExtractor={order => order.id}
-      style={styles.list}
+  return (
+    <SwipeListView
+        data={props.orders}
+        renderItem={(item: ListRenderItemInfo<Order>) =>
+          renderOrder(item.item, () => props.onOrderTapped(item.item))
+        }
+        keyExtractor={order => order.id}
+        style={styles.list}
+        renderHiddenItem={ (item: ListRenderItemInfo<Order>) => (
+          <View style={styles.detailContainer}>
+            <TouchableOpacity 
+              style={styles.detailView} 
+              onPress={() => props.onOrderTapped(item.item)}
+            >
+              <Text style={styles.detailText}>Detail</Text>
+            </TouchableOpacity>
+            <View style={styles.leftView} />
+          </View>
+        )}
+        leftOpenValue={95}
+        disableLeftSwipe={true}
+        rightOpenValue={-95}
+        stopRightSwipe={10}
     />
-  ) : null;
+  );
 }
 
 function renderOrder(order: Order, onOrderTapped: () => void): ReactElement {
@@ -76,6 +91,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     flex: 1,
     borderRadius: Theme.roundness,
+    backgroundColor: Theme.colors.background,
     borderColor: Theme.colors.backdrop,
     borderWidth: 1,
     margin: 4,
@@ -134,4 +150,26 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: Theme.colors.text,
   },
+  detailContainer: {
+    flex: 1,
+    flexDirection: 'row'
+  },
+  detailView: {
+    flex: 0.2,
+    marginVertical: 6,
+    marginLeft: 6,
+    padding: 4,
+    borderWidth:1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: Theme.roundness,
+    borderColor: Theme.colors.backdrop,
+  },
+  leftView: {
+    flex: 0.8
+  },
+  detailText: {
+    fontSize: 14,
+    color: Theme.colors.text,
+  }
 });
