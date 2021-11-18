@@ -120,7 +120,7 @@ const ShipItemDetails = () => {
                 </View>
                 <View style={styles.columnItem}>
                     <Text style={styles.label}>{'Container'}</Text>
-                    <Text style={styles.value}>{item.container ?? "Default"}</Text>
+                    <Text style={styles.value}>{item.container.name ?? "Default"}</Text>
                 </View>
             </View>
             <View style={styles.rowItem}>
