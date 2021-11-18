@@ -77,7 +77,7 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
     locations: Location[],
   ): Dictionary<Location[]> => {
     let orgNameAndLocationsDictionary = _.groupBy(
-      locations,
+      locations.sort(this.getSortOrder("name")),
       (location: Location) => {
         if (location.organizationName) {
           return location.organizationName;
@@ -116,6 +116,16 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
       );
   };
 
+  getSortOrder=(prop:string)=> {
+    return function(a:any, b:any) {
+      if (a[prop] > b[prop]) {
+        return 1;
+      } else if (a[prop] < b[prop]) {
+        return -1;
+      }
+      return 0;
+    }
+  }
   setCurrentLocation = async (orgName: string, location: Location) => {
     console.log(55, location)
     showPopup({
