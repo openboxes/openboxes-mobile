@@ -10,3 +10,6 @@ export function fetchContainer(id: string){
     console.debug("fetchContainer id "+id)
     return apiClient.get(`/generic/container/`+id);
 }
+export function getContainerDetail(id: string){
+    return apiClient.get(`/containers/${id}/details`);
+}

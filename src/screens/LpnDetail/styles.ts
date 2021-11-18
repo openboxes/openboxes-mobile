@@ -1,5 +1,6 @@
 import {StyleSheet} from "react-native";
 import Theme from "../../utils/Theme";
+import {ratio} from "../../constants";
 
 export default StyleSheet.create({
     contentContainer: {
@@ -7,6 +8,12 @@ export default StyleSheet.create({
         flex: 1,
         flexDirection: "column",
         padding: 8,
+    },
+    bottom: {
+        width: '100%',
+        alignItems: "center",
+        justifyContent: "center",
+        height: ratio.height * 100,
     },
     list: {
         width: '100%',
