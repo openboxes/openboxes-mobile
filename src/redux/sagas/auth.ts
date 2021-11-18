@@ -1,5 +1,5 @@
 import {takeLatest, put, call} from 'redux-saga/effects';
-import {LOGIN_REQUEST, LOGIN_REQUEST_SUCCESS} from '../actions/auth';
+import {LOGIN_REQUEST, LOGIN_REQUEST_SUCCESS, LOGOUT_REQUEST, LOGOUT_REQUEST_SUCCESS} from '../actions/auth';
 import * as NavigationService from '../../NavigationService';
 import showPopup from '../../components/Popup';
 
@@ -53,8 +53,35 @@ function* login(action: any) {
     }
   }
 }
-
+function* logout(action: any) {
+  try {
+    yield put(showScreenLoading('Logging in'));
+    const data = yield call(api.logout, action.payload.data);
+    yield put({
+      type: LOGOUT_REQUEST_SUCCESS,
+      payload: data,
+    });
+    yield NavigationService.navigate('Login')
+    yield put(hideScreenLoading());
+  } catch (e) {
+    console.log('function* auth', e.response);
+    yield put(hideScreenLoading());
+    if(e.response) {
+      console.debug("e.response status:"+e.response.status)
+      if (e.response.status == 401) {
+        showPopup({message: "Invalid Username and Password", positiveButton: "ok"});
+      } else if (e.response.status == 500) {
+        showPopup({message: "Something went wrong on server", positiveButton: "ok"});
+      } else if (e.response.status == 404) {
+        showPopup({message: "Server unavailable", positiveButton: "ok"});
+      }
+    }else {
+      showPopup({message: "Server unavailable", positiveButton: "ok"});
+    }
+  }
+}
 export default function* watcher() {
   yield takeLatest(GET_SESSION_REQUEST, getSession);
   yield takeLatest(LOGIN_REQUEST, login);
+  yield takeLatest(LOGOUT_REQUEST, logout);
 }

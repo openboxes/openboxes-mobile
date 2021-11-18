@@ -6,3 +6,6 @@ export function getSession() {
 export function login(data: any) {
   return apiClient.post('/login', data);
 }
+export function logout(data: any) {
+  return apiClient.post('/logout', data);
+}
