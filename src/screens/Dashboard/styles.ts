@@ -13,6 +13,7 @@ export default StyleSheet.create({
     flex: 0,
     borderColor: Theme.colors.backdrop,
     borderWidth: 1,
+    backgroundColor:'white',
     margin: 4,
     borderRadius: 4,
     padding: 8,
@@ -25,7 +26,7 @@ export default StyleSheet.create({
   },
   countLabel: {
     fontWeight: 'bold',
-    fontSize: 16,
+    fontSize: 18,
     marginStart: 4,
   },
 });

@@ -1,110 +1,80 @@
 import React from 'react';
-import {Text, TouchableOpacity, View} from 'react-native';
-import Header from '../../components/Header';
+import {FlatList, ListRenderItemInfo, Text, TouchableOpacity, View} from 'react-native';
 import styles from './styles';
-// import Header from '../../components/Header';
 import {connect} from 'react-redux';
-// import Icon, {Name} from '../../Icon';
+// import Icon, {Name} from '../../components/Icon'
 import {DispatchProps, Props, State} from './Types';
 
 import {RootState} from '../../redux/reducers';
 
+const Dashboard_Data = [
+    {
+        screenName: "Products",
+        navigationScreenName: "Products"
+    },
+    {
+        screenName: "Picking",
+        navigationScreenName: "Orders"
+    },
+    {
+        screenName: "Receiving",
+        navigationScreenName: "InboundOrderList"
+    },
+    {
+        screenName: "Stock Transfer",
+        navigationScreenName: "InternalTransfer"
+    },
+    {
+        screenName: "Put Away",
+        navigationScreenName: "PutawayList"
+    },
+    {
+        screenName: "Scan",
+        navigationScreenName: "Scan"
+    },
+    {
+        screenName: " Create LPN",
+        navigationScreenName: "CreateLpn"
+    },
+    {
+        screenName: "Put Away Candidates",
+        navigationScreenName: "PutawayCandidates"
+    },
+    {
+        screenName: "Product Summary",
+        navigationScreenName: "Product Summary"
+    },
+    {
+        screenName: "Ready to be Packed",
+        navigationScreenName: "OutboundStockList"
+    }
+]
+
 class Dashboard extends React.Component<Props, State> {
+
+    renderItem = (item: any, index: any) => {
+        console.log(item)
+        return (
+            <TouchableOpacity
+                key={index}
+                style={styles.countContainer}
+                onPress={() => {
+                    this.props.navigation.navigate(item.navigationScreenName);
+                }}>
+                <View style={styles.countLabelAndIconContainer}>
+                    {/*<Icon name={Name.ShoppingCart} size={14}/>*/}
+                    <Text style={styles.countLabel}>{item.screenName}</Text>
+                </View>
+            </TouchableOpacity>)
+    }
+
     render() {
         return (
             <View style={styles.screenContainer}>
-                <TouchableOpacity
-                    style={styles.countContainer}
-                    onPress={() => {
-                        this.props.navigation.navigate('Products');
-                    }}>
-                    <View style={styles.countLabelAndIconContainer}>
-                        {/*<Icon name={Name.Boxes} size={14} />*/}
-                        <Text style={styles.countLabel}>Products</Text>
-                    </View>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={styles.countContainer}
-                    onPress={() => {
-                        this.props.navigation.navigate('Orders');
-                    }}>
-                    <View style={styles.countLabelAndIconContainer}>
-                        {/*<Icon name={Name.Boxes} size={14} />*/}
-                        <Text style={styles.countLabel}>Picking</Text>
-                    </View>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={styles.countContainer}
-                    onPress={() => {
-                        this.props.navigation.navigate('InboundOrderList');
-                    }}>
-                    <View style={styles.countLabelAndIconContainer}>
-                        <Text style={styles.countLabel}>Receiving</Text>
-                    </View>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={styles.countContainer}
-                    onPress={() => {
-                        this.props.navigation.navigate('InternalTransfer');
-                    }}>
-                    <View style={styles.countLabelAndIconContainer}>
-                        <Text style={styles.countLabel}>Stock Transfer</Text>
-                    </View>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={styles.countContainer}
-                    onPress={() => {
-                        this.props.navigation.navigate('PutawayList');
-                    }}>
-                    <View style={styles.countLabelAndIconContainer}>
-                        <Text style={styles.countLabel}>Putaways</Text>
-                    </View>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={styles.countContainer}
-                    onPress={() => {
-                        this.props.navigation.navigate('Scan');
-                    }}>
-                    <View style={styles.countLabelAndIconContainer}>
-                        <Text style={styles.countLabel}>Scan</Text>
-                    </View>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={styles.countContainer}
-                    onPress={() => {
-                        this.props.navigation.navigate('CreateLpn');
-                    }}>
-                    <View style={styles.countLabelAndIconContainer}>
-                        <Text style={styles.countLabel}>Create LPN</Text>
-                    </View>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={styles.countContainer}
-                    onPress={() => {
-                        this.props.navigation.navigate('PutawayCandidates');
-                    }}>
-                    <View style={styles.countLabelAndIconContainer}>
-                        <Text style={styles.countLabel}>Putaway Candidates</Text>
-                    </View>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={styles.countContainer}
-                    onPress={() => {
-                        this.props.navigation.navigate('Product Summary');
-                    }}>
-                    <View style={styles.countLabelAndIconContainer}>
-                        <Text style={styles.countLabel}>Product Summary</Text>
-                    </View>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={styles.countContainer}
-                    onPress={() => {
-                        this.props.navigation.navigate('OutboundStockList');
-                    }}>
-                    <View style={styles.countLabelAndIconContainer}>
-                        <Text style={styles.countLabel}>Ready to be Packed</Text>
-                    </View>
-                </TouchableOpacity>
+                <FlatList
+                    data={Dashboard_Data}
+                    renderItem={(item: ListRenderItemInfo<any>) => this.renderItem(item.item, item.index)}
+                />
             </View>
         )
             ;
