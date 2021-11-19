@@ -88,7 +88,7 @@ class ProductDetails extends React.Component<Props, State> {
   }
 
   navigateToDetails = (item: any) => {
-    this.props.navigation.navigate('AdjustStock', {item});
+    this.props.navigation.navigate('ViewAvailableItem', {item,imageUrl:this.state.productDetails?.defaultImageUrl ?? 'https://reactnative.dev/img/tiny_logo.png',});
   };
 
   renderListItem = (item: any, index: any) => (
