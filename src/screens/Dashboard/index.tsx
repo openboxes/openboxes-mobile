@@ -2,7 +2,6 @@ import React from 'react';
 import {FlatList, Image, ListRenderItemInfo, Text, TouchableOpacity, View} from 'react-native';
 import styles from './styles';
 import {connect} from 'react-redux';
-// import Icon, {Name} from '../../components/Icon'
 import {DispatchProps, Props, State} from './Types';
 
 import {RootState} from '../../redux/reducers';
