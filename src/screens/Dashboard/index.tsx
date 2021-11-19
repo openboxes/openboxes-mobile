@@ -32,7 +32,7 @@ const Dashboard_Data = [
     {
         screenName: "Inventory",
         icon: require("../../assets/images/inventory.png"),
-        navigationScreenName: "Products"
+        navigationScreenName: "Product Summary"
     },
     {
         screenName: "Lookup",
@@ -56,9 +56,9 @@ const Dashboard_Data = [
     },
 
     {
-        screenName: "Product Summary",
+        screenName: "Product",
         icon: require("../../assets/images/product.png"),
-        navigationScreenName: "Product Summary"
+        navigationScreenName: "Products"
     },
     {
         screenName: "Put Away Candidates",
