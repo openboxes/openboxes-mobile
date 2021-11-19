@@ -14,6 +14,9 @@ class DrawerNavigator extends Component {
                 headerStyle: {
                     backgroundColor: colors.headerColor
                 },
+                headerTitleStyle:{
+                    color:"white"
+                },
                 headerRight: () => <Image
                     source={require('../assets/images/logo.png')}
                     style={{resizeMode: 'stretch', width: 40, height: 30, marginRight: 30}}

@@ -1,7 +1,7 @@
 import {Dimensions} from 'react-native'
 
 export const colors = {
-    headerColor: '#68c91e'
+    headerColor: '#003369'
 }
 
 export const device = {
