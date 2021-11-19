@@ -1,53 +1,70 @@
 import React from 'react';
-import {FlatList, ListRenderItemInfo, Text, TouchableOpacity, View} from 'react-native';
+import {FlatList, Image, ListRenderItemInfo, Text, TouchableOpacity, View} from 'react-native';
 import styles from './styles';
 import {connect} from 'react-redux';
 // import Icon, {Name} from '../../components/Icon'
 import {DispatchProps, Props, State} from './Types';
 
 import {RootState} from '../../redux/reducers';
+import {Card} from "react-native-paper";
 
 const Dashboard_Data = [
     {
-        screenName: "Products",
-        navigationScreenName: "Products"
-    },
-    {
         screenName: "Picking",
+        icon: require("../../assets/images/picking.png"),
         navigationScreenName: "Orders"
     },
     {
-        screenName: "Receiving",
-        navigationScreenName: "InboundOrderList"
+        screenName: "Packing",
+        icon: require("../../assets/images/packing.png"),
+        navigationScreenName: "OutboundStockList"
     },
     {
-        screenName: "Stock Transfer",
+        screenName: "Loading",
+        icon: require("../../assets/images/loading.png"),
+        navigationScreenName: "PutawayCandidates"
+    },
+    {
+        screenName: "Transfer",
+        icon: require("../../assets/images/transfer.png"),
         navigationScreenName: "InternalTransfer"
     },
     {
+        screenName: "Inventory",
+        icon: require("../../assets/images/inventory.png"),
+        navigationScreenName: "Products"
+    },
+    {
+        screenName: "Lookup",
+        icon: require("../../assets/images/lookup.png"),
+        navigationScreenName: "CreateLpn"
+    },
+    {
+        screenName: "Receiving",
+        icon: require("../../assets/images/receiving.png"),
+        navigationScreenName: "InboundOrderList"
+    },
+    {
         screenName: "Put Away",
+        icon: require("../../assets/images/putaway.png"),
         navigationScreenName: "PutawayList"
     },
     {
         screenName: "Scan",
+        icon: require("../../assets/images/scan.jpg"),
         navigationScreenName: "Scan"
     },
-    {
-        screenName: " Create LPN",
-        navigationScreenName: "CreateLpn"
-    },
-    {
-        screenName: "Put Away Candidates",
-        navigationScreenName: "PutawayCandidates"
-    },
+
     {
         screenName: "Product Summary",
+        icon: require("../../assets/images/product.png"),
         navigationScreenName: "Product Summary"
     },
     {
-        screenName: "Ready to be Packed",
-        navigationScreenName: "OutboundStockList"
-    }
+        screenName: "Put Away Candidates",
+        icon: require("../../assets/images/putaway.png"),
+        navigationScreenName: "PutawayCandidates"
+    },
 ]
 
 class Dashboard extends React.Component<Props, State> {
@@ -61,10 +78,10 @@ class Dashboard extends React.Component<Props, State> {
                 onPress={() => {
                     this.props.navigation.navigate(item.navigationScreenName);
                 }}>
-                <View style={styles.countLabelAndIconContainer}>
-                    {/*<Icon name={Name.ShoppingCart} size={14}/>*/}
+                <Card style={styles.card}>
+                    <Image style={styles.cardImage} source={item.icon}/>
                     <Text style={styles.countLabel}>{item.screenName}</Text>
-                </View>
+                </Card>
             </TouchableOpacity>)
     }
 
@@ -73,6 +90,8 @@ class Dashboard extends React.Component<Props, State> {
             <View style={styles.screenContainer}>
                 <FlatList
                     data={Dashboard_Data}
+                    horizontal={false}
+                    numColumns={3}
                     renderItem={(item: ListRenderItemInfo<any>) => this.renderItem(item.item, item.index)}
                 />
             </View>
