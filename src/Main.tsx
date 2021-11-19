@@ -18,7 +18,7 @@ import FullScreenLoadingIndicator from './components/FullScreenLoadingIndicator'
 import {RootState} from './redux/reducers';
 import {connect} from 'react-redux';
 import SplashScreen from 'react-native-splash-screen';
-import {Image, SafeAreaView} from 'react-native';
+import {Image, View, SafeAreaView, TouchableOpacity} from 'react-native';
 import Location from './data/location/Location';
 import {Session} from './data/auth/Session';
 import {getSessionAction} from './redux/actions/main';
@@ -44,6 +44,7 @@ import ProductSummary from './screens/ProductSummary';
 import AdjustStock from './screens/AdjustStock';
 import ShipItemDetails from './screens/ShipItemDetails';
 import ApiClient from './utils/ApiClient';
+import OptionMenu from "./components/OptionMenu";
 import ViewAvailableItem from "./screens/ViewAvailableItem";
 // import PutawayDetails from "./screens/PutawayDetails";
 
@@ -142,23 +143,15 @@ class Main extends Component<Props, State> {
         <NavigationContainer ref={NavigationService.navigationRef}>
           <Stack.Navigator
             initialRouteName={initialRouteName}
-            screenOptions={{
+            screenOptions={({route, navigation}) => ({
               headerRight: () => (
-                <Image
-                  source={require('./assets/images/logo.png')}
-                  style={{
-                    resizeMode: 'stretch',
-                    width: 40,
-                    height: 30,
-                    marginRight: 30,
-                  }}
-                />
+                    <OptionMenu route={route}/>
               ),
               headerTintColor: '#ffffff',
               headerStyle: {
                 backgroundColor: colors.headerColor,
               },
-            }}>
+            })}>
             <Stack.Screen name="Login" component={Login} />
             <Stack.Screen
               name="Drawer"
