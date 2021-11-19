@@ -1,110 +1,41 @@
 import React from 'react';
-import {Text, TouchableOpacity, View} from 'react-native';
-import Header from '../../components/Header';
+import {FlatList, Image, ListRenderItemInfo, Text, TouchableOpacity, View} from 'react-native';
 import styles from './styles';
-// import Header from '../../components/Header';
 import {connect} from 'react-redux';
-// import Icon, {Name} from '../../Icon';
 import {DispatchProps, Props, State} from './Types';
-
 import {RootState} from '../../redux/reducers';
+import {Card} from "react-native-paper";
+import dashboardData from "./dashboardData";
+
+
 
 class Dashboard extends React.Component<Props, State> {
+
+    renderItem = (item: any, index: any) => {
+        console.log(item)
+        return (
+            <TouchableOpacity
+                key={index}
+                style={styles.countContainer}
+                onPress={() => {
+                    this.props.navigation.navigate(item.navigationScreenName);
+                }}>
+                <Card style={styles.card}>
+                    <Image style={styles.cardImage} source={item.icon}/>
+                    <Text style={styles.countLabel}>{item.screenName}</Text>
+                </Card>
+            </TouchableOpacity>)
+    }
+
     render() {
         return (
             <View style={styles.screenContainer}>
-                <TouchableOpacity
-                    style={styles.countContainer}
-                    onPress={() => {
-                        this.props.navigation.navigate('Products');
-                    }}>
-                    <View style={styles.countLabelAndIconContainer}>
-                        {/*<Icon name={Name.Boxes} size={14} />*/}
-                        <Text style={styles.countLabel}>Products</Text>
-                    </View>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={styles.countContainer}
-                    onPress={() => {
-                        this.props.navigation.navigate('Orders');
-                    }}>
-                    <View style={styles.countLabelAndIconContainer}>
-                        {/*<Icon name={Name.Boxes} size={14} />*/}
-                        <Text style={styles.countLabel}>Picking</Text>
-                    </View>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={styles.countContainer}
-                    onPress={() => {
-                        this.props.navigation.navigate('InboundOrderList');
-                    }}>
-                    <View style={styles.countLabelAndIconContainer}>
-                        <Text style={styles.countLabel}>Receiving</Text>
-                    </View>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={styles.countContainer}
-                    onPress={() => {
-                        this.props.navigation.navigate('InternalTransfer');
-                    }}>
-                    <View style={styles.countLabelAndIconContainer}>
-                        <Text style={styles.countLabel}>Stock Transfer</Text>
-                    </View>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={styles.countContainer}
-                    onPress={() => {
-                        this.props.navigation.navigate('PutawayList');
-                    }}>
-                    <View style={styles.countLabelAndIconContainer}>
-                        <Text style={styles.countLabel}>Putaways</Text>
-                    </View>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={styles.countContainer}
-                    onPress={() => {
-                        this.props.navigation.navigate('Scan');
-                    }}>
-                    <View style={styles.countLabelAndIconContainer}>
-                        <Text style={styles.countLabel}>Scan</Text>
-                    </View>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={styles.countContainer}
-                    onPress={() => {
-                        this.props.navigation.navigate('CreateLpn');
-                    }}>
-                    <View style={styles.countLabelAndIconContainer}>
-                        <Text style={styles.countLabel}>Create LPN</Text>
-                    </View>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={styles.countContainer}
-                    onPress={() => {
-                        this.props.navigation.navigate('PutawayCandidates');
-                    }}>
-                    <View style={styles.countLabelAndIconContainer}>
-                        <Text style={styles.countLabel}>Putaway Candidates</Text>
-                    </View>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={styles.countContainer}
-                    onPress={() => {
-                        this.props.navigation.navigate('Product Summary');
-                    }}>
-                    <View style={styles.countLabelAndIconContainer}>
-                        <Text style={styles.countLabel}>Product Summary</Text>
-                    </View>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={styles.countContainer}
-                    onPress={() => {
-                        this.props.navigation.navigate('OutboundStockList');
-                    }}>
-                    <View style={styles.countLabelAndIconContainer}>
-                        <Text style={styles.countLabel}>Ready to be Packed</Text>
-                    </View>
-                </TouchableOpacity>
+                <FlatList
+                    data={dashboardData}
+                    horizontal={false}
+                    numColumns={3}
+                    renderItem={(item: ListRenderItemInfo<any>) => this.renderItem(item.item, item.index)}
+                />
             </View>
         )
             ;

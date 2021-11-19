@@ -153,6 +153,7 @@ class Main extends Component<Props, State> {
                   }}
                 />
               ),
+              headerTintColor: '#ffffff',
               headerStyle: {
                 backgroundColor: colors.headerColor,
               },
