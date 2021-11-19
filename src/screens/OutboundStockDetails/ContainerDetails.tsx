@@ -23,15 +23,15 @@ const ContainerDetails = ({item}: any) => {
         )
     }
 
-    const navigateToInboundOrderDetails = (item: any) => {
-        navigation.navigate("ShipmentDetails", {item: item.item})
+    const navigateToOutboundOrderDetails = (item: any) => {
+        navigation.navigate("ShipmentDetails", {item: item})
     }
 
 
     const renderListItem = (item: any, index: any) => {
         return (<TouchableOpacity
             key={index}
-            onPress={() => navigateToInboundOrderDetails(item)}
+            onPress={() => navigateToOutboundOrderDetails(item)}
             style={styles.itemView}>
             <Card>
                 <Card.Content>
