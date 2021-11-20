@@ -6,6 +6,7 @@ import {
     Text,
     TextInput,
     TouchableOpacity,
+    ListRenderItemInfo,
     View,
 } from 'react-native';
 import {pickListVMMapper} from './PickListVMMapper';
@@ -25,6 +26,9 @@ import {useNavigation, useRoute} from '@react-navigation/native';
 import Button from '../../components/Button';
 import useEventListener from '../../hooks/useEventListener';
 import InputBox from '../../components/InputBox';
+import Carousel from 'react-native-snap-carousel';
+import {device} from '../../constants';
+import {PicklistItem} from "../../data/picklist/PicklistItem";
 
 const PickOrderItem = () => {
     const route = useRoute();
@@ -384,116 +388,134 @@ const PickOrderItem = () => {
     console.log('finall value', state)
     return (
         <View style={styles.screenContainer}>
-            <ScrollView style={styles.inputContainer}>
-                <View style={styles.listItemContainer}>
-                    <View style={styles.row}>
-                        <View style={styles.col50}>
-                            <Text style={styles.label}>Order Number</Text>
-                            <Text style={styles.value}>{vm.order.identifier}</Text>
+           <View style={styles.swiperView}>
+                <Carousel
+                    key={3}
+                    dimensions={{width: device.windowWidth}}
+                    sliderWidth={device.windowWidth}
+                    sliderHeight={device.windowHeight}
+                    itemWidth={device.windowWidth - 70}
+                    data={vm?.order?.picklist?.picklistItems}
+                    firstItem={vm.selectedPinkItemIndex ? vm.selectedPinkItemIndex : 0 }
+                    scrollEnabled={true}
+                    renderItem={({item, index}: ListRenderItemInfo<PicklistItem>) => {
+                        return (
+                            <View key={index}>
+                                <ScrollView style={styles.inputContainer}>
+                                    <View style={styles.listItemContainer}>
+                                        <View style={styles.row}>
+                                            <View style={styles.col50}>
+                                                <Text style={styles.label}>Order Number</Text>
+                                                <Text style={styles.value}>{vm.order.identifier}</Text>
+                                            </View>
+                                            <View style={styles.col50}>
+                                                <Text style={styles.label}>Destination</Text>
+                                                <Text style={styles.value}>{vm.order.destination?.name}</Text>
+                                            </View>
+                                        </View>
+                                        <View style={styles.row}>
+                                            <View style={styles.col50}>
+                                                <Text style={styles.label}>Product Code</Text>
+                                                <Text style={styles.value}>
+                                                    {item?.productCode}
+                                                </Text>
+                                            </View>
+                                            <View style={styles.col50}>
+                                                <Text style={styles.label}>Product Name</Text>
+                                                <Text style={styles.value}>
+                                                    {item?.['product.name']}
+                                                </Text>
+                                            </View>
+                                        </View>
+                                        <View style={styles.row}>
+                                            <View style={styles.col50}>
+                                                <Text style={styles.label}>Lot Number</Text>
+                                                <Text style={styles.value}>
+                                                    {item?.lotNumber ?? 'Default'}
+                                                </Text>
+                                            </View>
+                                            <View style={styles.col50}>
+                                                <Text style={styles.label}>Expiration Date</Text>
+                                                <Text style={styles.value}>
+                                                    {item?.expirationDate
+                                                        ? item?.expirationDate
+                                                        : 'N/A'}
+                                                </Text>
+                                            </View>
+                                        </View>
+                                        <View style={styles.row}>
+                                            <View style={styles.col50}>
+                                                <Text style={styles.label}>Bin Location</Text>
+                                                <Text style={styles.value}>
+                                                    {item?.['binLocation.name'] ?? 'Default'}
+                                                </Text>
+                                            </View>
+                                            <View style={styles.col50}>
+                                                <Text style={styles.label}>Quantity Requested</Text>
+                                                <Text style={styles.value}>
+                                                    {item?.quantityRequested}
+                                                </Text>
+                                            </View>
+                                        </View>
+                                        <View style={styles.row}>
+                                            <View style={styles.col50}>
+                                                <Text style={styles.label}>Quantity Picked</Text>
+                                                <Text style={styles.value}>
+                                                    {item?.quantityPicked}
+                                                </Text>
+                                            </View>
+                                            <View style={styles.col50}>
+                                                <Text style={styles.label}>Quantity Remaining</Text>
+                                                <Text style={styles.value}>
+                                                    {item?.quantityRemaining}
+                                                </Text>
+                                            </View>
+                                        </View>
+                                    </View>
+                                    <View style={styles.from}>
+                                        <InputBox
+                                            value={state.productCode}
+                                            disabled={true}
+                                            editable={false}
+                                            onEndEdit={productSearchQueryChange}
+                                            onChange={onChangeProduct}
+                                            label={'Product Code'}
+                                        />
+                                        <InputBox
+                                            value={state.lotNumber}
+                                            label={'Lot Number'}
+                                            disabled={true}
+                                            onEndEdit={binLocationSearchQueryChange}
+                                            onChange={onChangeBin}
+                                            editable={false}
+                                        />
+                                        <InputBox
+                                            value={state.binLocationName}
+                                            label={'Bin Location'}
+                                            disabled={true}
+                                            onEndEdit={binLocationSearchQueryChange}
+                                            onChange={onChangeBin}
+                                            editable={false}
+                                        />
+                                        <InputBox
+                                            label={'Quantity to Pick'}
+                                            value={state.quantityPicked}
+                                            onChange={quantityPickedChange}
+                                            disabled={false}
+                                            editable={false}
+                                            onEndEdit={quantityPickedChange}
+                                            keyboard={'number-pad'}
+                                            showSelect={false}
+                                        />
+                                    </View>
+                                </ScrollView>
+                                <View style={styles.bottom}>
+                                <Button title="Pick Item" onPress={formSubmit}/>
+                            </View>
                         </View>
-                        <View style={styles.col50}>
-                            <Text style={styles.label}>Destination</Text>
-                            <Text style={styles.value}>{vm.order.destination?.name}</Text>
-                        </View>
-                    </View>
-                    <View style={styles.row}>
-                        <View style={styles.col50}>
-                            <Text style={styles.label}>Product Code</Text>
-                            <Text style={styles.value}>
-                                {state.pickListItem?.productCode}
-                            </Text>
-                        </View>
-                        <View style={styles.col50}>
-                            <Text style={styles.label}>Product Name</Text>
-                            <Text style={styles.value}>
-                                {state.pickListItem?.['product.name']}
-                            </Text>
-                        </View>
-                    </View>
-                    <View style={styles.row}>
-                        <View style={styles.col50}>
-                            <Text style={styles.label}>Lot Number</Text>
-                            <Text style={styles.value}>
-                                {state.pickListItem?.lotNumber ?? 'Default'}
-                            </Text>
-                        </View>
-                        <View style={styles.col50}>
-                            <Text style={styles.label}>Expiration Date</Text>
-                            <Text style={styles.value}>
-                                {state.pickListItem?.expirationDate
-                                    ? state.pickListItem?.expirationDate
-                                    : 'N/A'}
-                            </Text>
-                        </View>
-                    </View>
-                    <View style={styles.row}>
-                        <View style={styles.col50}>
-                            <Text style={styles.label}>Bin Location</Text>
-                            <Text style={styles.value}>
-                                {state.pickListItem?.['binLocation.name'] ?? 'Default'}
-                            </Text>
-                        </View>
-                        <View style={styles.col50}>
-                            <Text style={styles.label}>Quantity Requested</Text>
-                            <Text style={styles.value}>
-                                {state.pickListItem?.quantityRequested}
-                            </Text>
-                        </View>
-                    </View>
-                    <View style={styles.row}>
-                        <View style={styles.col50}>
-                            <Text style={styles.label}>Quantity Picked</Text>
-                            <Text style={styles.value}>
-                                {state.pickListItem?.quantityPicked}
-                            </Text>
-                        </View>
-                        <View style={styles.col50}>
-                            <Text style={styles.label}>Quantity Remaining</Text>
-                            <Text style={styles.value}>
-                                {state.pickListItem?.quantityRemaining}
-                            </Text>
-                        </View>
-                    </View>
-                </View>
-                <View style={styles.from}>
-                    <InputBox
-                        value={state.productCode}
-                        disabled={true}
-                        editable={false}
-                        onEndEdit={productSearchQueryChange}
-                        onChange={onChangeProduct}
-                        label={'Product Code'}
-                    />
-                    <InputBox
-                        value={state.lotNumber}
-                        label={'Lot Number'}
-                        disabled={true}
-                        onEndEdit={binLocationSearchQueryChange}
-                        onChange={onChangeBin}
-                        editable={false}
-                    />
-                    <InputBox
-                        value={state.binLocationName}
-                        label={'Bin Location'}
-                        disabled={true}
-                        onEndEdit={binLocationSearchQueryChange}
-                        onChange={onChangeBin}
-                        editable={false}
-                    />
-                    <InputBox
-                        label={'Quantity to Pick'}
-                        value={state.quantityPicked}
-                        onChange={quantityPickedChange}
-                        disabled={false}
-                        editable={false}
-                        onEndEdit={quantityPickedChange}
-                        keyboard={'number-pad'}
-                        showSelect={false}
-                    />
-                </View>
-            </ScrollView>
-            <View style={styles.bottom}>
-                <Button title="Pick Item" onPress={formSubmit}/>
+                        );
+                    }}
+                />
             </View>
         </View>
     );

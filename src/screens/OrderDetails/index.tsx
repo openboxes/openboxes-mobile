@@ -42,11 +42,12 @@ class OrderDetails extends React.Component<Props, State> {
     this.props.getPickListAction(order?.picklist?.id, actionCallback);
   }
 
-  onItemTapped = (item: PicklistItem) => {
+  onItemTapped = (item: PicklistItem, index: number) => {
     const {order} = this.props.route.params;
     this.props.navigation.navigate('PickOrderItem', {
       order,
       pickListItem: item,
+      selectedPinkItemIndex: index
     });
   };
 
@@ -87,7 +88,7 @@ class OrderDetails extends React.Component<Props, State> {
               <PickListItem
                 item={item.item}
                 onPress={() => {
-                  this.onItemTapped(item.item);
+                  this.onItemTapped(item.item, item.index);
                 }}
               />
             )}
