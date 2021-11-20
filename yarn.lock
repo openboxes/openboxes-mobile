@@ -1459,7 +1459,7 @@
   resolved "https://registry.yarnpkg.com/@types/react-native-datawedge-intents/-/react-native-datawedge-intents-0.1.1.tgz#f0fb1a78f8b80e83f65c8f19ca0ceaf2e5e29e75"
   integrity sha512-sG2FOIGjPQ/JOKSPBCYBZwrutUbifsnSwB3n69YTEs7fQ/bisZPkfHjOPQzOtqWF3GWwDyrPd2tN5JFGaQpg9w==
 
-"@types/react-native-snap-carousel@^3.8.5":
+"@types/react-native-snap-carousel@3.8.5":
   version "3.8.5"
   resolved "https://registry.yarnpkg.com/@types/react-native-snap-carousel/-/react-native-snap-carousel-3.8.5.tgz#5b3cb208119e3599d5537b5fc83653a155c6275d"
   integrity sha512-EMBwQo/om2HZM/J6u8Bvz7i0BEO/v6frrpmlvUQ579CMsgYQPlYzQ1ne4KDdRq08+yDSG8/8AwIi1R+185ROsg==
@@ -5810,7 +5810,7 @@ react-native-select-dropdown@^1.2.0:
   resolved "https://registry.yarnpkg.com/react-native-select-dropdown/-/react-native-select-dropdown-1.3.0.tgz#9c45773a6fd52ee08c266fad422e3728b3a311b1"
   integrity sha512-smrRro240/id5kIWd1ozBuXfvS45BHiRz4fJiPQ7mZPkKMG5OPYn6DKFUkknzW+iqgLjtrSsv2zw0pkJAS7K2g==
 
-react-native-snap-carousel@^3.9.1:
+react-native-snap-carousel@3.9.1:
   version "3.9.1"
   resolved "https://registry.yarnpkg.com/react-native-snap-carousel/-/react-native-snap-carousel-3.9.1.tgz#6fd9bd8839546c2c6043a41d2035afbc6fe0443e"
   integrity sha512-xWEGusacIgK1YaDXLi7Gao2+ISLoGPVEBR8fcMf4tOOJQufutlNwkoLu0l6B8Qgsrre0nTxoVZikRgGRDWlLaQ==
@@ -5822,11 +5822,6 @@ react-native-splash-screen@^3.2.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/react-native-splash-screen/-/react-native-splash-screen-3.2.0.tgz#d47ec8557b1ba988ee3ea98d01463081b60fff45"
   integrity sha512-Ls9qiNZzW/OLFoI25wfjjAcrf2DZ975hn2vr6U9gyuxi2nooVbzQeFoQS5vQcbCt9QX5NY8ASEEAtlLdIa6KVg==
-
-react-native-swipe-list-view@3.2.9:
-  version "3.2.9"
-  resolved "https://registry.yarnpkg.com/react-native-swipe-list-view/-/react-native-swipe-list-view-3.2.9.tgz#d725c7cdf481dd5df12a00dbfe0120013b5f2e59"
-  integrity sha512-SjAEuHc/D6ovp+RjDUhfNmw6NYOntdT7+GFhfMGfP/BSLMuMWynpzJy9GKQeyB8sI78T6Lzip21TVbongOg1Mw==
 
 react-native-vector-icons@^8.1.0:
   version "8.1.0"
