@@ -9,6 +9,7 @@ import {hideScreenLoading, showScreenLoading} from "../../redux/actions/main";
 import {connect} from "react-redux";
 import {getBinLocationsAction} from "../../redux/actions/locations";
 import {createPutawayOderAction} from "../../redux/actions/putaways";
+import AutoInputInternalLocation from '../../components/AutoInputInternalLocation';
 
 const arrowDown = require('../../assets/images/arrow-down.png')
 
@@ -80,17 +81,14 @@ class PutawayItem extends Component <Props, State> {
                         <Text>Lot Number</Text>
                         <TextInput value={item['inventoryItem.lotNumber']}/>
                     </View>
-
-                    <SelectDropdown
+                    <AutoInputInternalLocation
+                        label="AutoInputInternalContainer"
                         data={locations}
-                        onSelect={(selectedLocation) => {
+                        getMoreData={(d: any) => console.log('get More data api call', d)} // for calling api for more results
+                        selectedData={(selectedLocation: any) => {
+                            console.log('selectedLocation', selectedLocation);
                             this.setState({selectedLocation})
                         }}
-                        defaultButtonText={"Select Location"}
-                        renderDropdownIcon={() => <Image style={styles.arrowDownIcon} source={arrowDown}/>}
-                        buttonStyle={styles.select}
-                        buttonTextAfterSelection={(selectedLocation, index) => selectedLocation.name}
-                        rowTextForSelection={(selectedLocation, index) => selectedLocation.name}
                     />
                     <View style={styles.row}>
                         <Text>Quantity</Text>

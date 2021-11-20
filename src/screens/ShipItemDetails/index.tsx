@@ -12,6 +12,8 @@ import {
     getShipmentPacking,
     submitShipmentDetails,
 } from '../../redux/actions/packing';
+import AutoInputInternalLocation from '../../components/AutoInputInternalLocation';
+import Index from '../LpnDetail/Index';
 
 const renderIcon = () => {
     return (
@@ -149,23 +151,18 @@ const ShipItemDetails = () => {
                     <Text style={styles.value}>{item.quantityRemaining}</Text>
                 </View>
             </View>
-            <View>
-                <Text>{'Container'}</Text>
-                <SelectDropdown
-                    data={state.containerList}
-                    onSelect={(selectedItem, index) => {
-                        state.containerId = selectedItem
-                        const container = state.shipmentDetails.availableContainers[index];
-                        setState({...state,containerId : selectedItem,container:container})
-                        console.log(selectedItem, index);
-                    }}
-                    defaultValueByIndex={0}
-                    renderDropdownIcon={renderIcon}
-                    buttonStyle={styles.select}
-                    buttonTextAfterSelection={(selectedItem, index) => selectedItem}
-                    rowTextForSelection={(item, index) => item}
-                />
-            </View>
+            <Text>{'Container'}</Text>
+            <AutoInputInternalLocation
+                label="AutoInputInternalContainer"
+                data={state.containerList ? state.containerList : [] }
+                getMoreData={(d: any) => console.log('get More data api call', d)} // for calling api for more results
+                selectedData={(selectedItem: any, index: number) => {
+                    state.containerId = selectedItem
+                    console.log('state.shipmentD', state.shipmentDetails.availableContainers[index]);
+                    const container = state.shipmentDetails.availableContainers[index];
+                    setState({...state,containerId : selectedItem,container:container})
+                }}
+            />
             <InputBox
                 label={'Quantity to Pick'}
                 value={state.quantityPicked}

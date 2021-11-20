@@ -13,6 +13,7 @@ import SelectDropdown from "react-native-select-dropdown";
 import {getShipmentPacking, getShipmentOrigin} from "../../redux/actions/packing";
 import {RootState} from "../../redux/reducers";
 import Location from "../../data/location/Location";
+import AutoInputInternalLocation from '../../components/AutoInputInternalLocation';
 
 
 export interface State {
@@ -174,18 +175,16 @@ class CreateLpn extends React.Component<Props, State> {
             <View style={styles.container}>
                 <View style={styles.from}>
                     <Text style={styles.label}>Shipment Number</Text>
-                    <SelectDropdown
+                    <AutoInputInternalLocation
+                        label="AutoInputInternalLocation"
                         data={this.state.stockMovementList}
-                        onSelect={(selectedItem, index) => {
+                        getMoreData={(d: any) => console.log('get More data api call', d)} // for calling api for more results
+                        selectedData={(selectedItem: any, index: number) => {
                             console.log(selectedItem, index)
                             const stockMovement = this.state.stockMovements?.find(i => i.shipmentNumber === selectedItem);
                             this.setState({stockMovement: selectedItem, stockMovementId: stockMovement?.id})
-                        }}
-                        defaultValueByIndex={0}
-                        renderDropdownIcon={this.renderIcon}
-                        buttonStyle={styles.select}
-                        buttonTextAfterSelection={(selectedItem, index) => selectedItem}
-                        rowTextForSelection={(item, index) => item}
+                            }
+                        }
                     />
                     <InputBox
                         value={this.state.name}

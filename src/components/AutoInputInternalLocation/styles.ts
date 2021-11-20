@@ -4,7 +4,7 @@ import Theme from '../../utils/Theme';
 export default StyleSheet.create({
   mainContainer: {
     flexDirection: 'row',
-    flex: 1,
+    // flex: 1,
     marginVertical: 5,
   },
   itemContainer: {

@@ -39,17 +39,18 @@ export default function ({
           keyExtractor: (_, idx) => idx,
           style: {maxHeight: 100},
           nestedScrollEnabled: true,
-          renderItem: ({item}: any) => (
+          renderItem: ({item, index}: any) => {
+            return(
             <TouchableOpacity
               style={styles.itemContainer}
               onPress={() => {
                 setQuery(item?.name || item);
                 setShowResult(true);
-                selectedData?.(item);
+                selectedData?.(item, index);
               }}>
               <Text style={styles.textInput}>{item?.name || item}</Text>
             </TouchableOpacity>
-          ),
+          )},
         }}
         onShowResults={(res: boolean) =>
           !res && getMoreData?.('here you can pass params for api')
