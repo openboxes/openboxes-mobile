@@ -92,7 +92,7 @@ class Index extends React.Component<Props, State> {
             placeHolder={'Search Orders by Name'}
             autoSearch={true}
             searchBox={false}/>
-        <Text style={styles.label}>Returned {this.state.resultCount} results</Text>
+        <Text style={styles.label}>  Returned {this.state.resultCount} results</Text>
         <View style={styles.content}>
           <OrdersList
             orders={this.state.allOrders}

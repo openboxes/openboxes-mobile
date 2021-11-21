@@ -1,16 +1,18 @@
 import {StyleSheet} from 'react-native';
 import Theme from '../../utils/Theme';
-import {ratio} from '../../constants';
+import {ratio, device} from '../../constants';
 
 export default StyleSheet.create({
   screenContainer: {
     display: 'flex',
     flexDirection: 'column',
+    justifyContent:  'center',
     flex: 1,
   },
   inputContainer: {
+    borderWidth:1,
+    borderRadius: 4,
     display: 'flex',
-    flex: 1,
     flexDirection: 'column',
     paddingHorizontal: 10,
   },
@@ -196,4 +198,8 @@ export default StyleSheet.create({
     justifyContent: 'center',
     height: ratio.height * 100,
   },
+  swiperView: {
+    height: device.windowHeight - 100,
+    justifyContent: 'center'
+  }
 });
