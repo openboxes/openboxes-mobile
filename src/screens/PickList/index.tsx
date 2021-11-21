@@ -405,16 +405,6 @@ const PickOrderItem = () => {
                                     <View style={styles.listItemContainer}>
                                         <View style={styles.row}>
                                             <View style={styles.col50}>
-                                                <Text style={styles.label}>Order Number</Text>
-                                                <Text style={styles.value}>{vm.order.identifier}</Text>
-                                            </View>
-                                            <View style={styles.col50}>
-                                                <Text style={styles.label}>Destination</Text>
-                                                <Text style={styles.value}>{vm.order.destination?.name}</Text>
-                                            </View>
-                                        </View>
-                                        <View style={styles.row}>
-                                            <View style={styles.col50}>
                                                 <Text style={styles.label}>Product Code</Text>
                                                 <Text style={styles.value}>
                                                     {item?.productCode}
@@ -427,45 +417,16 @@ const PickOrderItem = () => {
                                                 </Text>
                                             </View>
                                         </View>
+
                                         <View style={styles.row}>
                                             <View style={styles.col50}>
-                                                <Text style={styles.label}>Lot Number</Text>
+                                                <Text style={styles.label}>Picked</Text>
                                                 <Text style={styles.value}>
-                                                    {item?.lotNumber ?? 'Default'}
+                                                    {item?.quantityPicked} / {item?.quantityRequested}
                                                 </Text>
                                             </View>
                                             <View style={styles.col50}>
-                                                <Text style={styles.label}>Expiration Date</Text>
-                                                <Text style={styles.value}>
-                                                    {item?.expirationDate
-                                                        ? item?.expirationDate
-                                                        : 'N/A'}
-                                                </Text>
-                                            </View>
-                                        </View>
-                                        <View style={styles.row}>
-                                            <View style={styles.col50}>
-                                                <Text style={styles.label}>Bin Location</Text>
-                                                <Text style={styles.value}>
-                                                    {item?.['binLocation.name'] ?? 'Default'}
-                                                </Text>
-                                            </View>
-                                            <View style={styles.col50}>
-                                                <Text style={styles.label}>Quantity Requested</Text>
-                                                <Text style={styles.value}>
-                                                    {item?.quantityRequested}
-                                                </Text>
-                                            </View>
-                                        </View>
-                                        <View style={styles.row}>
-                                            <View style={styles.col50}>
-                                                <Text style={styles.label}>Quantity Picked</Text>
-                                                <Text style={styles.value}>
-                                                    {item?.quantityPicked}
-                                                </Text>
-                                            </View>
-                                            <View style={styles.col50}>
-                                                <Text style={styles.label}>Quantity Remaining</Text>
+                                                <Text style={styles.label}>Remaining</Text>
                                                 <Text style={styles.value}>
                                                     {item?.quantityRemaining}
                                                 </Text>
@@ -507,10 +468,11 @@ const PickOrderItem = () => {
                                             keyboard={'number-pad'}
                                             showSelect={false}
                                         />
+                                        <Button title="Pick Item" onPress={formSubmit}/>
                                     </View>
                                 </ScrollView>
                                 <View style={styles.bottom}>
-                                <Button title="Pick Item" onPress={formSubmit}/>
+
                             </View>
                         </View>
                         );

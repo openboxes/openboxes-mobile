@@ -51,6 +51,16 @@ class OrderDetails extends React.Component<Props, State> {
     });
   };
 
+  renderEmptyContainer() {
+    return (
+      <View style={styles.row}>
+        <View style={styles.col50}>
+          <Text style={styles.value}>No picklist items</Text>
+        </View>
+      </View>
+    );
+  }
+
   render() {
     const vm = orderDetailsVMMapper(this.props.route?.params, this.state);
     return (
@@ -62,16 +72,6 @@ class OrderDetails extends React.Component<Props, State> {
               <Text style={styles.value}>{vm.identifier}</Text>
             </View>
             <View style={styles.col50}>
-              <Text style={styles.label}>Name</Text>
-              <Text style={styles.value}>{vm.name}</Text>
-            </View>
-          </View>
-          <View style={styles.row}>
-            <View style={styles.col50}>
-              <Text style={styles.label}>Origin</Text>
-              <Text style={styles.value}>{vm.origin.locationNumber}-{vm.origin.name}</Text>
-            </View>
-            <View style={styles.col50}>
               <Text style={styles.label}>Status</Text>
               <Text style={styles.value}>{vm.status}</Text>
             </View>
@@ -81,20 +81,32 @@ class OrderDetails extends React.Component<Props, State> {
               <Text style={styles.label}>Destination</Text>
               <Text style={styles.value}>{vm.destination.locationNumber}-{vm.destination.name}</Text>
             </View>
+            <View style={styles.col50}>
+              <Text style={styles.label}>Requested Delivery Date</Text>
+              <Text style={styles.value}>{vm.requestedDeliveryDate}</Text>
+            </View>
           </View>
-          <FlatList
-            data={this.state.pickList?.picklistItems}
-            renderItem={(item: ListRenderItemInfo<PicklistItem>) => (
-              <PickListItem
-                item={item.item}
-                onPress={() => {
-                  this.onItemTapped(item.item, item.index);
-                }}
-              />
-            )}
-            keyExtractor={item => `${item.id}`}
-            style={styles.list}
-          />
+          <View style={styles.row}>
+            <View style={styles.col50}>
+              <Text style={styles.label}>Picklist</Text>
+            </View>
+          </View>
+          <View style={styles.row}>
+            <FlatList
+              data={this.state.pickList?.picklistItems}
+              ListEmptyComponent={this.renderEmptyContainer()}
+              renderItem={(item: ListRenderItemInfo<PicklistItem>) => (
+                <PickListItem
+                  item={item.item}
+                  onPress={() => {
+                    this.onItemTapped(item.item, item.index);
+                  }}
+                />
+              )}
+              keyExtractor={item => `${item.id}`}
+              style={styles.list}
+            />
+          </View>
         </View>
       </View>
     );

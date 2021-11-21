@@ -47,8 +47,8 @@ function renderOrder(order: Order, onOrderTapped: () => void): ReactElement {
       </View>
       <View style={styles.row}>
         <View style={styles.col50}>
-          <Text style={styles.label}>Name</Text>
-          <Text style={styles.value}>{order.name}</Text>
+          <Text style={styles.label}>Destination</Text>
+          <Text style={styles.value}>{order.destination?.name}</Text>
         </View>
         <View style={styles.col50}>
           <Text style={styles.label}>Requested Delivery Date</Text>
@@ -56,14 +56,6 @@ function renderOrder(order: Order, onOrderTapped: () => void): ReactElement {
         </View>
       </View>
       <View style={styles.row}>
-        <View style={styles.col50}>
-          <Text style={styles.label}>Origin</Text>
-          <Text style={styles.value}>{order.origin?.name}</Text>
-        </View>
-        <View style={styles.col50}>
-          <Text style={styles.label}>Destination</Text>
-          <Text style={styles.value}>{order.destination?.name}</Text>
-        </View>
       </View>
     </TouchableOpacity>
   );
