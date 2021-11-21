@@ -1,7 +1,6 @@
 import {StyleSheet} from 'react-native';
 import Theme from '../../utils/Theme';
-import {ratio} from '../../constants';
-import { device } from '../../constants'; 
+import {ratio, device} from '../../constants';
 
 export default StyleSheet.create({
   screenContainer: {
