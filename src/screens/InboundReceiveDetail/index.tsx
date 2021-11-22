@@ -70,7 +70,7 @@ const InboundReceiveDetail = () => {
               shipmentItemId: shipmentItem.shipmentItemId,
               'container.id': shipmentItem['container.id'],
               'product.id': shipmentItem['product.id'],
-              'binLocation.id': shipmentItem['binLocation.id'],
+              'binLocation.id': state.receiveLocation,
               recipient: '',
               quantityReceiving: state.quantityToReceive,
               cancelRemaining: cancelRemaining,
