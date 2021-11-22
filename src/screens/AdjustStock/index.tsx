@@ -6,75 +6,75 @@ import InputBox from '../../components/InputBox';
 import Button from "../../components/Button";
 import showPopup from "../../components/Popup";
 import {useNavigation, useRoute} from "@react-navigation/native";
-import SelectDropdown from "react-native-select-dropdown";
 import RenderData from "../../components/RenderData";
 import {RootState} from "../../redux/reducers";
 import {stockAdjustments} from "../../redux/actions/products";
+import DropDownPicker from 'react-native-dropdown-picker';
 
 const reasonCodes = [
     {
-        "id": "CONSUMED",
-        "name": "Consumed",
+        "value": "CONSUMED",
+        "label": "Consumed",
         "sortOrder": 24
     },
     {
-        "id": "CORRECTION",
-        "name": "Correction",
+        "value": "CORRECTION",
+        "label": "Correction",
         "sortOrder": 30
     },
     {
-        "id": "DAMAGED",
-        "name": "Damaged product",
+        "value": "DAMAGED",
+        "label": "Damaged product",
         "sortOrder": 4
     },
     {
-        "id": "DATA_ENTRY_ERROR",
-        "name": "Data entry error",
+        "value": "DATA_ENTRY_ERROR",
+        "label": "Data entry error",
         "sortOrder": 16
     },
     {
-        "id": "EXPIRED",
-        "name": "Expired product",
+        "value": "EXPIRED",
+        "label": "Expired product",
         "sortOrder": 3
     },
     {
-        "id": "FOUND",
-        "name": "Found",
+        "value": "FOUND",
+        "label": "Found",
         "sortOrder": 26
     },
     {
-        "id": "MISSING",
-        "name": "Missing",
+        "value": "MISSING",
+        "label": "Missing",
         "sortOrder": 27
     },
     {
-        "id": "RECOUNTED",
-        "name": "Recounted",
+        "value": "RECOUNTED",
+        "label": "Recounted",
         "sortOrder": 29
     },
     {
-        "id": "REJECTED",
-        "name": "Rejected",
+        "value": "REJECTED",
+        "label": "Rejected",
         "sortOrder": 32
     },
     {
-        "id": "RETURNED",
-        "name": "Returned",
+        "value": "RETURNED",
+        "label": "Returned",
         "sortOrder": 25
     },
     {
-        "id": "SCRAPPED",
-        "name": "Scrapped",
+        "value": "SCRAPPED",
+        "label": "Scrapped",
         "sortOrder": 31
     },
     {
-        "id": "STOLEN",
-        "name": "Stolen",
+        "value": "STOLEN",
+        "label": "Stolen",
         "sortOrder": 28
     },
     {
-        "id": "OTHER",
-        "name": "Other",
+        "value": "OTHER",
+        "label": "Other",
         "sortOrder": 100
     }
 ];
@@ -87,21 +87,17 @@ const AdjustStock = () => {
     const navigation = useNavigation();
     const location = useSelector((state: RootState) => state.mainReducer.currentLocation)
     console.log(JSON.stringify(item))
+    const [open, setOpen] = useState(false);
+    const [reasonCode, setReasonCode] = useState("");
+
+
+
     const [state, setState] = useState<any>({
         comments: "",
         quantityAdjusted: "",
-        reasonCode: "",
-        reasonCodeList: [],
         error: null,
     })
-    useEffect(() => {
-        let reasonList: any = []
-        reasonCodes.map((item) => {
-            reasonList.push(item.name)
-        })
-        state.reasonCodeList = reasonList;
-        setState({...state})
-    }, [])
+
 
     const onSave = () => {
         let errorTitle = ""
@@ -109,6 +105,14 @@ const AdjustStock = () => {
         if (state.quantityAdjusted == null || state.quantityAdjusted == "") {
             errorTitle = "Quantity!"
             errorMessage = "Please fill the Quantity to Adjusted"
+        }
+        if (reasonCode == null || reasonCode == "") {
+            errorTitle = "Reason Code!"
+            errorMessage = "Please select a reason code"
+        }
+        if (state.comments == null || state.comments == "") {
+            errorTitle = "Comment!"
+            errorMessage = "Please enter a comment"
         }
         if (errorTitle != "") {
             showPopup({
@@ -125,10 +129,11 @@ const AdjustStock = () => {
             "inventoryItem.id": item?.inventoryItem?.id ?? "",
             "binLocation.id": item?.binLocation?.id ?? "",
             "quantityAvailable":item.quantityAvailableToPromise,
-            "reasonCode": state?.reasonCode?.id ?? "CORRECTION",
+            "reasonCode":reasonCode ?? "CORRECTION",
             "quantityAdjusted":state.quantityAdjusted,
-            "comments":state.comments
+            "comments":state.comments ?? ""
         }
+        console.log(request)
         submitStockAdjustments(request)
     }
 
@@ -200,18 +205,13 @@ const AdjustStock = () => {
                     editable={false}
                     keyboard={"number-pad"}/>
                 <Text style={styles.value}>{"Reason Code"}</Text>
-                <SelectDropdown
-                    data={state.reasonCodeList}
-                    onSelect={(selectedItem, index) => {
-                        console.log(selectedItem, index)
-                        state.reasonCode = selectedItem;
-                        setState({...state})
-                    }}
-                    defaultValueByIndex={0}
-                    renderDropdownIcon={renderIcon}
-                    buttonStyle={styles.select}
-                    buttonTextAfterSelection={(selectedItem, index) => selectedItem}
-                    rowTextForSelection={(item, index) => item}
+                <DropDownPicker
+                    open={open}
+                    value={reasonCode}
+                    items={reasonCodes}
+                    setOpen={setOpen}
+                    setValue={setReasonCode}
+                    dropDownDirection="TOP"
                 />
                 <InputBox
                     value={state.comments}
