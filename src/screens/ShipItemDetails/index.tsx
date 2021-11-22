@@ -39,11 +39,13 @@ const ShipItemDetails = () => {
         containerId: '',
         containerList: ""
     });
+    const [ selectedContainerItem, setSelectedContainerItem ] = useState<number>(0);
 
     useEffect(() => {
         console.log(" Shipment Details", route.params)
         getShipmentDetails(item.shipment.shipmentNumber)
     }, [])
+    console.log('state', state);
     const getShipmentDetails = (id: string) => {
         const callback = (data: any) => {
             if (data?.error) {
@@ -112,7 +114,7 @@ const ShipItemDetails = () => {
             quantityPicked: query,
         });
     };
-
+    console.log('selectedContainerItem', selectedContainerItem);
     return (
         <View style={styles.contentContainer}>
             <View style={styles.rowItem}>
@@ -155,12 +157,19 @@ const ShipItemDetails = () => {
             <AutoInputInternalLocation
                 label="AutoInputInternalContainer"
                 data={state.containerList ? state.containerList : [] }
-                getMoreData={(d: any) => console.log('get More data api call', d)} // for calling api for more results
+                getMoreData={(d: any) => console.log('get More data api call', d)}
                 selectedData={(selectedItem: any, index: number) => {
-                    state.containerId = selectedItem
-                    console.log('state.shipmentD', state.shipmentDetails.availableContainers[index]);
+                    console.log('index....', index)
+                    setSelectedContainerItem(index);
+                    state.containerId = selectedItem;
                     const container = state.shipmentDetails.availableContainers[index];
-                    setState({...state,containerId : selectedItem,container:container})
+                    console.log('container',  container);
+                    setState({
+                        ...state,
+                        containerId : selectedItem,
+                        container:container,
+                        selectedContainerItem: index
+                    })
                 }}
             />
             <InputBox

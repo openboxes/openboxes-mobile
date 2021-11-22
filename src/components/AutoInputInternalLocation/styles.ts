@@ -37,4 +37,10 @@ export default StyleSheet.create({
     height: 25,
     margin: 5,
   },
+  container: {
+    backgroundColor: 'white'
+  },
+  option:{
+    color: 'black'
+  }
 });
