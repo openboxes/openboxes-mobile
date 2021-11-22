@@ -13,71 +13,71 @@ import {RootState} from '../../redux/reducers';
 import {stockAdjustments} from '../../redux/actions/products';
 
 const reasonCodes = [
-  {
-    id: 'CONSUMED',
-    name: 'Consumed',
-    sortOrder: 24,
-  },
-  {
-    id: 'CORRECTION',
-    name: 'Correction',
-    sortOrder: 30,
-  },
-  {
-    id: 'DAMAGED',
-    name: 'Damaged product',
-    sortOrder: 4,
-  },
-  {
-    id: 'DATA_ENTRY_ERROR',
-    name: 'Data entry error',
-    sortOrder: 16,
-  },
-  {
-    id: 'EXPIRED',
-    name: 'Expired product',
-    sortOrder: 3,
-  },
-  {
-    id: 'FOUND',
-    name: 'Found',
-    sortOrder: 26,
-  },
-  {
-    id: 'MISSING',
-    name: 'Missing',
-    sortOrder: 27,
-  },
-  {
-    id: 'RECOUNTED',
-    name: 'Recounted',
-    sortOrder: 29,
-  },
-  {
-    id: 'REJECTED',
-    name: 'Rejected',
-    sortOrder: 32,
-  },
-  {
-    id: 'RETURNED',
-    name: 'Returned',
-    sortOrder: 25,
-  },
-  {
-    id: 'SCRAPPED',
-    name: 'Scrapped',
-    sortOrder: 31,
-  },
-  {
-    id: 'STOLEN',
-    name: 'Stolen',
-    sortOrder: 28,
-  },
-  {
-    id: 'OTHER',
-    name: 'Other',
-    sortOrder: 100,
-  },
+    {
+        "value": "CONSUMED",
+        "label": "Consumed",
+        "sortOrder": 24
+    },
+    {
+        "value": "CORRECTION",
+        "label": "Correction",
+        "sortOrder": 30
+    },
+    {
+        "value": "DAMAGED",
+        "label": "Damaged product",
+        "sortOrder": 4
+    },
+    {
+        "value": "DATA_ENTRY_ERROR",
+        "label": "Data entry error",
+        "sortOrder": 16
+    },
+    {
+        "value": "EXPIRED",
+        "label": "Expired product",
+        "sortOrder": 3
+    },
+    {
+        "value": "FOUND",
+        "label": "Found",
+        "sortOrder": 26
+    },
+    {
+        "value": "MISSING",
+        "label": "Missing",
+        "sortOrder": 27
+    },
+    {
+        "value": "RECOUNTED",
+        "label": "Recounted",
+        "sortOrder": 29
+    },
+    {
+        "value": "REJECTED",
+        "label": "Rejected",
+        "sortOrder": 32
+    },
+    {
+        "value": "RETURNED",
+        "label": "Returned",
+        "sortOrder": 25
+    },
+    {
+        "value": "SCRAPPED",
+        "label": "Scrapped",
+        "sortOrder": 31
+    },
+    {
+        "value": "STOLEN",
+        "label": "Stolen",
+        "sortOrder": 28
+    },
+    {
+        "value": "OTHER",
+        "label": "Other",
+        "sortOrder": 100
+    }
 ];
 
 const AdjustStock = () => {
