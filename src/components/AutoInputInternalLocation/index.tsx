@@ -48,7 +48,7 @@ export default function ({
         <TextInput
           style={{borderWidth:1, borderColor:'#ccc', padding: 10, height: 40, width: device.windowWidth - 20, borderRadius: 4}}
           editable={false}
-          placeholder="Select something yummy!"
+          placeholder=""
           value={query} 
         />
 
