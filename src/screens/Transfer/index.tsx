@@ -106,7 +106,30 @@ console.log(item)
             }
                 ]
         }
-       dispatch(updateStockTransfer(request));
+        const actionCallback = (data: any) => {
+        if (data?.error) {
+            showPopup({
+                title: 'Failed to submit' ,
+                message: 'Failed to submit',
+                positiveButton: {
+                    text: 'Retry',
+                    callback:()=>{
+                        dispatch(updateStockTransfer(request,actionCallback));
+                    }
+                },
+                negativeButtonText: 'Cancel',
+            });
+        } else {
+            showPopup({
+                title: 'Submit' ,
+                message:'Successfully submit',
+                positiveButton: {
+                    text: 'ok',
+                },
+            });
+        }
+    }
+       dispatch(updateStockTransfer(request,actionCallback));
     }
 
     return (
