@@ -1,7 +1,7 @@
 import React from "react";
 import {DispatchProps, Props} from "./Types";
 import {Container} from "../../data/container/Container";
-import {FlatList, ListRenderItemInfo, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {FlatList, ListRenderItemInfo, StyleSheet, Text, TouchableOpacity, View,Image} from "react-native";
 import Theme from "../../utils/Theme";
 import {ContainerShipmentItem} from "../../data/container/ContainerShipmentItem";
 import {fetchContainer, getContainer} from "../../redux/actions/lpn";
@@ -12,6 +12,15 @@ import Button from "../../components/Button";
 import PrintModal from "../../components/PrintModal";
 import showPopup from "../../components/Popup";
 import {getProductByIdAction} from "../../redux/actions/products";
+import SelectDropdown from "react-native-select-dropdown";
+
+
+const containerStatus = ["Open", "Packing", "Packed", "Loaded"]
+const renderIcon = () => {
+    return (
+        <Image style={styles.arrowDownIcon} source={require('../../assets/images/arrow-down.png')}/>
+    )
+}
 
 export interface State {
     container: Container | null
@@ -128,6 +137,18 @@ class LpnDetail extends React.Component<Props, State> {
                             <Text style={styles.value}>{this.state.container?.shipmentItems?.length}</Text>
                         </View>
                     </View>
+                    <Text style={styles.value}>{"Status"}</Text>
+                    <SelectDropdown
+                        data={containerStatus}
+                        onSelect={(selectedItem, index) => {
+                            console.log(selectedItem, index)
+                        }}
+                        defaultValueByIndex={0}
+                        renderDropdownIcon={renderIcon}
+                        buttonStyle={styles.select}
+                        buttonTextAfterSelection={(selectedItem, index) => selectedItem}
+                        rowTextForSelection={(item, index) => item}
+                    />
                     <FlatList
                         data={this.state.container?.shipmentItems}
                         renderItem={(shipmentItem: ListRenderItemInfo<ContainerShipmentItem>) =>
