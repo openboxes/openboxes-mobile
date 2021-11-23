@@ -14,7 +14,7 @@ const ViewAvailableItem = () => {
         navigation.navigate('AdjustStock', {item});
     }
     const navigateToTransfer = () => {
-        navigation.navigate('InternalTransfer', {item});
+        navigation.navigate('Transfer',{item});
     }
     return (
         <View style={styles.container}>
