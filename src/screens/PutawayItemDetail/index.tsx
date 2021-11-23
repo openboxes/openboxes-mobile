@@ -32,10 +32,11 @@ const PutawayItemDetail = () => {
         binToData:"",
         quantity: "0",
     })
+    const {putAway, putAwayItem}: any = route.params;
 
 
     useEffect(() => {
-        const {putAway, putAwayItem}: any = route.params;
+        console.log(putAway,putAwayItem)
         setState({
             ...state,
             putAway: putAway,
@@ -203,7 +204,7 @@ const PutawayItemDetail = () => {
             "id": state.putAway?.id,
             "putawayNumber": state.putAway?.putawayNumber,
             "putawayStatus": "COMPLETED",
-            "putawayDate": state.putAway?.putawayDate,
+            "putawayDate": state.putAway?.putawayDate??"",
             "putawayAssignee": "",
             "origin.id": state.putAway?.["origin.id"],
             "destination.id": state.putAway?.["destination.id"],
@@ -216,26 +217,30 @@ const PutawayItemDetail = () => {
                     "product.id": state.putAwayItem?.["product.id"],
                     "inventoryItem.id": state.putAwayItem?.["inventoryItem.id"],
                     "putawayFacility.id": state.putAwayItem?.["putawayFacility.id"],
-                    "putawayLocation.id": state.binToData?.id,
+                    "putawayLocation.id":state.putAwayItem?.["putawayLocation.id"],
                     "quantity": state.putAwayItem?.quantity
                 }
             ],
             "orderedBy.id": "",
-            "sortBy": null
+            "sortBy": ""
         }
         const actionCallback = (data: any) => {
             console.debug("data after submit")
             console.debug(data)
-            if (data?.length == 0) {
-                // setState({...state,
-                //     pickListItem: data,
-                //     error: 'No Picklist found',
-                // });
+            if (data?.error) {
+                showPopup({
+                    title: data.error.message ? 'Failed to submit' : null,
+                    message: data.error.message ?? 'Failed to submit',
+                    positiveButton: {
+                        text: 'Retry',
+                        callback:()=>{
+                            dispatch(submitPutawayItem(state.putAwayItem?.id as string, requestBody, actionCallback));
+                        }
+                    },
+                    negativeButtonText: 'Cancel',
+                });
             } else {
-                // setState({...state,
-                //     pickListItem: data,
-                //     error: null,
-                // });
+
             }
         }
         dispatch(submitPutawayItem(state.putAwayItem?.id as string, requestBody, actionCallback));
@@ -325,6 +330,7 @@ const PutawayItemDetail = () => {
                 <InputBox
                     value={state.productCode}
                     disabled={true}
+                    editable={false}
                     onChange={onChangeProduct}
                     label={'Product Code'}/>
                 <InputBox
@@ -337,6 +343,7 @@ const PutawayItemDetail = () => {
                 <InputBox
                     value={state.binToLocation}
                     disabled={true}
+                    editable={false}
                     onChange={onChangeBin}
                     label={'To'}/>
                 <InputBox
