@@ -158,6 +158,7 @@ const ShipItemDetails = () => {
                 label="AutoInputInternalContainer"
                 data={state.containerList ? state.containerList : [] }
                 getMoreData={(d: any) => console.log('get More data api call', d)}
+                selectedContainerItem={selectedContainerItem}
                 selectedData={(selectedItem: any, index: number) => {
                     console.log('index....', index)
                     setSelectedContainerItem(index);
