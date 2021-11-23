@@ -64,7 +64,7 @@ class PutawayItem extends Component <Props, State> {
 
     render() {
         const {item} = this.props.route.params
-        const {locations} = this.props
+        const {locations} = this.props;
         const {quantity} = this.state
         return (
             <View style={styles.container}>
@@ -83,7 +83,7 @@ class PutawayItem extends Component <Props, State> {
                     </View>
                     <AutoInputInternalLocation
                         label="AutoInputInternalContainer"
-                        data={locations}
+                        data={locations.map(({ name }) => name)}
                         getMoreData={(d: any) => console.log('get More data api call', d)} // for calling api for more results
                         selectedData={(selectedLocation: any) => {
                             console.log('selectedLocation', selectedLocation);
