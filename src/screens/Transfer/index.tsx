@@ -6,13 +6,16 @@ import InputBox from '../../components/InputBox';
 import Button from "../../components/Button";
 import {RootState} from "../../redux/reducers";
 import {useNavigation, useRoute} from "@react-navigation/native";
+import {updateStockTransfer} from "../../redux/actions/transfers";
+import showPopup from "../../components/Popup";
+import {searchLocationByLocationNumber} from "../../redux/actions/locations";
 
 
 const Transfer = () => {
     const route = useRoute();
     const navigation = useNavigation()
     const {item}: any = route.params
-
+console.log(item)
     const navigateToTransfer = () => {
     }
     const dispatch = useDispatch();
@@ -25,12 +28,59 @@ const Transfer = () => {
         ExpirationDate:"",
         binFromLocation:"",
         binToLocation: "",
+        binToLocationData:"",
         quantity: "0",
         quantityToTransfer:"",
         error: null,
         searchProductCode: null,
     })
+    const binLocationSearchQueryChange = (query: string) => {
+        setState({
+            ...state,
+            binLocationSearchQuery: query,
+        });
+        onBinLocationBarCodeSearchQuerySubmitted();
+    };
 
+    const onBinLocationBarCodeSearchQuerySubmitted = () => {
+        if (!state.binToLocation) {
+            showPopup({
+                message: 'Search query is empty',
+                positiveButton: {
+                    text: 'Ok',
+                },
+            });
+            return;
+        }
+
+        const actionCallback = (location: any) => {
+            if (!location || location.error) {
+                showPopup({
+                    message:
+                        'Bin Location not found with LocationNumber:' +
+                        state.binLocationName,
+                    positiveButton: {
+                        text: 'Ok',
+                    },
+                });
+                setState({
+                    ...state,
+                    binToLocation: '',
+                    binLocationSearchQuery: '',
+                });
+                return;
+            } else if (location) {
+                setState({
+                    ...state,
+                    binToLocationData: location,
+                    binLocationSearchQuery: '',
+                });
+            }
+        };
+        dispatch(
+            searchLocationByLocationNumber(state.binToLocation, actionCallback),
+        );
+    };
     const onChangeBin = (text: string) => {
         setState({...state, binToLocation: text})
     }
@@ -40,24 +90,23 @@ const Transfer = () => {
 
 
     const onTransfer = () =>{
-        // dispatch(showScreenLoading("Update Transfer"))
         const request :any = {
             "status": "COMPLETED",
             "stockTransferNumber": "",
-            "description": "Test stock transfer from bin with quantity =",
+            "description": "Test stock transfer from bin with quantity",
             "origin.id": location.id,
             "destination.id": location.id,
-            "stockTransferItems": [
-                {
-                    "product.id":item?.product.productCode,
-                    "inventoryItem.id": "",
-                    "Expiration Date": item?.inventoryItem.expirationDate?? "Never",
-                    "Lot Number": item?.inventoryItem.lotNumber ?? "Default",
-                    "Quantity Available to Transfer": item?.quantityAvailableToPromise.toString(),
-                   "quantity": state.quantity,
-             }]
+            "stockTransferItems": [{
+                "product.id": item.inventoryItem.product.id,
+                "inventoryItem.id": item.inventoryItem.id,
+                "location.id": location.id,
+                "originBinLocation.id": item?.binLocation.id ?? "Never",
+                "destinationBinLocation.id": state.binToLocationData.id,
+                "quantity": state.quantity
+            }
+                ]
         }
-       //dispatch(updateStockTransfer(request));
+       dispatch(updateStockTransfer(request));
     }
 
     return (
@@ -81,7 +130,7 @@ const Transfer = () => {
                     editable={false}
                     label={'Expiration Date'}/>
                 <InputBox
-                    value={item?.inventoryItem.binLocation??"Never"}
+                    value={item?.binLocation.name??"Never"}
                     label={'From'}
                     disabled={true}
                     editable={false} />
@@ -101,7 +150,8 @@ const Transfer = () => {
                     />
                 <InputBox
                     label={'Bin Location'}
-                    value={state.quantity}
+                    value={state.binToLocation}
+                    onEndEdit={binLocationSearchQueryChange}
                     onChange={onChangeBin}
                     disabled={false}
                     editable={false}
