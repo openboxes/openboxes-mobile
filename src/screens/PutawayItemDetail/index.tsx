@@ -240,7 +240,13 @@ const PutawayItemDetail = () => {
                     negativeButtonText: 'Cancel',
                 });
             } else {
-
+                showPopup({
+                    title: ' submit' ,
+                    message:'successfully submit',
+                    positiveButton: {
+                        text: 'ok',
+                                            },
+                });
             }
         }
         dispatch(submitPutawayItem(state.putAwayItem?.id as string, requestBody, actionCallback));
