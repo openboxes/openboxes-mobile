@@ -8,7 +8,7 @@ export default StyleSheet.create({
     },
     row: {
         borderWidth: 2,
-        marginVertical: 10,
+        marginVertical: 5,
         padding: 5
     },
     arrowDownIcon: {
@@ -17,7 +17,7 @@ export default StyleSheet.create({
     },
     select: {
         width: '100%',
-        borderWidth: 2,
+        borderWidth: 0,
         height: 40
     },
     quantityBox: {
