@@ -17,13 +17,13 @@ const InboundOrderList = ({data}: InboundOrderProps) => {
         )
     }
 
-    const navigateToInboundDetails = () => {
-        navigation.navigate("InboundDetails",{shipmentDetails : data[0] })
+    const navigateToInboundDetails = (item:any) => {
+        navigation.navigate("InboundDetails",{shipmentDetails : item })
     }
 
     const RenderListItem = ({item, index}: any): JSX.Element => {
         return (<TouchableOpacity
-            onPress={navigateToInboundDetails}
+            onPress={()=>navigateToInboundDetails(item)}
             style={styles.itemView}
             key={index}>
             <Card>

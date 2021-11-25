@@ -68,9 +68,9 @@ const InboundReceiveDetail = () => {
             {
               receiptItemId: '',
               shipmentItemId: shipmentItem.shipmentItemId,
-              'container.id': shipmentItem['container.id'],
-              'product.id': shipmentItem['product.id'],
-              'binLocation.id': state.receiveLocation,
+              'container.id': shipmentItem['container.id']??"",
+              'product.id': shipmentItem['product.id']??"",
+              'binLocation.id': state.receiveLocation??"",
               recipient: '',
               quantityReceiving: state.quantityToReceive,
               cancelRemaining: cancelRemaining,
@@ -209,7 +209,7 @@ const InboundReceiveDetail = () => {
     const callback = (data: any) => {
       if (data?.error) {
         showPopup({
-          title: data.message ? 'internal location details' : null,
+          title: data.message ? 'internal location details' : "",
           message:
             data.error.message ??
             `Failed to load internal location value ${id}`,
