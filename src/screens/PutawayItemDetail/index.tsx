@@ -7,7 +7,7 @@ import {searchLocationByLocationNumber} from "../../redux/actions/locations";
 import {hideScreenLoading, showScreenLoading} from "../../redux/actions/main";
 import {connect, useDispatch, useSelector} from "react-redux";
 import {submitPutawayItem} from "../../redux/actions/putaways";
-import {useRoute} from "@react-navigation/native";
+import {useRoute, useNavigation} from "@react-navigation/native";
 import Button from "../../components/Button";
 import useEventListener from "../../hooks/useEventListener";
 import {searchProductGloballyAction} from "../../redux/actions/products";
@@ -18,6 +18,7 @@ const PutawayItemDetail = () => {
     const route = useRoute();
     const barcodeData = useEventListener();
     const dispatch = useDispatch();
+    const navigation = useNavigation()
     const location = useSelector((state: RootState) => state.mainReducer.currentLocation)
     const [state, setState] = useState<any>({
         error: null,
@@ -244,6 +245,9 @@ const PutawayItemDetail = () => {
                     message:'successfully submit',
                     positiveButton: {
                         text: 'ok',
+                        callback: () => {
+                            navigation.navigate('PutawayList');
+                        }
                     },
                 });
             }
@@ -267,67 +271,43 @@ const PutawayItemDetail = () => {
     }
     return (
         <View style={styles.contentContainer}>
-            <View style={styles.row}>
-                <View style={styles.col40}>
-                    <Text style={styles.title}>Status</Text>
-                </View>
-                <View style={styles.col60}>
+            <View style={styles.rowItem}>
+                <View style={styles.columnItem}>
+                    <Text style={styles.label}>{'Status'}</Text>
                     <Text style={styles.value}>{state.putAway?.putawayStatus}</Text>
                 </View>
-            </View>
-            <View style={styles.row}>
-                <View style={styles.col40}>
-                    <Text style={styles.title}>Putaway Number</Text>
-                </View>
-                <View style={styles.col60}>
+                <View style={styles.columnItem}>
+                    <Text style={styles.label}>{'Putaway Number'}</Text>
                     <Text style={styles.value}>{state.putAway?.putawayNumber}</Text>
                 </View>
             </View>
-            <View style={styles.row}>
-                <View style={styles.col40}>
-                    <Text style={styles.title}>Product Code</Text>
-                </View>
-                <View style={styles.col60}>
+            <View style={styles.rowItem}>
+                <View style={styles.columnItem}>
+                    <Text style={styles.label}>{'Product Code'}</Text>
                     <Text style={styles.value}>{state.putAwayItem?.["product.productCode"]}</Text>
                 </View>
-            </View>
-            <View style={styles.row}>
-                <View style={styles.col40}>
-                    <Text style={styles.title}>Product Name</Text>
-                </View>
-                <View style={styles.col60}>
+                <View style={styles.columnItem}>
+                    <Text style={styles.label}>{'Product Name'}</Text>
                     <Text style={styles.value}>{state.putAwayItem?.["product.name"]}</Text>
                 </View>
             </View>
-            <View style={styles.row}>
-                <View style={styles.col40}>
-                    <Text style={styles.title}>Current Location</Text>
+            <View style={styles.rowItem}>
+                <View style={styles.columnItem}>
+                    <Text style={styles.label}>{'Current Location'}</Text>
+                    <Text style={styles.value}>{state.putAway?.putawayStatus}</Text>
                 </View>
-                <View style={styles.col60}>
-                    <Text style={styles.value}>{state.putAwayItem?.["currentLocation.name"]}</Text>
-                </View>
-            </View>
-            <View style={styles.row}>
-                <View style={styles.col40}>
-                    <Text style={styles.title}>Putaway Location</Text>
-                </View>
-                <View style={styles.col60}>
+                <View style={styles.columnItem}>
+                    <Text style={styles.label}>{'Putaway Location'}</Text>
                     <Text style={styles.value}>{state.putAwayItem?.["putawayLocation.name"]}</Text>
                 </View>
             </View>
-            <View style={styles.row}>
-                <View style={styles.col40}>
-                    <Text style={styles.title}>Preferred Location</Text>
-                </View>
-                <View style={styles.col60}>
+            <View style={styles.rowItem}>
+                <View style={styles.columnItem}>
+                    <Text style={styles.label}>Preferred Location</Text>
                     <Text style={styles.value}>{state.putAwayItem?.["preferredBin.name"]??'None'}</Text>
                 </View>
-            </View>
-            <View style={styles.row}>
-                <View style={styles.col40}>
-                    <Text style={styles.title}>Quantity</Text>
-                </View>
-                <View style={styles.col60}>
+                <View style={styles.columnItem}>
+                    <Text style={styles.label}>Quantity</Text>
                     <Text style={styles.value}>{state.putAwayItem?.["quantity"]}</Text>
                 </View>
             </View>
@@ -340,7 +320,7 @@ const PutawayItemDetail = () => {
                     label={'Product Code'}/>
                 <InputBox
                     value={state.binFromLocation}
-                    label={'From'}
+                    label={'Current Location'}
                     disabled={true}
                     onChange={onChangeFrom}
                     editable={false}
@@ -350,7 +330,7 @@ const PutawayItemDetail = () => {
                     disabled={true}
                     editable={false}
                     onChange={onChangeBin}
-                    label={'To'}/>
+                    label={'Putaway Location'}/>
                 <InputBox
                     label={'Quantity to transfer'}
                     value={state.quantity}
@@ -358,7 +338,7 @@ const PutawayItemDetail = () => {
                     onChange={onChangeQuantity}
                     disabled={true}
                     keyboard={"number-pad"}
-                    showSelect={true}/>
+                    />
             </View>
             <View>
                 <Button
