@@ -36,7 +36,6 @@ const PutawayItemDetail = () => {
 
 
     useEffect(() => {
-        console.log(putAway,putAwayItem)
         setState({
             ...state,
             putAway: putAway,
@@ -245,7 +244,7 @@ const PutawayItemDetail = () => {
                     message:'successfully submit',
                     positiveButton: {
                         text: 'ok',
-                                            },
+                    },
                 });
             }
         }
@@ -321,7 +320,7 @@ const PutawayItemDetail = () => {
                     <Text style={styles.title}>Preferred Location</Text>
                 </View>
                 <View style={styles.col60}>
-                    <Text style={styles.value}>{state.putAwayItem?.["preferredBin.name"]}</Text>
+                    <Text style={styles.value}>{state.putAwayItem?.["preferredBin.name"]??'None'}</Text>
                 </View>
             </View>
             <View style={styles.row}>
@@ -363,7 +362,7 @@ const PutawayItemDetail = () => {
             </View>
             <View>
                 <Button
-                    title="Submit"
+                    title="Putaway"
                     style={{
                         marginTop: 8,
                     }}
