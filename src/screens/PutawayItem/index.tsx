@@ -57,6 +57,7 @@ class PutawayItem extends Component <Props, State> {
         }
 
         createPutawayOderAction(data, ()=>{
+            console.log("data", data);
             Alert.alert("Order created successfully");
         })
     }
@@ -65,6 +66,9 @@ class PutawayItem extends Component <Props, State> {
         const {item} = this.props.route.params
         const {locations} = this.props
         const {quantity} = this.state
+
+        console.log(item);
+        console.log(item.quantity);
         return (
             <View style={styles.container}>
                 <View style={{flex: 1}}>
@@ -78,20 +82,26 @@ class PutawayItem extends Component <Props, State> {
                     </View>
                     <View style={styles.row}>
                         <Text>Lot Number</Text>
-                        <TextInput value={item['inventoryItem.lotNumber']}/>
+                        <TextInput value={item['inventoryItem.lotNumber']??'Default'}/>
                     </View>
-
-                    <SelectDropdown
-                        data={locations}
-                        onSelect={(selectedLocation) => {
-                            this.setState({selectedLocation})
-                        }}
-                        defaultButtonText={"Select Location"}
-                        renderDropdownIcon={() => <Image style={styles.arrowDownIcon} source={arrowDown}/>}
-                        buttonStyle={styles.select}
-                        buttonTextAfterSelection={(selectedLocation, index) => selectedLocation.name}
-                        rowTextForSelection={(selectedLocation, index) => selectedLocation.name}
-                    />
+                    <View style={styles.row}>
+                        <Text>Current Location</Text>
+                        <TextInput value={item['currentLocation.name']??'Default'}/>
+                    </View>
+                    <View style={styles.row}>
+                        <Text>Putaway Location</Text>
+                        <SelectDropdown
+                            data={locations}
+                            onSelect={(selectedLocation) => {
+                                this.setState({selectedLocation})
+                            }}
+                            defaultButtonText={"Select Putaway Location"}
+                            renderDropdownIcon={() => <Image style={styles.arrowDownIcon} source={arrowDown}/>}
+                            buttonStyle={styles.select}
+                            buttonTextAfterSelection={(selectedLocation, index) => selectedLocation.name}
+                            rowTextForSelection={(selectedLocation, index) => selectedLocation.name}
+                        />
+                    </View>
                     <View style={styles.row}>
                         <Text>Quantity</Text>
                         <View style={styles.quantityBox}>
