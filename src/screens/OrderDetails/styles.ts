@@ -141,6 +141,7 @@ export default StyleSheet.create({
     // borderBottomWidth: 1,
     marginTop: 1,
     padding: 2,
+    border: 0,
     width: '100%',
   },
   col50: {

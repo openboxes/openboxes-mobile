@@ -58,6 +58,7 @@ class PutawayItem extends Component <Props, State> {
         }
 
         createPutawayOderAction(data, ()=>{
+            console.log("data", data);
             Alert.alert("Order created successfully");
         })
     }
@@ -66,6 +67,9 @@ class PutawayItem extends Component <Props, State> {
         const {item} = this.props.route.params
         const {locations} = this.props;
         const {quantity} = this.state
+
+        console.log(item);
+        console.log(item.quantity);
         return (
             <View style={styles.container}>
                 <View style={{flex: 1}}>
@@ -79,9 +83,15 @@ class PutawayItem extends Component <Props, State> {
                     </View>
                     <View style={styles.row}>
                         <Text>Lot Number</Text>
-                        <TextInput value={item['inventoryItem.lotNumber']}/>
+                        <TextInput value={item['inventoryItem.lotNumber']??'Default'}/>
                     </View>
-                    <AutoInputInternalLocation
+                    <View style={styles.row}>
+                        <Text>Current Location</Text>
+                        <TextInput value={item['currentLocation.name']??'Default'}/>
+                    </View>
+                    <View style={styles.row}>
+                        <Text>Putaway Location</Text>
+                        <AutoInputInternalLocation
                         label="AutoInputInternalContainer"
                         data={locations.map(({ name }) => name)}
                         getMoreData={(d: any) => console.log('get More data api call', d)} // for calling api for more results
@@ -90,6 +100,7 @@ class PutawayItem extends Component <Props, State> {
                             this.setState({selectedLocation})
                         }}
                     />
+                    </View>
                     <View style={styles.row}>
                         <Text>Quantity</Text>
                         <View style={styles.quantityBox}>

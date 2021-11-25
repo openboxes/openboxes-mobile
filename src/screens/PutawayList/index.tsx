@@ -246,12 +246,12 @@ function renderPutAway(putAway: PutAway): ReactElement {
             style={styles.listItemContainer}>
             <View style={styles.row}>
                 <View style={styles.col50}>
-                    <Text style={styles.label}>Status</Text>
-                    <Text style={styles.value}>{putAway?.putawayStatus}</Text>
-                </View>
-                <View style={styles.col50}>
                     <Text style={styles.label}>PutAway Number</Text>
                     <Text style={styles.value}>{putAway?.putawayNumber}</Text>
+                </View>
+                <View style={styles.col50}>
+                    <Text style={styles.label}>Status</Text>
+                    <Text style={styles.value}>{putAway?.putawayStatus}</Text>
                 </View>
 
             </View>
