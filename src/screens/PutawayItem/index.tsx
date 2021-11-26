@@ -1,18 +1,10 @@
+/* eslint-disable no-shadow */
 /* eslint-disable react-native/no-inline-styles */
 import React, {Component} from 'react';
-import {Props, State} from './types';
-import {
-  TextInput,
-  View,
-  Text,
-  Image,
-  Button,
-  Alert,
-  ToastAndroid,
-} from 'react-native';
+import {Props, State, DispatchProps} from './types';
+import {TextInput, View, Text, Image, Button, ToastAndroid} from 'react-native';
 import SelectDropdown from 'react-native-select-dropdown';
 import {RootState} from '../../redux/reducers';
-import {DispatchProps} from './types';
 import styles from './styles';
 import {hideScreenLoading, showScreenLoading} from '../../redux/actions/main';
 import {connect} from 'react-redux';
@@ -52,7 +44,7 @@ class PutawayItem extends Component<Props, State> {
           putawayStatus: 'PENDING',
           'product.id': item['product.id'],
           'inventoryItem.id': item['inventoryItem.id'],
-          'putawayFacility.id': SelectedLocation?.id,
+          'putawayFacility.id': SelectedLocation.id,
           'currentLocation.id': item['currentLocation.id'],
           'putawayLocation.id': this.state?.selectedLocation?.id,
           quantity: this.state?.quantity,
@@ -62,7 +54,10 @@ class PutawayItem extends Component<Props, State> {
       sortBy: null,
     };
     createPutawayOderAction(data, () => {
+      console.log('data ::', data);
       ToastAndroid.show('Order created successfully', ToastAndroid.SHORT);
+      this.props.navigation.goBack();
+      this.props.route.params.onRefresh();
     });
   };
 
@@ -119,15 +114,20 @@ class PutawayItem extends Component<Props, State> {
                 style={styles.quantityInput}
                 keyboardType="number-pad"
                 value={quantity}
-                onChangeText={quantity => {
-                  this.setState({quantity});
+                onChangeText={changeQuantity => {
+                  this.setState({quantity: changeQuantity});
                 }}
               />
               <Text style={styles.quantityText}>{`/ ${item.quantity}`}</Text>
             </View>
           </View>
         </View>
-       
+        <Button
+          disabled={this.state?.selectedLocation?.id ? false : true}
+          style={{padding: 20}}
+          title={'Create Putaway'}
+          onPress={this.create}
+        />
       </View>
     );
   }

@@ -15,6 +15,7 @@ class PutawayCandidates extends Component<Props> {
   }
 
   getScreenData = () => {
+    console.log('get screen data');
     const {SelectedLocation} = this.props;
     this.props.getCandidates(SelectedLocation.id);
   };
@@ -27,7 +28,10 @@ class PutawayCandidates extends Component<Props> {
           if (item.id) {
             Alert.alert('Item is already in a pending putaway');
           } else {
-            this.props.navigation.navigate('PutawayItem', {item});
+          this.props.navigation.navigate('PutawayItem', {
+            item,
+            onRefresh: this.getScreenData,
+          });
           }
         }}>
         <Text>{`Status - ${item['putawayStatus']}`}</Text>
