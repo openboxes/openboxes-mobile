@@ -97,11 +97,12 @@ const AdjustStock = () => {
   });
   useEffect(() => {
     let reasonList: any = [];
-    reasonCodes.map(item => {
+    reasonCodes.forEach(function (item) {
       reasonList.push(item.name);
     });
     state.reasonCodeList = reasonList;
     setState({...state});
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onSave = () => {
