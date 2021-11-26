@@ -1,14 +1,12 @@
-/* eslint-disable no-shadow */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
-import {DispatchProps, Props, State} from './types';
 import React, {useEffect, useState} from 'react';
-import {TouchableOpacity, View, Text, TextInput} from 'react-native';
+import {View, Text} from 'react-native';
 import styles from './styles';
 import showPopup from '../../components/Popup';
 import {searchLocationByLocationNumber} from '../../redux/actions/locations';
-import {hideScreenLoading, showScreenLoading} from '../../redux/actions/main';
-import {connect, useDispatch, useSelector} from 'react-redux';
+import {hideScreenLoading} from '../../redux/actions/main';
+import {useDispatch, useSelector} from 'react-redux';
 import {submitPutawayItem} from '../../redux/actions/putaways';
 import {useRoute} from '@react-navigation/native';
 import Button from '../../components/Button';
@@ -38,8 +36,6 @@ const PutawayItemDetail = () => {
     quantity: '0',
   });
   const {putAway, putAwayItem}: any = route.params;
-  console.log('PUT AWAY ::', JSON.stringify(putAway));
-  console.log('PUT AWAY ITEM ::', JSON.stringify(putAwayItem));
   useEffect(() => {
     setState({
       ...state,
@@ -51,7 +47,6 @@ const PutawayItemDetail = () => {
       binToLocation: putAwayItem?.['putawayLocation.name'],
     });
   }, []);
-  console.log('STATE ::', JSON.stringify(state));
   useEffect(() => {
     if (barcodeData && Object.keys(barcodeData).length !== 0) {
       onBarCodeScanned(barcodeData.data);
@@ -99,7 +94,6 @@ const PutawayItemDetail = () => {
             searchProductGloballyAction,
           );
         } else {
-          console.log(data);
           if (data.length == 0) {
             showPopup({
               message: `No search results found for product name "${query}"`,
@@ -139,7 +133,6 @@ const PutawayItemDetail = () => {
               positiveButton: {text: 'Ok'},
             });
           } else {
-            console.log(data);
             if (data && Object.keys(data).length !== 0) {
               if (
                 state.binToLocation === '' ||

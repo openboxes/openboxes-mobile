@@ -4,7 +4,6 @@ import {createDrawerNavigator} from '@react-navigation/drawer';
 import ChooseCurrentLocation from './ChooseCurrentLocation';
 import {Image} from 'react-native';
 import {colors} from '../constants';
-import InternalTransfer from './InternalTransfer';
 
 const Drawer = createDrawerNavigator();
 

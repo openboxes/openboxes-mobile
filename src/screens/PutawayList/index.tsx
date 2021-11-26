@@ -1,4 +1,4 @@
-import {DispatchProps, OwnProps, Props, StateProps, State} from './types';
+import {DispatchProps, Props, State} from './types';
 import React, {ReactElement} from 'react';
 // import Order from "../../../data/order/Order";
 import {getOrdersAction} from '../../redux/actions/orders';
@@ -10,7 +10,6 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import BarCodeSearchHeader from '../Products/BarCodeSearchHeader';
-
 import {connect} from 'react-redux';
 import {showScreenLoading, hideScreenLoading} from '../../redux/actions/main';
 import {RootState} from '../../redux/reducers';
@@ -19,12 +18,7 @@ import styles from './styles';
 import PutAwayItem from '../../components/PutAwayItem';
 import PutAwayItems from '../../data/putaway/PutAwayItems';
 import {fetchPutAwayFromOrderAction} from '../../redux/actions/putaways';
-import {Order} from '../../data/order/Order';
 import PutAway from '../../data/putaway/PutAway';
-import {PicklistItem} from '../../data/picklist/PicklistItem';
-import PickListItem from '../OrderDetails/PickListItem';
-import OrdersList from '../Orders/OrdersList';
-import PutawayDetail from '../../components/PutawayDetail';
 
 class PutawayList extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -74,8 +68,7 @@ class PutawayList extends React.Component<Props, State> {
           this.setState({
             error: 'No orders found',
           });
-        } else if (data.length == 1) {
-          console.log(333333333, data);
+        } else if (data.length === 1) {
           this.fetchPutAway(data[0]['id']);
           // this.setState({showList: true})
           // this.showPutAwayDetailsScreen(data[0])
@@ -95,7 +88,6 @@ class PutawayList extends React.Component<Props, State> {
 
   fetchPutAways = (query: any) => {
     const actionCallback = (data: any) => {
-      console.log(55555555555, data);
       if (!data || data?.error) {
         const title = data.error.message
           ? 'Failed to fetch PutAway Detail'

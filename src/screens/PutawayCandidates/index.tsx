@@ -1,9 +1,8 @@
 import React, {Component} from 'react';
-import {Props, State} from './types';
+import {Props, DispatchProps} from './types';
 import {FlatList, Text, TouchableOpacity, Alert} from 'react-native';
 import Refresh from '../../components/Refresh';
 import {RootState} from '../../redux/reducers';
-import {DispatchProps} from './types';
 import styles from './styles';
 import {hideScreenLoading, showScreenLoading} from '../../redux/actions/main';
 import {connect} from 'react-redux';
