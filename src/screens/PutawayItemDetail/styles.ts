@@ -152,4 +152,19 @@ export default StyleSheet.create({
     borderWidth: 2,
     borderColor: '#e7edd8',
   },
+  rowItem: {
+    flexDirection: 'row',
+    borderColor: Theme.colors.background,
+    marginTop: 1,
+    padding: 2,
+    marginStart: 4,
+    width: '100%',
+    alignItems: 'center',
+  },
+  columnItem: {
+    display: 'flex',
+    flexDirection: 'column',
+    flex: 0,
+    width: '50%',
+  },
 });
