@@ -1,38 +1,28 @@
 import React, {useState} from 'react';
-import { useDispatch, useSelector} from 'react-redux';
-import styles from './styles';;
-import { View,ScrollView } from 'react-native';
+import {useDispatch, useSelector} from 'react-redux';
+import styles from './styles';
+import {ScrollView, View} from 'react-native';
 import InputBox from '../../components/InputBox';
 import Button from "../../components/Button";
 import {RootState} from "../../redux/reducers";
-import {useNavigation, useRoute} from "@react-navigation/native";
+import {useRoute} from "@react-navigation/native";
 import {updateStockTransfer} from "../../redux/actions/transfers";
 import showPopup from "../../components/Popup";
 import {searchLocationByLocationNumber} from "../../redux/actions/locations";
 
+;
+
 
 const Transfer = () => {
     const route = useRoute();
-    const navigation = useNavigation()
     const {item}: any = route.params
-console.log(item)
-    const navigateToTransfer = () => {
-    }
+
     const dispatch = useDispatch();
     const location = useSelector((state: RootState) => state.mainReducer.currentLocation)
     const [state, setState] = useState<any>({
-        productCode: "",
-        lotNumber:"",
-        LotNumber:"",
-        From:"",
-        ExpirationDate:"",
-        binFromLocation:"",
         binToLocation: "",
-        binToLocationData:"",
+        binToLocationData: "",
         quantity: "0",
-        quantityToTransfer:"",
-        error: null,
-        searchProductCode: null,
     })
     const binLocationSearchQueryChange = (query: string) => {
         setState({
@@ -89,11 +79,11 @@ console.log(item)
     }
 
 
-    const onTransfer = () =>{
-        const request :any = {
+    const onTransfer = () => {
+        const request: any = {
             "status": "COMPLETED",
             "stockTransferNumber": "",
-            "description": "Test stock transfer from bin with quantity",
+            "description": "",
             "origin.id": location.id,
             "destination.id": location.id,
             "stockTransferItems": [{
@@ -104,93 +94,92 @@ console.log(item)
                 "destinationBinLocation.id": state.binToLocationData.id,
                 "quantity": state.quantity
             }
-                ]
+            ]
         }
         const actionCallback = (data: any) => {
-        if (data?.error) {
-            showPopup({
-                title: 'Failed to submit' ,
-                message: 'Failed to submit',
-                positiveButton: {
-                    text: 'Retry',
-                    callback:()=>{
-                        dispatch(updateStockTransfer(request,actionCallback));
-                    }
-                },
-                negativeButtonText: 'Cancel',
-            });
-        } else {
-            showPopup({
-                title: 'Submit' ,
-                message:'Successfully submit',
-                positiveButton: {
-                    text: 'ok',
-                },
-            });
+            if (data?.error) {
+                showPopup({
+                    title:  data.errorMessage ? 'Submit' : "Error",
+                    message: 'Failed to submit',
+                    positiveButton: {
+                        text: 'Retry',
+                        callback: () => {
+                            dispatch(updateStockTransfer(request, actionCallback));
+                        }
+                    },
+                    negativeButtonText: 'Cancel',
+                });
+            } else {
+                showPopup({
+                    title: 'Submit',
+                    message: 'Successfully submit',
+                    positiveButton: {
+                        text: 'ok',
+                    },
+                });
+            }
         }
-    }
-       dispatch(updateStockTransfer(request,actionCallback));
+        dispatch(updateStockTransfer(request, actionCallback));
     }
 
     return (
         <ScrollView>
-        <View style={styles.container}>
-            <View style={styles.from}>
-                <InputBox
-                    value={item?.product.productCode}
-                    disabled={true}
-                    editable={false}
-                    label={'Product Code'}/>
-                <InputBox
-                    value={item?.inventoryItem.lotNumber ?? "Default"}
-                    disabled={true}
-                    editable={false}
-                    // onChange={onChangeProduct}
-                    label={'Lot Number'}/>
-                <InputBox
-                    value={item?.inventoryItem.expirationDate?? "Never" }
-                    disabled={true}
-                    editable={false}
-                    label={'Expiration Date'}/>
-                <InputBox
-                    value={item?.binLocation.name??"Never"}
-                    label={'From'}
-                    disabled={true}
-                    editable={false} />
+            <View style={styles.container}>
+                <View style={styles.from}>
+                    <InputBox
+                        value={item?.product.productCode}
+                        disabled={true}
+                        editable={false}
+                        label={'Product Code'}/>
+                    <InputBox
+                        value={item?.inventoryItem.lotNumber ?? "Default"}
+                        disabled={true}
+                        editable={false}
+                        label={'Lot Number'}/>
+                    <InputBox
+                        value={item?.inventoryItem.expirationDate ?? "Never"}
+                        disabled={true}
+                        editable={false}
+                        label={'Expiration Date'}/>
+                    <InputBox
+                        value={item?.binLocation.name ?? "Never"}
+                        label={'From'}
+                        disabled={true}
+                        editable={false}/>
                     <InputBox
                         label={'Quantity Available to Transfer'}
                         value={item?.quantityAvailableToPromise.toString()}
                         disabled={true}
                         editable={false}
-                        />
-                <InputBox
-                    label={'Quantity to transfer'}
-                    value={state.quantity}
-                    onChange={onChangeQuantity}
-                    disabled={false}
-                    editable={false}
-                    keyboard={"number-pad"}
                     />
-                <InputBox
-                    label={'Bin Location'}
-                    value={state.binToLocation}
-                    onEndEdit={binLocationSearchQueryChange}
-                    onChange={onChangeBin}
-                    disabled={false}
-                    editable={false}
-                    keyboard={"default"}
-                />
+                    <InputBox
+                        label={'Quantity to transfer'}
+                        value={state.quantity}
+                        onChange={onChangeQuantity}
+                        disabled={false}
+                        editable={false}
+                        keyboard={"number-pad"}
+                    />
+                    <InputBox
+                        label={'Bin Location'}
+                        value={state.binToLocation}
+                        onEndEdit={binLocationSearchQueryChange}
+                        onChange={onChangeBin}
+                        disabled={false}
+                        editable={false}
+                        keyboard={"default"}
+                    />
+                </View>
+                <View style={styles.bottom}>
+                    <Button
+                        title="TRANSFER"
+                        onPress={onTransfer}
+                        style={{
+                            marginTop: 8,
+                        }}
+                    />
+                </View>
             </View>
-            <View style={styles.bottom}>
-                <Button
-                    title="TRANSFER"
-                    onPress={onTransfer}
-                    style={{
-                        marginTop: 8,
-                    }}
-                />
-            </View>
-        </View>
         </ScrollView>
     );
 }

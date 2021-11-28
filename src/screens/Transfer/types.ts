@@ -1,7 +1,3 @@
-import Location from "../../data/location/Location";
-import {Dictionary} from "lodash";
-import {stockTransfersAction} from "../../redux/actions/transfers";
-
 export interface OwnProps {
     navigation: any;
 }
@@ -16,8 +12,8 @@ export interface DispatchProps {
     hideScreenLoading: () => void;
 }
 
-export type Props = OwnProps &  DispatchProps;
-
 export interface State {
     data: any
 }
+export type Props = OwnProps &  DispatchProps;
+
