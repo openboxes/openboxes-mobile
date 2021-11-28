@@ -15,7 +15,7 @@ const Transfer = () => {
     const route = useRoute();
     const {item}: any = route.params
     const dispatch = useDispatch();
-    const location = useSelector((state: RootState) => state.mainReducer.currentLocation)
+    const location = useSelector((rootState: RootState) => rootState.mainReducer.currentLocation)
     const [state, setState] = useState<any>({
         binToLocation: "",
         binToLocationData: "",
@@ -40,8 +40,8 @@ const Transfer = () => {
             return;
         }
 
-        const actionCallback = (location: any) => {
-            if (!location || location.error) {
+        const actionCallback = (locationData: any) => {
+            if (!locationData || locationData.error) {
                 showPopup({
                     message:
                         'Bin Location not found with LocationNumber:' +
@@ -55,11 +55,10 @@ const Transfer = () => {
                     binToLocation: '',
                     binLocationSearchQuery: '',
                 });
-                return;
-            } else if (location) {
+            } else if (locationData) {
                 setState({
                     ...state,
-                    binToLocationData: location,
+                    binToLocationData: locationData,
                     binLocationSearchQuery: '',
                 });
             }
