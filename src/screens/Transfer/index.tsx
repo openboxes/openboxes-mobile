@@ -10,13 +10,10 @@ import {updateStockTransfer} from "../../redux/actions/transfers";
 import showPopup from "../../components/Popup";
 import {searchLocationByLocationNumber} from "../../redux/actions/locations";
 
-;
-
 
 const Transfer = () => {
     const route = useRoute();
     const {item}: any = route.params
-
     const dispatch = useDispatch();
     const location = useSelector((state: RootState) => state.mainReducer.currentLocation)
     const [state, setState] = useState<any>({
