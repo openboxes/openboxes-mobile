@@ -1,12 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import React from 'react';
-import {
-    Image,
-    ScrollView,
-    Text,
-    View,
-    TouchableOpacity,
-} from 'react-native';
+import {Image, ScrollView, Text, View, TouchableOpacity} from 'react-native';
 import styles from './styles';
 import PrintModal from '../../components/PrintModal';
 import Refresh from '../../components/Refresh';
@@ -19,7 +13,7 @@ import showPopup from '../../components/Popup';
 import {RootState} from '../../redux/reducers';
 import {Card} from 'react-native-paper';
 import RenderData from '../../components/RenderData';
-import Button from "../../components/Button";
+import Button from '../../components/Button';
 
 class ProductDetails extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -88,7 +82,12 @@ class ProductDetails extends React.Component<Props, State> {
   }
 
   navigateToDetails = (item: any) => {
-    this.props.navigation.navigate('ViewAvailableItem', {item,imageUrl:this.state.productDetails?.defaultImageUrl ?? 'https://reactnative.dev/img/tiny_logo.png',});
+    this.props.navigation.navigate('ViewAvailableItem', {
+      item,
+      imageUrl:
+        this.state.productDetails?.defaultImageUrl ??
+        'https://reactnative.dev/img/tiny_logo.png',
+    });
   };
 
   renderListItem = (item: any, index: any) => (
@@ -137,7 +136,7 @@ class ProductDetails extends React.Component<Props, State> {
           visible={visible}
           closeModal={this.closeModal}
           product={product}
-          type={"products"}
+          type={'products'}
           defaultBarcodeLabelUrl={product?.defaultBarcodeLabelUrl}
         />
         <View style={styles.contentContainer}>

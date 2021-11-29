@@ -1,5 +1,3 @@
-/* eslint-disable react-native/no-inline-styles */
-/* eslint-disable no-shadow */
 import React, {Component} from 'react';
 import {Props, State} from './types';
 import {TextInput, View, Text, Button, Alert} from 'react-native';
@@ -12,9 +10,10 @@ import {getBinLocationsAction} from '../../redux/actions/locations';
 import {createPutawayOderAction} from '../../redux/actions/putaways';
 import AutoInputInternalLocation from '../../components/AutoInputInternalLocation';
 
-class PutawayItem extends Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
+class PutawayItem extends Component <Props, State> {
+
+    constructor(props: Props) {
+        super(props);
 
     this.state = {
       selectedLocation: null,
@@ -22,7 +21,7 @@ class PutawayItem extends Component<Props, State> {
     };
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.props.getBinLocationsAction();
   }
 
