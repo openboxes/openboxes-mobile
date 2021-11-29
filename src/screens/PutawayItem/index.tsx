@@ -1,7 +1,8 @@
+/* eslint-disable no-shadow */
+/* eslint-disable react-native/no-inline-styles */
 import React, {Component} from 'react';
 import {Props, State} from './types';
-import {TextInput, View, Text, Image, Button, Alert} from 'react-native';
-import SelectDropdown from 'react-native-select-dropdown';
+import {TextInput, View, Text, Button, Alert} from 'react-native';
 import {RootState} from '../../redux/reducers';
 import {DispatchProps} from './types';
 import styles from './styles';
@@ -9,8 +10,7 @@ import {hideScreenLoading, showScreenLoading} from '../../redux/actions/main';
 import {connect} from 'react-redux';
 import {getBinLocationsAction} from '../../redux/actions/locations';
 import {createPutawayOderAction} from '../../redux/actions/putaways';
-
-const arrowDown = require('../../assets/images/arrow-down.png');
+import AutoInputInternalLocation from '../../components/AutoInputInternalLocation';
 
 class PutawayItem extends Component<Props, State> {
   constructor(props: Props) {
@@ -55,7 +55,6 @@ class PutawayItem extends Component<Props, State> {
     };
 
     createPutawayOderAction(data, () => {
-      console.log('data', data);
       Alert.alert('Order created successfully');
     });
   };
@@ -64,9 +63,6 @@ class PutawayItem extends Component<Props, State> {
     const {item} = this.props.route.params;
     const {locations} = this.props;
     const {quantity} = this.state;
-
-    console.log(item);
-    console.log(item.quantity);
     return (
       <View style={styles.container}>
         <View style={{flex: 1}}>
@@ -88,22 +84,12 @@ class PutawayItem extends Component<Props, State> {
           </View>
           <View style={styles.row}>
             <Text>Putaway Location</Text>
-            <SelectDropdown
-              data={locations}
-              onSelect={selectedLocation => {
+            <AutoInputInternalLocation
+              label="AutoInputInternalContainer"
+              data={locations.map(({name}) => name)}
+              selectedData={(selectedLocation: any) => {
                 this.setState({selectedLocation});
               }}
-              defaultButtonText={'Select Putaway Location'}
-              renderDropdownIcon={() => (
-                <Image style={styles.arrowDownIcon} source={arrowDown} />
-              )}
-              buttonStyle={styles.select}
-              buttonTextAfterSelection={(selectedLocation, index) =>
-                selectedLocation.name
-              }
-              rowTextForSelection={(selectedLocation, index) =>
-                selectedLocation.name
-              }
             />
           </View>
           <View style={styles.row}>
@@ -122,8 +108,8 @@ class PutawayItem extends Component<Props, State> {
           </View>
         </View>
         <Button
-          style={{padding: 20}}
           title={'Create Putaway'}
+          style={{padding: 20}}
           onPress={this.create}
         />
       </View>
