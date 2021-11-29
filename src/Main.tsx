@@ -44,8 +44,8 @@ import ProductSummary from './screens/ProductSummary';
 import AdjustStock from './screens/AdjustStock';
 import ShipItemDetails from './screens/ShipItemDetails';
 import ApiClient from './utils/ApiClient';
-import OptionMenu from "./components/OptionMenu";
-import ViewAvailableItem from "./screens/ViewAvailableItem";
+import OptionMenu from './components/OptionMenu';
+import ViewAvailableItem from './screens/ViewAvailableItem';
 // import PutawayDetails from "./screens/PutawayDetails";
 
 const Stack = createStackNavigator();
@@ -145,7 +145,7 @@ class Main extends Component<Props, State> {
             initialRouteName={initialRouteName}
             screenOptions={({route, navigation}) => ({
               headerRight: () => (
-                    <OptionMenu route={route}/>
+                <OptionMenu route={route} navigation={navigation} />
               ),
               headerTintColor: '#ffffff',
               headerStyle: {
@@ -204,8 +204,14 @@ class Main extends Component<Props, State> {
             />
             <Stack.Screen name="AdjustStock" component={AdjustStock} />
             <Stack.Screen name="ShipmentDetails" component={ShipItemDetails} />
-            <Stack.Screen name="InternalLocationDetail" component={InternalLocationDetails} />
-            <Stack.Screen name={"ViewAvailableItem"} component={ViewAvailableItem}/>
+            <Stack.Screen
+              name="InternalLocationDetail"
+              component={InternalLocationDetails}
+            />
+            <Stack.Screen
+              name={'ViewAvailableItem'}
+              component={ViewAvailableItem}
+            />
             {/*<Stack.Screen name="Drawer" component={DrawerNavigator} />*/}
             {/*<Stack.Screen name="Drawer" component={DrawerNavigator} />*/}
           </Stack.Navigator>
