@@ -1,8 +1,7 @@
 /* eslint-disable no-shadow */
-/* eslint-disable react-native/no-inline-styles */
 import React, {Component} from 'react';
 import {Props, State} from './types';
-import {TextInput, View, Text, Button, Alert} from 'react-native';
+import {TextInput, View, Text, Button, ToastAndroid} from 'react-native';
 import {RootState} from '../../redux/reducers';
 import {DispatchProps} from './types';
 import styles from './styles';
@@ -35,27 +34,26 @@ class PutawayItem extends Component<Props, State> {
       putawayStatus: 'PENDING',
       putawayDate: '',
       putawayAssignee: '',
-      'origin.id': SelectedLocation.id,
+      'origin.id': SelectedLocation?.id,
       // "origin.name": "Main Warehouse",
-      'destination.id': SelectedLocation.id,
+      'destination.id': SelectedLocation?.id,
       // "destination.name": "Main Warehouse",
       putawayItems: [
         {
           putawayStatus: 'PENDING',
           'product.id': item['product.id'],
           'inventoryItem.id': item['inventoryItem.id'],
-          'putawayFacility.id': SelectedLocation.id,
+          'putawayFacility.id': SelectedLocation?.id,
           'currentLocation.id': item['currentLocation.id'],
-          'putawayLocation.id': this.state.selectedLocation.id,
-          quantity: this.state.quantity,
+          'putawayLocation.id': this.state?.selectedLocation?.id,
+          quantity: this.state?.quantity,
         },
       ],
       'orderedBy.id': '',
       sortBy: null,
     };
-
     createPutawayOderAction(data, () => {
-      Alert.alert('Order created successfully');
+      ToastAndroid.show('Order created successfully', ToastAndroid.SHORT);
     });
   };
 
@@ -65,7 +63,7 @@ class PutawayItem extends Component<Props, State> {
     const {quantity} = this.state;
     return (
       <View style={styles.container}>
-        <View style={{flex: 1}}>
+        <View style={styles.childContainer}>
           <View style={styles.row}>
             <Text>Product Code</Text>
             <TextInput value={item['product.productCode']} />
@@ -109,7 +107,7 @@ class PutawayItem extends Component<Props, State> {
         </View>
         <Button
           title={'Create Putaway'}
-          style={{padding: 20}}
+          style={styles.buttonContainer}
           onPress={this.create}
         />
       </View>

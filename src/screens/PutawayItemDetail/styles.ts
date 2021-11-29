@@ -3,21 +3,21 @@ import Theme from '../../utils/Theme';
 
 export default StyleSheet.create({
   contentContainer: {
-    display: "flex",
+    display: 'flex',
     flex: 1,
-    flexDirection: "column",
+    flexDirection: 'column',
     padding: 8,
   },
   from:{
-    flex: 1
+    flex: 1,
   },
   name: {
     fontSize: 17,
     color: Theme.colors.text,
-    fontWeight: "bold",
-    textAlign: "center",
-    display: "flex",
-    flexDirection: "column",
+    fontWeight: 'bold',
+    textAlign: 'center',
+    display: 'flex',
+    flexDirection: 'column',
     flex: 0,
     marginStart: 4,
 
@@ -25,125 +25,107 @@ export default StyleSheet.create({
   emptyRow: {
     flexDirection: 'row',
     borderColor: Theme.colors.onBackground,
-    // borderBottomWidth: 1,
-    // marginTop: 1,
-    // padding: 2,
     width: '100%',
     height: 20,
   },
   topRow: {
     flexDirection: 'row',
     borderColor: Theme.colors.onBackground,
-    // borderBottomWidth: 1,
-    // marginTop: 1,
-    // padding: 2,
     width: '100%',
     borderLeftWidth: 0,
     borderTopWidth: 0,
-    borderTopColor: "black",
+    borderTopColor: 'black',
     borderBottomWidth: 0,
-    borderBottomColor: "black",
+    borderBottomColor: 'black',
     borderRightWidth: 0,
-    borderRightColor: "black",
-    textAlign: "center"
+    borderRightColor: 'black',
+    textAlign: 'center',
 
   },
   row: {
     flexDirection: 'row',
     borderColor: Theme.colors.onBackground,
-    // borderBottomWidth: 1,
-    // marginTop: 1,
-    // padding: 2,
     width: '100%',
     borderLeftWidth: 0,
-    borderLeftColor: "black",
+    borderLeftColor: 'black',
     borderBottomWidth: 0,
-    borderBottomColor: "black",
+    borderBottomColor: 'black',
     borderRightWidth: 0,
-    borderRightColor: "black"
+    borderRightColor: 'black',
   },
   col30: {
-    display: "flex",
-    flexDirection: "column",
+    display: 'flex',
+    flexDirection: 'column',
     flex: 0,
     marginStart: 4,
-    width: "30%",
+    width: '30%',
     borderRightWidth: 0,
-    borderRightColor: "black"
+    borderRightColor: 'black',
 
   },
   col40: {
-    display: "flex",
-    flexDirection: "column",
+    display: 'flex',
+    flexDirection: 'column',
     flex: 0,
     marginStart: 4,
-    width: "40%",
+    width: '40%',
     borderRightWidth: 0,
-    borderRightColor: "black",
+    borderRightColor: 'black',
     justifyContent: 'center', //Centered horizontally
-    // alignItems: 'center', //Centered vertically
-
   },
   col50: {
-    display: "flex",
-    flexDirection: "column",
+    display: 'flex',
+    flexDirection: 'column',
     flex: 0,
     marginStart: 4,
-    width: "50%",
+    width: '50%',
     borderRightWidth: 1,
-    borderRightColor: "black"
+    borderRightColor: 'black',
 
   },
   col60: {
-    display: "flex",
-    flexDirection: "column",
+    display: 'flex',
+    flexDirection: 'column',
     flex: 0,
     marginStart: 4,
-    width: "60%",
-    // borderRightWidth:1,
-    // borderRightColor:"black"
-
+    width: '60%',
   },
   col70: {
-    display: "flex",
-    flexDirection: "column",
+    display: 'flex',
+    flexDirection: 'column',
     flex: 0,
     marginStart: 4,
-    width: "70%"
+    width: '70%',
 
   },
   col100: {
-    display: "flex",
-    flexDirection: "column",
+    display: 'flex',
+    flexDirection: 'column',
     flex: 0,
     marginStart: 4,
-    width: "100%"
+    width: '100%',
   },
   width100:{
-    width: "100%"
+    width: '100%',
   },
   label: {
     fontSize: 12,
     color: Theme.colors.placeholder,
-    width: "30%"
+    width: '30%',
 
   },
   title: {
     fontSize: 16,
     color: Theme.colors.text,
-    fontWeight:"bold",
+    fontWeight:'bold',
   },
   value: {
     fontSize: 16,
     color: Theme.colors.text,
-    // justifyContent: 'center'
-    // width: "70%"
   },
   info: {
     fontSize: 12,
-    color: "#000000",
-    // justifyContent: 'center'
-    // width: "70%"
+    color: '#000000',
   },
   textInput: {
     fontSize: 16,
@@ -166,5 +148,8 @@ export default StyleSheet.create({
     flexDirection: 'column',
     flex: 0,
     width: '50%',
+  },
+  buttonContainer: {
+    marginTop: 8,
   },
 });
