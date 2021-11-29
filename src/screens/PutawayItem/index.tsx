@@ -1,10 +1,11 @@
 /* eslint-disable no-shadow */
 /* eslint-disable react-native/no-inline-styles */
 import React, {Component} from 'react';
-import {Props, State, DispatchProps} from './types';
-import {TextInput, View, Text, Image, Button, ToastAndroid} from 'react-native';
+import {Props, State} from './types';
+import {TextInput, View, Text, Image, ToastAndroid} from 'react-native';
 import SelectDropdown from 'react-native-select-dropdown';
 import {RootState} from '../../redux/reducers';
+import {DispatchProps} from './types';
 import styles from './styles';
 import {hideScreenLoading, showScreenLoading} from '../../redux/actions/main';
 import {connect} from 'react-redux';
@@ -23,41 +24,38 @@ class PutawayItem extends Component<Props, State> {
     };
   }
 
-  UNSAFE_componentWillMount() {
+  componentWillMount() {
     this.props.getBinLocationsAction();
   }
 
   create = () => {
     const {SelectedLocation, createPutawayOderAction} = this.props;
     const {item} = this.props.route.params;
-    const {currentLocation} = this.props;
     const data = {
       putawayNumber: '',
       putawayStatus: 'PENDING',
       putawayDate: '',
       putawayAssignee: '',
-      'origin.id': SelectedLocation.id,
+      'origin.id': SelectedLocation?.id,
       // "origin.name": "Main Warehouse",
-      'destination.id': SelectedLocation.id,
+      'destination.id': SelectedLocation?.id,
       // "destination.name": "Main Warehouse",
       putawayItems: [
         {
           putawayStatus: 'PENDING',
           'product.id': item['product.id'],
           'inventoryItem.id': item['inventoryItem.id'],
-          'putawayFacility.id': SelectedLocation.id,
+          'putawayFacility.id': SelectedLocation?.id,
           'currentLocation.id': item['currentLocation.id'],
-          'putawayLocation.id': this.state.selectedLocation.id,
-          quantity: this.state.quantity,
+          'putawayLocation.id': this.state?.selectedLocation?.id,
+          quantity: this.state?.quantity,
         },
       ],
       'orderedBy.id': '',
       sortBy: null,
     };
-
     createPutawayOderAction(data, () => {
-      console.log('data', data);
-      Alert.alert('Order created successfully');
+      ToastAndroid.show('Order created successfully', ToastAndroid.SHORT);
     });
   };
 
@@ -122,11 +120,6 @@ class PutawayItem extends Component<Props, State> {
             </View>
           </View>
         </View>
-        <Button
-          style={{padding: 20}}
-          title={'Create Putaway'}
-          onPress={this.create}
-        />
       </View>
     );
   }
