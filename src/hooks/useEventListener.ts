@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React from 'react';
 import {DeviceEventEmitter} from 'react-native';
 import DataWedgeIntents from 'react-native-datawedge-intents';
@@ -32,29 +33,9 @@ const useEventListener = () => {
     data: {},
     sendCommandResult: 'false',
   });
-  React.useEffect(() => {
-    const callback = (intent: any) => {
-      setEvent(intent);
-      broadcastReceiver(intent);
-    };
-
-    DeviceEventEmitter.addListener(LISTENER.BROADCAST_INTENT, callback);
-    DeviceEventEmitter.addListener(LISTENER.BARCODE_SCAN, callback);
-    DeviceEventEmitter.addListener(LISTENER.ENUMERATED_SCANNER, callback);
-    registerBroadcastReceiver();
-    return () => {
-      DeviceEventEmitter.removeAllListeners();
-    };
-  }, [event]);
-
-  const registerBroadcastReceiver = () => {
-    DataWedgeIntents.registerBroadcastReceiver({
-      filterActions: FILTER_ACTIONS,
-      filterCategories: FILTER_CATEGORY,
-    });
-  };
-
   const broadcastReceiver = (intent: any) => {
+    //  Broadcast received
+    console.log('Received Intent: ' + JSON.stringify(intent));
     if (intent.hasOwnProperty(PROPERTY.RESULT_INFO)) {
       var commandResult =
         intent.RESULT +
@@ -70,7 +51,10 @@ const useEventListener = () => {
     if (intent.hasOwnProperty(PROPERTY.VERSION_INFO)) {
       //  The version has been returned (DW 6.3 or higher).  Includes the DW version along with other subsystem versions e.g MX
       var versionInfo = intent[PROPERTY.VERSION_INFO];
+      console.log('Version Info: ' + JSON.stringify(versionInfo));
       var datawedgeVersion = versionInfo[PROPERTY.DATAWEDGE];
+      console.log('Datawedge version: ' + datawedgeVersion);
+
       //  Fire events sequentially so the application can gracefully degrade the functionality available on earlier DW versions
       if (datawedgeVersion >= VERSION.V06_3) datawedge63();
       if (datawedgeVersion >= VERSION.V06_4) datawedge64();
@@ -89,42 +73,70 @@ const useEventListener = () => {
     }
   };
 
+  React.useEffect(() => {
+    const callback = (intent: any) => {
+      setEvent(intent);
+      broadcastReceiver(intent);
+    };
+
+    DeviceEventEmitter.addListener(LISTENER.BROADCAST_INTENT, callback);
+    DeviceEventEmitter.addListener(LISTENER.BARCODE_SCAN, callback);
+    DeviceEventEmitter.addListener(LISTENER.ENUMERATED_SCANNER, callback);
+    registerBroadcastReceiver();
+    return () => {
+      DeviceEventEmitter.removeAllListeners();
+    };
+  }, [broadcastReceiver, event]);
+
+  const registerBroadcastReceiver = () => {
+    console.log('registerBroadcastReceiver');
+    DataWedgeIntents.registerBroadcastReceiver({
+      filterActions: FILTER_ACTIONS,
+      filterCategories: FILTER_CATEGORY,
+    });
+  };
+
+
   const datawedge63 = () => {
+    console.log('Datawedge 6.3 APIs are available');
     //  Create a profile for our application
     sendCommand(PROFILE.CREATE_PROFILE, PROFILE.NAME);
 
-    state.dwVersionText =
-      '6.3.  Please configure profile manually.  See ReadMe for more details.';
+        state.dwVersionText = "6.3.  Please configure profile manually.  See ReadMe for more details.";
 
-    //  Although we created the profile we can only configure it with DW 6.4.
-    sendCommand(PROFILE.ACTIVE_PROFILE, '');
+        //  Although we created the profile we can only configure it with DW 6.4.
+        sendCommand(PROFILE.ACTIVE_PROFILE, "");
 
-    //  Enumerate the available scanners on the device
-    sendCommand(PROFILE.ENUMERATE_PROFILE, '');
+        //  Enumerate the available scanners on the device
+        sendCommand(PROFILE.ENUMERATE_PROFILE, "");
 
-    //  Functionality of the scan button is available
-    state.scanButtonVisible = true;
-  };
+        //  Functionality of the scan button is available
+        state.scanButtonVisible = true;
 
-  const datawedge64 = () => {
-    console.log('Datawedge 6.4 APIs are available');
-    //  Documentation states the ability to set a profile config is only available from DW 6.4.
-    //  For our purposes, this includes setting the decoders and configuring the associated app / output params of the profile.
-    state.dwVersionText = '6.4.';
-    //document.getElementById('info_datawedgeVersion').classList.remove("attention");
-    //  Decoders are now available
-    state.checkBoxesDisabled = false;
-    //  Configure the created profile (associated app and keyboard plugin)
-    sendCommand(PROFILE.SET_CONFIG_PROFILE, PROFILE_CONFIG);
-    //  Configure the created profile (intent plugin)
-    sendCommand(PROFILE.SET_CONFIG_PROFILE, PROFILE_CONFIG2);
-    //  Give some time for the profile to settle then query its value
-    setTimeout(() => {
-      sendCommand(PROFILE.ACTIVE_PROFILE, '');
-    }, 1000);
-  };
+    }
+
+    const datawedge64 = () => {
+        console.log("Datawedge 6.4 APIs are available");
+        //  Documentation states the ability to set a profile config is only available from DW 6.4.
+        //  For our purposes, this includes setting the decoders and configuring the associated app / output params of the profile.
+        state.dwVersionText = "6.4.";
+        //document.getElementById('info_datawedgeVersion').classList.remove("attention");
+        //  Decoders are now available
+        state.checkBoxesDisabled = false;
+        //  Configure the created profile (associated app and keyboard plugin)
+        sendCommand(PROFILE.SET_CONFIG_PROFILE, PROFILE_CONFIG);
+        //  Configure the created profile (intent plugin)
+        sendCommand(PROFILE.SET_CONFIG_PROFILE, PROFILE_CONFIG2);
+        //  Give some time for the profile to settle then query its value
+        setTimeout(() => {
+            sendCommand(PROFILE.ACTIVE_PROFILE, "");
+        }, 1000);
+    }
 
   const sendCommand = (extraName: string, extraValue: any) => {
+    console.log(
+      'Sending Command: ' + extraName + ', ' + JSON.stringify(extraValue),
+    );
     var broadcastExtras: any = {};
     broadcastExtras[extraName] = extraValue;
     broadcastExtras['SEND_RESULT'] = state.sendCommandResult;

@@ -6,6 +6,7 @@ import {colors} from '../constants';
 export interface Props extends ViewProps {
   title: string;
   onPress?: () => void;
+  disabled: boolean;
 }
 
 export default function Button(props: Props) {
@@ -21,8 +22,16 @@ export default function Button(props: Props) {
       <PaperButton
         onPress={props.onPress}
         mode="contained"
-        style={styles.viewStyle}
+        style={[
+          styles.viewStyle,
+          {
+            backgroundColor: props.disabled
+              ? colors.disabledBgColor
+              : colors.headerColor,
+          },
+        ]}
         labelStyle={styles.label}
+        disabled={props.disabled}
         compact={true}>
         {props.title}
       </PaperButton>

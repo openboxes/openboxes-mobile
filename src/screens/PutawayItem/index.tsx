@@ -23,21 +23,22 @@ class PutawayItem extends Component<Props, State> {
     };
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.props.getBinLocationsAction();
   }
 
   create = () => {
     const {SelectedLocation, createPutawayOderAction} = this.props;
     const {item} = this.props.route.params;
+    const {currentLocation} = this.props;
     const data = {
       putawayNumber: '',
       putawayStatus: 'PENDING',
       putawayDate: '',
       putawayAssignee: '',
-      'origin.id': SelectedLocation?.id,
+      'origin.id': SelectedLocation.id,
       // "origin.name": "Main Warehouse",
-      'destination.id': SelectedLocation?.id,
+      'destination.id': SelectedLocation.id,
       // "destination.name": "Main Warehouse",
       putawayItems: [
         {
@@ -46,18 +47,17 @@ class PutawayItem extends Component<Props, State> {
           'inventoryItem.id': item['inventoryItem.id'],
           'putawayFacility.id': SelectedLocation.id,
           'currentLocation.id': item['currentLocation.id'],
-          'putawayLocation.id': this.state?.selectedLocation?.id,
-          quantity: this.state?.quantity,
+          'putawayLocation.id': this.state.selectedLocation.id,
+          quantity: this.state.quantity,
         },
       ],
       'orderedBy.id': '',
       sortBy: null,
     };
+
     createPutawayOderAction(data, () => {
-      console.log('data ::', data);
-      ToastAndroid.show('Order created successfully', ToastAndroid.SHORT);
-      this.props.navigation.goBack();
-      this.props.route.params.onRefresh();
+      console.log('data', data);
+      Alert.alert('Order created successfully');
     });
   };
 
@@ -114,8 +114,8 @@ class PutawayItem extends Component<Props, State> {
                 style={styles.quantityInput}
                 keyboardType="number-pad"
                 value={quantity}
-                onChangeText={changeQuantity => {
-                  this.setState({quantity: changeQuantity});
+                onChangeText={quantity => {
+                  this.setState({quantity});
                 }}
               />
               <Text style={styles.quantityText}>{`/ ${item.quantity}`}</Text>
@@ -123,7 +123,6 @@ class PutawayItem extends Component<Props, State> {
           </View>
         </View>
         <Button
-          disabled={this.state?.selectedLocation?.id ? false : true}
           style={{padding: 20}}
           title={'Create Putaway'}
           onPress={this.create}

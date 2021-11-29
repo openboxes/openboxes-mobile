@@ -83,7 +83,7 @@ class Main extends Component<Props, State> {
     };
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     AsyncStorage.getItem('API_URL').then(value => {
       if (!value) {
         NavigationService.navigate('Settings');
