@@ -1,9 +1,9 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useState} from 'react';
-import {Text, View, Image} from 'react-native';
+import {Text, View} from 'react-native';
 import styles from './styles';
 import Button from '../../components/Button';
 
-import SelectDropdown from 'react-native-select-dropdown';
 import InputBox from '../../components/InputBox';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {useDispatch} from 'react-redux';
@@ -12,15 +12,7 @@ import {
   getShipmentPacking,
   submitShipmentDetails,
 } from '../../redux/actions/packing';
-
-const renderIcon = () => {
-  return (
-    <Image
-      style={styles.arrowDownIcon}
-      source={require('../../assets/images/arrow-down.png')}
-    />
-  );
-};
+import AutoInputInternalLocation from '../../components/AutoInputInternalLocation';
 
 const ShipItemDetails = () => {
   const route = useRoute();
@@ -37,6 +29,7 @@ const ShipItemDetails = () => {
     containerId: '',
     containerList: '',
   });
+  const [selectedContainerItem, setSelectedContainerItem] = useState<number>(0);
 
   useEffect(() => {
     getShipmentDetails(item.shipment.shipmentNumber);
@@ -91,9 +84,6 @@ const ShipItemDetails = () => {
           negativeButtonText: 'Cancel',
         });
       } else {
-        if (data && Object.keys(data).length !== 0) {
-          console.log(data);
-        }
         setState({...state});
         navigation.navigate('OutboundStockDetails', {
           shipmentId: item.shipment.id,
@@ -109,7 +99,6 @@ const ShipItemDetails = () => {
       quantityPicked: query,
     });
   };
-
   return (
     <View style={styles.contentContainer}>
       <View style={styles.rowItem}>
@@ -154,27 +143,23 @@ const ShipItemDetails = () => {
           <Text style={styles.value}>{item.quantityRemaining}</Text>
         </View>
       </View>
-      <View>
-        <Text>{'Container'}</Text>
-        <SelectDropdown
-          data={state.containerList}
-          onSelect={(selectedItem, index) => {
-            state.containerId = selectedItem;
-            const container = state.shipmentDetails.availableContainers[index];
-            setState({
-              ...state,
-              containerId: selectedItem,
-              container: container,
-            });
-            console.log(selectedItem, index);
-          }}
-          defaultValueByIndex={0}
-          renderDropdownIcon={renderIcon}
-          buttonStyle={styles.select}
-          buttonTextAfterSelection={(selectedItem, index) => selectedItem}
-          rowTextForSelection={(item, index) => item}
-        />
-      </View>
+      <Text>{'Container'}</Text>
+      <AutoInputInternalLocation
+        label="AutoInputInternalContainer"
+        data={state.containerList ? state.containerList : []}
+        selectedContainerItem={selectedContainerItem}
+        selectedData={(selectedItem: any, index: number) => {
+          setSelectedContainerItem(index);
+          state.containerId = selectedItem;
+          const container = state.shipmentDetails.availableContainers[index];
+          setState({
+            ...state,
+            containerId: selectedItem,
+            container: container,
+            selectedContainerItem: index,
+          });
+        }}
+      />
       <InputBox
         label={'Quantity to Pick'}
         value={state.quantityPicked}
