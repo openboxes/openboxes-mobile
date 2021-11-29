@@ -1,5 +1,3 @@
-/* eslint-disable react-native/no-inline-styles */
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useState} from 'react';
 import {View, Text} from 'react-native';
 import styles from './styles';
@@ -78,7 +76,6 @@ const PutawayItemDetail = () => {
     });
   };
   const onBarCodeScanned = (query: string) => {
-    // handleBarcodeScan(barcodeNo);
     if (!query) {
       showPopup({
         message: 'Search query is empty',
@@ -222,7 +219,6 @@ const PutawayItemDetail = () => {
       showPopup({
         title: errorTitle,
         message: errorMessage,
-        // positiveButtonText: "Retry",
         negativeButtonText: 'Cancel',
       });
       return Promise.resolve(null);
@@ -390,9 +386,7 @@ const PutawayItemDetail = () => {
       <View>
         <Button
           title="Putaway"
-          style={{
-            marginTop: 8,
-          }}
+          style={styles.buttonContainer}
           onPress={formSubmit}
           disabled={false}
         />

@@ -1,5 +1,4 @@
 /* eslint-disable no-shadow */
-/* eslint-disable react-native/no-inline-styles */
 import React, {Component} from 'react';
 import {Props, State} from './types';
 import {TextInput, View, Text, Button, ToastAndroid} from 'react-native';
@@ -64,7 +63,7 @@ class PutawayItem extends Component<Props, State> {
     const {quantity} = this.state;
     return (
       <View style={styles.container}>
-        <View style={{flex: 1}}>
+        <View style={styles.childContainer}>
           <View style={styles.row}>
             <Text>Product Code</Text>
             <TextInput value={item['product.productCode']} />
@@ -108,7 +107,7 @@ class PutawayItem extends Component<Props, State> {
         </View>
         <Button
           title={'Create Putaway'}
-          style={{padding: 20}}
+          style={styles.buttonContainer}
           onPress={this.create}
         />
       </View>

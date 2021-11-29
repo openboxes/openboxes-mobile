@@ -34,13 +34,6 @@ class DrawerNavigator extends Component {
         <Drawer.Screen
           name="Choose Current Location"
           component={ChooseCurrentLocation}
-          options={
-            {
-              // headerStyle: {
-              //     backgroundColor: '#f4511e',
-              // }
-            }
-          }
         />
       </Drawer.Navigator>
     );
