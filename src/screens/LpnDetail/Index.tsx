@@ -1,8 +1,7 @@
 import React from "react";
 import {DispatchProps, Props} from "./Types";
 import {Container} from "../../data/container/Container";
-import {FlatList, ListRenderItemInfo, StyleSheet, Text, TouchableOpacity, View,Image} from "react-native";
-import Theme from "../../utils/Theme";
+import {FlatList, ListRenderItemInfo, Text, TouchableOpacity, View,Image} from "react-native";
 import {ContainerShipmentItem} from "../../data/container/ContainerShipmentItem";
 import {fetchContainer, getContainer} from "../../redux/actions/lpn";
 import {getShipmentPacking} from "../../redux/actions/packing";
@@ -11,11 +10,10 @@ import styles from "./styles";
 import Button from "../../components/Button";
 import PrintModal from "../../components/PrintModal";
 import showPopup from "../../components/Popup";
-import {getProductByIdAction} from "../../redux/actions/products";
 import SelectDropdown from "react-native-select-dropdown";
 
 
-const containerStatus = ["Open", "Packing", "Packed", "Loaded"]
+const containerStatus = ['PACKING', 'PACKED', 'LOADED', 'UNLOADED', 'UNPACKING', 'UNPACKED'];
 const renderIcon = () => {
     return (
         <Image style={styles.arrowDownIcon} source={require('../../assets/images/arrow-down.png')}/>
