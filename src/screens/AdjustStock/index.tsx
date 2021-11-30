@@ -1,114 +1,108 @@
 /* eslint-disable no-shadow */
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import styles from './styles';
-import {Image, ScrollView, Text, View, ToastAndroid} from 'react-native';
+import { ScrollView, View, ToastAndroid } from 'react-native';
 import InputBox from '../../components/InputBox';
 import Button from '../../components/Button';
 import showPopup from '../../components/Popup';
-import {useNavigation, useRoute} from '@react-navigation/native';
-import SelectDropdown from 'react-native-select-dropdown';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import DropDown from "react-native-paper-dropdown";
 import RenderData from '../../components/RenderData';
-import {RootState} from '../../redux/reducers';
-import {stockAdjustments} from '../../redux/actions/products';
+import { RootState } from '../../redux/reducers';
+import { stockAdjustments } from '../../redux/actions/products';
 
 const reasonCodes = [
   {
-    id: 'CONSUMED',
-    name: 'Consumed',
-    sortOrder: 24,
+    value: '',
+    label: ' ',
+    sortOrder: 0
   },
   {
-    id: 'CORRECTION',
-    name: 'Correction',
-    sortOrder: 30,
+    value: 'CONSUMED',
+    label: 'Consumed',
+    sortOrder: 24
   },
   {
-    id: 'DAMAGED',
-    name: 'Damaged product',
-    sortOrder: 4,
+    value: 'CORRECTION',
+    label: 'Correction',
+    sortOrder: 30
   },
   {
-    id: 'DATA_ENTRY_ERROR',
-    name: 'Data entry error',
-    sortOrder: 16,
+    value: 'DAMAGED',
+    label: 'Damaged product',
+    sortOrder: 4
   },
   {
-    id: 'EXPIRED',
-    name: 'Expired product',
-    sortOrder: 3,
+    value: 'DATA_ENTRY_ERROR',
+    label: 'Data entry error',
+    sortOrder: 16
   },
   {
-    id: 'FOUND',
-    name: 'Found',
-    sortOrder: 26,
+    value: 'EXPIRED',
+    label: 'Expired product',
+    sortOrder: 3
   },
   {
-    id: 'MISSING',
-    name: 'Missing',
-    sortOrder: 27,
+    value: 'FOUND',
+    label: 'Found',
+    sortOrder: 26
   },
   {
-    id: 'RECOUNTED',
-    name: 'Recounted',
-    sortOrder: 29,
+    value: 'MISSING',
+    label: 'Missing',
+    sortOrder: 27
   },
   {
-    id: 'REJECTED',
-    name: 'Rejected',
-    sortOrder: 32,
+    value: 'RECOUNTED',
+    label: 'Recounted',
+    sortOrder: 29
   },
   {
-    id: 'RETURNED',
-    name: 'Returned',
-    sortOrder: 25,
+    value: 'REJECTED',
+    label: 'Rejected',
+    sortOrder: 32
   },
   {
-    id: 'SCRAPPED',
-    name: 'Scrapped',
-    sortOrder: 31,
+    value: 'RETURNED',
+    label: 'Returned',
+    sortOrder: 25
   },
   {
-    id: 'STOLEN',
-    name: 'Stolen',
-    sortOrder: 28,
+    value: 'SCRAPPED',
+    label: 'Scrapped',
+    sortOrder: 31
   },
   {
-    id: 'OTHER',
-    name: 'Other',
-    sortOrder: 100,
+    value: 'STOLEN',
+    label: 'Stolen',
+    sortOrder: 28
   },
+  {
+    value: 'OTHER',
+    label: 'Other',
+    sortOrder: 100
+  }
 ];
 
 const AdjustStock = () => {
   const dispatch = useDispatch();
   const route = useRoute();
-  const {item}: any = route.params;
+  const { item }: any = route.params;
   const navigation = useNavigation();
   const location = useSelector(
     (state: RootState) => state.mainReducer.currentLocation,
   );
-  const [state, setState] = useState<any>({
-    comments: '',
-    quantityAdjusted: '',
-    reasonCode: '',
-    reasonCodeList: [],
-    error: null,
-  });
-  useEffect(() => {
-    let reasonList: any = [];
-    reasonCodes.forEach(function (item) {
-      reasonList.push(item.name);
-    });
-    state.reasonCodeList = reasonList;
-    setState({...state});
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+
+  const [comments, setComments] = useState('');
+  const [quantityAdjusted, setQuantityAdjusted] = useState('');
+  const [reasonCode, setReasonCode] = useState(null);
+  const [showDropDown, setShowDropDown] = useState(false);
 
   const onSave = () => {
     let errorTitle = '';
     let errorMessage = '';
-    if (state.quantityAdjusted === null || state.quantityAdjusted === '') {
+    if (quantityAdjusted === null || quantityAdjusted === '') {
       errorTitle = 'Quantity!';
       errorMessage = 'Please fill the Quantity to Adjusted';
     }
@@ -127,20 +121,13 @@ const AdjustStock = () => {
       'inventoryItem.id': item?.inventoryItem?.id ?? '',
       'binLocation.id': item?.binLocation?.id ?? '',
       quantityAvailable: item.quantityAvailableToPromise,
-      reasonCode: state?.reasonCode?.id ?? 'CORRECTION',
-      quantityAdjusted: state.quantityAdjusted,
-      comments: state.comments,
+      reasonCode: reasonCode ?? 'CORRECTION',
+      quantityAdjusted: quantityAdjusted,
+      comments: comments,
     };
     submitStockAdjustments(request);
   };
 
-  const onChangeComment = (text: string) => {
-    setState({...state, comments: text});
-  };
-
-  const onChangeQuantity = (text: string) => {
-    setState({...state, quantityAdjusted: text});
-  };
   const submitStockAdjustments = (requestBody: any) => {
     const callback = (data: any) => {
       if (data?.error) {
@@ -174,40 +161,32 @@ const AdjustStock = () => {
       <View style={styles.itemView}>
         <View style={styles.rowItem}>
           <RenderData
-            title={'Product Code'}
+            title="Product Code"
             subText={item?.product.productCode}
           />
-          <RenderData title={'Product Name'} subText={item?.product.name} />
+          <RenderData title="Product Name" subText={item?.product.name} />
         </View>
         <View style={styles.rowItem}>
           <RenderData
-            title={'Lot Number'}
+            title="Lot Number"
             subText={item?.inventoryItem.lotNumber ?? 'Default'}
           />
           <RenderData
-            title={'Expiration Date'}
+            title="Expiration Date"
             subText={item?.inventoryItem.expirationDate ?? 'Never'}
           />
         </View>
         <View style={styles.rowItem}>
           <RenderData
-            title={'Bin Location'}
+            title="Bin Location"
             subText={item?.binLocation?.name ?? 'Default'}
           />
           <RenderData
-            title={'Quantity Available'}
+            title="Quantity Available"
             subText={item.quantityAvailableToPromise}
           />
         </View>
       </View>
-    );
-  };
-  const renderIcon = () => {
-    return (
-      <Image
-        style={styles.arrowDownIcon}
-        source={require('../../assets/images/arrow-down.png')}
-      />
     );
   };
 
@@ -216,43 +195,35 @@ const AdjustStock = () => {
       <RenderItem />
       <View style={styles.from}>
         <InputBox
-          label={'Quantity Adjusted'}
-          value={state.quantityAdjusted}
-          onChange={onChangeQuantity}
+          label="Quantity Adjusted"
+          value={quantityAdjusted}
+          onChange={setQuantityAdjusted}
           disabled={false}
           editable={false}
-          keyboard={'number-pad'}
+          keyboard="number-pad"
         />
-        <Text style={styles.value}>{'Reason Code'}</Text>
-        <SelectDropdown
-          data={state.reasonCodeList}
-          onSelect={(selectedItem, index) => {
-            state.reasonCode = selectedItem;
-            setState({...state});
-          }}
-          defaultValueByIndex={0}
-          renderDropdownIcon={renderIcon}
-          buttonStyle={styles.select}
-          buttonTextAfterSelection={(selectedItem, index) => selectedItem}
-          rowTextForSelection={(item, index) => item}
+        <View style={styles.dropDownDivider} />
+        <DropDown
+          label="Reason Code"
+          mode="outlined"
+          visible={showDropDown}
+          showDropDown={() => setShowDropDown(true)}
+          onDismiss={() => setShowDropDown(false)}
+          value={reasonCode}
+          setValue={setReasonCode}
+          list={reasonCodes}
         />
         <InputBox
-          value={state.comments}
-          onChange={onChangeComment}
+          value={comments}
+          onChange={setComments}
           disabled={false}
           editable={false}
-          label={'Comments'}
+          label="Comments"
         />
       </View>
       <View style={styles.bottom}>
         <Button
-          disabled={
-            state?.comments?.length > 0 &&
-            state?.reasonCode?.length > 0 &&
-            state.quantityAdjusted?.length > 0
-              ? false
-              : true
-          }
+          disabled={!comments || !reasonCode || !quantityAdjusted}
           title="Adjust Stock"
           onPress={onSave}
         />
