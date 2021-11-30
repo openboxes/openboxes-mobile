@@ -53,3 +53,7 @@ export function printLabel(data: any) {
 export function stockAdjustments(requestBody: any) {
   return apiClient.post(`/stockAdjustments`,requestBody);
 }
+
+export function searchBarcode(id: string) {
+  return apiClient.get(`/globalSearch/${id}`, {});
+}

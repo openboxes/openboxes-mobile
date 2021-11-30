@@ -1,18 +1,23 @@
-import {takeLatest, put, call} from 'redux-saga/effects';
+import {call, put, takeLatest} from 'redux-saga/effects';
 import {
+    GET_PRODUCT_BY_ID_REQUEST,
+    GET_PRODUCT_BY_ID_REQUEST_SUCCESS,
     GET_PRODUCTS_REQUEST,
     GET_PRODUCTS_REQUEST_SUCCESS,
-    SEARCH_PRODUCTS_BY_NAME_REQUEST,
-    SEARCH_PRODUCTS_BY_NAME_REQUEST_SUCCESS,
+    PRINT_LABEL_REQUEST,
+    PRINT_LABEL_REQUEST_SUCCESS,
+    SEARCH_BARCODE,
+    SEARCH_BARCODE_SUCCESS,
     SEARCH_PRODUCT_BY_CODE_REQUEST,
     SEARCH_PRODUCT_BY_CODE_REQUEST_SUCCESS,
     SEARCH_PRODUCT_GLOBALY_REQUEST,
     SEARCH_PRODUCT_GLOBALY_REQUEST_SUCCESS,
     SEARCH_PRODUCTS_BY_CATEGORY_REQUEST,
     SEARCH_PRODUCTS_BY_CATEGORY_REQUEST_SUCCESS,
-    GET_PRODUCT_BY_ID_REQUEST,
-    GET_PRODUCT_BY_ID_REQUEST_SUCCESS,
-    PRINT_LABEL_REQUEST, PRINT_LABEL_REQUEST_SUCCESS, STOCK_ADJUSTMENT_REQUEST, STOCK_ADJUSTMENT_REQUEST_SUCCESS,
+    SEARCH_PRODUCTS_BY_NAME_REQUEST,
+    SEARCH_PRODUCTS_BY_NAME_REQUEST_SUCCESS,
+    STOCK_ADJUSTMENT_REQUEST,
+    STOCK_ADJUSTMENT_REQUEST_SUCCESS,
 } from '../actions/products';
 
 import * as api from '../../apis';
@@ -132,6 +137,29 @@ function* searchProductsByCategory(action: any) {
     }
 }
 
+function* searchBarcode(action: any) {
+    try {
+        yield showScreenLoading(
+            `Searching searchBarcode "${action.payload.id}"`,
+        );
+        const response = yield call(api.searchBarcode, action.payload.id);
+        yield put({
+            type: SEARCH_BARCODE_SUCCESS,
+            payload: response.data,
+        });
+        yield action.callback(response.data);
+        yield hideScreenLoading();
+    } catch (error) {
+        if (error.code != 401) {
+            yield action.callback({
+                error: true,
+                message: error.message,
+            });
+        }
+    }
+}
+
+
 function* getProductById(action: any) {
     try {
         yield put(showScreenLoading('Fetching product by ID'));
@@ -186,11 +214,12 @@ function* stockAdjustments(action: any) {
         console.log('function* stockAdjustments', e);
         yield put(hideScreenLoading());
         yield action.callback({
-          error: true,
-          message: e.message,
+            error: true,
+            message: e.message,
         });
     }
 }
+
 export default function* watcher() {
     yield takeLatest(GET_PRODUCTS_REQUEST, getProducts);
     yield takeLatest(SEARCH_PRODUCTS_BY_NAME_REQUEST, searchProductsByName);
@@ -203,5 +232,5 @@ export default function* watcher() {
     yield takeLatest(GET_PRODUCT_BY_ID_REQUEST, getProductById);
     yield takeLatest(PRINT_LABEL_REQUEST, printLabel);
     yield takeLatest(STOCK_ADJUSTMENT_REQUEST, stockAdjustments);
-
+    yield takeLatest(SEARCH_BARCODE, searchBarcode);
 }
