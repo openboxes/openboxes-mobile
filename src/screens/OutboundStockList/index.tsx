@@ -21,13 +21,13 @@ class OutboundStockList extends React.Component<Props, State> {
     }
 
     componentDidMount() {
-        this.fetchPacking(null);
+        this.fetchPacking();
     }
 
 
-    fetchPacking = (query: any) => {
+    fetchPacking = (query?: any) => {
+        const {SelectedLocation} = this.props
         const actionCallback = (data: any) => {
-            const callback = (data: any) => {
                 if (data?.error) {
                     showPopup({
                         title: data.errorMessage
@@ -45,6 +45,7 @@ class OutboundStockList extends React.Component<Props, State> {
                         negativeButtonText: 'Cancel',
                     });
                 } else {
+                    this.props.hideScreenLoading();
                     if (data?.length == 1) {
                         // this.onPackingTapped(data[0])
                         // this.setState({
@@ -59,13 +60,6 @@ class OutboundStockList extends React.Component<Props, State> {
                         })
                     }
                 }
-                this.props.hideScreenLoading();
-            };
-
-            const {SelectedLocation} = this.props
-
-            // const location = useSelector((state: RootState) => state.mainReducer.currentLocation)
-            console.debug("SelectedLocation::>:>:>:>:" + SelectedLocation.id)
             this.props.getShipmentsReadyToBePacked(SelectedLocation.id, "PENDING", actionCallback)
         }
     }
@@ -140,36 +134,6 @@ class OutboundStockList extends React.Component<Props, State> {
 
 }
 
-/*function renderPutAway(putAway: PutAway): ReactElement {
-    return (
-        <TouchableOpacity
-            style={styles.listItemContainer}>
-            <View style={styles.row}>
-                <View style={styles.col50}>
-                    <Text style={styles.label}>Status</Text>
-                    <Text style={styles.value}>{putAway?.putawayStatus}</Text>
-                </View>
-                <View style={styles.col50}>
-                    <Text style={styles.label}>PutAway Number</Text>
-                    <Text style={styles.value}>{putAway?.putawayNumber}</Text>
-                </View>
-
-            </View>
-            <View style={styles.row}>
-                <View style={styles.col50}>
-                    <Text style={styles.label}>Origin</Text>
-                    <Text
-                        style={styles.value}>{putAway?.["origin.name"]}</Text>
-                </View>
-                <View style={styles.col50}>
-                    <Text style={styles.label}>Destination</Text>
-                    <Text
-                        style={styles.value}>{putAway?.["destination.name"]}</Text>
-                </View>
-            </View>
-        </TouchableOpacity>
-    );
-}*/
 
 const mapStateToProps = (state: RootState) => ({
     SelectedLocation: state.locationsReducer.SelectedLocation,

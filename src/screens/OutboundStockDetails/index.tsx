@@ -8,6 +8,7 @@ import styles from "./styles";
 import {getShipmentReadyToBePacked} from "../../redux/actions/packing";
 import OutboundVMMapper from "./OutboubVmMapper";
 import ContainerDetails from "./ContainerDetails";
+import showPopup from "../../components/Popup";
 
 
 class OutboundStockDetails extends React.Component<Props, State> {
@@ -31,9 +32,21 @@ class OutboundStockDetails extends React.Component<Props, State> {
         const actionCallback = (data: any) => {
             console.log("shipment details:", data)
             if (!data || data?.error) {
-                const title = data.errorMessage ? "Failed to fetch Shipments Detail" : "Error"
-                const message = data.errorMessage ?? "Failed to fetch PutAway Detail with OrderNumber:"
-                return Promise.resolve(null)
+                showPopup({
+                    title: data.errorMessage
+                        ? `Failed to fetch Shipments Detail`
+                        : null,
+                    message:
+                        data.errorMessage ??
+                        `Failed to fetch PutAway Detail with OrderNumber:`,
+                    positiveButton: {
+                        text: 'Retry',
+                        callback: () => {
+                            this.props.getShipmentReadyToBePacked(shipmentId, actionCallback)
+                        },
+                    },
+                    negativeButtonText: 'Cancel',
+                });
             } else {
                 this.setState({
                     shipment: data,
