@@ -26,13 +26,12 @@ const Scan = () => {
     }, [barcodeData])
 
     const onBarCodeScanned = (query: string) => {
-        if (!query) {
-            onEmptyQuery();
-            return;
-        }
+        onEmptyQuery(query);
         const actionCallback = (data: any) => {
             if (data?.error) {
-                onError(data, query)
+                onError(data, query,() => {
+                    dispatch(searchBarcode(query, actionCallback));
+                })
             } else {
                 if (data.length == 0) {
                     onEmptyData(query)
@@ -43,32 +42,35 @@ const Scan = () => {
                 }
             }
         };
-        const onError = (data: any, query: any) => {
-            showPopup({
-                title: data.errorMessage
-                    ? `Failed to load search results with value = "${query}"`
-                    : null,
-                message:
-                    data.errorMessage ??
-                    `Failed to load search results with value = "${query}"`,
-                positiveButton: {
-                    text: 'Retry',
-                    callback: () => {
-                        dispatch(searchBarcode(query, actionCallback));
-                    },
-                },
-                negativeButtonText: 'Cancel',
-            });
-        }
         dispatch(searchBarcode(query, actionCallback));
 
     };
 
-    const onEmptyQuery = () => {
+
+
+    const onError = (data: any, query: any, callback: (data: any) => void,) => {
         showPopup({
-            message: 'Search query is empty',
-            positiveButton: {text: 'Ok'},
+            title: data.errorMessage
+                ?? `Failed to load search results with value = "${query}"`,
+            message:
+                data.errorMessage ??
+                `Failed to load search results with value = "${query}"`,
+            positiveButton: {
+                text: 'Retry',
+                callback: callback
+            },
+            negativeButtonText: 'Cancel',
         });
+    }
+    const onEmptyQuery = (query: any) => {
+        if (!query) {
+            showPopup({
+                message: 'Search query is empty',
+                positiveButton: {text: 'Ok'},
+            });
+            return;
+        }
+
     }
     const onEmptyData = (query: any) => {
         setState({
