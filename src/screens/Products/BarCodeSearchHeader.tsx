@@ -1,11 +1,6 @@
-// noinspection DuplicatedCode
-
 import React, {ReactElement} from 'react';
 import {Searchbar} from 'react-native-paper';
 import {StyleSheet} from 'react-native';
-import {Platform, StatusBar} from 'react-native';
-// import {setStatusBarBackgroundColor} from 'expo-status-bar';
-
 export interface Props {
   subtitle?: string | null;
   placeholder?: string;
