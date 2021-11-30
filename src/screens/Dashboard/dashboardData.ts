@@ -25,7 +25,7 @@ const dashboardData = [
         navigationScreenName: "Product Summary"
     },
     {
-        screenName: "Lookup",
+        screenName: "Create LPN",
         icon: require("../../assets/images/lookup.png"),
         navigationScreenName: "CreateLpn"
     },
@@ -55,6 +55,6 @@ const dashboardData = [
         icon: require("../../assets/images/putaway.png"),
         navigationScreenName: "PutawayCandidates"
     },
-]
+];
 
 export default dashboardData
