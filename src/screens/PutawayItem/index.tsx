@@ -102,7 +102,14 @@ class PutawayItem extends Component<Props, State> {
                 keyboardType="number-pad"
                 value={quantity}
                 onChangeText={quantity => {
-                  this.setState({quantity});
+                  if (Number(quantity) <= item.quantity) {
+                    this.setState({quantity});
+                  } else {
+                    ToastAndroid.show(
+                      'quantity will be not grater then received quantity',
+                      ToastAndroid.SHORT,
+                    );
+                  }
                 }}
               />
               <Text style={styles.quantityText}>{`/ ${item.quantity}`}</Text>
