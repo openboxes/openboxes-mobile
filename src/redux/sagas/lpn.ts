@@ -3,14 +3,13 @@ import * as api from "../../apis";
 import {
     FETCH_CONTAINER_DETAIL,
     FETCH_CONTAINER_DETAIL_RESPONSE_SUCCESS,
-    GET_CONTAINER_DETAIL, GET_CONTAINER_DETAIL_RESPONSE_SUCCESS,
+    GET_CONTAINER_DETAIL,
+    GET_CONTAINER_DETAIL_RESPONSE_SUCCESS,
+    GET_CONTAINER_STATUS_DETAIL,
+    GET_CONTAINER_STATUS_DETAIL_RESPONSE_SUCCESS,
     SAVE_OR_UPDATE_LPN
 } from "../actions/lpn";
-import {GET_LOCATIONS_REQUEST_SUCCESS} from "../actions/locations";
-import {ContainerResponse} from "../../data/container/Container";
-import showPopup from "../../components/Popup";
 import {handleError} from "./error";
-import {getContainerDetails} from "../../apis";
 
 function* saveAndUpdateLpn(action: any) {
     try {
@@ -70,8 +69,32 @@ function* getContainerDetail(action: any) {
         });
     }
 }
+
+function* getStatusDetails(action: any) {
+    try {
+        console.log("sagas getStatusDetails:" + action.payload.id)
+        const response = yield call(
+            api.getStatusDetails,
+            action.payload.id,
+        );
+        console.log(response.data)
+        yield put({
+            type: GET_CONTAINER_STATUS_DETAIL_RESPONSE_SUCCESS,
+            payload: response.data,
+        });
+        yield action.callback(response.data);
+    } catch (e) {
+        console.log('function* getStatusDetails', e.message);
+        yield action.callback({
+            error: true,
+            message: e.message,
+        });
+    }
+}
+
 export default function* watcher() {
     yield takeLatest(SAVE_OR_UPDATE_LPN, saveAndUpdateLpn);
     yield takeLatest(FETCH_CONTAINER_DETAIL, fetchContainer);
     yield takeLatest(GET_CONTAINER_DETAIL, getContainerDetail);
+    yield takeLatest(GET_CONTAINER_STATUS_DETAIL, getStatusDetails);
 }

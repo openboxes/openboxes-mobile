@@ -1,9 +1,9 @@
 import React from "react";
 import {DispatchProps, Props} from "./Types";
 import {Container} from "../../data/container/Container";
-import {FlatList, ListRenderItemInfo, Text, TouchableOpacity, View,Image} from "react-native";
+import {FlatList, Image, ListRenderItemInfo, Text, TouchableOpacity, View} from "react-native";
 import {ContainerShipmentItem} from "../../data/container/ContainerShipmentItem";
-import {fetchContainer, getContainer} from "../../redux/actions/lpn";
+import {fetchContainer, getContainer, getContainerStatus} from "../../redux/actions/lpn";
 import {getShipmentPacking} from "../../redux/actions/packing";
 import {connect} from "react-redux";
 import styles from "./styles";
@@ -36,6 +36,42 @@ class LpnDetail extends React.Component<Props, State> {
         }
     }
 
+    getContainerStatusDetails = (id: string) => {
+        if (!id) {
+            showPopup({
+                message: 'id is empty',
+                positiveButton: {text: 'Ok'},
+            });
+            return;
+        }
+        const actionCallback = (data: any) => {
+            if (data?.error) {
+                showPopup({
+                    title: data.error.message
+                        ? `Failed to load details with value = "${id}"`
+                        : null,
+                    message:
+                        data.error.message ??
+                        `Failed to load details with value = "${id}"`,
+                    positiveButton: {
+                        text: 'Retry',
+                        callback: () => {
+                            this.props.getContainerStatus(id, actionCallback);
+                        },
+                    },
+                    negativeButtonText: 'Cancel',
+                });
+            } else {
+                this.showShipmentReadyToPackScreen(data["shipment.id"])
+            }
+        };
+        this.props.getContainerStatus(id, actionCallback);
+    }
+
+    showShipmentReadyToPackScreen = (id: string) => {
+        this.props.navigation.navigate('OutboundStockDetails', {shipmentId: id})
+    }
+
     getContainerDetails = (id: string) => {
         if (!id) {
             showPopup({
@@ -44,9 +80,7 @@ class LpnDetail extends React.Component<Props, State> {
             });
             return;
         }
-
         const actionCallback = (data: any) => {
-            console.log(JSON.stringify(data))
             if (data?.error) {
                 showPopup({
                     title: data.error.message
@@ -140,6 +174,8 @@ class LpnDetail extends React.Component<Props, State> {
                         data={containerStatus}
                         onSelect={(selectedItem, index) => {
                             console.log(selectedItem, index)
+                            const {id} = this.props.route.params
+                            this.getContainerStatusDetails(id)
                         }}
                         defaultValueByIndex={0}
                         renderDropdownIcon={renderIcon}
@@ -206,6 +242,7 @@ const mapDispatchToProps: DispatchProps = {
     fetchContainer,
     getShipmentPacking,
     getContainer,
+    getContainerStatus
 }
 
 export default connect(null, mapDispatchToProps)(LpnDetail);
