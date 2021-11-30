@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import InputSpinner from "react-native-input-spinner";
 import {StyleSheet, Text, View} from "react-native";
 import {colors} from "../constants";
