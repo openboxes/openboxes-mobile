@@ -1,13 +1,12 @@
 import React, {useEffect, useState} from 'react';
 import {Text, View} from 'react-native';
 import styles from './styles';
-import {useDispatch, useSelector} from 'react-redux';
+import {useDispatch} from 'react-redux';
 import {useNavigation} from "@react-navigation/native";
 import useEventListener from "../../hooks/useEventListener";
 import Product from "../../data/product/Product";
 import showPopup from "../../components/Popup";
 import {searchBarcode,} from '../../redux/actions/products';
-import {RootState} from "../../redux/reducers";
 
 const Scan = () => {
     const barcodeData = useEventListener();
@@ -28,63 +27,76 @@ const Scan = () => {
 
     const onBarCodeScanned = (query: string) => {
         if (!query) {
-            showPopup({
-                message: 'Search query is empty',
-                positiveButton: {text: 'Ok'},
-            });
+            onEmptyQuery();
             return;
         }
         const actionCallback = (data: any) => {
             if (data?.error) {
-                showPopup({
-                    title: data.errorMessage
-                        ? `Failed to load search results with value = "${query}"`
-                        : null,
-                    message:
-                        data.errorMessage ??
-                        `Failed to load search results with value = "${query}"`,
-                    positiveButton: {
-                        text: 'Retry',
-                        callback: () => {
-                            dispatch(searchBarcode(query, actionCallback));
-                        },
-                    },
-                    negativeButtonText: 'Cancel',
-                });
+                onError(data, query)
             } else {
                 if (data.length == 0) {
-                    setState({
-                        ...state,
-                        searchProductCode: {
-                            query: query,
-                            results: null,
-                        },
-                        error: `No search results found for barcode "${query}"`,
-                    });
+                    onEmptyData(query)
                 } else {
                     if (data && Object.keys(data).length !== 0) {
-                        setState({
-                            ...state,
-                            searchProductCode: {
-                                query: query,
-                                results: data,
-                            },
-                            error: null,
-                        });
-                        if ((query.toUpperCase() === data?.productCode?.toUpperCase() ?? '') && data.type === 'Product') {
-                            navigateToProduct(data)
-                        } else if ((query.toUpperCase() === data?.name?.toUpperCase() ?? '') && data.type === 'Location') {
-                            navigateToLocationDetails(query)
-                        } else if ((query.toUpperCase() === data?.containerNumber?.toUpperCase() ?? '')&& data.type === 'Container') {
-                            navigateToLPNDetails(data.id, data?.shipment?.shipmentNumber??"")
-                        }
+                        onSuccess(data, query)
                     }
                 }
             }
         };
+        const onError = (data: any, query: any) => {
+            showPopup({
+                title: data.errorMessage
+                    ? `Failed to load search results with value = "${query}"`
+                    : null,
+                message:
+                    data.errorMessage ??
+                    `Failed to load search results with value = "${query}"`,
+                positiveButton: {
+                    text: 'Retry',
+                    callback: () => {
+                        dispatch(searchBarcode(query, actionCallback));
+                    },
+                },
+                negativeButtonText: 'Cancel',
+            });
+        }
         dispatch(searchBarcode(query, actionCallback));
 
     };
+
+    const onEmptyQuery = () => {
+        showPopup({
+            message: 'Search query is empty',
+            positiveButton: {text: 'Ok'},
+        });
+    }
+    const onEmptyData = (query: any) => {
+        setState({
+            ...state,
+            searchProductCode: {
+                query: query,
+                results: null,
+            },
+            error: `No search results found for barcode "${query}"`,
+        });
+    }
+    const onSuccess = (data: any, query: any) => {
+        setState({
+            ...state,
+            searchProductCode: {
+                query: query,
+                results: data,
+            },
+            error: null,
+        });
+        if ( data.type === 'Product') {
+            navigateToProduct(data)
+        } else if (data.type === 'Location') {
+            navigateToLocationDetails(query)
+        } else if ( data.type === 'Container') {
+            navigateToLPNDetails(data.id, data?.shipment?.shipmentNumber ?? "")
+        }
+    }
 
     const navigateToProduct = (product: Product | undefined) => {
         if (product) { // @ts-ignore
