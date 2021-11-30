@@ -10,7 +10,8 @@ export interface OwnProps {
   onEndEdit?: (text: string) => void;
   data: Array<any>;
   selectedData?: Function,
-  getMoreData?: Function
+  getMoreData?: Function,
+  initValue: string
 }
 
 export interface StateProps {}
