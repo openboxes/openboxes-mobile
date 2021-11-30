@@ -18,7 +18,7 @@ import FullScreenLoadingIndicator from './components/FullScreenLoadingIndicator'
 import {RootState} from './redux/reducers';
 import {connect} from 'react-redux';
 import SplashScreen from 'react-native-splash-screen';
-import {Image, View, SafeAreaView, TouchableOpacity} from 'react-native';
+import { SafeAreaView } from 'react-native';
 import Location from './data/location/Location';
 import {Session} from './data/auth/Session';
 import {getSessionAction} from './redux/actions/main';
@@ -27,7 +27,6 @@ import {colors} from './constants';
 import Scan from './screens/Scan';
 import PutawayList from './screens/PutawayList';
 import Settings from './screens/Settings';
-import PutawayDetails from './screens/PutawayDetails';
 import PutawayItemDetail from './screens/PutawayItemDetail';
 import InboundOrder from './screens/InboundOrder';
 import InboundDetails from './screens/InboundDetails';
@@ -47,6 +46,7 @@ import ApiClient from './utils/ApiClient';
 import OptionMenu from './components/OptionMenu';
 import ViewAvailableItem from './screens/ViewAvailableItem';
 // import PutawayDetails from "./screens/PutawayDetails";
+import { Provider } from 'react-native-paper';
 
 const Stack = createStackNavigator();
 
@@ -135,7 +135,8 @@ class Main extends Component<Props, State> {
     const {loggedIn} = this.props;
     const initialRouteName = !loggedIn ? 'Login' : 'Drawer';
     return (
-      <SafeAreaView style={{flex: 1}}>
+      <Provider>
+       <SafeAreaView style={{flex: 1}}>
         <FullScreenLoadingIndicator
           visible={this.props.fullScreenLoadingIndicator.visible}
           message={this.props.fullScreenLoadingIndicator.message}
@@ -217,6 +218,7 @@ class Main extends Component<Props, State> {
           </Stack.Navigator>
         </NavigationContainer>
       </SafeAreaView>
+      </Provider>
     );
   }
 }

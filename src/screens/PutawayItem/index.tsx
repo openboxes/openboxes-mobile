@@ -1,7 +1,7 @@
+/* eslint-disable no-shadow */
 import React, {Component} from 'react';
 import {Props, State} from './types';
-import {TextInput, View, Text, Image, Button, Alert} from 'react-native';
-import SelectDropdown from 'react-native-select-dropdown';
+import {TextInput, View, Text, Button, ToastAndroid} from 'react-native';
 import {RootState} from '../../redux/reducers';
 import {DispatchProps} from './types';
 import styles from './styles';
@@ -9,8 +9,7 @@ import {hideScreenLoading, showScreenLoading} from '../../redux/actions/main';
 import {connect} from 'react-redux';
 import {getBinLocationsAction} from '../../redux/actions/locations';
 import {createPutawayOderAction} from '../../redux/actions/putaways';
-
-const arrowDown = require('../../assets/images/arrow-down.png');
+import AutoInputInternalLocation from '../../components/AutoInputInternalLocation';
 
 class PutawayItem extends Component<Props, State> {
   constructor(props: Props) {
@@ -35,28 +34,26 @@ class PutawayItem extends Component<Props, State> {
       putawayStatus: 'PENDING',
       putawayDate: '',
       putawayAssignee: '',
-      'origin.id': SelectedLocation.id,
+      'origin.id': SelectedLocation?.id,
       // "origin.name": "Main Warehouse",
-      'destination.id': SelectedLocation.id,
+      'destination.id': SelectedLocation?.id,
       // "destination.name": "Main Warehouse",
       putawayItems: [
         {
           putawayStatus: 'PENDING',
           'product.id': item['product.id'],
           'inventoryItem.id': item['inventoryItem.id'],
-          'putawayFacility.id': SelectedLocation.id,
+          'putawayFacility.id': SelectedLocation?.id,
           'currentLocation.id': item['currentLocation.id'],
-          'putawayLocation.id': this.state.selectedLocation.id,
-          quantity: this.state.quantity,
+          'putawayLocation.id': this.state?.selectedLocation?.id,
+          quantity: this.state?.quantity,
         },
       ],
       'orderedBy.id': '',
       sortBy: null,
     };
-
     createPutawayOderAction(data, () => {
-      console.log('data', data);
-      Alert.alert('Order created successfully');
+      ToastAndroid.show('Order created successfully', ToastAndroid.SHORT);
     });
   };
 
@@ -64,12 +61,9 @@ class PutawayItem extends Component<Props, State> {
     const {item} = this.props.route.params;
     const {locations} = this.props;
     const {quantity} = this.state;
-
-    console.log(item);
-    console.log(item.quantity);
     return (
       <View style={styles.container}>
-        <View style={{flex: 1}}>
+        <View style={styles.childContainer}>
           <View style={styles.row}>
             <Text>Product Code</Text>
             <TextInput value={item['product.productCode']} />
@@ -88,22 +82,12 @@ class PutawayItem extends Component<Props, State> {
           </View>
           <View style={styles.row}>
             <Text>Putaway Location</Text>
-            <SelectDropdown
-              data={locations}
-              onSelect={selectedLocation => {
+            <AutoInputInternalLocation
+              label="AutoInputInternalContainer"
+              data={locations.map(({name}) => name)}
+              selectedData={(selectedLocation: any) => {
                 this.setState({selectedLocation});
               }}
-              defaultButtonText={'Select Putaway Location'}
-              renderDropdownIcon={() => (
-                <Image style={styles.arrowDownIcon} source={arrowDown} />
-              )}
-              buttonStyle={styles.select}
-              buttonTextAfterSelection={(selectedLocation, index) =>
-                selectedLocation.name
-              }
-              rowTextForSelection={(selectedLocation, index) =>
-                selectedLocation.name
-              }
             />
           </View>
           <View style={styles.row}>
@@ -122,8 +106,8 @@ class PutawayItem extends Component<Props, State> {
           </View>
         </View>
         <Button
-          style={{padding: 20}}
           title={'Create Putaway'}
+          style={styles.buttonContainer}
           onPress={this.create}
         />
       </View>

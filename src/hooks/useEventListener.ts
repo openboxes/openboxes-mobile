@@ -72,7 +72,7 @@ const useEventListener = () => {
       barcodeScanned(intent, new Date().toLocaleString());
     }
   };
-  
+
   React.useEffect(() => {
     const callback = (intent: any) => {
       setEvent(intent);
@@ -96,42 +96,42 @@ const useEventListener = () => {
     });
   };
 
- 
+
   const datawedge63 = () => {
     console.log('Datawedge 6.3 APIs are available');
     //  Create a profile for our application
     sendCommand(PROFILE.CREATE_PROFILE, PROFILE.NAME);
 
-    state.dwVersionText =
-      '6.3.  Please configure profile manually.  See ReadMe for more details.';
+        state.dwVersionText = "6.3.  Please configure profile manually.  See ReadMe for more details.";
 
-    //  Although we created the profile we can only configure it with DW 6.4.
-    sendCommand(PROFILE.ACTIVE_PROFILE, '');
+        //  Although we created the profile we can only configure it with DW 6.4.
+        sendCommand(PROFILE.ACTIVE_PROFILE, "");
 
-    //  Enumerate the available scanners on the device
-    sendCommand(PROFILE.ENUMERATE_PROFILE, '');
+        //  Enumerate the available scanners on the device
+        sendCommand(PROFILE.ENUMERATE_PROFILE, "");
 
-    //  Functionality of the scan button is available
-    state.scanButtonVisible = true;
-  };
+        //  Functionality of the scan button is available
+        state.scanButtonVisible = true;
 
-  const datawedge64 = () => {
-    console.log('Datawedge 6.4 APIs are available');
-    //  Documentation states the ability to set a profile config is only available from DW 6.4.
-    //  For our purposes, this includes setting the decoders and configuring the associated app / output params of the profile.
-    state.dwVersionText = '6.4.';
-    //document.getElementById('info_datawedgeVersion').classList.remove("attention");
-    //  Decoders are now available
-    state.checkBoxesDisabled = false;
-    //  Configure the created profile (associated app and keyboard plugin)
-    sendCommand(PROFILE.SET_CONFIG_PROFILE, PROFILE_CONFIG);
-    //  Configure the created profile (intent plugin)
-    sendCommand(PROFILE.SET_CONFIG_PROFILE, PROFILE_CONFIG2);
-    //  Give some time for the profile to settle then query its value
-    setTimeout(() => {
-      sendCommand(PROFILE.ACTIVE_PROFILE, '');
-    }, 1000);
-  };
+    }
+
+    const datawedge64 = () => {
+        console.log("Datawedge 6.4 APIs are available");
+        //  Documentation states the ability to set a profile config is only available from DW 6.4.
+        //  For our purposes, this includes setting the decoders and configuring the associated app / output params of the profile.
+        state.dwVersionText = "6.4.";
+        //document.getElementById('info_datawedgeVersion').classList.remove("attention");
+        //  Decoders are now available
+        state.checkBoxesDisabled = false;
+        //  Configure the created profile (associated app and keyboard plugin)
+        sendCommand(PROFILE.SET_CONFIG_PROFILE, PROFILE_CONFIG);
+        //  Configure the created profile (intent plugin)
+        sendCommand(PROFILE.SET_CONFIG_PROFILE, PROFILE_CONFIG2);
+        //  Give some time for the profile to settle then query its value
+        setTimeout(() => {
+            sendCommand(PROFILE.ACTIVE_PROFILE, "");
+        }, 1000);
+    }
 
   const sendCommand = (extraName: string, extraValue: any) => {
     console.log(
@@ -147,10 +147,7 @@ const useEventListener = () => {
   };
 
   const datawedge65 = () => {
-    console.log('Datawedge 6.5 APIs are available');
-
     state.dwVersionText = '6.5 or higher.';
-
     //  Instruct the API to send
     state.sendCommandResult = 'true';
     state.lastApiVisible = true;
@@ -187,7 +184,6 @@ const useEventListener = () => {
   const barcodeScanned = (scanData: any, timeOfScan: string) => {
     var scannedData = scanData[ACTION.DATA_STRING] ?? scanData['data'];
     var scannedType = scanData[ACTION.LABEL_TYPE] ?? scanData['labelType'];
-    console.log('Scan:1 ' + scanData['data']);
     if (scannedData && scannedType) {
       let dataScanned = {
         data: scannedData,
@@ -196,7 +192,6 @@ const useEventListener = () => {
       };
       state.data = dataScanned;
       state.scans.unshift(dataScanned);
-      console.log('SCAN DATA', state.scans);
       setState({...state});
     }
   };

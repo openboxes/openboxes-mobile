@@ -12,7 +12,6 @@ import dashboardData from "./dashboardData";
 class Dashboard extends React.Component<Props, State> {
 
     renderItem = (item: any, index: any) => {
-        console.log(item)
         return (
             <TouchableOpacity
                 key={index}
@@ -37,8 +36,7 @@ class Dashboard extends React.Component<Props, State> {
                     renderItem={(item: ListRenderItemInfo<any>) => this.renderItem(item.item, item.index)}
                 />
             </View>
-        )
-            ;
+        );
     }
 }
 
