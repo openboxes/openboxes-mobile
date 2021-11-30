@@ -74,7 +74,11 @@ class PutawayItem extends Component<Props, State> {
           </View>
           <View style={styles.row}>
             <Text>Lot Number</Text>
-            <TextInput value={item['inventoryItem.lotNumber'] ?? 'Default'} />
+            <TextInput
+              editable={false}
+              selectTextOnFocus={false}
+              value={item['inventoryItem.lotNumber'] ?? 'Default'}
+            />
           </View>
           <View style={styles.row}>
             <Text>Current Location</Text>
