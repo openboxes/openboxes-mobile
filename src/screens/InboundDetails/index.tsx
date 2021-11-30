@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {useDispatch} from "react-redux";
-import { fetchPartialReceiving} from "../../redux/actions/inboundorder";
+import {fetchPartialReceiving} from "../../redux/actions/inboundorder";
 import showPopup from "../../components/Popup";
 import InboundOrderContainer from "./InboundOrderContainer";
 import {useNavigation, useRoute} from "@react-navigation/native";
@@ -26,15 +26,14 @@ const InboundDetails = () => {
 
 
     const getPartialReceiving = (id: string = "") => {
-        console.log("Reload")
         const callback = (data: any) => {
             if (data?.error) {
                 showPopup({
-                    title: data.error.message
+                    title: data.errorMessage
                         ? `Inbound order details`
                         : null,
                     message:
-                        data.error.message ??
+                        data.errorMessage ??
                         `Failed to load inbound order details value ${id}`,
                     positiveButton: {
                         text: 'Retry',

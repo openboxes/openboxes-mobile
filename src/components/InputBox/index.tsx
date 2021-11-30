@@ -1,7 +1,6 @@
 import React, {useState} from 'react';
 import styles from './styles';
-import {View, TouchableOpacity, Text, Image} from 'react-native';
-import {TextInput} from 'react-native-paper';
+import {Image, TouchableOpacity, View} from 'react-native';
 import SelectDropdown from 'react-native-select-dropdown'
 import {Props} from "./types";
 import AutoComplete from "../AutoComplete/AutoComplete";
@@ -61,7 +60,6 @@ export default function ({
                         <SelectDropdown
                             data={['EA', 'BX/10', 'CS/100', 'PL/100']}
                             onSelect={(selectedItem, index) => {
-                                console.log(selectedItem, index)
                             }}
                             disabled={!editable}
                             defaultValueByIndex={0}

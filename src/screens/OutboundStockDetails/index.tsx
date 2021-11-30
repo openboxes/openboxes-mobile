@@ -1,8 +1,6 @@
 import {DispatchProps, Props, State} from "./types";
 import React from "react";
-// import Order from "../../../data/order/Order";
 import {Text, View} from "react-native";
-
 import {connect} from "react-redux";
 import {hideScreenLoading, showScreenLoading} from '../../redux/actions/main';
 import {RootState} from "../../redux/reducers";
@@ -33,8 +31,8 @@ class OutboundStockDetails extends React.Component<Props, State> {
         const actionCallback = (data: any) => {
             console.log("shipment details:", data)
             if (!data || data?.error) {
-                const title = data.error.message ? "Failed to fetch Shipments Detail" : null
-                const message = data.error.message ?? "Failed to fetch PutAway Detail with OrderNumber:"
+                const title = data.errorMessage ? "Failed to fetch Shipments Detail" : "Error"
+                const message = data.errorMessage ?? "Failed to fetch PutAway Detail with OrderNumber:"
                 return Promise.resolve(null)
             } else {
                 this.setState({
@@ -89,7 +87,7 @@ class OutboundStockDetails extends React.Component<Props, State> {
                         </View>
                     </View>
                     <ContainerDetails
-                        item={this.state.shipmentData?.sectionData?? []}
+                        item={this.state.shipmentData?.sectionData ?? []}
                     />
                 </View>
             </View>

@@ -1,18 +1,13 @@
-import {DispatchProps, OwnProps, Props, StateProps, State} from "./types";
-import React, {ReactElement} from "react";
-// import Order from "../../../data/order/Order";
-import {getOrdersAction} from '../../redux/actions/orders';
-import {View, FlatList, ListRenderItemInfo, Text, TouchableOpacity} from "react-native";
-import BarCodeSearchHeader from '../Products/BarCodeSearchHeader';
-
-import {connect, useSelector} from "react-redux";
-import {showScreenLoading, hideScreenLoading} from '../../redux/actions/main';
+import {DispatchProps, Props, State} from "./types";
+import React from "react";
+import {FlatList, ListRenderItemInfo, Text, TouchableOpacity, View} from "react-native";
+import {hideScreenLoading, showScreenLoading} from '../../redux/actions/main';
 import {RootState} from "../../redux/reducers";
 import showPopup from "../../components/Popup";
 import styles from "./styles";
 import {getShipmentsReadyToBePacked} from "../../redux/actions/packing";
 import {Shipment} from "../../data/container/Shipment";
-import Header from "../../components/Header";
+import {connect} from "react-redux";
 
 
 class OutboundStockList extends React.Component<Props, State> {
@@ -26,74 +21,61 @@ class OutboundStockList extends React.Component<Props, State> {
     }
 
     componentDidMount() {
-        this.fetchPackings(null);
+        this.fetchPacking(null);
     }
 
 
-    fetchPackings = (query: any) => {
+    fetchPacking = (query: any) => {
         const actionCallback = (data: any) => {
-            console.log(55555555555, data)
-            if (!data || data?.error) {
-                const title = data.error.message ? "Failed to fetch Shipments Detail" : null
-                const message = data.error.message ?? "Failed to fetch PutAway Detail with OrderNumber:" + query
-                return Promise.resolve(null)
-            } else {
-                if (data?.length == 1){
-                    // this.onPackingTapped(data[0])
-                    // this.setState({
-                    //     showList: true,
-                    //     putAway: data[0],
-                    //     putAwayList: data,
-                    //     showDetail: true
-                    // })
-                }else{
-                    this.setState({
-                        shipments: data
-                    })
+            const callback = (data: any) => {
+                if (data?.error) {
+                    showPopup({
+                        title: data.errorMessage
+                            ? `Shipment details`
+                            : null,
+                        message:
+                            data.errorMessage ??
+                            `Failed to submit shipment details`,
+                        positiveButton: {
+                            text: 'Retry',
+                            callback: () => {
+                                this.props.getShipmentsReadyToBePacked(SelectedLocation.id, "PENDING", actionCallback)
+                            },
+                        },
+                        negativeButtonText: 'Cancel',
+                    });
+                } else {
+                    if (data?.length == 1) {
+                        // this.onPackingTapped(data[0])
+                        // this.setState({
+                        //     showList: true,
+                        //     putAway: data[0],
+                        //     putAwayList: data,
+                        //     showDetail: true
+                        // })
+                    } else {
+                        this.setState({
+                            shipments: data
+                        })
+                    }
                 }
-            }
-            this.props.hideScreenLoading();
-        };
+                this.props.hideScreenLoading();
+            };
 
-        const {SelectedLocation} = this.props
+            const {SelectedLocation} = this.props
 
-        // const location = useSelector((state: RootState) => state.mainReducer.currentLocation)
-        console.debug("SelectedLocation::>:>:>:>:"+SelectedLocation.id)
-        this.props.getShipmentsReadyToBePacked(SelectedLocation.id, "PENDING", actionCallback)
+            // const location = useSelector((state: RootState) => state.mainReducer.currentLocation)
+            console.debug("SelectedLocation::>:>:>:>:" + SelectedLocation.id)
+            this.props.getShipmentsReadyToBePacked(SelectedLocation.id, "PENDING", actionCallback)
+        }
     }
-
 
 
     showShipmentReadyToPackScreen = (shipment: Shipment) => {
         this.props.navigation.navigate('OutboundStockDetails', {shipmentId: shipment.id})
     }
 
-    // renderItem = (item: ListRenderItemInfo<PutAwayItems>) => {
-    //     return (
-    //         <PutAwayItem
-    //             item={item.item}
-    //         />
-    //     )
-    // }
-    //
-    // goToPutawayItemDetailScreen = (putAway: PutAway, putAwayItem: PutAwayItems) => {
-    //     this.props.navigation.navigate('PutawayItemDetail', {
-    //         putAway: putAway,
-    //         putAwayItem: putAwayItem,
-    //     });
-    // };
-    // onPackingTapped = (putAway: PutAway) => {
-    //     this.props.navigation.navigate('PutawayDetail', {
-    //         // putAway,
-    //         putAway: putAway,
-    //         exit: () => {
-    //             this.props.navigation.navigate('PutawayList');
-    //         },
-    //     });
-    // };
-
     render() {
-        // const {showList} = this.state
         return (
             <View style={styles.screenContainer}>
 

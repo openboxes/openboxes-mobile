@@ -1,8 +1,7 @@
 import React from "react";
 import {DispatchProps, Props} from "./Types";
 import {Container} from "../../data/container/Container";
-import {FlatList, ListRenderItemInfo, StyleSheet, Text, TouchableOpacity, View} from "react-native";
-import Theme from "../../utils/Theme";
+import {FlatList, ListRenderItemInfo, Text, TouchableOpacity, View} from "react-native";
 import {ContainerShipmentItem} from "../../data/container/ContainerShipmentItem";
 import {fetchContainer, getContainer} from "../../redux/actions/lpn";
 import {getShipmentPacking} from "../../redux/actions/packing";
@@ -11,7 +10,6 @@ import styles from "./styles";
 import Button from "../../components/Button";
 import PrintModal from "../../components/PrintModal";
 import showPopup from "../../components/Popup";
-import {getProductByIdAction} from "../../redux/actions/products";
 
 export interface State {
     container: Container | null
@@ -42,11 +40,11 @@ class LpnDetail extends React.Component<Props, State> {
             console.log(JSON.stringify(data))
             if (data?.error) {
                 showPopup({
-                    title: data.error.message
+                    title: data.errorMessage
                         ? `Failed to load details with value = "${id}"`
                         : null,
                     message:
-                        data.error.message ??
+                        data.errorMessage ??
                         `Failed to load details with value = "${id}"`,
                     positiveButton: {
                         text: 'Retry',

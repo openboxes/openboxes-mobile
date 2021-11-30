@@ -1,5 +1,3 @@
-import {getCandidates} from "../../redux/actions/putaways";
-
 export interface OwnProps {
     navigation: any
 }
@@ -12,7 +10,7 @@ export interface StateProps {
 export interface DispatchProps {
     showScreenLoading: (message?: string) => void;
     hideScreenLoading: () => void;
-    getCandidates: (locationId: string, callback?: () => void) => void;
+    getCandidates: (locationId: string, callback?: (data) => void) => void;
 }
 
 export type Props = OwnProps & StateProps & DispatchProps;

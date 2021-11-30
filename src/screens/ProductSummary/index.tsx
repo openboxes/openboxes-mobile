@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {SectionList, View, Text, TouchableOpacity, FlatList} from "react-native";
+import {FlatList, Text, TouchableOpacity, View} from "react-native";
 import {useNavigation} from "@react-navigation/native";
 import styles from "./styles";
 import {Card} from "react-native-paper";
@@ -23,11 +23,11 @@ const ProductSummary = () => {
         const callback = (data: any) => {
             if (data?.error) {
                 showPopup({
-                    title: data.error.message
+                    title: data.errorMessage
                         ? `Product Summary details`
                         : null,
                     message:
-                        data.error.message ??
+                        data.errorMessage ??
                         `Failed to load Product Summary details ${id}`,
                     positiveButton: {
                         text: 'Retry',

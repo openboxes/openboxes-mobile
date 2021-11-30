@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {connect, useDispatch} from 'react-redux';
+import {useDispatch} from 'react-redux';
 import styles from './styles';
 import {View} from 'react-native';
 import showPopup from '../../components/Popup';
@@ -8,7 +8,7 @@ import {hideScreenLoading} from '../../redux/actions/main';
 import useEventListener from "../../hooks/useEventListener";
 import {searchProductGloballyAction} from "../../redux/actions/products";
 import Button from "../../components/Button"
-import {getShipmentPacking, getContainerDetails, submitShipmentDetails} from "../../redux/actions/packing";
+import {getContainerDetails, getShipmentPacking, submitShipmentDetails} from "../../redux/actions/packing";
 import {useRoute} from "@react-navigation/native";
 
 
@@ -30,7 +30,7 @@ const Packing = () => {
         shipmentDetails: null,
         shipmentId: ""
     })
-    console.log("shipment",  shipment.item.inventoryItem?.product?.productCode.toString())
+    console.log("shipment", shipment.item.inventoryItem?.product?.productCode.toString())
 
     useEffect(() => {
         getShipmentDetails(shipment.item.shipment.id)
@@ -45,11 +45,11 @@ const Packing = () => {
 
     const showErrorPopup = (data: any, query: any, actionCallback: any, searchBarcode: any) => {
         showPopup({
-            title: data.error.message
+            title: data.errorMessage
                 ? `Failed to load search results with value = "${query}"`
                 : null,
             message:
-                data.error.message ??
+                data.errorMessage ??
                 `Failed to load search results with value = "${query}"`,
             positiveButton: {
                 text: 'Retry',
@@ -105,11 +105,11 @@ const Packing = () => {
         const callback = (data: any) => {
             if (data?.error) {
                 showPopup({
-                    title: data.error.message
+                    title: data.errorMessage
                         ? `Shipment details`
                         : null,
                     message:
-                        data.error.message ??
+                        data.errorMessage ??
                         `Failed to load Shipment details value ${id}`,
                     positiveButton: {
                         text: 'Retry',
@@ -139,16 +139,16 @@ const Packing = () => {
         const callback = (data: any) => {
             if (data?.error) {
                 showPopup({
-                    title: data.error.message
+                    title: data.errorMessage
                         ? `Container details`
                         : null,
                     message:
-                        data.error.message ??
+                        data.errorMessage ??
                         `Failed to load Container details value ${id}`,
                     positiveButton: {
                         text: 'Retry',
                         callback: () => {
-                            dispatch(getContainerDetails(id));
+                            dispatch(getContainerDetails(id, callback));
                         },
                     },
                     negativeButtonText: 'Cancel',
@@ -159,7 +159,7 @@ const Packing = () => {
                 }
             }
         }
-        dispatch(getContainerDetails(id))
+        dispatch(getContainerDetails(id, callback))
     }
 
 
@@ -170,16 +170,16 @@ const Packing = () => {
         const callback = (data: any) => {
             if (data?.error) {
                 showPopup({
-                    title: data.error.message
+                    title: data.errorMessage
                         ? `Shipment details`
                         : null,
                     message:
-                        data.error.message ??
+                        data.errorMessage ??
                         `Failed to submit shipment details`,
                     positiveButton: {
                         text: 'Retry',
                         callback: () => {
-                            dispatch(submitShipmentDetails(id, request));
+                            dispatch(submitShipmentDetails(id, request, callback));
                         },
                     },
                     negativeButtonText: 'Cancel',
@@ -192,7 +192,7 @@ const Packing = () => {
                 setState({...state})
             }
         }
-        dispatch(submitShipmentDetails(id, request))
+        dispatch(submitShipmentDetails(id, request, callback))
     }
     const onChangeLPNNumber = (text: string) => {
         setState({...state, quantityUnpacked: text})

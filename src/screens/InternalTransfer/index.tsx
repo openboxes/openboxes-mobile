@@ -1,15 +1,10 @@
 import React, {useEffect, useState} from 'react';
-import {connect, useDispatch, useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import styles from './styles';
-import Location from '../../data/location/Location';
-import _, {Dictionary} from 'lodash';
-import {ScrollView, View, TouchableOpacity, Text, TextInput, Image} from 'react-native';
-import Header from '../../components/Header';
-import {List} from 'react-native-paper';
-import {Props, State, DispatchProps} from './types'
+import {View} from 'react-native';
 import showPopup from '../../components/Popup';
 import InputBox from '../../components/InputBox';
-import {showScreenLoading, hideScreenLoading} from '../../redux/actions/main';
+import {hideScreenLoading} from '../../redux/actions/main';
 import useEventListener from "../../hooks/useEventListener";
 import {searchProductGloballyAction} from "../../redux/actions/products";
 import {searchLocationByLocationNumber} from "../../redux/actions/locations"
@@ -24,10 +19,10 @@ const InternalTransfer = () => {
     const location = useSelector((state: RootState) => state.mainReducer.currentLocation)
     const [state, setState] = useState<any>({
         productCode: "",
-        product:"",
-        fromData:"",
-        toData:"",
-        binFromLocation:"",
+        product: "",
+        fromData: "",
+        toData: "",
+        binFromLocation: "",
         binToLocation: "",
         quantity: "0",
         error: null,
@@ -43,11 +38,11 @@ const InternalTransfer = () => {
 
     const showErrorPopup = (data: any, query: any, actionCallback: any, searchBarcode: any) => {
         showPopup({
-            title: data.error.message
+            title: data.errorMessage
                 ? `Failed to load search results with value = "${query}"`
                 : null,
             message:
-                data.error.message ??
+                data.errorMessage ??
                 `Failed to load search results with value = "${query}"`,
             positiveButton: {
                 text: 'Retry',
@@ -83,7 +78,7 @@ const InternalTransfer = () => {
                             if (state.productCode === "" || state.productCode === data.data[0].productCode) {
                                 state.product = data.data[0];
                                 state.productCode = data.data[0].productCode;
-                                state.quantity = (parseInt(state.quantity,10) +1).toString();
+                                state.quantity = (parseInt(state.quantity, 10) + 1).toString();
                             } else {
                                 showPopup({
                                     message: `You have scanned a wrong product barcode "${query}"`,
@@ -93,7 +88,8 @@ const InternalTransfer = () => {
                             setState({...state})
                         }
                     }
-                    dispatch(hideScreenLoading());;
+                    dispatch(hideScreenLoading());
+                    ;
                 }
             };
             dispatch(searchProductGloballyAction(query, actionCallback));
@@ -113,7 +109,7 @@ const InternalTransfer = () => {
                             if (state.binFromLocation === "") {
                                 state.fromData = data;
                                 state.binFromLocation = data.name;
-                            }else if(state.binToLocation === "") {
+                            } else if (state.binToLocation === "") {
                                 state.toData = data;
                                 state.binToLocation = data.name;
                             }
@@ -142,9 +138,9 @@ const InternalTransfer = () => {
     }
 
 
-    const onTransfer = () =>{
+    const onTransfer = () => {
         // dispatch(showScreenLoading("Update Transfer"))
-        const request :any = {
+        const request: any = {
             "status": "COMPLETED",
             "stockTransferNumber": "",
             "description": "Test stock transfer from bin with quantity =",
@@ -152,7 +148,7 @@ const InternalTransfer = () => {
             "destination.id": location.id,
             "stockTransferItems": [
                 {
-                    "product.id":state.product.id,
+                    "product.id": state.product.id,
                     "inventoryItem.id": "",
                     "location.id": location.id,
                     "originBinLocation.id": state.fromData.id,
@@ -164,11 +160,11 @@ const InternalTransfer = () => {
         // const actionCallback = (data: any) => {
         //     if (data?.error) {
         //         showPopup({
-        //             title: data.error.message
+        //             title: data.errorMessage
         //                 ? `Failed to update`
         //                 : null,
         //             message:
-        //                 data.error.message ??
+        //                 data.errorMessage ??
         //                 `Failed to update`,
         //             positiveButton: {
         //                 text: 'Retry',

@@ -4,12 +4,9 @@ import styles from './styles';
 import {useDispatch, useSelector} from 'react-redux';
 import {useNavigation} from "@react-navigation/native";
 import useEventListener from "../../hooks/useEventListener";
-import {Order} from "../../data/order/Order";
 import Product from "../../data/product/Product";
 import showPopup from "../../components/Popup";
-import {
-    searchProductGloballyAction,
-} from '../../redux/actions/products';
+import {searchProductGloballyAction,} from '../../redux/actions/products';
 import {hideScreenLoading} from '../../redux/actions/main';
 import {getInternalLocationDetails} from "../../redux/actions/locations";
 import {RootState} from "../../redux/reducers";
@@ -45,11 +42,11 @@ const Scan = () => {
             const actionCallback = (data: any) => {
                 if (data?.error) {
                     showPopup({
-                        title: data.error.message
+                        title: data.errorMessage
                             ? `Failed to load search results with value = "${query}"`
-                            : null,
+                            : "error",
                         message:
-                            data.error.message ??
+                            data.errorMessage ??
                             `Failed to load search results with value = "${query}"`,
                         positiveButton: {
                             text: 'Retry',
@@ -91,16 +88,16 @@ const Scan = () => {
             const actionLocationCallback = (data: any) => {
                 if (data?.error) {
                     showPopup({
-                        title: data.error.message
+                        title: data.errorMessage
                             ? `Failed to load search results with value = "${query}"`
                             : null,
                         message:
-                            data.error.message ??
+                            data.errorMessage ??
                             `Failed to load search results with value = "${query}"`,
                         positiveButton: {
                             text: 'Retry',
                             callback: () => {
-                                dispatch(getInternalLocationDetails(query,location.id, actionLocationCallback));
+                                dispatch(getInternalLocationDetails(query, location.id, actionLocationCallback));
                             },
                         },
                         negativeButtonText: 'Cancel',
@@ -120,16 +117,16 @@ const Scan = () => {
                     dispatch(hideScreenLoading());
                 }
             };
-            dispatch(getInternalLocationDetails(query,location.id, actionLocationCallback));
+            dispatch(getInternalLocationDetails(query, location.id, actionLocationCallback));
         }
     };
 
-    const RenderItem = ({title, subTitle}:any) => {
-        return(
-        <View style={styles.columnItem}>
-            <Text style={styles.label}>{title}</Text>
-            <Text style={styles.value}>{subTitle}</Text>
-        </View>)
+    const RenderItem = ({title, subTitle}: any) => {
+        return (
+            <View style={styles.columnItem}>
+                <Text style={styles.label}>{title}</Text>
+                <Text style={styles.value}>{subTitle}</Text>
+            </View>)
     }
 
     const navigateToProduct = (product: Product | undefined) => {
