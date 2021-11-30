@@ -89,11 +89,11 @@ const Scan = () => {
             },
             error: null,
         });
-        if ( data.type === 'Product') {
+        if (data.type === 'Product') {
             navigateToProduct(data)
         } else if (data.type === 'Location') {
             navigateToLocationDetails(query)
-        } else if ( data.type === 'Container') {
+        } else if (data.type === 'Container') {
             navigateToLPNDetails(data.id, data?.shipment?.shipmentNumber ?? "")
         }
     }
