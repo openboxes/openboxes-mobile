@@ -5,10 +5,11 @@ export const FETCH_STOCK_MOVEMENTS_SUCCESS = "FETCH_STOCK_MOVEMENTS_SUCCESS"
 export const STOCK_TRANSFERS_REQUEST = 'STOCK_TRANSFERS_REQUEST';
 export const STOCK_TRANSFERS_REQUEST_SUCCESS = 'STOCK_TRANSFERS_REQUEST_SUCCESS';
 
-export const updateStockTransfer = (data: any) => {
+export const updateStockTransfer = (data: any,callback: (data: any) => void) => {
     return {
         type: UPDATE_INTERNAL_STOCK_TRANSFER,
-        payload: {data}
+        payload: {data},
+        callback
     };
 }
 

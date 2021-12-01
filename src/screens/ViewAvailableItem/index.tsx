@@ -28,7 +28,7 @@ const ViewAvailableItem = () => {
     });
   };
   const navigateToTransfer = () => {
-    navigation.navigate('InternalTransfer', {item: availableItems});
+    navigation.navigate('Transfer',{item: availableItems});
   };
   return (
     <View style={styles.container}>
