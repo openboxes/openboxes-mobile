@@ -10,7 +10,7 @@ import {hideScreenLoading, showScreenLoading} from '../../redux/actions/main';
 import {connect} from 'react-redux';
 import {getBinLocationsAction} from '../../redux/actions/locations';
 import {createPutawayOderAction} from '../../redux/actions/putaways';
-import AutoInputInternalLocation from '../../components/AutoInputInternalLocation';
+import AutoInputBinLocation from '../../components/AutoInputBinLocation';
 
 class PutawayItem extends Component<Props, State> {
   constructor(props: Props) {
@@ -89,7 +89,7 @@ class PutawayItem extends Component<Props, State> {
           </View>
           <View style={styles.row}>
             <Text>Putaway Location</Text>
-            <AutoInputInternalLocation
+            <AutoInputBinLocation
               label="AutoInputInternalContainer"
               data={locations.map(({name}) => name)}
               selectedData={(selectedLocation: any) => {
