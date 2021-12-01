@@ -2,14 +2,14 @@ import React from 'react';
 import {DispatchProps, Props} from './Types';
 import {Container} from '../../data/container/Container';
 import {
-  FlatList,
+  FlatList, Image,
   ListRenderItemInfo,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
 import {ContainerShipmentItem} from '../../data/container/ContainerShipmentItem';
-import {fetchContainer, getContainer} from '../../redux/actions/lpn';
+import {fetchContainer, getContainer,getContainerStatus} from '../../redux/actions/lpn';
 import {getShipmentPacking} from '../../redux/actions/packing';
 import {connect} from 'react-redux';
 import styles from './styles';
@@ -17,7 +17,12 @@ import Button from '../../components/Button';
 import PrintModal from '../../components/PrintModal';
 import showPopup from '../../components/Popup';
 import SelectDropdown from "react-native-select-dropdown";
-
+const containerStatus = ['PACKING', 'PACKED', 'LOADED', 'UNLOADED', 'UNPACKING', 'UNPACKED'];
+const renderIcon = () => {
+  return (
+      <Image style={styles.arrowDownIcon} source={require('../../assets/images/arrow-down.png')}/>
+  )
+}
 export interface State {
   container: Container | null;
   visible: boolean;
@@ -32,6 +37,41 @@ class LpnDetail extends React.Component<Props, State> {
       visible: false,
       containerDetails: null,
     };
+  }
+  getContainerStatusDetails = (id: string) => {
+    if (!id) {
+      showPopup({
+        message: 'id is empty',
+        positiveButton: {text: 'Ok'},
+      });
+      return;
+    }
+    const actionCallback = (data: any) => {
+      if (data?.error) {
+        showPopup({
+          title: data.error.message
+              ? `Failed to load details with value = "${id}"`
+              : null,
+          message:
+              data.error.message ??
+              `Failed to load details with value = "${id}"`,
+          positiveButton: {
+            text: 'Retry',
+            callback: () => {
+              this.props.getContainerStatus(id, actionCallback);
+            },
+          },
+          negativeButtonText: 'Cancel',
+        });
+      } else {
+        this.showShipmentReadyToPackScreen(data["shipment.id"])
+      }
+    };
+    this.props.getContainerStatus(id, actionCallback);
+  }
+
+  showShipmentReadyToPackScreen = (id: string) => {
+    this.props.navigation.navigate('OutboundStockDetails', {shipmentId: id})
   }
 
   getContainerDetails = (id: string) => {
@@ -208,7 +248,7 @@ const mapDispatchToProps: DispatchProps = {
   fetchContainer,
   getShipmentPacking,
   getContainer,
-    getContainerStatus
+  getContainerStatus
 };
 
 export default connect(null, mapDispatchToProps)(LpnDetail);
