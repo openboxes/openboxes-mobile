@@ -25,19 +25,20 @@ export interface State {
 class CreateLpn extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
-        this.state = {
-            stockMovements: null,
+        const {id, shipmentDetail} = this.props.route.params;this.state = {
+            stockMovements: shipmentDetail?.shipmentNumber || null,
+      stockMovement: shipmentDetail?.shipmentNumber ||null,
             stockMovementList: [],
             open: false,
-            stockMovement: null,
+
             name: null,
             containerNumber: null,
-            stockMovementId: null,
+            stockMovementId: id ||null,
         };
     }
 
     componentDidMount() {
-        console.debug('Did mount with stockmovement');
+
         this.getShipmentOrigin();
     }
 
@@ -151,8 +152,7 @@ class CreateLpn extends React.Component<Props, State> {
     };
 
     render() {
-        // const {open, value, stockMovements} = this.state;
-        // const [selectedLanguage, setSelectedLanguage] = this.state;
+
         console.debug('{item.item.name}:');
         return (
             <View style={styles.container}>
@@ -169,7 +169,7 @@ class CreateLpn extends React.Component<Props, State> {
                                 stockMovement: selectedItem,
                                 stockMovementId: stockMovement?.id,
                             });
-                        }}
+                        }}initValue={this.state.stockMovements}
                     />
                     <InputBox
                         value={this.state.name}

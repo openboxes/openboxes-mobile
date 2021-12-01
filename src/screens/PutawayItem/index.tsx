@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 /* eslint-disable no-shadow */
 import React, {Component} from 'react';
 import {DispatchProps, Props, State} from './types';
@@ -53,7 +54,8 @@ class PutawayItem extends Component<Props, State> {
         };
         createPutawayOderAction(data, () => {
             ToastAndroid.show('Order created successfully', ToastAndroid.SHORT);
-        });
+        this.props.navigation.goBack();
+      this.props.route.params.onRefresh();});
     };
 
     render() {
@@ -96,17 +98,18 @@ class PutawayItem extends Component<Props, State> {
                                 style={styles.quantityInput}
                                 keyboardType="number-pad"
                                 value={quantity}
-                                onChangeText={quantity => {
-                                    this.setState({quantity});
+                                onChangeText={changeQuantity => {
+                                    this.setState({quantity: changeQuantity});
                                 }}
                             />
                             <Text style={styles.quantityText}>{`/ ${item.quantity}`}</Text>
                         </View>
                     </View>
                 </View>
-                <Button
+                <Buttondisabled={this.state?.selectedLocation?.id ? false : true}
+          style={{padding: 20}}
                     title={'Create Putaway'}
-                    style={styles.buttonContainer}
+
                     onPress={this.create}
                 />
             </View>

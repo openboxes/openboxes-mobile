@@ -1,12 +1,13 @@
-import React, {useState} from 'react';
-import {Image, Modal, Pressable, Text, View,} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {Image, Modal, Text, Pressable, View, TextInput} from 'react-native';
+import SelectDropdown from 'react-native-select-dropdown';
 import styles from './styles';
 import {DispatchProps, Props} from './types';
 import {printLabelAction} from '../../redux/actions/products';
 import {connect} from 'react-redux';
 import {RootState} from '../../redux/reducers';
-import InputBox from "../InputBox";
-import Button from "../../components/Button";
+import InputBox from '../InputBox';
+import Button from '../../components/Button';
 
 const arrowDown = require('../../assets/images/arrow-down.png');
 
@@ -24,8 +25,8 @@ function PrintModal(props: Props) {
     };
 
     const onChangeLabel = (text: string) => {
-        setLabel(text)
-    }
+        setLabel(text);
+    };
     return (
         <Modal
             animationType="slide"
@@ -42,8 +43,8 @@ function PrintModal(props: Props) {
                         disabled={false}
                         editable={false}
                         onChange={onChangeLabel}
-                        label={'Number of Labels'}/>
-                    <View style={styles.bottom}>
+                        label={'Number of Labels'}
+                    /><View style={styles.bottom}>
                         <Button
                             title={'Print Label'}
                             onPress={handleClick}/>

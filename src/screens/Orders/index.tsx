@@ -10,7 +10,6 @@ import {getOrdersAction} from '../../redux/actions/orders';
 import {hideScreenLoading, showScreenLoading} from '../../redux/actions/main';
 import BarCodeSearchHeader from '../Products/BarCodeSearchHeader';
 
-
 class Index extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
@@ -44,7 +43,7 @@ class Index extends React.Component<Props, State> {
                     this.setState({
                         error: 'No outbound orders found',
                         allOrders: data,
-                        resultCount: 0
+                        resultCount: 0,
                     });
                 } else {
                     this.setState({
@@ -61,7 +60,7 @@ class Index extends React.Component<Props, State> {
             this.props.hideScreenLoading();
         };
         this.props.getOrdersAction(query, actionCallback);
-    }
+    };
 
     onBackButtonPress = () => {
         this.props.exit();
@@ -88,10 +87,10 @@ class Index extends React.Component<Props, State> {
                 {/*/>*/}
                 <BarCodeSearchHeader
                     onBarCodeSearchQuerySubmitted={this.searchOrders}
-                    placeHolder={'Search Orders by Name'}
+                    placeholder={'Search Orders by Name'}
                     autoSearch={true}
                     searchBox={false}/>
-                <Text style={styles.label}> Returned {this.state.resultCount} results</Text>
+                <Text style={styles.label}>{' '} Returned {this.state.resultCount} results</Text>
                 <View style={styles.content}>
                     <OrdersList
                         orders={this.state.allOrders}

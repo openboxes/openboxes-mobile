@@ -5,6 +5,7 @@ export default StyleSheet.create({
     display: 'flex',
     flexDirection: 'column',
     flex: 1,
+    zIndex: -1
   },
   content: {
     display: 'flex',
