@@ -6,7 +6,9 @@ import {Card} from "react-native-paper";
 import {useDispatch, useSelector} from "react-redux";
 import showPopup from "../../components/Popup";
 import {getLocationProductSummary} from "../../redux/actions/locations";
+import {searchProductGloballyAction} from "../../redux/actions/products";
 import {RootState} from "../../redux/reducers";
+import BarCodeSearchHeader from '../Products/BarCodeSearchHeader';
 
 const ProductSummary = () => {
     const navigation = useNavigation<any>();
@@ -47,6 +49,47 @@ const ProductSummary = () => {
         dispatch(getLocationProductSummary(id, callback));
     }
 
+    const showErrorPopup = (data: any, query: any, actionCallback: any, searchBarcode: any) => {
+        showPopup({
+            title: data.error.message
+                ? `Failed to load search results with value = "${query}"`
+                : null,
+            message:
+                data.error.message ??
+                `Failed to load search results with value = "${query}"`,
+            positiveButton: {
+                text: 'Retry',
+                callback: () => {
+                    dispatch(searchBarcode(query, actionCallback));
+                },
+            },
+            negativeButtonText: 'Cancel',
+        });
+    }
+
+    const searchProduct = (query: string) => {
+
+        const actionCallback = (data: any) => {
+            if (data?.error) {
+                showErrorPopup(data, query, actionCallback, searchProductGloballyAction)
+            } else {
+                console.log(data)
+                if (data.length == 0) {
+                    showPopup({
+                        message: `No search results found for product name "${query}"`,
+                        positiveButton: {text: 'Ok'},
+                    });
+                } else {
+                    if (data && Object.keys(data).length !== 0) {
+                        state.productSummary = data.data
+                    }
+                    setState({...state})
+                }
+            }
+        };
+        dispatch(searchProductGloballyAction(query, actionCallback));
+    }
+
     const RenderData = ({title, subText}: any): JSX.Element => {
         return (
             <View style={styles.columnItem}>
@@ -65,30 +108,40 @@ const ProductSummary = () => {
 
 
     const renderListItem = (item: any, index: any) => {
-        return (<TouchableOpacity
-            key={index}
-            onPress={() => navigateToDetails(item)}
-            style={styles.itemView}>
-            <Card>
-                <Card.Content>
-                    <View style={styles.rowItem}>
-                        <RenderData title={"Product Code"} subText={item.productCode}/>
-                        <RenderData title={"Quantity OnHand"} subText={item.quantityOnHand}/>
-                    </View>
-                    <View style={styles.rowItem}>
-                        <RenderData title={"Product Name"} subText={item.productName}/>
-                    </View>
-                </Card.Content>
-            </Card>
-        </TouchableOpacity>)
+        return (
+
+            <TouchableOpacity
+                key={index}
+                onPress={() => navigateToDetails(item)}
+                style={styles.itemView}>
+                <Card>
+                    <Card.Content>
+                        <View style={styles.rowItem}>
+                            <RenderData title={"Product Code"} subText={item.productCode}/>
+                            <RenderData title={"Quantity OnHand"} subText={item.quantityOnHand}/>
+                        </View>
+                        <View style={styles.rowItem}>
+                            <RenderData title={"Product Name"} subText={item.productName}/>
+                        </View>
+                    </Card.Content>
+                </Card>
+            </TouchableOpacity>)
     }
 
     return (
-        <FlatList
-            renderItem={({item, index,}) => renderListItem(item, index)}
-            data={state.productSummary}
-            keyExtractor={(item, index) => item + index}
-        />
+        <>
+            <BarCodeSearchHeader
+                onBarCodeSearchQuerySubmitted={(query) => searchProduct(query)}
+                placeholder={'Search Orders by Name'}
+                autoSearch={true}
+                searchBox={false}
+            />
+            <FlatList
+                renderItem={({item, index,}) => renderListItem(item, index)}
+                data={state.productSummary}
+                keyExtractor={(item, index) => item + index}
+            />
+        </>
     );
 }
 export default ProductSummary;
