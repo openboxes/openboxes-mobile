@@ -4,9 +4,9 @@ import {
   FlatList,
   Text,
   TouchableOpacity,
-  Alert,
   SafeAreaView,
   RefreshControl,
+  Alert,
 } from 'react-native';
 import {RootState} from '../../redux/reducers';
 import {DispatchProps} from './types';
@@ -40,11 +40,11 @@ class PutawayCandidates extends Component<Props> {
       <TouchableOpacity
         style={styles.itemBox}
         onPress={() => {
-          // if (item.id) {
-          //   Alert.alert('Item is already in a pending putaway');
-          // } else {
+          if (item.id) {
+            Alert.alert('Item is already in a pending putaway');
+          } else {
             this.props.navigation.navigate('PutawayItem', {item});
-          //}
+          }
         }}>
         <Text>{`Status - ${item['putawayStatus']}`}</Text>
         <Text>{`Product Code - ${item['product.productCode']}`}</Text>

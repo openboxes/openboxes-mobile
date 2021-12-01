@@ -1,22 +1,13 @@
+/* eslint-disable react-native/no-inline-styles */
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useState} from 'react';
-import {connect, useDispatch, useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import styles from './styles';
-import Location from '../../data/location/Location';
-import _, {Dictionary} from 'lodash';
-import {
-  ScrollView,
-  View,
-  TouchableOpacity,
-  Text,
-  TextInput,
-  Image,
-} from 'react-native';
-import Header from '../../components/Header';
-import {List} from 'react-native-paper';
-import {Props, State, DispatchProps} from './types';
+import _ from 'lodash';
+import {View} from 'react-native';
 import showPopup from '../../components/Popup';
 import InputBox from '../../components/InputBox';
-import {showScreenLoading, hideScreenLoading} from '../../redux/actions/main';
+import {hideScreenLoading} from '../../redux/actions/main';
 import useEventListener from '../../hooks/useEventListener';
 import {searchProductGloballyAction} from '../../redux/actions/products';
 import {searchLocationByLocationNumber} from '../../redux/actions/locations';
