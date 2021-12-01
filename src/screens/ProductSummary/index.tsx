@@ -108,24 +108,22 @@ const ProductSummary = () => {
 
 
     const renderListItem = (item: any, index: any) => {
-        return (
-
-            <TouchableOpacity
-                key={index}
-                onPress={() => navigateToDetails(item)}
-                style={styles.itemView}>
-                <Card>
-                    <Card.Content>
-                        <View style={styles.rowItem}>
-                            <RenderData title={"Product Code"} subText={item.productCode}/>
-                            <RenderData title={"Quantity OnHand"} subText={item.quantityOnHand}/>
-                        </View>
-                        <View style={styles.rowItem}>
-                            <RenderData title={"Product Name"} subText={item.productName}/>
-                        </View>
-                    </Card.Content>
-                </Card>
-            </TouchableOpacity>)
+        return (<TouchableOpacity
+            key={index}
+            onPress={() => navigateToDetails(item)}
+            style={styles.itemView}>
+            <Card>
+                <Card.Content>
+                    <View style={styles.rowItem}>
+                        <RenderData title={"Product Code"} subText={item.productCode}/>
+                        <RenderData title={"Quantity OnHand"} subText={item.quantityOnHand}/>
+                    </View>
+                    <View style={styles.rowItem}>
+                        <RenderData title={"Product Name"} subText={item.productName}/>
+                    </View>
+                </Card.Content>
+            </Card>
+        </TouchableOpacity>)
     }
 
     return (
