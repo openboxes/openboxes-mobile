@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {DispatchProps, Props} from './types';
-import {Alert, FlatList, Text, TouchableOpacity} from 'react-native';
+import {FlatList, Text, TouchableOpacity} from 'react-native';
 import Refresh from '../../components/Refresh';
 import {RootState} from '../../redux/reducers';
 import styles from './styles';
