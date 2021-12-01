@@ -16,6 +16,7 @@ import styles from './styles';
 import Button from '../../components/Button';
 import PrintModal from '../../components/PrintModal';
 import showPopup from '../../components/Popup';
+import SelectDropdown from "react-native-select-dropdown";
 
 export interface State {
   container: Container | null;
@@ -132,7 +133,21 @@ class LpnDetail extends React.Component<Props, State> {
               </Text>
             </View>
           </View>
-          <FlatList
+          <Text style={styles.value}>{"Status"}</Text>
+                    <SelectDropdown
+                        data={containerStatus}
+                        onSelect={(selectedItem, index) => {
+                            console.log(selectedItem, index)
+                            const {id} = this.props.route.params
+                            this.getContainerStatusDetails(id)
+                        }}
+                        defaultValueByIndex={0}
+                        renderDropdownIcon={renderIcon}
+                        buttonStyle={styles.select}
+                        buttonTextAfterSelection={(selectedItem, index) => selectedItem}
+                        rowTextForSelection={(item, index) => item}
+                    />
+                    <FlatList
             data={this.state.container?.shipmentItems}
             renderItem={(
               shipmentItem: ListRenderItemInfo<ContainerShipmentItem>,
@@ -193,6 +208,7 @@ const mapDispatchToProps: DispatchProps = {
   fetchContainer,
   getShipmentPacking,
   getContainer,
+    getContainerStatus
 };
 
 export default connect(null, mapDispatchToProps)(LpnDetail);
