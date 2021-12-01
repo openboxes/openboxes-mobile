@@ -24,11 +24,11 @@ class PutawayCandidates extends Component<Props> {
       <TouchableOpacity
         style={styles.itemBox}
         onPress={() => {
-          if (item.id) {
-            Alert.alert('Item is already in a pending putaway');
-          } else {
+          // if (item.id) {
+          //   Alert.alert('Item is already in a pending putaway');
+          // } else {
             this.props.navigation.navigate('PutawayItem', {item});
-          }
+          //}
         }}>
         <Text>{`Status - ${item['putawayStatus']}`}</Text>
         <Text>{`Product Code - ${item['product.productCode']}`}</Text>
