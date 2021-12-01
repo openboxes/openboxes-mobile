@@ -77,7 +77,11 @@ class PutawayItem extends Component<Props, State> {
           </View>
           <View style={styles.row}>
             <Text>Lot Number</Text>
-            <TextInput value={item['inventoryItem.lotNumber'] ?? 'Default'} />
+            <TextInput
+              editable={false}
+              selectTextOnFocus={false}
+              value={item['inventoryItem.lotNumber'] ?? 'Default'}
+            />
           </View>
           <View style={styles.row}>
             <Text>Current Location</Text>
@@ -101,7 +105,14 @@ class PutawayItem extends Component<Props, State> {
                 keyboardType="number-pad"
                 value={quantity}
                 onChangeText={changeQuantity => {
-                  this.setState({quantity: changeQuantity});
+                  if (Number(changeQuantity) <= item.quantity) {
+                    this.setState({changeQuantity});
+                  } else {
+                    ToastAndroid.show(
+                      'quantity will be not grater then received quantity',
+                      ToastAndroid.SHORT,
+                    );
+                  }
                 }}
               />
               <Text style={styles.quantityText}>{`/ ${item.quantity}`}</Text>

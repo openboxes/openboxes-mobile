@@ -1,7 +1,13 @@
 import React, {Component} from 'react';
-import {Props, State} from './types';
-import {FlatList, Text, TouchableOpacity, Alert} from 'react-native';
-import Refresh from '../../components/Refresh';
+import {Props} from './types';
+import {
+  FlatList,
+  Text,
+  TouchableOpacity,
+  SafeAreaView,
+  RefreshControl,
+  Alert,
+} from 'react-native';
 import {RootState} from '../../redux/reducers';
 import {DispatchProps} from './types';
 import styles from './styles';
@@ -10,13 +16,23 @@ import {connect} from 'react-redux';
 import {getCandidates} from '../../redux/actions/putaways';
 
 class PutawayCandidates extends Component<Props> {
+  constructor(props: Props) {
+    super(props);
+
+    this.state = {
+      refreshing: false,
+    };
+  }
+
   UNSAFE_componentWillMount() {
     this.getScreenData();
   }
 
-  getScreenData = () => {
+  getScreenData = async () => {
+    this.setState({refreshing: true});
     const {SelectedLocation} = this.props;
-    this.props.getCandidates(SelectedLocation.id);
+    await this.props.getCandidates(SelectedLocation.id);
+    this.setState({refreshing: false});
   };
 
   renderItem = (item: any) => {
@@ -24,11 +40,11 @@ class PutawayCandidates extends Component<Props> {
       <TouchableOpacity
         style={styles.itemBox}
         onPress={() => {
-          // if (item.id) {
-          //   Alert.alert('Item is already in a pending putaway');
-          // } else {
+          if (item.id) {
+            Alert.alert('Item is already in a pending putaway');
+          } else {
             this.props.navigation.navigate('PutawayItem', {item});
-          //}
+          }
         }}>
         <Text>{`Status - ${item['putawayStatus']}`}</Text>
         <Text>{`Product Code - ${item['product.productCode']}`}</Text>
@@ -48,13 +64,19 @@ class PutawayCandidates extends Component<Props> {
   render() {
     const {candidates} = this.props;
     return (
-      <Refresh onRefresh={this.getScreenData}>
+      <SafeAreaView style={styles.container}>
         <FlatList
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.refreshing}
+              onRefresh={this.getScreenData}
+            />
+          }
           data={candidates}
           renderItem={({item}) => this.renderItem(item)}
           keyExtractor={(item, index) => index}
         />
-      </Refresh>
+      </SafeAreaView>
     );
   }
 }
