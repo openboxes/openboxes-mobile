@@ -13,7 +13,7 @@ import {
   submitShipmentDetails,
 } from '../../redux/actions/packing';
 import AutoInputInternalLocation from '../../components/AutoInputInternalLocation';
-import IncrementDecrement from "../../components/IncreamentDecreament";
+import IncrementDecrement from "../../components/InputSpinner";
 
 
 const ShipItemDetails = () => {

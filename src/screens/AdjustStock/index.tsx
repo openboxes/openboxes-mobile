@@ -11,7 +11,7 @@ import DropDown from "react-native-paper-dropdown";
 import RenderData from '../../components/RenderData';
 import { RootState } from '../../redux/reducers';
 import { stockAdjustments } from '../../redux/actions/products';
-import IncrementDecrement from "../../components/IncreamentDecreament";
+import IncrementDecrement from "../../components/InputSpinner";
 
 const reasonCodes = [
   {

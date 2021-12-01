@@ -1,18 +1,18 @@
 import React from 'react';
-import InputSpinner from "react-native-input-spinner";
+import {InputSpinner as Spinner} from "react-native-input-spinner";
 import {StyleSheet, Text, View} from "react-native";
 import {colors} from "../constants";
 
-const IncrementDecrement = ({title,value,max,setValue}: any) => {
+const InputSpinner = ({title,value,max,setValue}: any) => {
     return (<>
             <View style={styles.textView}><Text>{title}</Text></View>
             <View style={styles.container}>
-                <InputSpinner
+                <Spinner
                     max={max}
                     min={0}
                     color={colors.headerColor}
                     value={value}
-                    onChange={(num)=>{
+                    onChange={(num:any)=>{
                         setValue(num);
                     }}
                 />
@@ -20,7 +20,7 @@ const IncrementDecrement = ({title,value,max,setValue}: any) => {
         </>
     )
 };
-export default IncrementDecrement;
+export default InputSpinner;
 const styles = StyleSheet.create({
     container: {
         width: "40%",

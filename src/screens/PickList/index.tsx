@@ -27,7 +27,7 @@ import InputBox from '../../components/InputBox';
 import Carousel from 'react-native-snap-carousel';
 import {device} from '../../constants';
 import {PicklistItem} from '../../data/picklist/PicklistItem';
-import IncrementDecrement from "../../components/IncreamentDecreament";
+import IncrementDecrement from "../../components/InputSpinner";
 
 const PickOrderItem = () => {
   const route = useRoute();
