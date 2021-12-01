@@ -38,6 +38,9 @@ export const PRINT_LABEL_REQUEST_FAIL = 'PRINT_LABEL_REQUEST_FAIL';
 
 export const STOCK_ADJUSTMENT_REQUEST = 'STOCK_ADJUSTMENT_REQUEST'
 export const STOCK_ADJUSTMENT_REQUEST_SUCCESS = "STOCK_ADJUSTMENT_REQUEST_SUCCESS"
+
+export const SEARCH_BARCODE = 'SEARCH_BARCODE'
+export const SEARCH_BARCODE_SUCCESS = "SEARCH_BARCODE_SUCCESS"
 export function getProductsAction(callback?: (products: any) => void) {
   return {
     type: GET_PRODUCTS_REQUEST,
@@ -118,6 +121,17 @@ export function stockAdjustments(
   return {
     type: STOCK_ADJUSTMENT_REQUEST,
     payload: {data},
+    callback,
+  };
+}
+
+export function searchBarcode(
+    id: any,
+    callback?: (data: any) => void,
+) {
+  return {
+    type: SEARCH_BARCODE,
+    payload: {id},
     callback,
   };
 }
