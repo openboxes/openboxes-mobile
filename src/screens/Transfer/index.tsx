@@ -86,7 +86,7 @@ const Transfer = () => {
                 "product.id": item.inventoryItem.product.id,
                 "inventoryItem.id": item.inventoryItem.id,
                 "location.id": location.id,
-                "originBinLocation.id": item?.binLocation.id ?? "Never",
+                "originBinLocation.id": item?.binLocation?.id,
                 "destinationBinLocation.id": state.binToLocationData.id,
                 "quantity": state.quantity
             }
@@ -138,7 +138,7 @@ const Transfer = () => {
                         editable={false}
                         label={'Expiration Date'}/>
                     <InputBox
-                        value={item?.binLocation.name ?? "Never"}
+                        value={item?.binLocation.name ?? "Default"}
                         label={'From'}
                         disabled={true}
                         editable={false}/>
