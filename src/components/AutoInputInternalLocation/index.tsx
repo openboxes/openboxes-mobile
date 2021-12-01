@@ -1,68 +1,39 @@
 import React, {useState} from 'react';
 import styles from './styles';
-import {View, Text, Image} from 'react-native';
-import AutoComplete from 'react-native-autocomplete-input';
+import {View, TextInput} from 'react-native';
 import {Props} from './types';
-import {TouchableOpacity} from 'react-native-gesture-handler';
-const iconClear = require('../../assets/images/icon_clear.png');
+import ModalSelector from 'react-native-modal-selector-searchable';
 
-export default function ({
-  refs,
-  data,
-  disabled,
-  selectedData,
-  getMoreData,
-}: Props) {
-  const [query, setQuery] = useState('');
-  const [showResult, setShowResult] = useState(true);
-  const dataFilter = (value: any) => {
-    if (typeof value === 'string') {
-      return value.toLowerCase().includes(query.toLowerCase());
-    } else if (typeof value === 'object') {
-      return value?.name?.includes(query);
-    }
-  };
+export default function ({data, selectedData, initValue = ''}: Props) {
+  const [query, setQuery] = useState(initValue);
 
   return (
     <View style={styles.mainContainer}>
-      <AutoComplete
-        editable={disabled}
-        containerStyle={styles.autoCompleteInputContainer}
-        inputContainerStyle={styles.autoCompleteInputContainer}
-        onChangeText={(text: string) => {
-          setShowResult(false);
-          setQuery(text);
+      <ModalSelector
+        data={data.map((item, index) => ({
+          key: index,
+          label: item,
+          select: index === 0,
+        }))}
+        initValue=""
+        supportedOrientations={['landscape']}
+        optionContainerStyle={styles.container}
+        optionTextStyle={styles.option}
+        accessible={true}
+        scrollViewAccessibilityLabel={'Scrollable options'}
+        cancelButtonAccessibilityLabel={'Cancel Button'}
+        onChange={(option: {label: React.SetStateAction<string>; key: any}) => {
+          setQuery(option.label);
+          selectedData?.(option.label, option.key);
         }}
-        hideResults={showResult}
-        flatListProps={{
-          keyboardShouldPersistTaps: 'always',
-          keyExtractor: (_, idx) => idx,
-          style: {maxHeight: 100},
-          nestedScrollEnabled: true,
-          renderItem: ({item}: any) => (
-            <TouchableOpacity
-              style={styles.itemContainer}
-              onPress={() => {
-                setQuery(item?.name || item);
-                setShowResult(true);
-                selectedData?.(item);
-              }}>
-              <Text style={styles.textInput}>{item?.name || item}</Text>
-            </TouchableOpacity>
-          ),
-        }}
-        onShowResults={(res: boolean) =>
-          !res && getMoreData?.('here you can pass params for api')
-        }
-        data={data.filter((value: any) => dataFilter(value))}
-        value={query}
-      />
-      <TouchableOpacity
-        onPress={() => {
-          setQuery('');
-        }}>
-        <Image style={styles.clearButton} source={iconClear} />
-      </TouchableOpacity>
+        onCancel={() => setQuery('')}>
+        <TextInput
+          style={styles.textInput}
+          editable={false}
+          placeholder=""
+          value={query}
+        />
+      </ModalSelector>
     </View>
   );
 }

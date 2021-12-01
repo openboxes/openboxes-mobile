@@ -10,8 +10,8 @@ export default function PutAwayItem(props: Props) {
     <TouchableOpacity style={styles.listItemContainer} onPress={onItemTapped}>
       <View style={styles.row}>
         <View style={styles.col50}>
-          <Text style={styles.label}>Id</Text>
-          <Text style={styles.value}>{item['stockMovement.name']}</Text>
+          <Text style={styles.label}>Product Code</Text>
+          <Text style={styles.value}>{item['product.productCode']}</Text>
         </View>
         <View style={styles.col50}>
           <Text style={styles.label}>Product Name</Text>
@@ -34,8 +34,8 @@ export default function PutAwayItem(props: Props) {
           <Text style={styles.value}>{item.quantity}</Text>
         </View>
         <View style={styles.col50}>
-          <Text style={styles.label}>Qty Available</Text>
-          <Text style={styles.value}>{item.quantityAvailable}</Text>
+          <Text style={styles.label}>Putaway Status</Text>
+          <Text style={styles.value}>{item.putawayStatus}</Text>
         </View>
       </View>
     </TouchableOpacity>
