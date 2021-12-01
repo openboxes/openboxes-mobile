@@ -4,7 +4,10 @@ export default StyleSheet.create({
   container: {
     paddingHorizontal: 10,
     flex: 1,
-    paddingBottom: 30,
+    paddingBottom: 10,
+  },
+  childContainer: {
+    flex: 1,
   },
   row: {
     borderWidth: 2,
