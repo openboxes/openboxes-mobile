@@ -1,96 +1,21 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import {Text, View} from 'react-native';
 import styles from './styles';
-import {useDispatch} from 'react-redux';
 import {useNavigation} from "@react-navigation/native";
-import useEventListener from "../../hooks/useEventListener";
 import Product from "../../data/product/Product";
-import showPopup from "../../components/Popup";
-import {searchBarcode,} from '../../redux/actions/products';
+import onBarcodeScanned from "../../hooks/onBarcodeScanned";
 
 const Scan = () => {
-    const barcodeData = useEventListener();
+    const barcodeData = onBarcodeScanned();
     const navigation = useNavigation();
-    const dispatch = useDispatch();
-    const [state, setState] = useState<any>({
-        error: null,
-        searchProductCode: null,
-
-    });
-
 
     useEffect(() => {
-        if (barcodeData && Object.keys(barcodeData).length !== 0) {
-            onBarCodeScanned(barcodeData.data)
+        if (barcodeData?.results && barcodeData?.query) {
+            onSuccess(barcodeData?.results, barcodeData?.query)
         }
     }, [barcodeData])
 
-    const onBarCodeScanned = (query: string) => {
-        onEmptyQuery(query);
-        const actionCallback = (data: any) => {
-            if (data?.error) {
-                onError(data, query,() => {
-                    dispatch(searchBarcode(query, actionCallback));
-                })
-            } else {
-                if (data.length == 0) {
-                    onEmptyData(query)
-                } else {
-                    if (data && Object.keys(data).length !== 0) {
-                        onSuccess(data, query)
-                    }
-                }
-            }
-        };
-        dispatch(searchBarcode(query, actionCallback));
-
-    };
-
-
-
-    const onError = (data: any, query: any, callback: (data: any) => void,) => {
-        showPopup({
-            title: data.errorMessage
-                ?? `Failed to load search results with value = "${query}"`,
-            message:
-                data.errorMessage ??
-                `Failed to load search results with value = "${query}"`,
-            positiveButton: {
-                text: 'Retry',
-                callback: callback
-            },
-            negativeButtonText: 'Cancel',
-        });
-    }
-    const onEmptyQuery = (query: any) => {
-        if (!query) {
-            showPopup({
-                message: 'Search query is empty',
-                positiveButton: {text: 'Ok'},
-            });
-            return;
-        }
-
-    }
-    const onEmptyData = (query: any) => {
-        setState({
-            ...state,
-            searchProductCode: {
-                query: query,
-                results: null,
-            },
-            error: `No search results found for barcode "${query}"`,
-        });
-    }
     const onSuccess = (data: any, query: any) => {
-        setState({
-            ...state,
-            searchProductCode: {
-                query: query,
-                results: data,
-            },
-            error: null,
-        });
         if (data.type === 'Product') {
             navigateToProduct(data)
         } else if (data.type === 'Location') {
@@ -116,14 +41,13 @@ const Scan = () => {
                 id: id,
                 shipmentNumber: stockMovement,
             });
-            console.log("Container")
         }
     }
 
     return (
         <View style={styles.screenContainer}>
             <View style={styles.countLabelAndIconContainer}>
-                {barcodeData && <Text style={styles.countLabel}>{JSON.stringify(barcodeData?.data)}</Text>}
+                {barcodeData && <Text style={styles.countLabel}>{JSON.stringify(barcodeData?.query)}</Text>}
             </View>
         </View>);
 
