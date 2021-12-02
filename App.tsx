@@ -9,15 +9,14 @@ import Main from './src/Main';
 import {StatusBar} from 'react-native';
 import {colors} from './src/constants';
 import * as Sentry from '@sentry/react-native';
+import {environment} from './src/utils/Environment';
 
 const saga = createSageMiddleware();
-
 export const store = createStore(rootRducer, applyMiddleware(saga));
-
 saga.run(watchers);
 
 Sentry.init({
-  dsn: 'https://3f3a1c96911b47349bc28f92c7580add@o24796.ingest.sentry.io/6072925',
+  dsn: `https://${environment.PUBLIC_KEY}${environment.SECRET_KEY}.ingest.sentry.io/${environment.PROJECT_ID}`,
 });
 export class App extends Component {
   render() {

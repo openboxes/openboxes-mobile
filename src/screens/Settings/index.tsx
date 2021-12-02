@@ -1,26 +1,26 @@
-import React, {FC, useEffect, useState} from 'react'
+import React, {FC, useEffect, useState} from 'react';
 import {View, TextInput, Text, Button} from "react-native";
-import {Props} from './types'
+import {Props} from './types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {environment} from "../../utils/Environment";
 import * as NavigationService from "../../NavigationService";
 import ApiClient from "../../utils/ApiClient";
 
 const Settings: FC<Props> = ({}) => {
-    const [value, setValue] = useState('')
+    const [value, setValue] = useState('');
 
     useEffect(() => {
         AsyncStorage.getItem('API_URL').then((url) => {
-            setValue(url || environment.API_BASE_URL)
-        })
-    }, [])
+            setValue(url || environment.API_BASE_URL);
+        });
+    }, []);
 
     const handlePress = () => {
-        ApiClient.setBaseUrl(value)
+        ApiClient.setBaseUrl(value);
         AsyncStorage.setItem('API_URL', value).then(() => {
-            NavigationService.navigate("Login")
-        })
-    }
+            NavigationService.navigate("Login");
+        });
+    };
 
     return (
         <View style={{flex: 1, padding: 10}}>
@@ -30,7 +30,7 @@ const Settings: FC<Props> = ({}) => {
                     style={{borderWidth: 1, paddingHorizontal: 10, marginTop: 5}}
                     value={value}
                     onChangeText={(text) => {
-                        setValue(text)
+                        setValue(text);
                     }}
                 />
             </View>
@@ -39,7 +39,7 @@ const Settings: FC<Props> = ({}) => {
                 title="Go"
             />
         </View>
-    )
-}
+    );
+};
 
-export default Settings
+export default Settings;
