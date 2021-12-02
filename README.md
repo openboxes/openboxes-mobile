@@ -99,3 +99,5 @@ or it will try launching an emulator.
 ```
 yarn ios
 ```
+
+[**Sentry**](https://sentry.io/organizations/openboxes/projects/openboxes-mobile) - for error logging

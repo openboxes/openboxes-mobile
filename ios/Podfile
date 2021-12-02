@@ -12,6 +12,8 @@ target 'openboxes_mobile_o' do
     :hermes_enabled => false
   )
 
+  pod 'RNSentry', :path => '../node_modules/@sentry/react-native'
+
   target 'openboxes_mobile_oTests' do
     inherit! :complete
     # Pods for testing
