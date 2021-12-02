@@ -11,7 +11,7 @@ import DropDown from "react-native-paper-dropdown";
 import RenderData from '../../components/RenderData';
 import { RootState } from '../../redux/reducers';
 import { stockAdjustments } from '../../redux/actions/products';
-import IncrementDecrement from "../../components/InputSpinner";
+import InputSpinner from "../../components/InputSpinner";
 
 const reasonCodes = [
   {
@@ -195,7 +195,7 @@ const AdjustStock = () => {
     <ScrollView style={styles.container}>
       <RenderItem />
       <View style={styles.from}>
-          <IncrementDecrement
+          <InputSpinner
               title={'Quantity Adjusted'}
               value={state.quantityAdjusted}
               setValue={setQuantityAdjusted}

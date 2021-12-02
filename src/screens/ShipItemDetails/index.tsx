@@ -13,7 +13,7 @@ import {
   submitShipmentDetails,
 } from '../../redux/actions/packing';
 import AutoInputInternalLocation from '../../components/AutoInputInternalLocation';
-import IncrementDecrement from "../../components/InputSpinner";
+import InputSpinner from "../../components/InputSpinner";
 
 
 const ShipItemDetails = () => {
@@ -162,7 +162,7 @@ const ShipItemDetails = () => {
           });
         }}
       />
-      <IncrementDecrement
+      <InputSpinner
         title={"Quantity to Pick"}
         value={state.quantityPicked}
         setValue={quantityPickedChange}
