@@ -68,10 +68,35 @@ const OptionMenu = ({route, navigation}: any) => {
                 width: '70%',
               }}
               onPress={() => {
+                closeMenu();
+              }}
+              title="User detail"
+            />
+            <Menu.Item
+              style={{
+                width: '70%',
+              }}
+              onPress={() => {
+                closeMenu();
+              }}
+              title="App info / version"
+            />
+            <Menu.Item
+              style={{
+                width: '70%',
+              }}
+              onPress={() => {
                 navigation.navigate('Settings');
                 closeMenu();
               }}
               title="Settings"
+            />
+            <Menu.Item
+              style={{
+                width: '70%',
+              }}
+              onPress={() =>  closeMenu()}
+              title="Change location"
             />
             <Menu.Item
               style={{
