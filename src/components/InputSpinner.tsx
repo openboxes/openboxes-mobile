@@ -1,5 +1,5 @@
 import React from 'react';
-import {InputSpinner as Spinner} from "react-native-input-spinner";
+import Spinner from "react-native-input-spinner";
 import {StyleSheet, Text, View} from "react-native";
 import {colors} from "../constants";
 

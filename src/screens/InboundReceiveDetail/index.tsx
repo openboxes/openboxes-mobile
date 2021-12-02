@@ -13,7 +13,7 @@ import SelectDropdown from 'react-native-select-dropdown';
 import {getInternalLocations} from '../../redux/actions/locations';
 import {RootState} from '../../redux/reducers';
 import AutoInputInternalLocation from '../../components/AutoInputInternalLocation';
-import IncrementDecrement from "../../components/InputSpinner";
+import InputSpinner from "../../components/InputSpinner";
 
 const InboundReceiveDetail = () => {
   const dispatch = useDispatch();
@@ -254,7 +254,7 @@ const InboundReceiveDetail = () => {
             }
           }}
         />
-        <IncrementDecrement
+        <InputSpinner
             title={'Quantity to Receive'}
             value={state.quantityToReceive}
             setValue={onChangeQuantity}
