@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 /* eslint-disable no-shadow */
 import React, {Component} from 'react';
 import {Props, State} from './types';
@@ -54,6 +55,8 @@ class PutawayItem extends Component<Props, State> {
     };
     createPutawayOderAction(data, () => {
       ToastAndroid.show('Order created successfully', ToastAndroid.SHORT);
+      this.props.navigation.goBack();
+      this.props.route.params.onRefresh();
     });
   };
 
@@ -74,7 +77,11 @@ class PutawayItem extends Component<Props, State> {
           </View>
           <View style={styles.row}>
             <Text>Lot Number</Text>
-            <TextInput value={item['inventoryItem.lotNumber'] ?? 'Default'} />
+            <TextInput
+              editable={false}
+              selectTextOnFocus={false}
+              value={item['inventoryItem.lotNumber'] ?? 'Default'}
+            />
           </View>
           <View style={styles.row}>
             <Text>Current Location</Text>
@@ -97,8 +104,15 @@ class PutawayItem extends Component<Props, State> {
                 style={styles.quantityInput}
                 keyboardType="number-pad"
                 value={quantity}
-                onChangeText={quantity => {
-                  this.setState({quantity});
+                onChangeText={changeQuantity => {
+                  if (Number(changeQuantity) <= item.quantity) {
+                    this.setState({changeQuantity});
+                  } else {
+                    ToastAndroid.show(
+                      'quantity will be not grater then received quantity',
+                      ToastAndroid.SHORT,
+                    );
+                  }
                 }}
               />
               <Text style={styles.quantityText}>{`/ ${item.quantity}`}</Text>
@@ -106,8 +120,9 @@ class PutawayItem extends Component<Props, State> {
           </View>
         </View>
         <Button
+          disabled={this.state?.selectedLocation?.id ? false : true}
+          style={{padding: 20}}
           title={'Create Putaway'}
-          style={styles.buttonContainer}
           onPress={this.create}
         />
       </View>

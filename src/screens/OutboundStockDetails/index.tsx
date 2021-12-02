@@ -1,8 +1,6 @@
 import {DispatchProps, Props, State} from './types';
 import React from 'react';
-// import Order from "../../../data/order/Order";
 import {Text, View} from 'react-native';
-
 import {connect} from 'react-redux';
 import {hideScreenLoading, showScreenLoading} from '../../redux/actions/main';
 import {RootState} from '../../redux/reducers';
@@ -10,6 +8,7 @@ import styles from './styles';
 import {getShipmentReadyToBePacked} from '../../redux/actions/packing';
 import OutboundVMMapper from './OutboubVmMapper';
 import ContainerDetails from './ContainerDetails';
+import Button from '../../components/Button';
 
 class OutboundStockDetails extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -101,6 +100,16 @@ class OutboundStockDetails extends React.Component<Props, State> {
             </View>
           </View>
           <ContainerDetails item={this.state.shipmentData?.sectionData ?? []} />
+          <Button
+            title={'Create LPN'}
+            onPress={() => {
+              this.props.navigation.navigate('CreateLpn', {
+                id: this?.state?.shipment?.id,
+                shipmentDetail: this?.state?.shipment,
+              });
+            }}
+            disabled={false}
+          />
         </View>
       </View>
     );

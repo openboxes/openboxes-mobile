@@ -2,15 +2,13 @@ import React, {useEffect, useState} from 'react';
 import {DispatchProps} from './types';
 import styles from './styles';
 import {
-  ScrollView,
+ ListRenderItemInfo, ScrollView,
   Text,
-  TextInput,
-  TouchableOpacity,
-  ListRenderItemInfo,
+
   View,
 } from 'react-native';
 import {pickListVMMapper} from './PickListVMMapper';
-import {showScreenLoading, hideScreenLoading} from '../../redux/actions/main';
+import {hideScreenLoading, showScreenLoading} from '../../redux/actions/main';
 import {connect, useDispatch} from 'react-redux';
 import showPopup from '../../components/Popup';
 import {
@@ -29,6 +27,7 @@ import InputBox from '../../components/InputBox';
 import Carousel from 'react-native-snap-carousel';
 import {device} from '../../constants';
 import {PicklistItem} from '../../data/picklist/PicklistItem';
+import IncrementDecrement from "../../components/InputSpinner";
 
 const PickOrderItem = () => {
   const route = useRoute();
@@ -378,40 +377,41 @@ const PickOrderItem = () => {
     setState({...state});
   };
 
-  const onChangeBin = (text: string) => {
-    state.binLocationName = text;
-    setState({...state});
-  };
-  console.log('finall value', state);
-  return (
-    <View style={styles.screenContainer}>
-      <View style={styles.swiperView}>
-        <Carousel
-          key={3}
-          dimensions={{width: device.windowWidth}}
-          sliderWidth={device.windowWidth}
-          sliderHeight={device.windowHeight}
-          itemWidth={device.windowWidth - 70}
-          data={vm?.order?.picklist?.picklistItems}
-          firstItem={vm.selectedPinkItemIndex ? vm.selectedPinkItemIndex : 0}
-          scrollEnabled={true}
-          renderItem={({item, index}: ListRenderItemInfo<PicklistItem>) => {
-            return (
-              <View key={index}>
-                <ScrollView style={styles.inputContainer}>
-                  <View style={styles.listItemContainer}>
-                    <View style={styles.row}>
-                      <View style={styles.col50}>
-                        <Text style={styles.label}>Product Code</Text>
-                        <Text style={styles.value}>{item?.productCode}</Text>
-                      </View>
-                      <View style={styles.col50}>
-                        <Text style={styles.label}>Product Name</Text>
-                        <Text style={styles.value}>
-                          {item?.['product.name']}
-                        </Text>
-                      </View>
-                    </View>
+    const onChangeBin = (text: string) => {
+        state.binLocationName = text;
+        setState({...state});
+    };
+    return (
+        <View style={styles.screenContainer}>
+            <View style={styles.swiperView}>
+                <Carousel
+                    key={3}
+                    dimensions={{width: device.windowWidth}}
+                    sliderWidth={device.windowWidth}
+                    sliderHeight={device.windowHeight}
+                    itemWidth={device.windowWidth - 70}
+                    data={vm?.order?.picklist?.picklistItems}
+                    firstItem={vm.selectedPinkItemIndex ? vm.selectedPinkItemIndex : 0}
+                    scrollEnabled={true}
+                    renderItem={({item, index}: ListRenderItemInfo<PicklistItem>) => {
+                        return (
+                            <View key={index}>
+                                <ScrollView style={styles.inputContainer}>
+                                    <View style={styles.listItemContainer}>
+                                        <View style={styles.row}>
+                                            <View style={styles.col50}>
+                                                <Text style={styles.label}>Product Code</Text>
+                                                <Text style={styles.value}>
+                                                    {item?.productCode}
+                                                </Text>
+                                            </View>
+                                            <View style={styles.col50}>
+                                                <Text style={styles.label}>Product Name</Text>
+                                                <Text style={styles.value}>
+                                                    {item?.['product.name']}
+                                                </Text>
+                                            </View>
+                                        </View>
 
                     <View style={styles.row}>
                       <View style={styles.col50}>
@@ -453,15 +453,10 @@ const PickOrderItem = () => {
                       onChange={onChangeBin}
                       editable={false}
                     />
-                    <InputBox
-                      label={'Quantity to Pick'}
+                    <IncrementDecrement
+                      title={"Quantity to Pick"}
                       value={state.quantityPicked}
-                      onChange={quantityPickedChange}
-                      disabled={false}
-                      editable={false}
-                      onEndEdit={quantityPickedChange}
-                      keyboard={'number-pad'}
-                      showSelect={false}
+                      setValue={quantityPickedChange}
                     />
                     <Button title="Pick Item" onPress={formSubmit} />
                   </View>

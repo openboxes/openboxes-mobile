@@ -1,15 +1,14 @@
+/* eslint-disable react-native/no-inline-styles */
 import * as React from 'react';
 import {Image, TouchableOpacity, View} from 'react-native';
 import {Menu, Provider} from 'react-native-paper';
 import {useDispatch} from 'react-redux';
 import {logout} from '../redux/actions/auth';
 
-const OptionMenu = ({route}: any) => {
+const OptionMenu = ({route, navigation}: any) => {
   const dispatch = useDispatch();
   const [visible, setVisible] = React.useState(false);
-
   const openMenu = () => setVisible(true);
-
   const closeMenu = () => setVisible(false);
   const handleLogout = () => dispatch(logout());
   return (
@@ -17,7 +16,7 @@ const OptionMenu = ({route}: any) => {
       <View
         style={{
           flexDirection: 'row',
-          justifyContent: 'center',
+          justifyContent: 'center'
         }}>
         <Image
           source={require('../assets/images/logo.png')}
@@ -35,7 +34,9 @@ const OptionMenu = ({route}: any) => {
             style={{
               width: 350,
               marginTop: 30,
+              zIndex: 123,
             }}
+            contentStyle={{zIndex: 1}}
             visible={visible}
             onDismiss={closeMenu}
             anchor={
@@ -47,10 +48,31 @@ const OptionMenu = ({route}: any) => {
                     width: 40,
                     height: 40,
                     marginRight: 10,
+                    zIndex: 123,
                   }}
                 />
               </TouchableOpacity>
             }>
+            <Menu.Item
+              style={{
+                width: '70%',
+              }}
+              onPress={() => {
+                navigation.navigate('Dashboard');
+                closeMenu();
+              }}
+              title="Dashboard"
+            />
+            <Menu.Item
+              style={{
+                width: '70%',
+              }}
+              onPress={() => {
+                navigation.navigate('Settings');
+                closeMenu();
+              }}
+              title="Settings"
+            />
             <Menu.Item
               style={{
                 width: '70%',

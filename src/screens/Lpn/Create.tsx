@@ -1,21 +1,15 @@
-import React, {ReactElement, useState} from 'react';
+import React from 'react';
 import showPopup from '../../components/Popup';
-import {getStockMovements} from '../../redux/actions/orders';
 import {saveAndUpdateLpn} from '../../redux/actions/lpn';
 import {DispatchProps, Props} from './Types';
 import {connect} from 'react-redux';
-import {Image, Text, View} from 'react-native';
+import {Text, View} from 'react-native';
 import {Order} from '../../data/order/Order';
 import styles from './styles';
 import InputBox from '../../components/InputBox';
 import Button from '../../components/Button';
-import SelectDropdown from 'react-native-select-dropdown';
-import {
-  getShipmentPacking,
-  getShipmentOrigin,
-} from '../../redux/actions/packing';
+import {getShipmentOrigin, getShipmentPacking,} from '../../redux/actions/packing';
 import {RootState} from '../../redux/reducers';
-import Location from '../../data/location/Location';
 import AutoInputInternalLocation from '../../components/AutoInputInternalLocation';
 
 export interface State {
@@ -31,19 +25,19 @@ export interface State {
 class CreateLpn extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
+    const {id, shipmentDetail} = this.props?.route?.params ?? '';
     this.state = {
-      stockMovements: null,
+      stockMovements: shipmentDetail?.shipmentNumber || null,
+      stockMovement: shipmentDetail?.shipmentNumber || null,
       stockMovementList: [],
       open: false,
-      stockMovement: null,
       name: null,
       containerNumber: null,
-      stockMovementId: null,
+      stockMovementId: id || null,
     };
   }
 
   componentDidMount() {
-    console.debug('Did mount with stockmovement');
     this.getShipmentOrigin();
   }
 
@@ -59,13 +53,6 @@ class CreateLpn extends React.Component<Props, State> {
         });
       } else {
         let stockMovementList: string[] = [];
-        // data.map((item: any) => {
-        //     stockMovementList.push(item.name)
-        // })
-        // this.setState({
-        //     stockMovementList: stockMovementList,
-        //     stockMovements: data
-        // })
       }
     };
     this.props.getShipmentPacking('OUTBOUND', actionCallback);
@@ -117,12 +104,6 @@ class CreateLpn extends React.Component<Props, State> {
           negativeButtonText: 'Cancel',
         });
       } else {
-        // if (data.length == 0) {
-        //     showPopup({
-        //         message: `No search results`,
-        //         positiveButton: {text: 'Ok'},
-        //     });
-        // } else
         if (data && Object.keys(data).length !== 0) {
           this.props.navigation.navigate('LpnDetail', {
             id: data.id,
@@ -131,7 +112,6 @@ class CreateLpn extends React.Component<Props, State> {
         }
       }
     };
-    console.debug('Save LPN', requestBody);
     this.props.saveAndUpdateLpn(requestBody, actionCallback);
   };
 
@@ -147,19 +127,8 @@ class CreateLpn extends React.Component<Props, State> {
     });
   };
 
-  renderIcon = () => {
-    return (
-      <Image
-        style={styles.arrowDownIcon}
-        source={require('../../assets/images/arrow-down.png')}
-      />
-    );
-  };
 
   render() {
-    // const {open, value, stockMovements} = this.state;
-    // const [selectedLanguage, setSelectedLanguage] = this.state;
-    console.debug('{item.item.name}:');
     return (
       <View style={styles.container}>
         <View style={styles.from}>
@@ -176,6 +145,7 @@ class CreateLpn extends React.Component<Props, State> {
                 stockMovementId: stockMovement?.id,
               });
             }}
+            initValue={this.state.stockMovements}
           />
           <InputBox
             value={this.state.name}
