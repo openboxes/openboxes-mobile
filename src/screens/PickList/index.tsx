@@ -16,6 +16,7 @@ import InputBox from '../../components/InputBox';
 import Carousel from 'react-native-snap-carousel';
 import {device} from '../../constants';
 import {PicklistItem} from '../../data/picklist/PicklistItem';
+import IncrementDecrement from "../../components/InputSpinner";
 
 const PickOrderItem = () => {
     const route = useRoute();
@@ -369,7 +370,7 @@ const PickOrderItem = () => {
         state.binLocationName = text;
         setState({...state});
     };
-    console.log('finall value', state);
+
     return (
         <View style={styles.screenContainer}>
             <View style={styles.swiperView}>
@@ -440,15 +441,11 @@ const PickOrderItem = () => {
                                             onChange={onChangeBin}
                                             editable={false}
                                         />
-                                        <InputBox
-                                            label={'Quantity to Pick'}
+                                        <IncrementDecrement
+                                            title={"Quantity to Pick"}
                                             value={state.quantityPicked}
-                                            onChange={quantityPickedChange}
-                                            disabled={false}
-                                            editable={false}
-                                            onEndEdit={quantityPickedChange}
-                                            keyboard={'number-pad'}
-                                            showSelect={false}
+                                            setValue={quantityPickedChange}
+
                                         />
                                         <Button title="Pick Item" onPress={formSubmit}/>
                                     </View>

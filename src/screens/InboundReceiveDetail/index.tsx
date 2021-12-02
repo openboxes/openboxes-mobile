@@ -10,6 +10,7 @@ import {submitPartialReceiving} from '../../redux/actions/inboundorder';
 import {getInternalLocations} from '../../redux/actions/locations';
 import {RootState} from '../../redux/reducers';
 import AutoInputInternalLocation from '../../components/AutoInputInternalLocation';
+import IncrementDecrement from "../../components/InputSpinner";
 
 const InboundReceiveDetail = () => {
     const dispatch = useDispatch();
@@ -246,13 +247,11 @@ const InboundReceiveDetail = () => {
                         }
                     }}
                 />
-                <InputBox
-                    label={'Quantity to Receive'}
+                <IncrementDecrement
+                    title={'Quantity to Receive'}
                     value={state.quantityToReceive}
-                    onChange={onChangeQuantity}
-                    disabled={false}
-                    editable={false}
-                    keyboard={'number-pad'}
+                    setValue={onChangeQuantity}
+
                 />
                 <InputBox
                     value={state.comments}

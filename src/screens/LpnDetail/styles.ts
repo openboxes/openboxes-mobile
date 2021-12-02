@@ -81,4 +81,18 @@ export default StyleSheet.create({
         fontSize: 16,
         color: Theme.colors.text,
     },
+    arrowDownIcon:{
+        height: 15,
+        width:15,
+    },
+    select:{
+        width: "100%",
+        borderWidth: 2,
+        height: 40,
+        alignSelf: 'center',
+        borderColor:'grey',
+        backgroundColor:'white',
+        borderRadius:5,
+        marginTop:10,
+    },
 });

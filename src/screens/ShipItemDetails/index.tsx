@@ -9,6 +9,8 @@ import {useDispatch} from 'react-redux';
 import showPopup from '../../components/Popup';
 import {getShipmentPacking, submitShipmentDetails,} from '../../redux/actions/packing';
 import AutoInputInternalLocation from '../../components/AutoInputInternalLocation';
+import IncrementDecrement from "../../components/InputSpinner";
+
 
 const ShipItemDetails = () => {
     const route = useRoute();
@@ -156,15 +158,11 @@ const ShipItemDetails = () => {
                     });
                 }}
             />
-            <InputBox
-                label={'Quantity to Pick'}
+            <IncrementDecrement
+                title={"Quantity to Pick"}
                 value={state.quantityPicked}
-                onChange={quantityPickedChange}
-                disabled={false}
-                editable={false}
-                onEndEdit={quantityPickedChange}
-                keyboard={'number-pad'}
-                showSelect={false}
+                setValue={quantityPickedChange}
+
             />
             <View style={styles.bottom}>
                 <Button

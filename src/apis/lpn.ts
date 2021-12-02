@@ -5,8 +5,14 @@ export function saveAndUpdateLpn(requestBody: any) {
 }
 
 export function fetchContainer(id: string) {
-  return apiClient.get('/generic/container/' + id);
+    return apiClient.get('/generic/container/' + id);
 }
+
 export function getContainerDetail(id: string) {
   return apiClient.get(`/containers/${id}/details`);
 }
+
+export function getStatusDetails(id: string) {
+    return apiClient.post(`/containers/${id}`,{});
+}
+

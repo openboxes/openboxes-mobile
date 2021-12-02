@@ -1,7 +1,13 @@
 import React, {Component} from 'react';
-import {DispatchProps, Props} from './types';
-import {FlatList, Text, TouchableOpacity} from 'react-native';
-import Refresh from '../../components/Refresh';
+import {Props} from './types';
+import {
+  FlatList,
+  Text,
+  TouchableOpacity,
+  SafeAreaView,
+  RefreshControl,
+  Alert,
+} from 'react-native';
 import {RootState} from '../../redux/reducers';
 import styles from './styles';
 import {hideScreenLoading, showScreenLoading} from '../../redux/actions/main';
@@ -10,11 +16,18 @@ import {getCandidates} from '../../redux/actions/putaways';
 import showPopup from "../../components/Popup";
 
 class PutawayCandidates extends Component<Props> {
-    UNSAFE_componentWillMount() {
+    constructor(props: Props) {
+    super(props);
+
+    this.state = {
+      refreshing: false,
+    };
+  }UNSAFE_componentWillMount() {
         this.getScreenData();
     }
 
     getScreenData = () => {
+        this.setState({refreshing: true});
         const {SelectedLocation} = this.props;
         const actionCallback = (data: any) => {
             if (data?.error) {
@@ -32,18 +45,20 @@ class PutawayCandidates extends Component<Props> {
             }
         }
         this.props.getCandidates(SelectedLocation.id, actionCallback);
+        this.setState({refreshing: false});
     };
+
 
     renderItem = (item: any) => {
         return (
             <TouchableOpacity
                 style={styles.itemBox}
                 onPress={() => {
-                    //if (item.id) {
-                      //  Alert.alert('Item is already in a pending putaway');
-                    //} else {
+                    if (item.id) {
+                        Alert.alert('Item is already in a pending putaway');
+                    } else {
                         this.props.navigation.navigate('PutawayItem', {item});
-                    //}
+                    }
                 }}>
                 <Text>{`Status - ${item['putawayStatus']}`}</Text>
                 <Text>{`Product Code - ${item['product.productCode']}`}</Text>
@@ -63,13 +78,19 @@ class PutawayCandidates extends Component<Props> {
     render() {
         const {candidates} = this.props;
         return (
-            <Refresh onRefresh={this.getScreenData}>
-                <FlatList
+            <SafeAreaView style={styles.container}>
+        <FlatList
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.refreshing}
+              onRefresh={this.getScreenData}
+                />
+          }
                     data={candidates}
                     renderItem={({item}) => this.renderItem(item)}
                     keyExtractor={(item, index) => index}
                 />
-            </Refresh>
+            </SafeAreaView>
         );
     }
 }
