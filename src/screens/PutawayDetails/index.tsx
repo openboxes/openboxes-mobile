@@ -40,8 +40,8 @@ class PutawayDetail extends React.Component<Props, State> {
   }
 
   goToPutawayItemDetailScreen = (
-    putAway: PutAway,
-    putAwayItem: PutAwayItems,
+      putAway: PutAway,
+      putAwayItem: PutAwayItems,
   ) => {
     this.props.navigation.navigate('PutawayItemDetail', {
       putAway,
@@ -54,54 +54,54 @@ class PutawayDetail extends React.Component<Props, State> {
 
   render() {
     return (
-      <TouchableOpacity style={styles.contentContainer}>
-        <View style={styles.row}>
-          <View style={styles.col50}>
-            <Text style={styles.label}>PutAway Number</Text>
-            <Text style={styles.value}>
-              {this.state.putAway?.putawayNumber}
-            </Text>
+        <TouchableOpacity style={styles.contentContainer}>
+          <View style={styles.row}>
+            <View style={styles.col50}>
+              <Text style={styles.label}>PutAway Number</Text>
+              <Text style={styles.value}>
+                {this.state.putAway?.putawayNumber}
+              </Text>
+            </View>
+            <View style={styles.col50}>
+              <Text style={styles.label}>Status</Text>
+              <Text style={styles.value}>
+                {this.state.putAway?.putawayStatus}
+              </Text>
+            </View>
           </View>
-          <View style={styles.col50}>
-            <Text style={styles.label}>Status</Text>
-            <Text style={styles.value}>
-              {this.state.putAway?.putawayStatus}
-            </Text>
+          <View style={styles.row}>
+            <View style={styles.col50}>
+              <Text style={styles.label}>Origin</Text>
+              <Text style={styles.value}>
+                {this.state.putAway?.['origin.name']}
+              </Text>
+            </View>
+            <View style={styles.col50}>
+              <Text style={styles.label}>Destination</Text>
+              <Text style={styles.value}>
+                {this.state.putAway?.['destination.name']}
+              </Text>
+            </View>
           </View>
-        </View>
-        <View style={styles.row}>
-          <View style={styles.col50}>
-            <Text style={styles.label}>Origin</Text>
-            <Text style={styles.value}>
-              {this.state.putAway?.['origin.name']}
-            </Text>
-          </View>
-          <View style={styles.col50}>
-            <Text style={styles.label}>Destination</Text>
-            <Text style={styles.value}>
-              {this.state.putAway?.['destination.name']}
-            </Text>
-          </View>
-        </View>
-        {
-          <FlatList
-            data={this.state.putAway?.putawayItems}
-            renderItem={(putAwayItem: ListRenderItemInfo<PutAwayItems>) => (
-              <PutAwayItem
-                item={putAwayItem.item}
-                onItemTapped={() =>
-                  this.goToPutawayItemDetailScreen(
-                    this.state.putAway,
-                    putAwayItem.item,
-                  )
-                }
-              />
-            )}
-            keyExtractor={item => item.id}
-            style={styles.list}
-          />
-        }
-      </TouchableOpacity>
+          {
+            <FlatList
+                data={this.state.putAway?.putawayItems}
+                renderItem={(putAwayItem: ListRenderItemInfo<PutAwayItems>) => (
+                    <PutAwayItem
+                        item={putAwayItem.item}
+                        onItemTapped={() =>
+                            this.goToPutawayItemDetailScreen(
+                                this.state.putAway,
+                                putAwayItem.item,
+                            )
+                        }
+                    />
+                )}
+                keyExtractor={item => item.id}
+                style={styles.list}
+            />
+          }
+        </TouchableOpacity>
     );
   }
 }

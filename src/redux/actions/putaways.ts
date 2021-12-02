@@ -12,11 +12,11 @@ export function fetchPutAwayFromOrderAction(
     q: string | null,
     callback: (data: any) => void,
 ) {
-    return {
-        type: FETCH_PUTAWAY_FROM_ORDER_REQUEST,
-        payload: {q},
-        callback,
-    };
+  return {
+    type: FETCH_PUTAWAY_FROM_ORDER_REQUEST,
+    payload: {q},
+    callback,
+  };
 }
 
 export function submitPutawayItem(
@@ -24,28 +24,28 @@ export function submitPutawayItem(
     requestBody: any,
     callback: (data: any) => void,
 ) {
-    return {
-        type: SUBMIT_PUTAWAY_ITEM_BIN_LOCATION,
-        payload: {id, requestBody},
-        callback,
-    };
+  return {
+    type: SUBMIT_PUTAWAY_ITEM_BIN_LOCATION,
+    payload: {id, requestBody},
+    callback,
+  };
 }
 
 export function getCandidates(
     locationId: string,
     callback?: (data: any) => void,
 ) {
-    return {
-        type: GET_PUTAWAY_CANDIDATES_REQUEST,
-        payload: {locationId},
-        callback,
-    };
+  return {
+    type: GET_PUTAWAY_CANDIDATES_REQUEST,
+    payload: {locationId},
+    callback,
+  };
 }
 
 export function createPutawayOderAction(data: any, callback?: (data: any) => void) {
-    return {
-        type: CREATE_PUTAWAY_ORDER_REQUEST,
-        payload: {data},
-        callback,
-    };
+  return {
+    type: CREATE_PUTAWAY_ORDER_REQUEST,
+    payload: {data},
+    callback,
+  };
 }

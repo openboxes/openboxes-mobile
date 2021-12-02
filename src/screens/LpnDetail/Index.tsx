@@ -46,10 +46,10 @@ class LpnDetail extends React.Component<Props, State> {
       if (data?.error) {
         showPopup({
           title: data.errorMessage
-            ? `Failed to load details with value = "${id}"`
-            : null,
+              ? `Failed to load details with value = "${id}"`
+              : null,
           message:
-            data.errorMessage ?? `Failed to load details with value = "${id}"`,
+              data.errorMessage ?? `Failed to load details with value = "${id}"`,
           positiveButton: {
             text: 'Retry',
             callback: () => {
@@ -96,95 +96,95 @@ class LpnDetail extends React.Component<Props, State> {
 
   render() {
     return (
-      <View style={styles.contentContainer}>
         <View style={styles.contentContainer}>
-          <View style={styles.row}>
-            <View style={styles.col50}>
-              <Text style={styles.label}>Shipment Number</Text>
-              <Text style={styles.value}>
-                {this.state.container?.shipmentNumber}
-              </Text>
+          <View style={styles.contentContainer}>
+            <View style={styles.row}>
+              <View style={styles.col50}>
+                <Text style={styles.label}>Shipment Number</Text>
+                <Text style={styles.value}>
+                  {this.state.container?.shipmentNumber}
+                </Text>
+              </View>
+              <View style={styles.col50}>
+                <Text style={styles.label}>Name</Text>
+                <Text style={styles.value}>{this.state.container?.name}</Text>
+              </View>
             </View>
-            <View style={styles.col50}>
-              <Text style={styles.label}>Name</Text>
-              <Text style={styles.value}>{this.state.container?.name}</Text>
+            <View style={styles.row}>
+              <View style={styles.col50}>
+                <Text style={styles.label}>Container Number</Text>
+                <Text style={styles.value}>
+                  {this.state.container?.containerNumber}
+                </Text>
+              </View>
+              <View style={styles.col50}>
+                <Text style={styles.label}>Container Type</Text>
+                <Text style={styles.value}>
+                  {this.state.container?.containerType?.name}
+                </Text>
+              </View>
             </View>
-          </View>
-          <View style={styles.row}>
-            <View style={styles.col50}>
-              <Text style={styles.label}>Container Number</Text>
-              <Text style={styles.value}>
-                {this.state.container?.containerNumber}
-              </Text>
+            <View style={styles.row}>
+              <View style={styles.col50}>
+                <Text style={styles.label}>Number of Items</Text>
+                <Text style={styles.value}>
+                  {this.state.container?.shipmentItems?.length}
+                </Text>
+              </View>
             </View>
-            <View style={styles.col50}>
-              <Text style={styles.label}>Container Type</Text>
-              <Text style={styles.value}>
-                {this.state.container?.containerType?.name}
-              </Text>
-            </View>
-          </View>
-          <View style={styles.row}>
-            <View style={styles.col50}>
-              <Text style={styles.label}>Number of Items</Text>
-              <Text style={styles.value}>
-                {this.state.container?.shipmentItems?.length}
-              </Text>
-            </View>
-          </View>
-          <FlatList
-            data={this.state.container?.shipmentItems}
-            renderItem={(
-              shipmentItem: ListRenderItemInfo<ContainerShipmentItem>,
-            ) => (
-              <TouchableOpacity
-                style={styles.listItemContainer}
-                onPress={() => this.onTapped(shipmentItem)}>
-                <View style={styles.row}>
-                  <View style={styles.col50}>
-                    <Text style={styles.label}>Product Code</Text>
-                    <Text style={styles.value}>
-                      {shipmentItem.item?.inventoryItem?.product?.productCode}
-                    </Text>
-                  </View>
-                  <View style={styles.col50}>
-                    <Text style={styles.label}>Product</Text>
-                    <Text style={styles.value}>
-                      {shipmentItem.item?.inventoryItem?.product?.name}
-                    </Text>
-                  </View>
-                </View>
-                <View style={styles.row}>
-                  <View style={styles.col50}>
-                    <Text style={styles.label}>Quantity</Text>
-                    <Text style={styles.value}>
-                      {shipmentItem.item.quantity}
-                    </Text>
-                  </View>
-                </View>
-              </TouchableOpacity>
-            )}
-            keyExtractor={item => item.id}
-            style={styles.list}
-          />
-          <View style={styles.bottom}>
-            <Button
-              title={'Print Barcode Label'}
-              onPress={this.handleClick}
-              disabled={false}
+            <FlatList
+                data={this.state.container?.shipmentItems}
+                renderItem={(
+                    shipmentItem: ListRenderItemInfo<ContainerShipmentItem>,
+                ) => (
+                    <TouchableOpacity
+                        style={styles.listItemContainer}
+                        onPress={() => this.onTapped(shipmentItem)}>
+                      <View style={styles.row}>
+                        <View style={styles.col50}>
+                          <Text style={styles.label}>Product Code</Text>
+                          <Text style={styles.value}>
+                            {shipmentItem.item?.inventoryItem?.product?.productCode}
+                          </Text>
+                        </View>
+                        <View style={styles.col50}>
+                          <Text style={styles.label}>Product</Text>
+                          <Text style={styles.value}>
+                            {shipmentItem.item?.inventoryItem?.product?.name}
+                          </Text>
+                        </View>
+                      </View>
+                      <View style={styles.row}>
+                        <View style={styles.col50}>
+                          <Text style={styles.label}>Quantity</Text>
+                          <Text style={styles.value}>
+                            {shipmentItem.item.quantity}
+                          </Text>
+                        </View>
+                      </View>
+                    </TouchableOpacity>
+                )}
+                keyExtractor={item => item.id}
+                style={styles.list}
             />
+            <View style={styles.bottom}>
+              <Button
+                  title={'Print Barcode Label'}
+                  onPress={this.handleClick}
+                  disabled={false}
+              />
+            </View>
           </View>
+          <PrintModal
+              visible={this.state.visible}
+              closeModal={this.closeModal}
+              type={'containers'}
+              product={this.state.containerDetails?.product}
+              defaultBarcodeLabelUrl={
+                this.state.containerDetails?.defaultBarcodeLabelUrl
+              }
+          />
         </View>
-        <PrintModal
-          visible={this.state.visible}
-          closeModal={this.closeModal}
-          type={'containers'}
-          product={this.state.containerDetails?.product}
-          defaultBarcodeLabelUrl={
-            this.state.containerDetails?.defaultBarcodeLabelUrl
-          }
-        />
-      </View>
     );
   }
 }
