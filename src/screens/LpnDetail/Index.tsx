@@ -3,7 +3,6 @@ import {DispatchProps, Props} from './Types';
 import {Container} from '../../data/container/Container';
 import {
   FlatList,
-  Image,
   ListRenderItemInfo,
   Text,
   Image,

@@ -2,8 +2,6 @@
 /* eslint-disable no-shadow */
 import React, {Component} from 'react';
 import {DispatchProps, Props, State} from './types';
-import {Button, Text, TextInput, ToastAndroid, View} from 'react-native';
-import {Props, State} from './types';
 import {
   TextInput,
   View,
