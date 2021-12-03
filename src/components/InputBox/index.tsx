@@ -1,10 +1,10 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {useState} from 'react';
 import styles from './styles';
-import {View, TouchableOpacity, Image} from 'react-native';
-import SelectDropdown from 'react-native-select-dropdown';
-import {Props} from './types';
-import AutoComplete from '../AutoComplete/AutoComplete';
+import {Image, TouchableOpacity, View} from 'react-native';
+import SelectDropdown from 'react-native-select-dropdown'
+import {Props} from "./types";
+import AutoComplete from "../AutoComplete/AutoComplete";
 
 const Edit = require('../../assets/images/edit.png');
 const Done = require('../../assets/images/tick.png');

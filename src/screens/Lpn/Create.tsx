@@ -31,6 +31,7 @@ class CreateLpn extends React.Component<Props, State> {
       stockMovement: shipmentDetail?.shipmentNumber || null,
       stockMovementList: [],
       open: false,
+
       name: null,
       containerNumber: null,
       stockMovementId: id || null,
@@ -38,6 +39,7 @@ class CreateLpn extends React.Component<Props, State> {
   }
 
   componentDidMount() {
+
     this.getShipmentOrigin();
   }
 
@@ -45,8 +47,8 @@ class CreateLpn extends React.Component<Props, State> {
     const actionCallback = (data: any) => {
       if (data?.error) {
         showPopup({
-          title: data.error.message ? 'Container' : null,
-          message: data.error.message ?? 'Failed to fetch Container List',
+          title: data.errorMessage ? 'Container' : "Error",
+          message: data.errorMessage ?? 'Failed to fetch Container List',
           positiveButton: {
             text: 'Ok',
           },
@@ -63,8 +65,8 @@ class CreateLpn extends React.Component<Props, State> {
     const actionCallback = (data: any) => {
       if (data?.error) {
         showPopup({
-          title: data.error.message ? 'StockMovements' : null,
-          message: data.error.message ?? 'Failed to fetch StockMovements',
+          title: data.errorMessage ? 'StockMovements' : "Error",
+          message: data.errorMessage ?? 'Failed to fetch StockMovements',
           positiveButton: {
             text: 'Ok',
           },
@@ -93,8 +95,8 @@ class CreateLpn extends React.Component<Props, State> {
     const actionCallback = (data: any) => {
       if (data?.error) {
         showPopup({
-          title: data.error.message ? `Failed to Save` : null,
-          message: data.error.message ?? `Failed to Save`,
+          title: data.errorMessage ? `Failed to Save` : null,
+          message: data.errorMessage ?? `Failed to Save`,
           positiveButton: {
             text: 'Retry',
             callback: () => {
@@ -130,47 +132,46 @@ class CreateLpn extends React.Component<Props, State> {
 
   render() {
     return (
-      <View style={styles.container}>
-        <View style={styles.from}>
-          <Text style={styles.label}>Shipment Number</Text>
-          <AutoInputInternalLocation
-            label="AutoInputInternalLocation"
-            data={this.state.stockMovementList}
-            selectedData={(selectedItem: any, index: number) => {
-              const stockMovement = this.state.stockMovements?.find(
-                i => i.shipmentNumber === selectedItem,
-              );
-              this.setState({
-                stockMovement: selectedItem,
-                stockMovementId: stockMovement?.id,
-              });
-            }}
-            initValue={this.state.stockMovements}
-          />
-          <InputBox
-            value={this.state.name}
-            onChange={this.onChangeName}
-            editable={false}
-            label={'Name'}
-          />
-          <InputBox
-            value={this.state.containerNumber}
-            onChange={this.onChangeContainerNumber}
-            editable={false}
-            label={'Container Number'}
-          />
+        <View style={styles.container}>
+          <View style={styles.from}>
+            <Text style={styles.label}>Shipment Number</Text>
+            <AutoInputInternalLocation
+                label="AutoInputInternalLocation"
+                data={this.state.stockMovementList}
+                selectedData={(selectedItem: any, index: number) => {
+                  const stockMovement = this.state.stockMovements?.find(
+                      i => i.shipmentNumber === selectedItem,
+                  );
+                  this.setState({
+                    stockMovement: selectedItem,
+                    stockMovementId: stockMovement?.id,
+                  });
+                }} initValue={this.state.stockMovements}
+            />
+            <InputBox
+                value={this.state.name}
+                onChange={this.onChangeName}
+                editable={false}
+                label={'Name'}
+            />
+            <InputBox
+                value={this.state.containerNumber}
+                onChange={this.onChangeContainerNumber}
+                editable={false}
+                label={'Container Number'}
+            />
+          </View>
+          <View style={styles.bottom}>
+            <Button
+                title="Submit"
+                onPress={this.saveLpn}
+                // eslint-disable-next-line react-native/no-inline-styles
+                style={{
+                  marginTop: 8,
+                }}
+            />
+          </View>
         </View>
-        <View style={styles.bottom}>
-          <Button
-            title="Submit"
-            onPress={this.saveLpn}
-            // eslint-disable-next-line react-native/no-inline-styles
-            style={{
-              marginTop: 8,
-            }}
-          />
-        </View>
-      </View>
     );
   }
 }

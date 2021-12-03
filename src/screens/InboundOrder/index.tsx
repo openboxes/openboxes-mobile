@@ -20,10 +20,10 @@ const InboundOrder = () => {
     const callback = (data: any) => {
       if (data?.error) {
         showPopup({
-          title: data.error.message ? 'Inbound order details' : null,
+          title: data.errorMessage ? 'Inbound order details' : null,
           message:
-            data.error.message ??
-            `Failed to load inbound order details value ${id}`,
+              data.errorMessage ??
+              `Failed to load inbound order details value ${id}`,
           positiveButton: {
             text: 'Retry',
             callback: () => {
@@ -34,9 +34,10 @@ const InboundOrder = () => {
         });
       } else {
         if (data && Object.keys(data).length !== 0) {
+
           state.inboundOrder = data.filter((item: any) => {
             return (
-              item.status === 'SHIPPED' || item.status === 'PARTIALLY_RECEIVED'
+                item.status === 'SHIPPED' || item.status === 'PARTIALLY_RECEIVED'
             );
           });
         }
@@ -47,14 +48,14 @@ const InboundOrder = () => {
   };
 
   return (
-    <View style={{zIndex: -1}}>
-      <BarCodeSearchHeader
-        onBarCodeSearchQuerySubmitted={getInboundOrderList}
-        searchBox={false}
-        autoSearch={undefined}
-      />
-      <InboundOrderList data={state.inboundOrder} />
-    </View>
+      <View style={{zIndex: -1}}>
+        <BarCodeSearchHeader
+            onBarCodeSearchQuerySubmitted={getInboundOrderList}
+            searchBox={false}
+            autoSearch={undefined}
+        />
+        <InboundOrderList data={state.inboundOrder}/>
+      </View>
   );
 };
 export default InboundOrder;

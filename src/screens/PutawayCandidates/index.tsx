@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Props} from './types';
+import {DispatchProps, Props} from './types';
 import {
   FlatList,
   Text,
@@ -9,11 +9,11 @@ import {
   Alert,
 } from 'react-native';
 import {RootState} from '../../redux/reducers';
-import {DispatchProps} from './types';
 import styles from './styles';
 import {hideScreenLoading, showScreenLoading} from '../../redux/actions/main';
 import {connect} from 'react-redux';
 import {getCandidates} from '../../redux/actions/putaways';
+import showPopup from "../../components/Popup";
 
 class PutawayCandidates extends Component<Props> {
   constructor(props: Props) {
@@ -21,11 +21,20 @@ class PutawayCandidates extends Component<Props> {
 
     this.state = {
       refreshing: false,
+      updatedList: [],
     };
   }
 
   UNSAFE_componentWillMount() {
     this.getScreenData();
+  }
+
+  componentDidUpdate() {
+    const {candidates} = this.props;
+    const updatedList = candidates.filter(candidate => candidate.putawayStatus === 'READY');
+    if (updatedList.length !== this.state.updatedList.length) {
+      this.setState({updatedList})
+    }
   }
 
   getScreenData = async () => {
@@ -62,20 +71,22 @@ class PutawayCandidates extends Component<Props> {
   };
 
   render() {
-    const {candidates} = this.props;
+    const {updatedList} = this.state;
     return (
       <SafeAreaView style={styles.container}>
-        <FlatList
-          refreshControl={
-            <RefreshControl
-              refreshing={this.state.refreshing}
-              onRefresh={this.getScreenData}
-            />
-          }
-          data={candidates}
-          renderItem={({item}) => this.renderItem(item)}
-          keyExtractor={(item, index) => index}
-        />
+        {updatedList.length ? (
+          <FlatList
+            refreshControl={
+              <RefreshControl
+                refreshing={this.state.refreshing}
+                onRefresh={this.getScreenData}
+              />
+            }
+            data={updatedList}
+            renderItem={({item}) => this.renderItem(item)}
+            keyExtractor={(item, index) => index}
+          />
+        ) : null}
       </SafeAreaView>
     );
   }

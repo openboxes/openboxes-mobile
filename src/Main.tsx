@@ -148,6 +148,9 @@ class Main extends Component<Props, State> {
                 headerRight: () => (
                   <OptionMenu route={route} navigation={navigation} />
                 ),
+                headerTitleContainerStyle: {
+                  width: '50%',
+                },
                 headerTintColor: '#ffffff',
                 headerStyle: {
                   backgroundColor: colors.headerColor,

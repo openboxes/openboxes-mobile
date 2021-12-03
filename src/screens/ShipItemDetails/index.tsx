@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useState} from 'react';
 import {Text, View} from 'react-native';
 import styles from './styles';
@@ -13,8 +12,7 @@ import {
   submitShipmentDetails,
 } from '../../redux/actions/packing';
 import AutoInputInternalLocation from '../../components/AutoInputInternalLocation';
-import IncrementDecrement from "../../components/InputSpinner";
-
+import InputSpinner from '../../components/InputSpinner';
 
 const ShipItemDetails = () => {
   const route = useRoute();
@@ -40,9 +38,9 @@ const ShipItemDetails = () => {
     const callback = (data: any) => {
       if (data?.error) {
         showPopup({
-          title: data.error.message ? 'Shipment details' : null,
+          title: data.errorMessage ? 'Shipment details' : 'Error',
           message:
-            data.error.message ?? `Failed to load Shipment details value ${id}`,
+            data.errorMessage ?? `Failed to load Shipment details value ${id}`,
           positiveButton: {
             text: 'Retry',
             callback: () => {
@@ -75,8 +73,8 @@ const ShipItemDetails = () => {
     const callback = (data: any) => {
       if (data?.error) {
         showPopup({
-          title: data.error.message ? 'Shipment details' : null,
-          message: data.error.message ?? 'Failed to submit shipment details',
+          title: data.errorMessage ? 'Shipment details' : 'Error',
+          message: data.errorMessage ?? 'Failed to submit shipment details',
           positiveButton: {
             text: 'Retry',
             callback: () => {
@@ -102,47 +100,49 @@ const ShipItemDetails = () => {
     });
   };
   return (
-    <View style={styles.contentContainer}>
-      <View style={styles.rowItem}>
-        <View style={styles.columnItem}>
-          <Text style={styles.label}>{'Shipment Number'}</Text>
-          <Text style={styles.value}>{item.shipment.shipmentNumber}</Text>
+    <>
+      <View style={styles.contentContainer}>
+        <View style={styles.rowItem}>
+          <View style={styles.columnItem}>
+            <Text style={styles.label}>{'Shipment Number'}</Text>
+            <Text style={styles.value}>{item.shipment.shipmentNumber}</Text>
+          </View>
+          <View style={styles.columnItem}>
+            <Text style={styles.label}>{'Container'}</Text>
+            <Text style={styles.value}>{item.container.name ?? 'Default'}</Text>
+          </View>
         </View>
-        <View style={styles.columnItem}>
-          <Text style={styles.label}>{'Container'}</Text>
-          <Text style={styles.value}>{item.container.name ?? 'Default'}</Text>
+        <View style={styles.rowItem}>
+          <View style={styles.columnItem}>
+            <Text style={styles.label}>{'Product Code'}</Text>
+            <Text style={styles.value}>
+              {item.inventoryItem.product.productCode}
+            </Text>
+          </View>
+          <View style={styles.columnItem}>
+            <Text style={styles.label}>{'Product Name'}</Text>
+            <Text style={styles.value}>{item.inventoryItem.product.name}</Text>
+          </View>
         </View>
-      </View>
-      <View style={styles.rowItem}>
-        <View style={styles.columnItem}>
-          <Text style={styles.label}>{'Product Code'}</Text>
-          <Text style={styles.value}>
-            {item.inventoryItem.product.productCode}
-          </Text>
+        <View style={styles.rowItem}>
+          <View style={styles.columnItem}>
+            <Text style={styles.label}>{'LOT Number'}</Text>
+            <Text style={styles.value}>
+              {item.inventoryItem.lotNumber ?? 'Default'}
+            </Text>
+          </View>
+          <View style={styles.columnItem}>
+            <Text style={styles.label}>{'Expiration Date'}</Text>
+            <Text style={styles.value}>
+              {item.inventoryItem.expirationDate ?? 'No Expiry'}
+            </Text>
+          </View>
         </View>
-        <View style={styles.columnItem}>
-          <Text style={styles.label}>{'Product Name'}</Text>
-          <Text style={styles.value}>{item.inventoryItem.product.name}</Text>
-        </View>
-      </View>
-      <View style={styles.rowItem}>
-        <View style={styles.columnItem}>
-          <Text style={styles.label}>{'LOT Number'}</Text>
-          <Text style={styles.value}>
-            {item.inventoryItem.lotNumber ?? 'Default'}
-          </Text>
-        </View>
-        <View style={styles.columnItem}>
-          <Text style={styles.label}>{'Expiration Date'}</Text>
-          <Text style={styles.value}>
-            {item.inventoryItem.expirationDate ?? 'No Expiry'}
-          </Text>
-        </View>
-      </View>
-      <View style={styles.rowItem}>
-        <View style={styles.columnItem}>
-          <Text style={styles.label}>{'Quantity'}</Text>
-          <Text style={styles.value}>{item.quantityRemaining}</Text>
+        <View style={styles.rowItem}>
+          <View style={styles.columnItem}>
+            <Text style={styles.label}>{'Quantity'}</Text>
+            <Text style={styles.value}>{item.quantityRemaining}</Text>
+          </View>
         </View>
       </View>
       <Text>{'Container'}</Text>
@@ -162,11 +162,10 @@ const ShipItemDetails = () => {
           });
         }}
       />
-      <IncrementDecrement
-        title={"Quantity to Pick"}
+      <InputSpinner
+        title={'Quantity to Pick'}
         value={state.quantityPicked}
         setValue={quantityPickedChange}
-
       />
       <View style={styles.bottom}>
         <Button
@@ -175,8 +174,26 @@ const ShipItemDetails = () => {
             submitShipmentDetail(item.id);
           }}
         />
+        <InputBox
+          label={'Quantity to Pick'}
+          value={state.quantityPicked}
+          onChange={quantityPickedChange}
+          disabled={false}
+          editable={false}
+          onEndEdit={quantityPickedChange}
+          keyboard={'number-pad'}
+          showSelect={false}
+        />
+        <View style={styles.bottom}>
+          <Button
+            title="PACK ITEM"
+            onPress={() => {
+              submitShipmentDetail(item.id);
+            }}
+          />
+        </View>
       </View>
-    </View>
+    </>
   );
 };
 export default ShipItemDetails;

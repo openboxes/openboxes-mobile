@@ -1,14 +1,13 @@
 import React from 'react';
 import styles from './styles';
 import {connect} from 'react-redux';
-import {View, Text} from 'react-native';
+import {Text, View} from 'react-native';
 import showPopup from '../../components/Popup';
-import {DispatchProps, State, Props} from './types';
+import {DispatchProps, Props, State} from './types';
 import OrdersList from './OrdersList';
 import {Order} from '../../data/order/Order';
-import Header from '../../components/Header';
 import {getOrdersAction} from '../../redux/actions/orders';
-import {showScreenLoading, hideScreenLoading} from '../../redux/actions/main';
+import {hideScreenLoading, showScreenLoading} from '../../redux/actions/main';
 import BarCodeSearchHeader from '../Products/BarCodeSearchHeader';
 
 class Index extends React.Component<Props, State> {
@@ -29,8 +28,8 @@ class Index extends React.Component<Props, State> {
     const actionCallback = (data: any) => {
       if (data?.error) {
         showPopup({
-          title: data.error.message ? 'Failed to fetch products' : null,
-          message: data.error.message ?? 'Failed to fetch products',
+          title: data.errorMessage ? 'Failed to fetch products' : "Error",
+          message: data.errorMessage ?? 'Failed to fetch products',
           positiveButton: {
             text: 'Retry',
             callback: () => {
@@ -79,31 +78,27 @@ class Index extends React.Component<Props, State> {
 
   render() {
     return (
-      <View style={styles.screenContainer}>
-        {/*<Header*/}
-        {/*  title="Orders"*/}
-        {/*  subtitle={'All Outbound Orders'}*/}
-        {/*  backButtonVisible={true}*/}
-        {/*  onBackButtonPress={this.onBackButtonPress}*/}
-        {/*/>*/}
-        <BarCodeSearchHeader
-          onBarCodeSearchQuerySubmitted={this.searchOrders}
-          placeholder={'Search Orders by Name'}
-          autoSearch={true}
-          searchBox={false}
-        />
-        <Text style={styles.label}>
-          {' '}
-          Returned {this.state.resultCount} results
-        </Text>
-        <View style={styles.content}>
-          <OrdersList
-            orders={this.state.allOrders}
-            onOrderTapped={this.goToOrderDetailsScreen}
-          />
-          {/*<CentralMessage message={this.state.centralErrorMessage}/>*/}
+        <View style={styles.screenContainer}>
+          {/*<Header*/}
+          {/*  title="Orders"*/}
+          {/*  subtitle={'All Outbound Orders'}*/}
+          {/*  backButtonVisible={true}*/}
+          {/*  onBackButtonPress={this.onBackButtonPress}*/}
+          {/*/>*/}
+          <BarCodeSearchHeader
+              onBarCodeSearchQuerySubmitted={this.searchOrders}
+              placeholder={'Search Orders by Name'}
+              autoSearch={true}
+              searchBox={false}/>
+          <Text style={styles.label}>{' '} Returned {this.state.resultCount} results</Text>
+          <View style={styles.content}>
+            <OrdersList
+                orders={this.state.allOrders}
+                onOrderTapped={this.goToOrderDetailsScreen}
+            />
+            {/*<CentralMessage message={this.state.centralErrorMessage}/>*/}
+          </View>
         </View>
-      </View>
     );
   }
 }

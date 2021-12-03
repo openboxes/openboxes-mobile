@@ -16,16 +16,16 @@ const InternalLocationDetails = () => {
   const barcodeData = useEventListener();
   const navigation = useNavigation();
   const dispatch = useDispatch();
-    const route = useRoute();
+  const route = useRoute();
   const location = useSelector(
-    (state: RootState) => state.mainReducer.currentLocation,
+      (state: RootState) => state.mainReducer.currentLocation,
   );
   const [state, setState] = useState<any>({
     error: null,
     searchProductCode: null,
     locationData: null,
-    visible:false,
-    locationDetails:null
+    visible: false,
+    locationDetails: null
   });
 
   useEffect(() => {
@@ -45,21 +45,21 @@ const InternalLocationDetails = () => {
     const actionLocationCallback = (data: any) => {
       if (data?.error) {
         showPopup({
-          title: data.error.message
-            ? `Failed to load search results with value = "${id}"`
-            : null,
+          title: data.errorMessage
+              ? `Failed to load search results with value = "${id}"`
+              : null,
           message:
-            data.error.message ??
-            `Failed to load search results with value = "${id}"`,
+              data.errorMessage ??
+              `Failed to load search results with value = "${id}"`,
           positiveButton: {
             text: 'Retry',
             callback: () => {
               dispatch(
-                getInternalLocationDetails(
-                  id,
-                  location.id,
-                  actionLocationCallback,
-                ),
+                  getInternalLocationDetails(
+                      id,
+                      location.id,
+                      actionLocationCallback,
+                  ),
               );
             },
           },
@@ -81,16 +81,16 @@ const InternalLocationDetails = () => {
       }
     };
     dispatch(
-      getInternalLocationDetails(id, location.id, actionLocationCallback),
+        getInternalLocationDetails(id, location.id, actionLocationCallback),
     );
   };
 
   const RenderItem = ({title, subTitle}: any) => {
     return (
-      <View style={styles.columnItem}>
-        <Text style={styles.label}>{title}</Text>
-        <Text style={styles.value}>{subTitle}</Text>
-      </View>
+        <View style={styles.columnItem}>
+          <Text style={styles.label}>{title}</Text>
+          <Text style={styles.value}>{subTitle}</Text>
+        </View>
     );
   };
   const navigateToDetails = (item: any) => {
@@ -117,7 +117,7 @@ const InternalLocationDetails = () => {
     navigation.navigate('AdjustStock', {item: stockItem});
   };
 
- const getLocationDetails=(id: string)=> {
+  const getLocationDetails = (id: string) => {
     if (!id) {
       showPopup({
         message: 'id is empty',
@@ -130,11 +130,11 @@ const InternalLocationDetails = () => {
       console.log(JSON.stringify(data))
       if (data?.error) {
         showPopup({
-          title: data.error.message
+          title: data.errorMessage
               ? `Failed to load details with value = "${id}"`
               : null,
           message:
-              data.error.message ??
+              data.errorMessage ??
               `Failed to load details with value = "${id}"`,
           positiveButton: {
             text: 'Retry',
@@ -146,108 +146,108 @@ const InternalLocationDetails = () => {
         });
       } else {
         data.data.product = {id: data.data.id}
-        setState({...state,locationDetails: data.data,visible: true})
+        setState({...state, locationDetails: data.data, visible: true})
       }
     };
     dispatch(getInternalLocationDetail(id, actionCallback));
   }
 
- const handleClick = () => {
-   console.log(state.locationData?.availableItems[0]["product.productCode"])
-   getLocationDetails(state.locationData?.name)
+  const handleClick = () => {
+    console.log(state.locationData?.availableItems[0]["product.productCode"])
+    getLocationDetails(state.locationData?.name)
 
   }
   const closeModal = () => {
-    setState({...state,visible: false})
+    setState({...state, visible: false})
   }
 
   const renderListItem = (item: any, index: any) => (
-    <TouchableOpacity
-      key={index}
-      onPress={() => navigateToDetails(item)}
-      style={styles.itemView}>
-      <Card>
-        <Card.Content>
-          <View style={styles.rowItem}>
-            <RenderItem
-              title={'Product Code'}
-              subTitle={item['product.productCode']}
-            />
-            <RenderItem
-              title={'Product Name'}
-              subTitle={item['product.name']}
-            />
-          </View>
-          <View style={styles.rowItem}>
-            <RenderItem
-              title={'Lot Number'}
-              subTitle={item['inventoryItem.lotNumber'] ?? 'Default'}
-            />
-            <RenderItem
-              title={'Lot Number'}
-              subTitle={item['inventoryItem.expirationDate'] ?? 'Never'}
-            />
-          </View>
-          <View style={styles.rowItem}>
-            <RenderItem
-              title={'Bin Location'}
-              subTitle={item['binLocation.name'] ?? 'Default'}
-            />
-            <RenderItem
-              title={'Quantity On Hand'}
-              subTitle={item.quantityOnHand ?? 0}
-            />
-          </View>
-        </Card.Content>
-      </Card>
-    </TouchableOpacity>
+      <TouchableOpacity
+          key={index}
+          onPress={() => navigateToDetails(item)}
+          style={styles.itemView}>
+        <Card>
+          <Card.Content>
+            <View style={styles.rowItem}>
+              <RenderItem
+                  title={'Product Code'}
+                  subTitle={item['product.productCode']}
+              />
+              <RenderItem
+                  title={'Product Name'}
+                  subTitle={item['product.name']}
+              />
+            </View>
+            <View style={styles.rowItem}>
+              <RenderItem
+                  title={'Lot Number'}
+                  subTitle={item['inventoryItem.lotNumber'] ?? 'Default'}
+              />
+              <RenderItem
+                  title={'Lot Number'}
+                  subTitle={item['inventoryItem.expirationDate'] ?? 'Never'}
+              />
+            </View>
+            <View style={styles.rowItem}>
+              <RenderItem
+                  title={'Bin Location'}
+                  subTitle={item['binLocation.name'] ?? 'Default'}
+              />
+              <RenderItem
+                  title={'Quantity On Hand'}
+                  subTitle={item.quantityOnHand ?? 0}
+              />
+            </View>
+          </Card.Content>
+        </Card>
+      </TouchableOpacity>
   );
   return (
-    <View style={styles.screenContainer}>
-      {state.locationData && (
-        <View>
-          <Text style={styles.boxHeading}>Details</Text>
-          <View style={styles.rowItem}>
-            <RenderItem
-              title={'Bin Location Name'}
-              subTitle={state.locationData?.name ?? ''}
-            />
-            <RenderItem
-              title={'Location Type'}
-              subTitle={state.locationData?.locationType.name ?? ''}
-            />
-          </View>
-          <View style={styles.rowItem}>
-            <RenderItem
-              title={'Facility Name'}
-              subTitle={state.locationData?.parentLocation?.name ?? ''}
-            />
-            <RenderItem
-              title={'Zone Name'}
-              subTitle={state.locationData?.zoneName ?? 'N/A'}
-            />
-          </View>
-          <Text style={styles.boxHeading}>
-            Available Items ({state.locationData.availableItems.length ?? '0'})
-          </Text>
-          {state.locationData?.availableItems?.map((item: any, index: any) => {
-            return renderListItem(item, index);
-          })}
-          <View style={styles.bottom}>
-            <Button
-                title={'Print Barcode Label'}
-                onPress={handleClick} />
-          </View>
-        </View>
-      )}
-      <PrintModal
-          visible={state.visible}
-          closeModal={closeModal}
-          type={"internalLocations"}
-          product={state.locationDetails?.product}
-          defaultBarcodeLabelUrl={state.locationDetails?.defaultBarcodeLabelUrl}
+      <View style={styles.screenContainer}>
+        {state.locationData && (
+            <View>
+              <Text style={styles.boxHeading}>Details</Text>
+              <View style={styles.rowItem}>
+                <RenderItem
+                    title={'Bin Location Name'}
+                    subTitle={state.locationData?.name ?? ''}
+                />
+                <RenderItem
+                    title={'Location Type'}
+                    subTitle={state.locationData?.locationType.name ?? ''}
+                />
+              </View>
+              <View style={styles.rowItem}>
+                <RenderItem
+                    title={'Facility Name'}
+                    subTitle={state.locationData?.parentLocation?.name ?? ''}
+                />
+                <RenderItem
+                    title={'Zone Name'}
+                    subTitle={state.locationData?.zoneName ?? 'N/A'}
+                />
+              </View>
+              <Text style={styles.boxHeading}>
+                Available Items ({state.locationData.availableItems.length ?? '0'})
+              </Text>
+              {state.locationData?.availableItems?.map((item: any, index: any) => {
+                return renderListItem(item, index);
+              })}
+              <View style={styles.bottom}>
+                <Button
+                    title={'Print Barcode Label'}
+                    onPress={handleClick}/>
+              </View>
+            </View>
+        )}
+        <PrintModal
+            visible={state.visible}
+            closeModal={closeModal}
+            type={"internalLocations"}
+            product={state.locationDetails?.product}
+            defaultBarcodeLabelUrl={state.locationDetails?.defaultBarcodeLabelUrl}
         />
-    </View>
+      </View>
   );
 };
 
