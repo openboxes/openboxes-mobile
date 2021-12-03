@@ -132,7 +132,6 @@ class PutawayItem extends Component<Props, State> {
                 </View>
               </View>
               <Button
-                disabled={this.state?.selectedLocation?.id ? false : true}
                 style={{padding: 20}}
                 title={'Create Putaway'}
                 onPress={this.create}
