@@ -144,7 +144,6 @@ class PutawayList extends React.Component<Props, State> {
     });
   };
   onPutAwayTapped = (putAway: PutAway) => {
-    console.log('putAway ::', putAway);
     if (putAway?.putawayItems?.length > 1) {
       this.props.navigation.navigate('PutawayDetail', {
         putAway: putAway,
