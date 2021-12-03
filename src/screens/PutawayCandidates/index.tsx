@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Props} from './types';
+import {DispatchProps, Props} from './types';
 import {
   FlatList,
   Text,
@@ -21,7 +21,7 @@ class PutawayCandidates extends Component<Props> {
 
     this.state = {
       refreshing: false,
-      updatedlist: [],
+      updatedList: [],
     };
   }
 
@@ -32,8 +32,8 @@ class PutawayCandidates extends Component<Props> {
   componentDidUpdate() {
     const {candidates} = this.props;
     const updatedList = candidates.filter(candidate => candidate.putawayStatus === 'READY');
-    if (updatedlist.length !== this.state.updatedlist.length) {
-      this.setState({updatedlist})
+    if (updatedList.length !== this.state.updatedList.length) {
+      this.setState({updatedList})
     }
   }
 
@@ -71,10 +71,10 @@ class PutawayCandidates extends Component<Props> {
   };
 
   render() {
-    const {updatedlist} = this.state;
+    const {updatedList} = this.state;
     return (
       <SafeAreaView style={styles.container}>
-        {updatedlist.length ? (
+        {updatedList.length ? (
           <FlatList
             refreshControl={
               <RefreshControl
@@ -82,7 +82,7 @@ class PutawayCandidates extends Component<Props> {
                 onRefresh={this.getScreenData}
               />
             }
-            data={updatedlist}
+            data={updatedList}
             renderItem={({item}) => this.renderItem(item)}
             keyExtractor={(item, index) => index}
           />

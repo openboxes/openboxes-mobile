@@ -2,8 +2,6 @@
 /* eslint-disable no-shadow */
 import React, {Component} from 'react';
 import {DispatchProps, Props, State} from './types';
-import {Button, Text, TextInput, ToastAndroid, View} from 'react-native';
-import {Props, State} from './types';
 import {
   TextInput,
   View,
@@ -134,7 +132,6 @@ class PutawayItem extends Component<Props, State> {
                 </View>
               </View>
               <Button
-                disabled={this.state?.selectedLocation?.id ? false : true}
                 style={{padding: 20}}
                 title={'Create Putaway'}
                 onPress={this.create}
