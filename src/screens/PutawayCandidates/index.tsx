@@ -31,10 +31,7 @@ class PutawayCandidates extends Component<Props> {
 
   componentDidUpdate() {
     const {candidates} = this.props;
-    let updatedlist: any = [];
-    if (candidates.length) {
-      const updatedList = candidates.filter(candidate => candidate.putawayStatus === 'READY');
-    }
+    const updatedList = candidates.filter(candidate => candidate.putawayStatus === 'READY');
     if (updatedlist.length !== this.state.updatedlist.length) {
       this.setState({updatedlist})
     }
@@ -76,21 +73,21 @@ class PutawayCandidates extends Component<Props> {
   render() {
     const {updatedlist} = this.state;
     return (
-        <SafeAreaView style={styles.container}>
-          {updatedlist.length ? (
-              <FlatList
-                  refreshControl={
-                    <RefreshControl
-                        refreshing={this.state.refreshing}
-                        onRefresh={this.getScreenData}
-                    />
-                  }
-                  data={updatedlist}
-                  renderItem={({item}) => this.renderItem(item)}
-                  keyExtractor={(item, index) => index}
+      <SafeAreaView style={styles.container}>
+        {updatedlist.length ? (
+          <FlatList
+            refreshControl={
+              <RefreshControl
+                refreshing={this.state.refreshing}
+                onRefresh={this.getScreenData}
               />
-          ) : null}
-        </SafeAreaView>
+            }
+            data={updatedlist}
+            renderItem={({item}) => this.renderItem(item)}
+            keyExtractor={(item, index) => index}
+          />
+        ) : null}
+      </SafeAreaView>
     );
   }
 }
