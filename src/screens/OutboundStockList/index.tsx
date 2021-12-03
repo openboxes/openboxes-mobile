@@ -28,7 +28,7 @@ class OutboundStockList extends React.Component<Props, State> {
     this.fetchPacking();
   }
 
-  fetchPackings = (query: any) => {
+  fetchPacking = (query: any) => {
     const actionCallback = (data: any) => {
       if (!data || data?.error) {
         showPopup({
