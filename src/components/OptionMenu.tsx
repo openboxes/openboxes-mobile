@@ -16,7 +16,8 @@ const OptionMenu = ({route, navigation}: any) => {
       <View
         style={{
           flexDirection: 'row',
-          justifyContent: 'center'
+          alignItems: 'flex-start',
+          alignContent: 'flex-start',
         }}>
         <Image
           source={require('../assets/images/logo.png')}
@@ -33,10 +34,10 @@ const OptionMenu = ({route, navigation}: any) => {
           <Menu
             style={{
               width: 350,
-              marginTop: 30,
-              zIndex: 123,
+              position: 'absolute',
+              top: 50,
+              left: 0,
             }}
-            contentStyle={{zIndex: 1}}
             visible={visible}
             onDismiss={closeMenu}
             anchor={
@@ -54,9 +55,6 @@ const OptionMenu = ({route, navigation}: any) => {
               </TouchableOpacity>
             }>
             <Menu.Item
-              style={{
-                width: '70%',
-              }}
               onPress={() => {
                 navigation.navigate('Dashboard');
                 closeMenu();
@@ -64,22 +62,13 @@ const OptionMenu = ({route, navigation}: any) => {
               title="Dashboard"
             />
             <Menu.Item
-              style={{
-                width: '70%',
-              }}
               onPress={() => {
                 navigation.navigate('Settings');
                 closeMenu();
               }}
               title="Settings"
             />
-            <Menu.Item
-              style={{
-                width: '70%',
-              }}
-              onPress={handleLogout}
-              title="Logout"
-            />
+            <Menu.Item onPress={handleLogout} title="Logout" />
           </Menu>
         ) : null}
       </View>
