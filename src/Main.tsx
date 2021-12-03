@@ -50,7 +50,6 @@ import ViewAvailableItem from './screens/ViewAvailableItem';
 import {Provider} from 'react-native-paper';
 
 const Stack = createStackNavigator();
-
 export interface OwnProps {
   //no-op
 }

@@ -62,3 +62,5 @@ buck-out/
 
 # Environment variables
 app/utils/EnvironmentActual.ts
+
+.env
