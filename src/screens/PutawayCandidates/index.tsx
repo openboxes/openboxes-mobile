@@ -9,11 +9,11 @@ import {
   Alert,
 } from 'react-native';
 import {RootState} from '../../redux/reducers';
-import {DispatchProps} from './types';
 import styles from './styles';
 import {hideScreenLoading, showScreenLoading} from '../../redux/actions/main';
 import {connect} from 'react-redux';
 import {getCandidates} from '../../redux/actions/putaways';
+import showPopup from "../../components/Popup";
 
 class PutawayCandidates extends Component<Props> {
   constructor(props: Props) {

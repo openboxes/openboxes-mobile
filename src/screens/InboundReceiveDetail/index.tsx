@@ -2,18 +2,15 @@ import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import styles from './styles';
 import {Image, ScrollView, Text, View} from 'react-native';
-import {Card} from 'react-native-paper';
 import InputBox from '../../components/InputBox';
 import Button from '../../components/Button';
 import showPopup from '../../components/Popup';
 import {useNavigation, useRoute} from '@react-navigation/native';
-import Radio from '../../components/Radio';
 import {submitPartialReceiving} from '../../redux/actions/inboundorder';
-import SelectDropdown from 'react-native-select-dropdown';
 import {getInternalLocations} from '../../redux/actions/locations';
 import {RootState} from '../../redux/reducers';
 import AutoInputInternalLocation from '../../components/AutoInputInternalLocation';
-import InputSpinner from "../../components/InputSpinner";
+import InputSpinner from '../../components/InputSpinner';
 
 const InboundReceiveDetail = () => {
   const dispatch = useDispatch();
@@ -24,7 +21,6 @@ const InboundReceiveDetail = () => {
   const location = useSelector(
     (state: RootState) => state.mainReducer.currentLocation,
   );
-  console.log('AAAAA', shipmentItem);
   const [state, setState] = useState<any>({
     comments: '',
     internalLocation: [],
@@ -69,9 +65,9 @@ const InboundReceiveDetail = () => {
             {
               receiptItemId: '',
               shipmentItemId: shipmentItem.shipmentItemId,
-              'container.id': shipmentItem['container.id']??"",
-              'product.id': shipmentItem['product.id']??"",
-              'binLocation.id': state.receiveLocation??"",
+              'container.id': shipmentItem['container.id'] ?? '',
+              'product.id': shipmentItem['product.id'] ?? '',
+              'binLocation.id': state.receiveLocation ?? '',
               recipient: '',
               quantityReceiving: state.quantityToReceive,
               cancelRemaining: cancelRemaining,
@@ -101,7 +97,7 @@ const InboundReceiveDetail = () => {
         showPopup({
           title: data.message ? 'Inbound order details' : null,
           message:
-            data.error.message ??
+            data.errorMessage ??
             `Failed to load Inbound order details value ${id}`,
           positiveButton: {
             text: 'Retry',
@@ -129,8 +125,8 @@ const InboundReceiveDetail = () => {
   const onComplete = (data: any) => {
     if (data?.error) {
       showPopup({
-        title: data.error.message ? 'In Bound order details' : null,
-        message: data.error.message ?? 'Failed to load Inbound order details',
+        title: data.errorMessage ? 'In Bound order details' : 'Error',
+        message: data.errorMessage ?? 'Failed to load Inbound order details',
         positiveButton: {
           text: 'Ok',
         },
@@ -158,21 +154,14 @@ const InboundReceiveDetail = () => {
             title={'Shipment Number'}
             subText={shipmentData?.shipmentNumber}
           />
-          <RenderData
-            title={'Description'}
-            subText={shipmentData?.name}
-          />
+          <RenderData title={'Description'} subText={shipmentData?.name} />
         </View>
         <View style={styles.rowItem}>
           <RenderData
             title={'Product Code'}
             subText={shipmentItem['product.productCode']}
           />
-          <RenderData
-            title={'Name'}
-            subText={shipmentItem['product.name']}
-          />
-
+          <RenderData title={'Name'} subText={shipmentItem['product.name']} />
         </View>
         <View style={styles.rowItem}>
           <RenderData
@@ -210,10 +199,9 @@ const InboundReceiveDetail = () => {
     const callback = (data: any) => {
       if (data?.error) {
         showPopup({
-          title: data.message ? 'internal location details' : "",
+          title: data.message ? 'internal location details' : '',
           message:
-            data.error.message ??
-            `Failed to load internal location value ${id}`,
+            data.errorMessage ?? `Failed to load internal location value ${id}`,
           positiveButton: {
             text: 'Retry',
             callback: () => {
@@ -223,11 +211,8 @@ const InboundReceiveDetail = () => {
           negativeButtonText: 'Cancel',
         });
       } else {
-        console.log(data);
-
         if (data && Object.keys(data).length !== 0) {
           let locationList: string[] = [];
-          console.log(data);
           data.data.map((item: any) => {
             locationList.push(item.name);
           });
@@ -255,9 +240,9 @@ const InboundReceiveDetail = () => {
           }}
         />
         <InputSpinner
-            title={'Quantity to Receive'}
-            value={state.quantityToReceive}
-            setValue={onChangeQuantity}
+          title={'Quantity to Receive'}
+          value={state.quantityToReceive}
+          setValue={onChangeQuantity}
         />
         <InputBox
           value={state.comments}

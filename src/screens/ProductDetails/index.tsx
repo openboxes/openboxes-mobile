@@ -1,13 +1,13 @@
 /* eslint-disable react-native/no-inline-styles */
 import React from 'react';
-import {Image, ScrollView, Text, View, TouchableOpacity} from 'react-native';
+import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import styles from './styles';
 import PrintModal from '../../components/PrintModal';
 import Refresh from '../../components/Refresh';
-import {Props, State, DispatchProps} from './types';
+import {DispatchProps, Props, State} from './types';
 import {vmMapper} from './VMMapper';
 import {getProductByIdAction} from '../../redux/actions/products';
-import {showScreenLoading, hideScreenLoading} from '../../redux/actions/main';
+import {hideScreenLoading, showScreenLoading} from '../../redux/actions/main';
 import {connect} from 'react-redux';
 import showPopup from '../../components/Popup';
 import {RootState} from '../../redux/reducers';
@@ -59,11 +59,11 @@ class ProductDetails extends React.Component<Props, State> {
       console.log(JSON.stringify(data));
       if (data?.error) {
         showPopup({
-          title: data.error.message
+          title: data.errorMessage
             ? `Failed to load product details with value = "${id}"`
             : null,
           message:
-            data.error.message ??
+            data.errorMessage ??
             `Failed to load product details with value = "${id}"`,
           positiveButton: {
             text: 'Retry',

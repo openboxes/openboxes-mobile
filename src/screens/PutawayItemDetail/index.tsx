@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from 'react';
-import {View, Text} from 'react-native';
+import {Text, View} from 'react-native';
 import styles from './styles';
 import showPopup from '../../components/Popup';
-import {useRoute, useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import InputBox from '../../components/InputBox';
 import {RootState} from '../../redux/reducers';
 import {searchLocationByLocationNumber} from '../../redux/actions/locations';
@@ -60,11 +60,11 @@ const PutawayItemDetail = () => {
     searchBarcode: any,
   ) => {
     showPopup({
-      title: data.error.message
+      title: data.errorMessage
         ? `Failed to load search results with value = "${query}"`
         : null,
       message:
-        data.error.message ??
+        data.errorMessage ??
         `Failed to load search results with value = "${query}"`,
       positiveButton: {
         text: 'Retry',
@@ -251,8 +251,8 @@ const PutawayItemDetail = () => {
     const actionCallback = (data: any) => {
       if (data?.error) {
         showPopup({
-          title: data.error.message ? 'Failed to submit' : null,
-          message: data.error.message ?? 'Failed to submit',
+          title: data.errorMessage ? 'Failed to submit' : "Error",
+          message: data.errorMessage ?? 'Failed to submit details',
           positiveButton: {
             text: 'Retry',
             callback: () => {

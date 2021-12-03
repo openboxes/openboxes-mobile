@@ -1,12 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {DispatchProps} from './types';
 import styles from './styles';
-import {
- ListRenderItemInfo, ScrollView,
-  Text,
-
-  View,
-} from 'react-native';
+import {ListRenderItemInfo, ScrollView, Text, View} from 'react-native';
 import {pickListVMMapper} from './PickListVMMapper';
 import {hideScreenLoading, showScreenLoading} from '../../redux/actions/main';
 import {connect, useDispatch} from 'react-redux';
@@ -27,7 +22,7 @@ import InputBox from '../../components/InputBox';
 import Carousel from 'react-native-snap-carousel';
 import {device} from '../../constants';
 import {PicklistItem} from '../../data/picklist/PicklistItem';
-import InputSpinner from "../../components/InputSpinner";
+import InputSpinner from '../../components/InputSpinner';
 
 const PickOrderItem = () => {
   const route = useRoute();
@@ -65,11 +60,11 @@ const PickOrderItem = () => {
     searchBarcode: any,
   ) => {
     showPopup({
-      title: data.error.message
+      title: data.errorMessage
         ? `Failed to load search results with value = "${query}"`
         : null,
       message:
-        data.error.message ??
+        data.errorMessage ??
         `Failed to load search results with value = "${query}"`,
       positiveButton: {
         text: 'Retry',
@@ -234,8 +229,8 @@ const PickOrderItem = () => {
         console.debug(data);
         if (data?.error) {
           showPopup({
-            title: data.error.message ? `Failed to load results` : null,
-            message: data.error.message ?? `Failed to load results`,
+            title: data.errorMessage ? `Failed to load results` : null,
+            message: data.errorMessage ?? `Failed to load results`,
             negativeButtonText: 'Cancel',
           });
         } else {
@@ -377,41 +372,39 @@ const PickOrderItem = () => {
     setState({...state});
   };
 
-    const onChangeBin = (text: string) => {
-        state.binLocationName = text;
-        setState({...state});
-    };
-    return (
-        <View style={styles.screenContainer}>
-            <View style={styles.swiperView}>
-                <Carousel
-                    key={3}
-                    dimensions={{width: device.windowWidth}}
-                    sliderWidth={device.windowWidth}
-                    sliderHeight={device.windowHeight}
-                    itemWidth={device.windowWidth - 70}
-                    data={vm?.order?.picklist?.picklistItems}
-                    firstItem={vm.selectedPinkItemIndex ? vm.selectedPinkItemIndex : 0}
-                    scrollEnabled={true}
-                    renderItem={({item, index}: ListRenderItemInfo<PicklistItem>) => {
-                        return (
-                            <View key={index}>
-                                <ScrollView style={styles.inputContainer}>
-                                    <View style={styles.listItemContainer}>
-                                        <View style={styles.row}>
-                                            <View style={styles.col50}>
-                                                <Text style={styles.label}>Product Code</Text>
-                                                <Text style={styles.value}>
-                                                    {item?.productCode}
-                                                </Text>
-                                            </View>
-                                            <View style={styles.col50}>
-                                                <Text style={styles.label}>Product Name</Text>
-                                                <Text style={styles.value}>
-                                                    {item?.['product.name']}
-                                                </Text>
-                                            </View>
-                                        </View>
+  const onChangeBin = (text: string) => {
+    state.binLocationName = text;
+    setState({...state});
+  };
+  return (
+    <View style={styles.screenContainer}>
+      <View style={styles.swiperView}>
+        <Carousel
+          key={3}
+          dimensions={{width: device.windowWidth}}
+          sliderWidth={device.windowWidth}
+          sliderHeight={device.windowHeight}
+          itemWidth={device.windowWidth - 70}
+          data={vm?.order?.picklist?.picklistItems}
+          firstItem={vm.selectedPinkItemIndex ? vm.selectedPinkItemIndex : 0}
+          scrollEnabled={true}
+          renderItem={({item, index}: ListRenderItemInfo<PicklistItem>) => {
+            return (
+              <View key={index}>
+                <ScrollView style={styles.inputContainer}>
+                  <View style={styles.listItemContainer}>
+                    <View style={styles.row}>
+                      <View style={styles.col50}>
+                        <Text style={styles.label}>Product Code</Text>
+                        <Text style={styles.value}>{item?.productCode}</Text>
+                      </View>
+                      <View style={styles.col50}>
+                        <Text style={styles.label}>Product Name</Text>
+                        <Text style={styles.value}>
+                          {item?.['product.name']}
+                        </Text>
+                      </View>
+                    </View>
 
                     <View style={styles.row}>
                       <View style={styles.col50}>
@@ -453,10 +446,15 @@ const PickOrderItem = () => {
                       onChange={onChangeBin}
                       editable={false}
                     />
-                    <InputSpinner
-                      title={"Quantity to Pick"}
+                    <InputBox
+                      label={'Quantity to Pick'}
                       value={state.quantityPicked}
-                      setValue={quantityPickedChange}
+                      onChange={quantityPickedChange}
+                      disabled={false}
+                      editable={false}
+                      onEndEdit={quantityPickedChange}
+                      keyboard={'number-pad'}
+                      showSelect={false}
                     />
                     <Button title="Pick Item" onPress={formSubmit} />
                   </View>

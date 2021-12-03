@@ -7,13 +7,13 @@ import {
   Text,
   TouchableOpacity,
 } from 'react-native';
-
 import {connect} from 'react-redux';
 import {showScreenLoading, hideScreenLoading} from '../../redux/actions/main';
 import {RootState} from '../../redux/reducers';
 import styles from './styles';
 import {getShipmentsReadyToBePacked} from '../../redux/actions/packing';
 import {Shipment} from '../../data/container/Shipment';
+import showPopup from '../../components/Popup';
 
 class OutboundStockList extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -25,19 +25,27 @@ class OutboundStockList extends React.Component<Props, State> {
   }
 
   componentDidMount() {
-    this.fetchPackings(null);
+    this.fetchPacking();
   }
 
-  fetchPackings = (query: any) => {
+  fetchPacking = (query: any) => {
     const actionCallback = (data: any) => {
       if (!data || data?.error) {
-        const title = data.error.message
-          ? 'Failed to fetch Shipments Detail'
-          : null;
-        const message =
-          data.error.message ??
-          'Failed to fetch PutAway Detail with OrderNumber:' + query;
-        return Promise.resolve(null);
+        showPopup({
+          title: data.errorMessage
+              ? `Shipment details`
+              : null,
+          message:
+              data.errorMessage ??
+              `Failed to submit shipment details`,
+          positiveButton: {
+            text: 'Retry',
+            callback: () => {
+              this.props.getShipmentsReadyToBePacked(SelectedLocation.id, 'PENDING', actionCallback)
+            },
+          },
+          negativeButtonText: 'Cancel',
+        });
       } else {
         if (data?.length == 1) {
           // this.onPackingTapped(data[0])
@@ -61,9 +69,9 @@ class OutboundStockList extends React.Component<Props, State> {
     // const location = useSelector((state: RootState) => state.mainReducer.currentLocation)
     console.debug('SelectedLocation::>:>:>:>:' + SelectedLocation.id);
     this.props.getShipmentsReadyToBePacked(
-      SelectedLocation.id,
-      'PENDING',
-      actionCallback,
+        SelectedLocation.id,
+        'PENDING',
+        actionCallback,
     );
   };
 
@@ -73,126 +81,71 @@ class OutboundStockList extends React.Component<Props, State> {
     });
   };
 
-  // renderItem = (item: ListRenderItemInfo<PutAwayItems>) => {
-  //     return (
-  //         <PutAwayItem
-  //             item={item.item}
-  //         />
-  //     )
-  // }
-  //
-  // goToPutawayItemDetailScreen = (putAway: PutAway, putAwayItem: PutAwayItems) => {
-  //     this.props.navigation.navigate('PutawayItemDetail', {
-  //         putAway: putAway,
-  //         putAwayItem: putAwayItem,
-  //     });
-  // };
-  // onPackingTapped = (putAway: PutAway) => {
-  //     this.props.navigation.navigate('PutawayDetail', {
-  //         // putAway,
-  //         putAway: putAway,
-  //         exit: () => {
-  //             this.props.navigation.navigate('PutawayList');
-  //         },
-  //     });
-  // };
-
   render() {
-    // const {showList} = this.state
     return (
-      <View style={styles.screenContainer}>
-        <View style={styles.contentContainer}>
-          <FlatList
-            data={this.state.shipments}
-            renderItem={(shipment: ListRenderItemInfo<Shipment>) => (
-              <TouchableOpacity
-                style={styles.listItemContainer}
-                onPress={() =>
-                  this.showShipmentReadyToPackScreen(shipment.item)
-                }>
-                <View style={styles.row}>
-                  <View style={styles.col50}>
-                    <Text style={styles.label}>Shipment Number</Text>
-                    <Text style={styles.value}>
-                      {shipment.item.shipmentNumber}
-                    </Text>
-                  </View>
-                  <View style={styles.col50}>
-                    <Text style={styles.label}>Status</Text>
-                    <Text style={styles.value}>{shipment.item.status}</Text>
-                  </View>
-                </View>
-                <View style={styles.row}>
-                  <View style={styles.col50}>
-                    <Text style={styles.label}>Origin</Text>
-                    <Text style={styles.value}>
-                      {shipment.item.origin.name}
-                    </Text>
-                  </View>
-                  <View style={styles.col50}>
-                    <Text style={styles.label}>Destination</Text>
-                    <Text style={styles.value}>
-                      {shipment.item.destination.name}
-                    </Text>
-                  </View>
-                </View>
-                <View style={styles.row}>
-                  <View style={styles.col50}>
-                    <Text style={styles.label}>Expected Shipping Date</Text>
-                    <Text style={styles.value}>
-                      {shipment.item.expectedShippingDate}
-                    </Text>
-                  </View>
-                  <View style={styles.col50}>
-                    <Text style={styles.label}>Expected Delivery Date</Text>
-                    <Text style={styles.value}>
-                      {shipment.item.expectedDeliveryDate}
-                    </Text>
-                  </View>
-                </View>
-              </TouchableOpacity>
-            )}
-            // renderItem={(item: ListRenderItemInfo<PutAwayItems>) => renderPutAwayItem(item.item, () => this.onItemTapped(this.props.order, item.item))}
-            // renderItem={this.renderItem}
-            keyExtractor={item => item.id}
-            style={styles.list}
-          />
+        <View style={styles.screenContainer}>
+          <View style={styles.contentContainer}>
+            <FlatList
+                data={this.state.shipments}
+                renderItem={(shipment: ListRenderItemInfo<Shipment>) => (
+                    <TouchableOpacity
+                        style={styles.listItemContainer}
+                        onPress={() =>
+                            this.showShipmentReadyToPackScreen(shipment.item)
+                        }>
+                      <View style={styles.row}>
+                        <View style={styles.col50}>
+                          <Text style={styles.label}>Shipment Number</Text>
+                          <Text style={styles.value}>
+                            {shipment.item.shipmentNumber}
+                          </Text>
+                        </View>
+                        <View style={styles.col50}>
+                          <Text style={styles.label}>Status</Text>
+                          <Text style={styles.value}>{shipment.item.status}</Text>
+                        </View>
+                      </View>
+                      <View style={styles.row}>
+                        <View style={styles.col50}>
+                          <Text style={styles.label}>Origin</Text>
+                          <Text style={styles.value}>
+                            {shipment.item.origin.name}
+                          </Text>
+                        </View>
+                        <View style={styles.col50}>
+                          <Text style={styles.label}>Destination</Text>
+                          <Text style={styles.value}>
+                            {shipment.item.destination.name}
+                          </Text>
+                        </View>
+                      </View>
+                      <View style={styles.row}>
+                        <View style={styles.col50}>
+                          <Text style={styles.label}>Expected Shipping Date</Text>
+                          <Text style={styles.value}>
+                            {shipment.item.expectedShippingDate}
+                          </Text>
+                        </View>
+                        <View style={styles.col50}>
+                          <Text style={styles.label}>Expected Delivery Date</Text>
+                          <Text style={styles.value}>
+                            {shipment.item.expectedDeliveryDate}
+                          </Text>
+                        </View>
+                      </View>
+                    </TouchableOpacity>
+                )}
+                // renderItem={(item: ListRenderItemInfo<PutAwayItems>) => renderPutAwayItem(item.item, () => this.onItemTapped(this.props.order, item.item))}
+                // renderItem={this.renderItem}
+                keyExtractor={item => item.id}
+                style={styles.list}
+            />
+          </View>
         </View>
-      </View>
     );
   }
 }
 
-/*function renderPutAway(putAway: PutAway): ReactElement {
-    return (
-        <TouchableOpacity
-            style={styles.listItemContainer}>
-            <View style={styles.row}>
-                <View style={styles.col50}>
-                    <Text style={styles.label}>Status</Text>
-                    <Text style={styles.value}>{putAway?.putawayStatus}</Text>
-                </View>
-                <View style={styles.col50}>
-                    <Text style={styles.label}>PutAway Number</Text>
-                    <Text style={styles.value}>{putAway?.putawayNumber}</Text>
-                </View>
-
-            </View>
-            <View style={styles.row}>
-                <View style={styles.col50}>
-                    <Text style={styles.label}>Origin</Text>
-                    <Text
-                        style={styles.value}>{putAway?.["origin.name"]}</Text>
-                </View>
-                <View style={styles.col50}>
-                    <Text style={styles.label}>Destination</Text>
-                    <Text
-                        style={styles.value}>{putAway?.["destination.name"]}</Text>
-                </View>
-            </View>
-        </TouchableOpacity>
-    );
-}*/
 
 const mapStateToProps = (state: RootState) => ({
   SelectedLocation: state.locationsReducer.SelectedLocation,

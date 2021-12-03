@@ -1,6 +1,8 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable no-shadow */
 import React, {Component} from 'react';
+import {DispatchProps, Props, State} from './types';
+import {Button, Text, TextInput, ToastAndroid, View} from 'react-native';
 import {Props, State} from './types';
 import {
   TextInput,
@@ -11,7 +13,6 @@ import {
   ScrollView,
 } from 'react-native';
 import {RootState} from '../../redux/reducers';
-import {DispatchProps} from './types';
 import styles from './styles';
 import {hideScreenLoading, showScreenLoading} from '../../redux/actions/main';
 import {connect} from 'react-redux';
@@ -133,7 +134,7 @@ class PutawayItem extends Component<Props, State> {
                 </View>
               </View>
               <Button
-                zdisabled={this.state?.selectedLocation?.id ? false : true}
+                disabled={this.state?.selectedLocation?.id ? false : true}
                 style={{padding: 20}}
                 title={'Create Putaway'}
                 onPress={this.create}
