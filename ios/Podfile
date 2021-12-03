@@ -14,6 +14,8 @@ target 'openboxes_mobile_o' do
 
   pod 'RNSentry', :path => '../node_modules/@sentry/react-native'
 
+  pod 'react-native-config', :path => '../node_modules/react-native-config'
+
   target 'openboxes_mobile_oTests' do
     inherit! :complete
     # Pods for testing

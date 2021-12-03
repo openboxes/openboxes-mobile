@@ -27,6 +27,7 @@
     "react-native": "0.66.0",
     "react-native-autocomplete-input": "^5.0.2",
     "react-native-datawedge-intents": "^0.1.8",
+    "react-native-dotenv": "^3.3.0",
     "react-native-gesture-handler": "^1.10.3",
     "react-native-input-spinner": "^1.7.12",
     "react-native-modal-selector-searchable": "^2.1.4",
