@@ -197,7 +197,7 @@ const AdjustStock = () => {
       <View style={styles.from}>
           <InputSpinner
               title={'Quantity Adjusted'}
-              value={state.quantityAdjusted}
+              value={quantityAdjusted}
               setValue={setQuantityAdjusted}
           />
         <View style={styles.dropDownDivider} />

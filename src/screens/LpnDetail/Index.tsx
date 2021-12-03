@@ -6,6 +6,7 @@ import {
   Image,
   ListRenderItemInfo,
   Text,
+  Image,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -21,6 +22,7 @@ import styles from './styles';
 import Button from '../../components/Button';
 import PrintModal from '../../components/PrintModal';
 import showPopup from '../../components/Popup';
+
 import SelectDropdown from 'react-native-select-dropdown';
 const containerStatus = [
   'PACKING',
@@ -38,6 +40,7 @@ const renderIcon = () => {
     />
   );
 };
+
 export interface State {
   container: Container | null;
   visible: boolean;
@@ -187,6 +190,21 @@ class LpnDetail extends React.Component<Props, State> {
               </Text>
             </View>
           </View>
+
+          <Text style={styles.value}>{'Status'}</Text>
+          <SelectDropdown
+            data={containerStatus}
+            onSelect={(selectedItem, index) => {
+              console.log(selectedItem, index);
+              const {id} = this.props.route.params;
+              this.getContainerStatusDetails(id);
+            }}
+            defaultValueByIndex={0}
+            renderDropdownIcon={renderIcon}
+            buttonStyle={styles.select}
+            buttonTextAfterSelection={(selectedItem, index) => selectedItem}
+            rowTextForSelection={(item, index) => item}
+          />
           <FlatList
             data={this.state.container?.shipmentItems}
             renderItem={(
