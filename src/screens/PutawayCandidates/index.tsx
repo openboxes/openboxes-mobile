@@ -31,18 +31,12 @@ class PutawayCandidates extends Component<Props> {
 
   componentDidUpdate() {
     const {candidates} = this.props;
-    let updatedList: any = [];
+    let updatedlist: any = [];
     if (candidates.length) {
-      this.props.candidates.map((list: any) => {
-        if (list.putawayStatus == 'READY') {
-          updatedList.push(list);
-        }
-        console.log("datess", updatedList)
-
-      });
+      const updatedList = candidates.filter(candidate => candidate.putawayStatus === 'READY');
     }
-    if (updatedList.length !== this.state.updatedlist.length) {
-      this.setState({updatedlist: updatedList})
+    if (updatedlist.length !== this.state.updatedlist.length) {
+      this.setState({updatedlist})
     }
   }
 
@@ -55,27 +49,27 @@ class PutawayCandidates extends Component<Props> {
 
   renderItem = (item: any) => {
     return (
-        <TouchableOpacity
-            style={styles.itemBox}
-            onPress={() => {
-              if (item.id) {
-                Alert.alert('Item is already in a pending putaway');
-              } else {
-                this.props.navigation.navigate('PutawayItem', {item});
-              }
-            }}>
-          <Text>{`Status - ${item['putawayStatus']}`}</Text>
-          <Text>{`Product Code - ${item['product.productCode']}`}</Text>
-          <Text>{`Product Name - ${item['product.name']}`}</Text>
-          <Text>{`Bin Location - ${item['currentLocation.name']}`}</Text>
-          <Text>{`Lot Number - ${
-              item['inventoryItem.lotNumber'] ?? 'Default'
-          }`}</Text>
-          <Text>{`Expiry Date - ${
-              item['inventoryItem.expirationDate'] ?? 'Never'
-          }`}</Text>
-          <Text>{`Quantity - ${item['quantity']}`}</Text>
-        </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.itemBox}
+        onPress={() => {
+          if (item.id) {
+            Alert.alert('Item is already in a pending putaway');
+          } else {
+            this.props.navigation.navigate('PutawayItem', {item});
+          }
+        }}>
+        <Text>{`Status - ${item['putawayStatus']}`}</Text>
+        <Text>{`Product Code - ${item['product.productCode']}`}</Text>
+        <Text>{`Product Name - ${item['product.name']}`}</Text>
+        <Text>{`Bin Location - ${item['currentLocation.name']}`}</Text>
+        <Text>{`Lot Number - ${
+          item['inventoryItem.lotNumber'] ?? 'Default'
+        }`}</Text>
+        <Text>{`Expiry Date - ${
+          item['inventoryItem.expirationDate'] ?? 'Never'
+        }`}</Text>
+        <Text>{`Quantity - ${item['quantity']}`}</Text>
+      </TouchableOpacity>
     );
   };
 
