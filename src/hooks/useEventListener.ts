@@ -13,9 +13,13 @@ import {
   PROPERTY,
   VERSION,
 } from './constant';
+import {searchBarcode} from "../redux/actions/products";
+import showPopup from "../components/Popup";
+import {useDispatch} from "react-redux";
 
 const useEventListener = () => {
   const [event, setEvent] = React.useState('');
+  const dispatch = useDispatch();
   const [state, setState] = React.useState<any>({
     ean8checked: true,
     ean13checked: true,

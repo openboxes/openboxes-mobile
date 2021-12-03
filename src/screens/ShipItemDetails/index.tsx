@@ -7,8 +7,12 @@ import InputBox from '../../components/InputBox';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {useDispatch} from 'react-redux';
 import showPopup from '../../components/Popup';
-import {getShipmentPacking, submitShipmentDetails,} from '../../redux/actions/packing';
+import {
+  getShipmentPacking,
+  submitShipmentDetails,
+} from '../../redux/actions/packing';
 import AutoInputInternalLocation from '../../components/AutoInputInternalLocation';
+import InputSpinner from '../../components/InputSpinner';
 
 const ShipItemDetails = () => {
   const route = useRoute();
@@ -34,9 +38,9 @@ const ShipItemDetails = () => {
     const callback = (data: any) => {
       if (data?.error) {
         showPopup({
-          title: data.errorMessage ? 'Shipment details' : "Error",
+          title: data.errorMessage ? 'Shipment details' : 'Error',
           message:
-              data.errorMessage ?? `Failed to load Shipment details value ${id}`,
+            data.errorMessage ?? `Failed to load Shipment details value ${id}`,
           positiveButton: {
             text: 'Retry',
             callback: () => {
@@ -69,7 +73,7 @@ const ShipItemDetails = () => {
     const callback = (data: any) => {
       if (data?.error) {
         showPopup({
-          title: data.errorMessage ? 'Shipment details' : "Error",
+          title: data.errorMessage ? 'Shipment details' : 'Error',
           message: data.errorMessage ?? 'Failed to submit shipment details',
           positiveButton: {
             text: 'Retry',
@@ -96,6 +100,7 @@ const ShipItemDetails = () => {
     });
   };
   return (
+    <>
       <View style={styles.contentContainer}>
         <View style={styles.rowItem}>
           <View style={styles.columnItem}>
@@ -139,42 +144,56 @@ const ShipItemDetails = () => {
             <Text style={styles.value}>{item.quantityRemaining}</Text>
           </View>
         </View>
-        <Text>{'Container'}</Text>
-        <AutoInputInternalLocation
-            label="AutoInputInternalContainer"
-            data={state.containerList ? state.containerList : []}
-            selectedContainerItem={selectedContainerItem}
-            selectedData={(selectedItem: any, index: number) => {
-              setSelectedContainerItem(index);
-              state.containerId = selectedItem;
-              const container = state.shipmentDetails.availableContainers[index];
-              setState({
-                ...state,
-                containerId: selectedItem,
-                container: container,
-                selectedContainerItem: index,
-              });
-            }}
+      </View>
+      <Text>{'Container'}</Text>
+      <AutoInputInternalLocation
+        label="AutoInputInternalContainer"
+        data={state.containerList ? state.containerList : []}
+        selectedContainerItem={selectedContainerItem}
+        selectedData={(selectedItem: any, index: number) => {
+          setSelectedContainerItem(index);
+          state.containerId = selectedItem;
+          const container = state.shipmentDetails.availableContainers[index];
+          setState({
+            ...state,
+            containerId: selectedItem,
+            container: container,
+            selectedContainerItem: index,
+          });
+        }}
+      />
+      <InputSpinner
+        title={'Quantity to Pick'}
+        value={state.quantityPicked}
+        setValue={quantityPickedChange}
+      />
+      <View style={styles.bottom}>
+        <Button
+          title="PACK ITEM"
+          onPress={() => {
+            submitShipmentDetail(item.id);
+          }}
         />
         <InputBox
-            label={'Quantity to Pick'}
-            value={state.quantityPicked}
-            onChange={quantityPickedChange}
-            disabled={false}
-            editable={false}
-            onEndEdit={quantityPickedChange}
-            keyboard={'number-pad'}
-            showSelect={false}
+          label={'Quantity to Pick'}
+          value={state.quantityPicked}
+          onChange={quantityPickedChange}
+          disabled={false}
+          editable={false}
+          onEndEdit={quantityPickedChange}
+          keyboard={'number-pad'}
+          showSelect={false}
         />
         <View style={styles.bottom}>
           <Button
-              title="PACK ITEM"
-              onPress={() => {
-                submitShipmentDetail(item.id);
-              }}
+            title="PACK ITEM"
+            onPress={() => {
+              submitShipmentDetail(item.id);
+            }}
           />
         </View>
       </View>
+    </>
   );
 };
 export default ShipItemDetails;

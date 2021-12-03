@@ -1,13 +1,19 @@
 import React, {useEffect, useState} from 'react';
 import {DispatchProps} from './types';
 import styles from './styles';
-import {ListRenderItemInfo, ScrollView, Text, View,} from 'react-native';
+import {ListRenderItemInfo, ScrollView, Text, View} from 'react-native';
 import {pickListVMMapper} from './PickListVMMapper';
 import {hideScreenLoading, showScreenLoading} from '../../redux/actions/main';
 import {connect, useDispatch} from 'react-redux';
 import showPopup from '../../components/Popup';
-import {getPickListItemAction, submitPickListItem,} from '../../redux/actions/orders';
-import {searchProductByCodeAction, searchProductGloballyAction,} from '../../redux/actions/products';
+import {
+  getPickListItemAction,
+  submitPickListItem,
+} from '../../redux/actions/orders';
+import {
+  searchProductByCodeAction,
+  searchProductGloballyAction,
+} from '../../redux/actions/products';
 import {searchLocationByLocationNumber} from '../../redux/actions/locations';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import Button from '../../components/Button';
@@ -16,6 +22,7 @@ import InputBox from '../../components/InputBox';
 import Carousel from 'react-native-snap-carousel';
 import {device} from '../../constants';
 import {PicklistItem} from '../../data/picklist/PicklistItem';
+import InputSpinner from '../../components/InputSpinner';
 
 const PickOrderItem = () => {
   const route = useRoute();
@@ -47,18 +54,18 @@ const PickOrderItem = () => {
   }, [barcodeData]);
 
   const showErrorPopup = (
-      data: any,
-      query: any,
-      actionCallback: any,
-      searchBarcode: any,
+    data: any,
+    query: any,
+    actionCallback: any,
+    searchBarcode: any,
   ) => {
     showPopup({
       title: data.errorMessage
-          ? `Failed to load search results with value = "${query}"`
-          : null,
+        ? `Failed to load search results with value = "${query}"`
+        : null,
       message:
-          data.errorMessage ??
-          `Failed to load search results with value = "${query}"`,
+        data.errorMessage ??
+        `Failed to load search results with value = "${query}"`,
       positiveButton: {
         text: 'Retry',
         callback: () => {
@@ -81,10 +88,10 @@ const PickOrderItem = () => {
       const actionCallback = (data: any) => {
         if (data?.error) {
           showErrorPopup(
-              data,
-              query,
-              actionCallback,
-              searchProductGloballyAction,
+            data,
+            query,
+            actionCallback,
+            searchProductGloballyAction,
           );
         } else {
           console.log(data);
@@ -96,7 +103,7 @@ const PickOrderItem = () => {
           } else {
             if (data && Object.keys(data).length !== 0) {
               if (
-                  state.pickListItem?.productCode !== data.data[0].productCode
+                state.pickListItem?.productCode !== data.data[0].productCode
               ) {
                 showPopup({
                   message: `You have scanned a wrong product barcode "${query}"`,
@@ -104,7 +111,7 @@ const PickOrderItem = () => {
                 });
               } else {
                 state.quantityPicked = (
-                    parseInt(state.quantityPicked, 10) + 1
+                  parseInt(state.quantityPicked, 10) + 1
                 ).toString();
                 state.product = data.data[0];
                 state.productCode = data.data[0].productCode;
@@ -120,10 +127,10 @@ const PickOrderItem = () => {
       const actionBinLocationCallback = (data: any) => {
         if (data?.error) {
           showErrorPopup(
-              data,
-              query,
-              actionBinLocationCallback,
-              searchLocationByLocationNumber,
+            data,
+            query,
+            actionBinLocationCallback,
+            searchLocationByLocationNumber,
           );
         } else {
           if (data.length == 0) {
@@ -150,7 +157,7 @@ const PickOrderItem = () => {
         }
       };
       dispatch(
-          searchLocationByLocationNumber(query, actionBinLocationCallback),
+        searchLocationByLocationNumber(query, actionBinLocationCallback),
       );
     }
   };
@@ -205,11 +212,11 @@ const PickOrderItem = () => {
         productCode: state.pickListItem.product.productCode,
         'inventoryItem.id': state.pickListItem.inventoryItem.id,
         'binLocation.id': state.pickListItem.binLocation
-            ? state.pickListItem.binLocation?.id
-            : '',
+          ? state.pickListItem.binLocation?.id
+          : '',
         'binLocation.locationNumber': state.pickListItem.binLocation
-            ? state.pickListItem.binLocation?.locationNumber
-            : state.binLocationSearchQuery,
+          ? state.pickListItem.binLocation?.locationNumber
+          : state.binLocationSearchQuery,
         quantityPicked: state.quantityPicked,
         'picker.id': '',
         datePicked: '',
@@ -236,11 +243,11 @@ const PickOrderItem = () => {
         }
       };
       dispatch(
-          submitPickListItem(
-              state.pickListItem?.id as string,
-              requestBody,
-              actionCallback,
-          ),
+        submitPickListItem(
+          state.pickListItem?.id as string,
+          requestBody,
+          actionCallback,
+        ),
       );
     } catch (e) {
       const title = e.message ? 'Failed submit item' : null;
@@ -320,8 +327,8 @@ const PickOrderItem = () => {
       if (!location || location.error) {
         showPopup({
           message:
-              'Bin Location not found with LocationNumber:' +
-              state.binLocationName,
+            'Bin Location not found with LocationNumber:' +
+            state.binLocationName,
           positiveButton: {
             text: 'Ok',
           },
@@ -341,7 +348,7 @@ const PickOrderItem = () => {
       }
     };
     dispatch(
-        searchLocationByLocationNumber(state.binLocationName, actionCallback),
+      searchLocationByLocationNumber(state.binLocationName, actionCallback),
     );
   };
 
@@ -369,97 +376,96 @@ const PickOrderItem = () => {
     state.binLocationName = text;
     setState({...state});
   };
-  console.log('finall value', state);
   return (
-      <View style={styles.screenContainer}>
-        <View style={styles.swiperView}>
-          <Carousel
-              key={3}
-              dimensions={{width: device.windowWidth}}
-              sliderWidth={device.windowWidth}
-              sliderHeight={device.windowHeight}
-              itemWidth={device.windowWidth - 70}
-              data={vm?.order?.picklist?.picklistItems}
-              firstItem={vm.selectedPinkItemIndex ? vm.selectedPinkItemIndex : 0}
-              scrollEnabled={true}
-              renderItem={({item, index}: ListRenderItemInfo<PicklistItem>) => {
-                return (
-                    <View key={index}>
-                      <ScrollView style={styles.inputContainer}>
-                        <View style={styles.listItemContainer}>
-                          <View style={styles.row}>
-                            <View style={styles.col50}>
-                              <Text style={styles.label}>Product Code</Text>
-                              <Text style={styles.value}>{item?.productCode}</Text>
-                            </View>
-                            <View style={styles.col50}>
-                              <Text style={styles.label}>Product Name</Text>
-                              <Text style={styles.value}>
-                                {item?.['product.name']}
-                              </Text>
-                            </View>
-                          </View>
-
-                          <View style={styles.row}>
-                            <View style={styles.col50}>
-                              <Text style={styles.label}>Picked</Text>
-                              <Text style={styles.value}>
-                                {item?.quantityPicked} / {item?.quantityRequested}
-                              </Text>
-                            </View>
-                            <View style={styles.col50}>
-                              <Text style={styles.label}>Remaining</Text>
-                              <Text style={styles.value}>
-                                {item?.quantityRemaining}
-                              </Text>
-                            </View>
-                          </View>
-                        </View>
-                        <View style={styles.from}>
-                          <InputBox
-                              value={state.productCode}
-                              disabled={true}
-                              editable={false}
-                              onEndEdit={productSearchQueryChange}
-                              onChange={onChangeProduct}
-                              label={'Product Code'}
-                          />
-                          <InputBox
-                              value={state.lotNumber}
-                              label={'Lot Number'}
-                              disabled={true}
-                              onEndEdit={binLocationSearchQueryChange}
-                              onChange={onChangeBin}
-                              editable={false}
-                          />
-                          <InputBox
-                              value={state.binLocationName}
-                              label={'Bin Location'}
-                              disabled={true}
-                              onEndEdit={binLocationSearchQueryChange}
-                              onChange={onChangeBin}
-                              editable={false}
-                          />
-                          <InputBox
-                              label={'Quantity to Pick'}
-                              value={state.quantityPicked}
-                              onChange={quantityPickedChange}
-                              disabled={false}
-                              editable={false}
-                              onEndEdit={quantityPickedChange}
-                              keyboard={'number-pad'}
-                              showSelect={false}
-                          />
-                          <Button title="Pick Item" onPress={formSubmit}/>
-                        </View>
-                      </ScrollView>
-                      <View style={styles.bottom}></View>
+    <View style={styles.screenContainer}>
+      <View style={styles.swiperView}>
+        <Carousel
+          key={3}
+          dimensions={{width: device.windowWidth}}
+          sliderWidth={device.windowWidth}
+          sliderHeight={device.windowHeight}
+          itemWidth={device.windowWidth - 70}
+          data={vm?.order?.picklist?.picklistItems}
+          firstItem={vm.selectedPinkItemIndex ? vm.selectedPinkItemIndex : 0}
+          scrollEnabled={true}
+          renderItem={({item, index}: ListRenderItemInfo<PicklistItem>) => {
+            return (
+              <View key={index}>
+                <ScrollView style={styles.inputContainer}>
+                  <View style={styles.listItemContainer}>
+                    <View style={styles.row}>
+                      <View style={styles.col50}>
+                        <Text style={styles.label}>Product Code</Text>
+                        <Text style={styles.value}>{item?.productCode}</Text>
+                      </View>
+                      <View style={styles.col50}>
+                        <Text style={styles.label}>Product Name</Text>
+                        <Text style={styles.value}>
+                          {item?.['product.name']}
+                        </Text>
+                      </View>
                     </View>
-                );
-              }}
-          />
-        </View>
+
+                    <View style={styles.row}>
+                      <View style={styles.col50}>
+                        <Text style={styles.label}>Picked</Text>
+                        <Text style={styles.value}>
+                          {item?.quantityPicked} / {item?.quantityRequested}
+                        </Text>
+                      </View>
+                      <View style={styles.col50}>
+                        <Text style={styles.label}>Remaining</Text>
+                        <Text style={styles.value}>
+                          {item?.quantityRemaining}
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
+                  <View style={styles.from}>
+                    <InputBox
+                      value={state.productCode}
+                      disabled={true}
+                      editable={false}
+                      onEndEdit={productSearchQueryChange}
+                      onChange={onChangeProduct}
+                      label={'Product Code'}
+                    />
+                    <InputBox
+                      value={state.lotNumber}
+                      label={'Lot Number'}
+                      disabled={true}
+                      onEndEdit={binLocationSearchQueryChange}
+                      onChange={onChangeBin}
+                      editable={false}
+                    />
+                    <InputBox
+                      value={state.binLocationName}
+                      label={'Bin Location'}
+                      disabled={true}
+                      onEndEdit={binLocationSearchQueryChange}
+                      onChange={onChangeBin}
+                      editable={false}
+                    />
+                    <InputBox
+                      label={'Quantity to Pick'}
+                      value={state.quantityPicked}
+                      onChange={quantityPickedChange}
+                      disabled={false}
+                      editable={false}
+                      onEndEdit={quantityPickedChange}
+                      keyboard={'number-pad'}
+                      showSelect={false}
+                    />
+                    <Button title="Pick Item" onPress={formSubmit} />
+                  </View>
+                </ScrollView>
+                <View style={styles.bottom}></View>
+              </View>
+            );
+          }}
+        />
       </View>
+    </View>
   );
 };
 

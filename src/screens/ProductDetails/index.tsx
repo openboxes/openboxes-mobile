@@ -60,11 +60,11 @@ class ProductDetails extends React.Component<Props, State> {
       if (data?.error) {
         showPopup({
           title: data.errorMessage
-              ? `Failed to load product details with value = "${id}"`
-              : null,
+            ? `Failed to load product details with value = "${id}"`
+            : null,
           message:
-              data.errorMessage ??
-              `Failed to load product details with value = "${id}"`,
+            data.errorMessage ??
+            `Failed to load product details with value = "${id}"`,
           positiveButton: {
             text: 'Retry',
             callback: () => {
@@ -85,41 +85,45 @@ class ProductDetails extends React.Component<Props, State> {
     this.props.navigation.navigate('ViewAvailableItem', {
       item,
       imageUrl:
-          this.state.productDetails?.defaultImageUrl ??
-          'https://reactnative.dev/img/tiny_logo.png',
+        this.state.productDetails?.defaultImageUrl ??
+        'https://reactnative.dev/img/tiny_logo.png',
     });
   };
 
   renderListItem = (item: any, index: any) => (
-      <TouchableOpacity
-          key={index}
-          onPress={() => this.navigateToDetails(item)}
-          style={styles.itemView}>
-        <Card>
-          <Card.Content>
-            <View style={styles.rowItem}>
+    <TouchableOpacity
+      key={index}
+      onPress={() => this.navigateToDetails(item)}
+      style={styles.itemView}>
+      <Card>
+        <Card.Content>
+          <View style={styles.rowItem}>
+            <RenderData
+              title={'Bin Location'}
+              subText={item?.binLocation?.name ?? 'Default'}
+            />
+            {item.quantityOnHand && (
               <RenderData
-                  title={'Bin Location'}
-                  subText={item?.binLocation?.name ?? 'Default'}
+                title={'Quantity OnHand'}
+                subText={item.quantityOnHand}
               />
+            )}
+          </View>
+          <View style={styles.rowItem}>
+            <RenderData
+              title={'Lot Number'}
+              subText={item?.inventoryItem?.lotNumber ?? 'Default'}
+            />
+            {item.quantityAvailable && (
               <RenderData
-                  title={'Quantity OnHand'}
-                  subText={item.quantityOnHand ?? 0}
+                title={'Quantity Available'}
+                subText={item.quantityAvailable}
               />
-            </View>
-            <View style={styles.rowItem}>
-              <RenderData
-                  title={'Lot Number'}
-                  subText={item?.inventoryItem?.lotNumber ?? 'Default'}
-              />
-              <RenderData
-                  title={'Quantity Available'}
-                  subText={item.quantityAvailable ?? 0}
-              />
-            </View>
-          </Card.Content>
-        </Card>
-      </TouchableOpacity>
+            )}
+          </View>
+        </Card.Content>
+      </Card>
+    </TouchableOpacity>
   );
 
   render() {
@@ -127,151 +131,151 @@ class ProductDetails extends React.Component<Props, State> {
     const product = this.props.selectedProduct;
     const {visible} = this.state;
     return (
-        <View
-            style={{
-              flexDirection: 'column',
-              flex: 1,
-            }}>
-          <PrintModal
-              visible={visible}
-              closeModal={this.closeModal}
-              product={product}
-              type={'products'}
-              defaultBarcodeLabelUrl={product?.defaultBarcodeLabelUrl}
-          />
-          <View style={styles.contentContainer}>
-            <Refresh onRefresh={this.getProduct}>
-              <View style={styles.header}>
-                <View style={styles.rowItem}>
-                  <View style={{width: '75%'}}>
-                    <Text style={styles.name}>{vm.productCode}</Text>
-                    <Text style={styles.name}>{vm.name}</Text>
+      <View
+        style={{
+          flexDirection: 'column',
+          flex: 1,
+        }}>
+        <PrintModal
+          visible={visible}
+          closeModal={this.closeModal}
+          product={product}
+          type={'products'}
+          defaultBarcodeLabelUrl={product?.defaultBarcodeLabelUrl}
+        />
+        <View style={styles.contentContainer}>
+          <Refresh onRefresh={this.getProduct}>
+            <View style={styles.header}>
+              <View style={styles.rowItem}>
+                <View style={{width: '75%'}}>
+                  <Text style={styles.name}>{vm.productCode}</Text>
+                  <Text style={styles.name}>{vm.name}</Text>
+                </View>
+                <View style={{width: '25%', alignItems: 'flex-end', flex: 1}}>
+                  <Image
+                    style={{width: 50, height: 50, resizeMode: 'contain'}}
+                    source={{uri: vm.defaultImageUrl}}
+                  />
+                </View>
+              </View>
+            </View>
+          </Refresh>
+          <ScrollView>
+            <Text style={styles.boxHeading}>Availability</Text>
+            <Card>
+              <View style={styles.container}>
+                <View style={styles.row}>
+                  <View style={styles.label}>
+                    <Text>{'Status'}</Text>
                   </View>
-                  <View style={{width: '25%', alignItems: 'flex-end', flex: 1}}>
-                    <Image
-                        style={{width: 50, height: 50, resizeMode: 'contain'}}
-                        source={{uri: vm.defaultImageUrl}}
-                    />
+                  <View style={styles.value}>
+                    <Text style={styles.textAlign}>{vm.status}</Text>
+                  </View>
+                </View>
+                <View style={styles.row}>
+                  <View style={styles.label}>
+                    <Text>{'Quantity On Hand'}</Text>
+                  </View>
+                  <View style={styles.value}>
+                    <Text style={styles.textAlign}>
+                      {vm.quantityOnHand}
+                      {vm.unitOfMeasure}
+                    </Text>
+                  </View>
+                </View>
+                <View style={styles.row}>
+                  <View style={styles.label}>
+                    <Text>{'Quantity Available'}</Text>
+                  </View>
+                  <View style={styles.value}>
+                    <Text style={styles.textAlign}>
+                      {vm.quantityAvailable}
+                      {vm.unitOfMeasure}
+                    </Text>
+                  </View>
+                </View>
+                <View style={styles.row}>
+                  <View style={styles.label}>
+                    <Text>{'Allocated to Order'}</Text>
+                  </View>
+                  <View style={styles.value}>
+                    <Text style={styles.textAlign}>
+                      {vm.quantityAllocated}
+                      {vm.unitOfMeasure}
+                    </Text>
+                  </View>
+                </View>
+                <View style={styles.row}>
+                  <View style={styles.label}>
+                    <Text>{'On Order'}</Text>
+                  </View>
+                  <View style={styles.value}>
+                    <Text style={styles.textAlign}>
+                      {vm.quantityOnOrder}
+                      {vm.unitOfMeasure}
+                    </Text>
                   </View>
                 </View>
               </View>
-            </Refresh>
-            <ScrollView>
-              <Text style={styles.boxHeading}>Availability</Text>
-              <Card>
-                <View style={styles.container}>
-                  <View style={styles.row}>
-                    <View style={styles.label}>
-                      <Text>{'Status'}</Text>
-                    </View>
-                    <View style={styles.value}>
-                      <Text style={styles.textAlign}>{vm.status}</Text>
-                    </View>
+            </Card>
+            <Text style={styles.boxHeading}>Details</Text>
+            <Card>
+              <View style={styles.container}>
+                <View style={styles.row}>
+                  <View style={styles.label}>
+                    <Text>{'Product Code'}</Text>
                   </View>
-                  <View style={styles.row}>
-                    <View style={styles.label}>
-                      <Text>{'Quantity On Hand'}</Text>
-                    </View>
-                    <View style={styles.value}>
-                      <Text style={styles.textAlign}>
-                        {vm.quantityOnHand}
-                        {vm.unitOfMeasure}
-                      </Text>
-                    </View>
-                  </View>
-                  <View style={styles.row}>
-                    <View style={styles.label}>
-                      <Text>{'Quantity Available'}</Text>
-                    </View>
-                    <View style={styles.value}>
-                      <Text style={styles.textAlign}>
-                        {vm.quantityAvailable}
-                        {vm.unitOfMeasure}
-                      </Text>
-                    </View>
-                  </View>
-                  <View style={styles.row}>
-                    <View style={styles.label}>
-                      <Text>{'Allocated to Order'}</Text>
-                    </View>
-                    <View style={styles.value}>
-                      <Text style={styles.textAlign}>
-                        {vm.quantityAllocated}
-                        {vm.unitOfMeasure}
-                      </Text>
-                    </View>
-                  </View>
-                  <View style={styles.row}>
-                    <View style={styles.label}>
-                      <Text>{'On Order'}</Text>
-                    </View>
-                    <View style={styles.value}>
-                      <Text style={styles.textAlign}>
-                        {vm.quantityOnOrder}
-                        {vm.unitOfMeasure}
-                      </Text>
-                    </View>
+                  <View style={styles.value}>
+                    <Text style={styles.textAlign}>{vm.productCode}</Text>
                   </View>
                 </View>
-              </Card>
-              <Text style={styles.boxHeading}>Details</Text>
-              <Card>
-                <View style={styles.container}>
-                  <View style={styles.row}>
-                    <View style={styles.label}>
-                      <Text>{'Product Code'}</Text>
-                    </View>
-                    <View style={styles.value}>
-                      <Text style={styles.textAlign}>{vm.productCode}</Text>
-                    </View>
+                <View style={styles.row}>
+                  <View style={styles.label}>
+                    <Text>{'Category'}</Text>
                   </View>
-                  <View style={styles.row}>
-                    <View style={styles.label}>
-                      <Text>{'Category'}</Text>
-                    </View>
-                    <View style={styles.value}>
-                      <Text style={styles.textAlign}>{vm.category.name}</Text>
-                    </View>
-                  </View>
-                  {vm?.attributes?.map((item, index) => {
-                    return (
-                        <View key={index} style={styles.row}>
-                          <Text style={styles.label}>{item.name}</Text>
-                          <Text style={styles.value}>{item.value}</Text>
-                        </View>
-                    );
-                  })}
-                  <View style={styles.row}>
-                    <View style={styles.label}>
-                      <Text>{'Product Type'}</Text>
-                    </View>
-                    <View style={styles.value}>
-                      <Text style={styles.textAlign}>{vm.productType.name}</Text>
-                    </View>
-                  </View>
-                  <View style={styles.row}>
-                    <View style={styles.label}>
-                      <Text>{'Price per unit'}</Text>
-                    </View>
-                    <View style={styles.value}>
-                      <Text style={styles.textAlign}>{vm.pricePerUnit}</Text>
-                    </View>
+                  <View style={styles.value}>
+                    <Text style={styles.textAlign}>{vm.category.name}</Text>
                   </View>
                 </View>
-              </Card>
-              <Text style={styles.boxHeading}>Available Items</Text>
-              <Card>
-                {vm?.availableItems?.map((item, index) => {
-                  return this.renderListItem(item, index);
+                {vm?.attributes?.map((item, index) => {
+                  return (
+                    <View key={index} style={styles.row}>
+                      <Text style={styles.label}>{item.name}</Text>
+                      <Text style={styles.value}>{item.value}</Text>
+                    </View>
+                  );
                 })}
-                <Button
-                    title={'Print Barcode Label'}
-                    onPress={this.handleClick}
-                />
-              </Card>
-            </ScrollView>
-          </View>
+                <View style={styles.row}>
+                  <View style={styles.label}>
+                    <Text>{'Product Type'}</Text>
+                  </View>
+                  <View style={styles.value}>
+                    <Text style={styles.textAlign}>{vm.productType.name}</Text>
+                  </View>
+                </View>
+                <View style={styles.row}>
+                  <View style={styles.label}>
+                    <Text>{'Price per unit'}</Text>
+                  </View>
+                  <View style={styles.value}>
+                    <Text style={styles.textAlign}>{vm.pricePerUnit}</Text>
+                  </View>
+                </View>
+              </View>
+            </Card>
+            <Text style={styles.boxHeading}>Available Items</Text>
+            <Card>
+              {vm?.availableItems?.map((item, index) => {
+                return this.renderListItem(item, index);
+              })}
+              <Button
+                title={'Print Barcode Label'}
+                onPress={this.handleClick}
+              />
+            </Card>
+          </ScrollView>
         </View>
+      </View>
     );
   }
 }

@@ -3,7 +3,7 @@ import showPopup from '../../components/Popup';
 import {saveAndUpdateLpn} from '../../redux/actions/lpn';
 import {DispatchProps, Props} from './Types';
 import {connect} from 'react-redux';
-import {Image, Text, View} from 'react-native';
+import {Text, View} from 'react-native';
 import {Order} from '../../data/order/Order';
 import styles from './styles';
 import InputBox from '../../components/InputBox';
@@ -25,7 +25,7 @@ export interface State {
 class CreateLpn extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    const {id, shipmentDetail} = this.props.route.params;
+    const {id, shipmentDetail} = this.props?.route?.params ?? '';
     this.state = {
       stockMovements: shipmentDetail?.shipmentNumber || null,
       stockMovement: shipmentDetail?.shipmentNumber || null,
@@ -55,13 +55,6 @@ class CreateLpn extends React.Component<Props, State> {
         });
       } else {
         let stockMovementList: string[] = [];
-        // data.map((item: any) => {
-        //     stockMovementList.push(item.name)
-        // })
-        // this.setState({
-        //     stockMovementList: stockMovementList,
-        //     stockMovements: data
-        // })
       }
     };
     this.props.getShipmentPacking('OUTBOUND', actionCallback);
@@ -113,12 +106,6 @@ class CreateLpn extends React.Component<Props, State> {
           negativeButtonText: 'Cancel',
         });
       } else {
-        // if (data.length == 0) {
-        //     showPopup({
-        //         message: `No search results`,
-        //         positiveButton: {text: 'Ok'},
-        //     });
-        // } else
         if (data && Object.keys(data).length !== 0) {
           this.props.navigation.navigate('LpnDetail', {
             id: data.id,
@@ -127,7 +114,6 @@ class CreateLpn extends React.Component<Props, State> {
         }
       }
     };
-    console.debug('Save LPN', requestBody);
     this.props.saveAndUpdateLpn(requestBody, actionCallback);
   };
 
@@ -143,18 +129,8 @@ class CreateLpn extends React.Component<Props, State> {
     });
   };
 
-  renderIcon = () => {
-    return (
-        <Image
-            style={styles.arrowDownIcon}
-            source={require('../../assets/images/arrow-down.png')}
-        />
-    );
-  };
 
   render() {
-
-    console.debug('{item.item.name}:');
     return (
         <View style={styles.container}>
           <View style={styles.from}>
