@@ -2,27 +2,44 @@ import React from 'react';
 import {DispatchProps, Props} from './Types';
 import {Container} from '../../data/container/Container';
 import {
-  FlatList, Image,
+  FlatList,
   ListRenderItemInfo,
   Text,
+  Image,
   TouchableOpacity,
   View,
 } from 'react-native';
 import {ContainerShipmentItem} from '../../data/container/ContainerShipmentItem';
-import {fetchContainer, getContainer,getContainerStatus} from '../../redux/actions/lpn';
+import {
+  fetchContainer,
+  getContainer,
+  getContainerStatus,
+} from '../../redux/actions/lpn';
 import {getShipmentPacking} from '../../redux/actions/packing';
 import {connect} from 'react-redux';
 import styles from './styles';
 import Button from '../../components/Button';
 import PrintModal from '../../components/PrintModal';
 import showPopup from '../../components/Popup';
-import SelectDropdown from "react-native-select-dropdown";
-const containerStatus = ['PACKING', 'PACKED', 'LOADED', 'UNLOADED', 'UNPACKING', 'UNPACKED'];
+
+import SelectDropdown from 'react-native-select-dropdown';
+const containerStatus = [
+  'PACKING',
+  'PACKED',
+  'LOADED',
+  'UNLOADED',
+  'UNPACKING',
+  'UNPACKED',
+];
 const renderIcon = () => {
   return (
-      <Image style={styles.arrowDownIcon} source={require('../../assets/images/arrow-down.png')}/>
-  )
-}
+    <Image
+      style={styles.arrowDownIcon}
+      source={require('../../assets/images/arrow-down.png')}
+    />
+  );
+};
+
 export interface State {
   container: Container | null;
   visible: boolean;
@@ -50,11 +67,10 @@ class LpnDetail extends React.Component<Props, State> {
       if (data?.error) {
         showPopup({
           title: data.error.message
-              ? `Failed to load details with value = "${id}"`
-              : null,
+            ? `Failed to load details with value = "${id}"`
+            : null,
           message:
-              data.error.message ??
-              `Failed to load details with value = "${id}"`,
+            data.error.message ?? `Failed to load details with value = "${id}"`,
           positiveButton: {
             text: 'Retry',
             callback: () => {
@@ -64,15 +80,15 @@ class LpnDetail extends React.Component<Props, State> {
           negativeButtonText: 'Cancel',
         });
       } else {
-        this.showShipmentReadyToPackScreen(data["shipment.id"])
+        this.showShipmentReadyToPackScreen(data['shipment.id']);
       }
     };
     this.props.getContainerStatus(id, actionCallback);
-  }
+  };
 
   showShipmentReadyToPackScreen = (id: string) => {
-    this.props.navigation.navigate('OutboundStockDetails', {shipmentId: id})
-  }
+    this.props.navigation.navigate('OutboundStockDetails', {shipmentId: id});
+  };
 
   getContainerDetails = (id: string) => {
     if (!id) {
@@ -173,21 +189,21 @@ class LpnDetail extends React.Component<Props, State> {
               </Text>
             </View>
           </View>
-          <Text style={styles.value}>{"Status"}</Text>
-                    <SelectDropdown
-                        data={containerStatus}
-                        onSelect={(selectedItem, index) => {
-                            console.log(selectedItem, index)
-                            const {id} = this.props.route.params
-                            this.getContainerStatusDetails(id)
-                        }}
-                        defaultValueByIndex={0}
-                        renderDropdownIcon={renderIcon}
-                        buttonStyle={styles.select}
-                        buttonTextAfterSelection={(selectedItem, index) => selectedItem}
-                        rowTextForSelection={(item, index) => item}
-                    />
-                    <FlatList
+          <Text style={styles.value}>{'Status'}</Text>
+          <SelectDropdown
+            data={containerStatus}
+            onSelect={(selectedItem, index) => {
+              console.log(selectedItem, index);
+              const {id} = this.props.route.params;
+              this.getContainerStatusDetails(id);
+            }}
+            defaultValueByIndex={0}
+            renderDropdownIcon={renderIcon}
+            buttonStyle={styles.select}
+            buttonTextAfterSelection={(selectedItem, index) => selectedItem}
+            rowTextForSelection={(item, index) => item}
+          />
+          <FlatList
             data={this.state.container?.shipmentItems}
             renderItem={(
               shipmentItem: ListRenderItemInfo<ContainerShipmentItem>,
@@ -248,7 +264,7 @@ const mapDispatchToProps: DispatchProps = {
   fetchContainer,
   getShipmentPacking,
   getContainer,
-  getContainerStatus
+  getContainerStatus,
 };
 
 export default connect(null, mapDispatchToProps)(LpnDetail);
