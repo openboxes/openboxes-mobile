@@ -19,7 +19,7 @@ const PutawayItemDetail = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const location = useSelector(
-      (state: RootState) => state.mainReducer.currentLocation,
+    (state: RootState) => state.mainReducer.currentLocation,
   );
   const [state, setState] = useState<any>({
     error: null,
@@ -54,18 +54,18 @@ const PutawayItemDetail = () => {
   }, [barcodeData]);
 
   const showErrorPopup = (
-      data: any,
-      query: any,
-      actionCallback: any,
-      searchBarcode: any,
+    data: any,
+    query: any,
+    actionCallback: any,
+    searchBarcode: any,
   ) => {
     showPopup({
       title: data.errorMessage
-          ? `Failed to load search results with value = "${query}"`
-          : null,
+        ? `Failed to load search results with value = "${query}"`
+        : null,
       message:
-          data.errorMessage ??
-          `Failed to load search results with value = "${query}"`,
+        data.errorMessage ??
+        `Failed to load search results with value = "${query}"`,
       positiveButton: {
         text: 'Retry',
         callback: () => {
@@ -87,10 +87,10 @@ const PutawayItemDetail = () => {
       const actionCallback = (data: any) => {
         if (data?.error) {
           showErrorPopup(
-              data,
-              query,
-              actionCallback,
-              searchProductGloballyAction,
+            data,
+            query,
+            actionCallback,
+            searchProductGloballyAction,
           );
         } else {
           if (data.length === 0) {
@@ -101,8 +101,8 @@ const PutawayItemDetail = () => {
           } else {
             if (data && Object.keys(data).length !== 0) {
               if (
-                  state.putAwayItem?.['product.productCode'] !==
-                  data.data[0].productCode
+                state.putAwayItem?.['product.productCode'] !==
+                data.data[0].productCode
               ) {
                 showPopup({
                   message: `You have scanned a wrong product barcode "${query}"`,
@@ -120,10 +120,10 @@ const PutawayItemDetail = () => {
       const actionBinLocationCallback = (data: any) => {
         if (data?.error) {
           showErrorPopup(
-              data,
-              query,
-              actionBinLocationCallback,
-              searchLocationByLocationNumber,
+            data,
+            query,
+            actionBinLocationCallback,
+            searchLocationByLocationNumber,
           );
         } else {
           if (data.length == 0) {
@@ -134,8 +134,8 @@ const PutawayItemDetail = () => {
           } else {
             if (data && Object.keys(data).length !== 0) {
               if (
-                  state.binToLocation === '' ||
-                  state.putAwayItem?.['putawayLocation.name'] === data.name
+                state.binToLocation === '' ||
+                state.putAwayItem?.['putawayLocation.name'] === data.name
               ) {
                 state.binToLocation = data.name;
                 state.binToData = data;
@@ -152,7 +152,7 @@ const PutawayItemDetail = () => {
         }
       };
       dispatch(
-          searchLocationByLocationNumber(query, actionBinLocationCallback),
+        searchLocationByLocationNumber(query, actionBinLocationCallback),
       );
     }
   };
@@ -172,8 +172,8 @@ const PutawayItemDetail = () => {
       if (!location || location.error) {
         showPopup({
           message:
-              'Bin Location not found with LocationNumber:' +
-              state.binLocationSearchQuery,
+            'Bin Location not found with LocationNumber:' +
+            state.binLocationSearchQuery,
           positiveButton: {
             text: 'Ok',
           },
@@ -188,10 +188,10 @@ const PutawayItemDetail = () => {
       }
     };
     dispatch(
-        searchLocationByLocationNumber(
-            state.binLocationSearchQuery,
-            actionCallback,
-        ),
+      searchLocationByLocationNumber(
+        state.binLocationSearchQuery,
+        actionCallback,
+      ),
     );
   };
 
@@ -257,11 +257,11 @@ const PutawayItemDetail = () => {
             text: 'Retry',
             callback: () => {
               dispatch(
-                  submitPutawayItem(
-                      state.putAwayItem?.id as string,
-                      requestBody,
-                      actionCallback,
-                  ),
+                submitPutawayItem(
+                  state.putAwayItem?.id as string,
+                  requestBody,
+                  actionCallback,
+                ),
               );
             },
           },
@@ -269,7 +269,7 @@ const PutawayItemDetail = () => {
         });
       } else {
         showPopup({
-          title: 'Submit',
+          title: ' submit',
           message: 'successfully submit',
           positiveButton: {
             text: 'ok',
@@ -281,11 +281,11 @@ const PutawayItemDetail = () => {
       }
     };
     dispatch(
-        submitPutawayItem(
-            state.putAwayItem?.id as string,
-            requestBody,
-            actionCallback,
-        ),
+      submitPutawayItem(
+        state.putAwayItem?.id as string,
+        requestBody,
+        actionCallback,
+      ),
     );
   };
 
@@ -303,95 +303,95 @@ const PutawayItemDetail = () => {
     setState({...state, quantity: text});
   };
   return (
-      <View style={styles.contentContainer}>
-        <View style={styles.rowItem}>
-          <View style={styles.columnItem}>
-            <Text style={styles.label}>{'Status'}</Text>
-            <Text style={styles.value}>{state.putAway?.putawayStatus}</Text>
-          </View>
-          <View style={styles.columnItem}>
-            <Text style={styles.label}>{'Putaway Number'}</Text>
-            <Text style={styles.value}>{state.putAway?.putawayNumber}</Text>
-          </View>
+    <View style={styles.contentContainer}>
+      <View style={styles.rowItem}>
+        <View style={styles.columnItem}>
+          <Text style={styles.label}>{'Status'}</Text>
+          <Text style={styles.value}>{state.putAway?.putawayStatus}</Text>
         </View>
-        <View style={styles.rowItem}>
-          <View style={styles.columnItem}>
-            <Text style={styles.label}>{'Product Code'}</Text>
-            <Text style={styles.value}>
-              {state.putAwayItem?.['product.productCode']}
-            </Text>
-          </View>
-          <View style={styles.columnItem}>
-            <Text style={styles.label}>{'Product Name'}</Text>
-            <Text style={styles.value}>
-              {state.putAwayItem?.['product.name']}
-            </Text>
-          </View>
-        </View>
-        <View style={styles.rowItem}>
-          <View style={styles.columnItem}>
-            <Text style={styles.label}>{'Current Location'}</Text>
-            <Text style={styles.value}>{state.putAway?.putawayStatus}</Text>
-          </View>
-          <View style={styles.columnItem}>
-            <Text style={styles.label}>{'Putaway Location'}</Text>
-            <Text style={styles.value}>
-              {state.putAwayItem?.['putawayLocation.name']}
-            </Text>
-          </View>
-        </View>
-        <View style={styles.rowItem}>
-          <View style={styles.columnItem}>
-            <Text style={styles.label}>Preferred Location</Text>
-            <Text style={styles.value}>
-              {state.putAwayItem?.['preferredBin.name'] ?? 'None'}
-            </Text>
-          </View>
-          <View style={styles.columnItem}>
-            <Text style={styles.label}>Quantity</Text>
-            <Text style={styles.value}>{state.putAwayItem?.['quantity']}</Text>
-          </View>
-        </View>
-        <View style={styles.from}>
-          <InputBox
-              value={state.productCode}
-              disabled={true}
-              editable={false}
-              onChange={onChangeProduct}
-              label={'Product Code'}
-          />
-          <InputBox
-              value={state.binFromLocation}
-              label={'Current Location'}
-              disabled={true}
-              onChange={onChangeFrom}
-              editable={false}
-          />
-          <InputBox
-              value={state.binToLocation}
-              disabled={true}
-              editable={false}
-              onChange={onChangeBin}
-              label={'Putaway Location'}
-          />
-          <InputBox
-              label={'Quantity to transfer'}
-              value={state.quantity}
-              editable={false}
-              onChange={onChangeQuantity}
-              disabled={true}
-              keyboard={'number-pad'}
-          />
-        </View>
-        <View>
-          <Button
-              title="Putaway"
-              style={styles.buttonContainer}
-              onPress={formSubmit}
-              disabled={false}
-          />
+        <View style={styles.columnItem}>
+          <Text style={styles.label}>{'Putaway Number'}</Text>
+          <Text style={styles.value}>{state.putAway?.putawayNumber}</Text>
         </View>
       </View>
+      <View style={styles.rowItem}>
+        <View style={styles.columnItem}>
+          <Text style={styles.label}>{'Product Code'}</Text>
+          <Text style={styles.value}>
+            {state.putAwayItem?.['product.productCode']}
+          </Text>
+        </View>
+        <View style={styles.columnItem}>
+          <Text style={styles.label}>{'Product Name'}</Text>
+          <Text style={styles.value}>
+            {state.putAwayItem?.['product.name']}
+          </Text>
+        </View>
+      </View>
+      <View style={styles.rowItem}>
+        <View style={styles.columnItem}>
+          <Text style={styles.label}>{'Current Location'}</Text>
+          <Text style={styles.value}>{state.putAway?.putawayStatus}</Text>
+        </View>
+        <View style={styles.columnItem}>
+          <Text style={styles.label}>{'Putaway Location'}</Text>
+          <Text style={styles.value}>
+            {state.putAwayItem?.['putawayLocation.name']}
+          </Text>
+        </View>
+      </View>
+      <View style={styles.rowItem}>
+        <View style={styles.columnItem}>
+          <Text style={styles.label}>Preferred Location</Text>
+          <Text style={styles.value}>
+            {state.putAwayItem?.['preferredBin.name'] ?? 'None'}
+          </Text>
+        </View>
+        <View style={styles.columnItem}>
+          <Text style={styles.label}>Quantity</Text>
+          <Text style={styles.value}>{state.putAwayItem?.['quantity']}</Text>
+        </View>
+      </View>
+      <View style={styles.from}>
+        <InputBox
+          value={state.productCode}
+          disabled={true}
+          editable={false}
+          onChange={onChangeProduct}
+          label={'Product Code'}
+        />
+        <InputBox
+          value={state.binFromLocation}
+          label={'Current Location'}
+          disabled={true}
+          onChange={onChangeFrom}
+          editable={false}
+        />
+        <InputBox
+          value={state.binToLocation}
+          disabled={true}
+          editable={false}
+          onChange={onChangeBin}
+          label={'Putaway Location'}
+        />
+        <InputBox
+          label={'Quantity to transfer'}
+          value={state.quantity}
+          editable={false}
+          onChange={onChangeQuantity}
+          disabled={true}
+          keyboard={'number-pad'}
+        />
+      </View>
+      <View>
+        <Button
+          title="Putaway"
+          style={styles.buttonContainer}
+          onPress={formSubmit}
+          disabled={false}
+        />
+      </View>
+    </View>
   );
 };
 

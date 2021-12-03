@@ -14,7 +14,7 @@ const arrowDown = require('../../assets/images/arrow-down.png');
 // const arrowUp = require('../../assets/images/arrow-down.png')
 
 function PrintModal(props: Props) {
-  const [label, setLabel] = useState<any>("1")
+  const [label, setLabel] = useState<any>('1')
   const handleClick = () => {
     const {printLabelAction, defaultBarcodeLabelUrl, product, type} = props;
     printLabelAction({
@@ -28,33 +28,33 @@ function PrintModal(props: Props) {
     setLabel(text);
   };
   return (
-      <Modal
-          animationType="slide"
-          transparent={props.printModalVisible}
-          visible={props.visible}>
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <Image
-                style={styles.image}
-                source={{uri: props?.defaultBarcodeLabelUrl?.url}}
-            />
-            <InputBox
-                value={label}
-                disabled={false}
-                editable={false}
-                onChange={onChangeLabel}
-                label={'Number of Labels'}
-            /><View style={styles.bottom}>
-            <Button
-                title={'Print Label'}
-                onPress={handleClick}/>
-          </View>
-            <Pressable style={styles.buttonClose} onPress={props.closeModal}>
-              <Text style={styles.textStyle}>X</Text>
-            </Pressable>
-          </View>
+    <Modal
+      animationType="slide"
+      transparent={props.printModalVisible}
+      visible={props.visible}>
+      <View style={styles.centeredView}>
+        <View style={styles.modalView}>
+          <Image
+            style={styles.image}
+            source={{uri: props?.defaultBarcodeLabelUrl?.url}}
+          />
+          <InputBox
+            value={label}
+            disabled={false}
+            editable={false}
+            onChange={onChangeLabel}
+            label={'Number of Labels'}
+          /><View style={styles.bottom}>
+          <Button
+            title={'Print Label'}
+            onPress={handleClick}/>
         </View>
-      </Modal>
+          <Pressable style={styles.buttonClose} onPress={props.closeModal}>
+            <Text style={styles.textStyle}>X</Text>
+          </Pressable>
+        </View>
+      </View>
+    </Modal>
   );
 }
 

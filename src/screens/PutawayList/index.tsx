@@ -25,7 +25,6 @@ class PutawayList extends React.Component<Props, State> {
       showDetail: false,
     };
   }
-
   componentDidMount() {
     this.searchOrder('');
   }
@@ -54,7 +53,7 @@ class PutawayList extends React.Component<Props, State> {
           showPopup({
             title: data.errorMessage ? 'Failed to fetch Order' : 'Error',
             message:
-                data.errorMessage ?? 'Failed to fetch Order with:' + query,
+              data.errorMessage ?? 'Failed to fetch Order with:' + query,
             positiveButton: {
               text: 'OK',
             },
@@ -84,11 +83,11 @@ class PutawayList extends React.Component<Props, State> {
     const actionCallback = (data: any) => {
       if (!data || data?.error) {
         const title = data.error.message
-            ? 'Failed to fetch PutAway Detail'
-            : null;
+          ? 'Failed to fetch PutAway Detail'
+          : null;
         const message =
-            data.error.message ??
-            'Failed to fetch PutAway Detail with OrderNumber:' + query;
+          data.error.message ??
+          'Failed to fetch PutAway Detail with OrderNumber:' + query;
         return Promise.resolve(null);
       } else {
         if (data?.length == 1) {
@@ -114,7 +113,6 @@ class PutawayList extends React.Component<Props, State> {
   };
 
   // showPutAwayListScreen =()=> {
-  //   console.debug('>>>>> showPutAwayListScreen')
   //   this.setState({
   //     navigationState: new NavigationStateHere()
   //   })
@@ -129,9 +127,8 @@ class PutawayList extends React.Component<Props, State> {
   };
 
   goToPutawayItemDetailScreen = (
-      putAway: PutAway,
-      putAwayItem: PutAwayItems
-      ,
+    putAway: PutAway,
+    putAwayItem: PutAwayItems,
   ) => {
     this.props.navigation.navigate('PutawayItemDetail', {
       putAway: putAway,
@@ -151,64 +148,64 @@ class PutawayList extends React.Component<Props, State> {
   render() {
     const {showList} = this.state;
     return (
-        <View style={styles.screenContainer}>
-          {/*<Header*/}
-          {/*  title='PutAway List'*/}
-          {/*  subtitle={'All Pending Put Away List'}*/}
-          {/*  backButtonVisible={true}*/}
-          {/*  onBackButtonPress={this.onBackButtonPress}*/}
-          {/*/>*/}
-          <BarCodeSearchHeader
-              onBarCodeSearchQuerySubmitted={this.searchOrder}
-              placeHolder={'Search Orders by Name'}
-              searchBox={false}
-          />
-          {showList ? (
-              <View style={styles.contentContainer}>
-                <FlatList
-                    data={this.state.putAwayList}
-                    renderItem={(item: ListRenderItemInfo<PutAway>) => (
-                        <TouchableOpacity
-                            style={styles.listItemContainer}
-                            onPress={() => this.onPutAwayTapped(item.item)}>
-                          <View style={styles.row}>
-                            <View style={styles.col50}>
-                              <Text style={styles.label}>Status</Text>
-                              <Text style={styles.value}>
-                                {item.item?.putawayStatus}
-                              </Text>
-                            </View>
-                            <View style={styles.col50}>
-                              <Text style={styles.label}>PutAway Number</Text>
-                              <Text style={styles.value}>
-                                {item.item?.putawayNumber}
-                              </Text>
-                            </View>
-                          </View>
-                          <View style={styles.row}>
-                            <View style={styles.col50}>
-                              <Text style={styles.label}>Origin</Text>
-                              <Text style={styles.value}>
-                                {item.item?.['origin.name']}
-                              </Text>
-                            </View>
-                            <View style={styles.col50}>
-                              <Text style={styles.label}>Destination</Text>
-                              <Text style={styles.value}>
-                                {item.item?.['destination.name']}
-                              </Text>
-                            </View>
-                          </View>
-                        </TouchableOpacity>
-                    )}
-                    // renderItem={(item: ListRenderItemInfo<PutAwayItems>) => renderPutAwayItem(item.item, () => this.onItemTapped(this.props.order, item.item))}
-                    // renderItem={this.renderItem}
-                    keyExtractor={item => item.id}
-                    style={styles.list}
-                />
-                {/*<Text style={styles.name}>{vm.name}</Text>*/}
+      <View style={styles.screenContainer}>
+        {/*<Header*/}
+        {/*  title='PutAway List'*/}
+        {/*  subtitle={'All Pending Put Away List'}*/}
+        {/*  backButtonVisible={true}*/}
+        {/*  onBackButtonPress={this.onBackButtonPress}*/}
+        {/*/>*/}
+        <BarCodeSearchHeader
+          onBarCodeSearchQuerySubmitted={this.searchOrder}
+          placeHolder={'Search Orders by Name'}
+          searchBox={false}
+        />
+        {showList ? (
+          <View style={styles.contentContainer}>
+            <FlatList
+              data={this.state.putAwayList}
+              renderItem={(item: ListRenderItemInfo<PutAway>) => (
+                <TouchableOpacity
+                  style={styles.listItemContainer}
+                  onPress={() => this.onPutAwayTapped(item.item)}>
+                  <View style={styles.row}>
+                    <View style={styles.col50}>
+                      <Text style={styles.label}>Status</Text>
+                      <Text style={styles.value}>
+                        {item.item?.putawayStatus}
+                      </Text>
+                    </View>
+                    <View style={styles.col50}>
+                      <Text style={styles.label}>PutAway Number</Text>
+                      <Text style={styles.value}>
+                        {item.item?.putawayNumber}
+                      </Text>
+                    </View>
+                  </View>
+                  <View style={styles.row}>
+                    <View style={styles.col50}>
+                      <Text style={styles.label}>Origin</Text>
+                      <Text style={styles.value}>
+                        {item.item?.['origin.name']}
+                      </Text>
+                    </View>
+                    <View style={styles.col50}>
+                      <Text style={styles.label}>Destination</Text>
+                      <Text style={styles.value}>
+                        {item.item?.['destination.name']}
+                      </Text>
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              )}
+              // renderItem={(item: ListRenderItemInfo<PutAwayItems>) => renderPutAwayItem(item.item, () => this.onItemTapped(this.props.order, item.item))}
+              // renderItem={this.renderItem}
+              keyExtractor={item => item.id}
+              style={styles.list}
+            />
+            {/*<Text style={styles.name}>{vm.name}</Text>*/}
 
-                {/*<FlatList
+            {/*<FlatList
                                     data={this.state.putAway?.putawayItems}
                                     renderItem={(item: ListRenderItemInfo<PicklistItem>) => (
                                         <PutAwayItem
@@ -222,37 +219,37 @@ class PutawayList extends React.Component<Props, State> {
                                     keyExtractor={item => item.id}
                                     style={styles.list}
                                 />*/}
-              </View>
-          ) : null}
-        </View>
+          </View>
+        ) : null}
+      </View>
     );
   }
 }
 
 function renderPutAway(putAway: PutAway): ReactElement {
   return (
-      <TouchableOpacity style={styles.listItemContainer}>
-        <View style={styles.row}>
-          <View style={styles.col50}>
-            <Text style={styles.label}>PutAway Number</Text>
-            <Text style={styles.value}>{putAway?.putawayNumber}</Text>
-          </View>
-          <View style={styles.col50}>
-            <Text style={styles.label}>Status</Text>
-            <Text style={styles.value}>{putAway?.putawayStatus}</Text>
-          </View>
+    <TouchableOpacity style={styles.listItemContainer}>
+      <View style={styles.row}>
+        <View style={styles.col50}>
+          <Text style={styles.label}>PutAway Number</Text>
+          <Text style={styles.value}>{putAway?.putawayNumber}</Text>
         </View>
-        <View style={styles.row}>
-          <View style={styles.col50}>
-            <Text style={styles.label}>Origin</Text>
-            <Text style={styles.value}>{putAway?.['origin.name']}</Text>
-          </View>
-          <View style={styles.col50}>
-            <Text style={styles.label}>Destination</Text>
-            <Text style={styles.value}>{putAway?.['destination.name']}</Text>
-          </View>
+        <View style={styles.col50}>
+          <Text style={styles.label}>Status</Text>
+          <Text style={styles.value}>{putAway?.putawayStatus}</Text>
         </View>
-      </TouchableOpacity>
+      </View>
+      <View style={styles.row}>
+        <View style={styles.col50}>
+          <Text style={styles.label}>Origin</Text>
+          <Text style={styles.value}>{putAway?.['origin.name']}</Text>
+        </View>
+        <View style={styles.col50}>
+          <Text style={styles.label}>Destination</Text>
+          <Text style={styles.value}>{putAway?.['destination.name']}</Text>
+        </View>
+      </View>
+    </TouchableOpacity>
   );
 }
 

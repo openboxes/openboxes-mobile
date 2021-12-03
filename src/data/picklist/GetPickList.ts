@@ -11,6 +11,6 @@ interface GetPickListApiResponse {
 export default function getPickListApi(id: string): Promise<Item[]> {
   const finalUrl = url + id + "/stockMovementItems"
   return apiClient.get(finalUrl)
-      .then((response: GetPickListApiResponse) => response.data)
+    .then((response: GetPickListApiResponse) => response.data)
 
 }

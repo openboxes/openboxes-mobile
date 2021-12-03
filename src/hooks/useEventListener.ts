@@ -30,7 +30,7 @@ const useEventListener = () => {
     checkBoxesDisabled: true,
     scanButtonVisible: false,
     dwVersionText:
-        'Pre 6.3.  Please create and configure profile manually.  See the ReadMe for more details',
+      'Pre 6.3.  Please create and configure profile manually.  See the ReadMe for more details',
     activeProfileText: 'Requires DataWedge 6.3+',
     enumeratedScannersText: 'Requires DataWedge 6.3+',
     scans: [],
@@ -41,13 +41,13 @@ const useEventListener = () => {
     //  Broadcast received
     if (intent.hasOwnProperty(PROPERTY.RESULT_INFO)) {
       var commandResult =
-          intent.RESULT +
-          ' (' +
-          intent.COMMAND.substring(
-              intent.COMMAND.lastIndexOf('.') + 1,
-              intent.COMMAND.length,
-          ) +
-          ')'; // + JSON.stringify(intent.RESULT_INFO);
+        intent.RESULT +
+        ' (' +
+        intent.COMMAND.substring(
+          intent.COMMAND.lastIndexOf('.') + 1,
+          intent.COMMAND.length,
+        ) +
+        ')'; // + JSON.stringify(intent.RESULT_INFO);
       commandReceived(commandResult.toLowerCase());
     }
 
