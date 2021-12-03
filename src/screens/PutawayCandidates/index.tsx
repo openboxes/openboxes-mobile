@@ -21,11 +21,20 @@ class PutawayCandidates extends Component<Props> {
 
     this.state = {
       refreshing: false,
+      updatedlist: [],
     };
   }
 
   UNSAFE_componentWillMount() {
     this.getScreenData();
+  }
+
+  componentDidUpdate() {
+    const {candidates} = this.props;
+    const updatedList = candidates.filter(candidate => candidate.putawayStatus === 'READY');
+    if (updatedlist.length !== this.state.updatedlist.length) {
+      this.setState({updatedlist})
+    }
   }
 
   getScreenData = async () => {
@@ -62,20 +71,22 @@ class PutawayCandidates extends Component<Props> {
   };
 
   render() {
-    const {candidates} = this.props;
+    const {updatedlist} = this.state;
     return (
       <SafeAreaView style={styles.container}>
-        <FlatList
-          refreshControl={
-            <RefreshControl
-              refreshing={this.state.refreshing}
-              onRefresh={this.getScreenData}
-            />
-          }
-          data={candidates}
-          renderItem={({item}) => this.renderItem(item)}
-          keyExtractor={(item, index) => index}
-        />
+        {updatedlist.length ? (
+          <FlatList
+            refreshControl={
+              <RefreshControl
+                refreshing={this.state.refreshing}
+                onRefresh={this.getScreenData}
+              />
+            }
+            data={updatedlist}
+            renderItem={({item}) => this.renderItem(item)}
+            keyExtractor={(item, index) => index}
+          />
+        ) : null}
       </SafeAreaView>
     );
   }

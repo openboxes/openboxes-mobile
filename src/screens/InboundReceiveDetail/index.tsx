@@ -13,6 +13,7 @@ import SelectDropdown from 'react-native-select-dropdown';
 import {getInternalLocations} from '../../redux/actions/locations';
 import {RootState} from '../../redux/reducers';
 import AutoInputInternalLocation from '../../components/AutoInputInternalLocation';
+import InputSpinner from "../../components/InputSpinner";
 
 const InboundReceiveDetail = () => {
   const dispatch = useDispatch();
@@ -253,13 +254,10 @@ const InboundReceiveDetail = () => {
             }
           }}
         />
-        <InputBox
-          label={'Quantity to Receive'}
-          value={state.quantityToReceive}
-          onChange={onChangeQuantity}
-          disabled={false}
-          editable={false}
-          keyboard={'number-pad'}
+        <InputSpinner
+            title={'Quantity to Receive'}
+            value={state.quantityToReceive}
+            setValue={onChangeQuantity}
         />
         <InputBox
           value={state.comments}

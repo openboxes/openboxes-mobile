@@ -102,20 +102,24 @@ class ProductDetails extends React.Component<Props, State> {
               title={'Bin Location'}
               subText={item?.binLocation?.name ?? 'Default'}
             />
-            <RenderData
-              title={'Quantity OnHand'}
-              subText={item.quantityOnHand ?? 0}
-            />
+            {item.quantityOnHand ? (
+              <RenderData
+                title={'Quantity OnHand'}
+                subText={item.quantityOnHand}
+              />
+            ) : null}
           </View>
           <View style={styles.rowItem}>
             <RenderData
               title={'Lot Number'}
               subText={item?.inventoryItem?.lotNumber ?? 'Default'}
             />
-            <RenderData
-              title={'Quantity Available'}
-              subText={item.quantityAvailable ?? 0}
-            />
+            {item.quantityAvailable ? (
+              <RenderData
+                title={'Quantity Available'}
+                subText={item.quantityAvailable}
+              />
+            ) : null}
           </View>
         </Card.Content>
       </Card>

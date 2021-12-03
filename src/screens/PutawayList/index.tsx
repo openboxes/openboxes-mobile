@@ -144,13 +144,22 @@ class PutawayList extends React.Component<Props, State> {
     });
   };
   onPutAwayTapped = (putAway: PutAway) => {
-    this.props.navigation.navigate('PutawayDetail', {
-      // putAway,
-      putAway: putAway,
-      exit: () => {
-        this.props.navigation.navigate('PutawayList');
-      },
-    });
+    if (putAway?.putawayItems?.length > 1) {
+      this.props.navigation.navigate('PutawayDetail', {
+        putAway: putAway,
+        exit: () => {
+          this.props.navigation.navigate('PutawayList');
+        },
+      });
+    } else {
+      this.props.navigation.navigate('PutawayItemDetail', {
+        putAway: putAway,
+        putAwayItem: putAway?.putawayItems[0],
+        exit: () => {
+          this.props.navigation.navigate('PutawayList');
+        },
+      });
+    }
   };
 
   render() {
