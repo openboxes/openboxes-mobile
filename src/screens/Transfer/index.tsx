@@ -123,28 +123,28 @@ const Transfer = () => {
             <View style={styles.container}>
                 <View style={styles.from}>
                     <InputBox
-                        value={item?.product.productCode}
+                        value={item?.product?.productCode}
                         disabled={true}
                         editable={false}
                         label={'Product Code'}/>
                     <InputBox
-                        value={item?.inventoryItem.lotNumber ?? "Default"}
+                        value={item?.inventoryItem?.lotNumber ?? "Default"}
                         disabled={true}
                         editable={false}
                         label={'Lot Number'}/>
                     <InputBox
-                        value={item?.inventoryItem.expirationDate ?? "Never"}
+                        value={item?.inventoryItem?.expirationDate ?? "Never"}
                         disabled={true}
                         editable={false}
                         label={'Expiration Date'}/>
                     <InputBox
-                        value={item?.binLocation.name ?? "Default"}
+                        value={item?.binLocation?.name ?? "Default"}
                         label={'From'}
                         disabled={true}
                         editable={false}/>
                     <InputBox
                         label={'Quantity Available to Transfer'}
-                        value={item?.quantityAvailableToPromise.toString()}
+                        value={item?.quantityAvailableToPromise?.toString()}
                         disabled={true}
                         editable={false}
                     />
