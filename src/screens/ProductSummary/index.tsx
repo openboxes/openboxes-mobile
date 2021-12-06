@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {useEffect, useState} from 'react';
 import {FlatList, Text, TouchableOpacity, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
@@ -139,7 +140,7 @@ const ProductSummary = () => {
   };
 
   return (
-    <>
+    <View style={styles.mainContainer}>
       <BarCodeSearchHeader
         onBarCodeSearchQuerySubmitted={query => searchProduct(query)}
         placeholder={'Search Orders by Name'}
@@ -151,7 +152,7 @@ const ProductSummary = () => {
         data={state.productSummary}
         keyExtractor={(item, index) => item + index}
       />
-    </>
+    </View>
   );
 };
 export default ProductSummary;
