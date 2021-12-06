@@ -1,4 +1,3 @@
-/* eslint-disable react-native/no-inline-styles */
 import React, {useEffect, useState} from 'react';
 import {FlatList, Text, TouchableOpacity, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
@@ -28,7 +27,7 @@ const ProductSummary = () => {
     const callback = (data: any) => {
       if (data?.error) {
         showPopup({
-          title: data.errorMessage ? `Product Summary details` : null,
+          title: data.errorMessage ? 'Product Summary details' : null,
           message:
             data.errorMessage ?? `Failed to load Product Summary details ${id}`,
           positiveButton: {
@@ -83,7 +82,7 @@ const ProductSummary = () => {
         );
       } else {
         console.log(data);
-        if (data.length == 0) {
+        if (data.length === 0) {
           showPopup({
             message: `No search results found for product name "${query}"`,
             positiveButton: {text: 'Ok'},
