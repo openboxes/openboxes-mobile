@@ -27,7 +27,7 @@ const ProductSummary = () => {
     const callback = (data: any) => {
       if (data?.error) {
         showPopup({
-          title: data.errorMessage ? `Product Summary details` : null,
+          title: data.errorMessage ? 'Product Summary details' : null,
           message:
             data.errorMessage ?? `Failed to load Product Summary details ${id}`,
           positiveButton: {
@@ -82,7 +82,7 @@ const ProductSummary = () => {
         );
       } else {
         console.log(data);
-        if (data.length == 0) {
+        if (data.length === 0) {
           showPopup({
             message: `No search results found for product name "${query}"`,
             positiveButton: {text: 'Ok'},
@@ -139,7 +139,7 @@ const ProductSummary = () => {
   };
 
   return (
-    <>
+    <View style={styles.mainContainer}>
       <BarCodeSearchHeader
         onBarCodeSearchQuerySubmitted={query => searchProduct(query)}
         placeholder={'Search Orders by Name'}
@@ -151,7 +151,7 @@ const ProductSummary = () => {
         data={state.productSummary}
         keyExtractor={(item, index) => item + index}
       />
-    </>
+    </View>
   );
 };
 export default ProductSummary;
