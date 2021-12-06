@@ -79,18 +79,20 @@ function* createPutawayOder(action: any) {
       type: CREATE_PUTAWAY_ORDER_REQUEST_SUCCESS,
       payload: response.data,
     });
-    yield hideScreenLoading()
-    yield action.callback(response)
-  } catch (e) {
-    console.log('function* createPutawayOder', e.message);
+    yield hideScreenLoading();
+    yield action.callback({ response, message: 'Order created successfully' });
+  } catch (error) {
+    yield hideScreenLoading();
+    yield action.callback({
+      message: error.message,
+      error: true,
+    });
   }
 }
-
 
 export default function* watcher() {
   yield takeLatest(FETCH_PUTAWAY_FROM_ORDER_REQUEST, fetchPutAwayFromOrder);
   yield takeLatest(GET_PUTAWAY_CANDIDATES_REQUEST, getCandidates);
   yield takeLatest(CREATE_PUTAWAY_ORDER_REQUEST, createPutawayOder);
   yield takeLatest(SUBMIT_PUTAWAY_ITEM_BIN_LOCATION, submitPutawayItem);
-
 }

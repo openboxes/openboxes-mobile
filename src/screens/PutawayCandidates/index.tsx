@@ -30,18 +30,25 @@ class PutawayCandidates extends Component<Props> {
   }
 
   componentDidUpdate() {
-    const {candidates} = this.props;
-    const updatedList = candidates.filter(candidate => candidate.putawayStatus === 'READY');
-    if (updatedList.length !== this.state.updatedList.length) {
-      this.setState({updatedList})
+    if (this.props.route.params && this.props.route.params.forceRefresh) {
+      this.getScreenData();
+      this.props.navigation.setParams({ forceRefresh: false });
+    }
+
+    if (!this.state.refreshing) {
+      const {candidates} = this.props;
+      const updatedList = candidates.filter(candidate => candidate.putawayStatus === 'READY');
+      if (updatedList.length !== this.state.updatedList.length) {
+        this.setState({updatedList})
+      }
     }
   }
 
   getScreenData = async () => {
-    this.setState({refreshing: true});
-    const {SelectedLocation} = this.props;
+    this.setState({ refreshing: true });
+    const { SelectedLocation } = this.props;
     await this.props.getCandidates(SelectedLocation.id);
-    this.setState({refreshing: false});
+    this.setState({ refreshing: false });
   };
 
   renderItem = (item: any) => {
@@ -52,7 +59,7 @@ class PutawayCandidates extends Component<Props> {
           if (item.id) {
             Alert.alert('Item is already in a pending putaway');
           } else {
-            this.props.navigation.navigate('PutawayItem', {item});
+            this.props.navigation.navigate('PutawayItem', { item });
           }
         }}>
         <Text>{`Status - ${item['putawayStatus']}`}</Text>

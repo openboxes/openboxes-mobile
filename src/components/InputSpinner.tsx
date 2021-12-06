@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
         marginStart:"3%"
     },
     textView: {
-        marginTop: "10%",
-        marginStart:5
+        marginTop: 20,
+        marginStart: 5,
     }
-})
+});
