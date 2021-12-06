@@ -6,12 +6,11 @@ import InputBox from '../../components/InputBox';
 import Button from '../../components/Button';
 import showPopup from '../../components/Popup';
 import {useNavigation, useRoute} from '@react-navigation/native';
-import Radio from '../../components/Radio';
 import {submitPartialReceiving} from '../../redux/actions/inboundorder';
-import SelectDropdown from 'react-native-select-dropdown';
 import {getInternalLocations} from '../../redux/actions/locations';
 import {RootState} from '../../redux/reducers';
 import AutoInputInternalLocation from '../../components/AutoInputInternalLocation';
+import InputSpinner from '../../components/InputSpinner';
 
 const InboundReceiveDetail = () => {
   const dispatch = useDispatch();
@@ -22,7 +21,6 @@ const InboundReceiveDetail = () => {
   const location = useSelector(
     (state: RootState) => state.mainReducer.currentLocation,
   );
-  console.log('AAAAA', shipmentItem);
   const [state, setState] = useState<any>({
     comments: '',
     internalLocation: [],
@@ -62,14 +60,14 @@ const InboundReceiveDetail = () => {
       shipmentId: shipmentId,
       containers: [
         {
-          'container.id': shipmentItem['container.id'],
+          'container.id': shipmentItem['container.id'] ?? '',
           shipmentItems: [
             {
               receiptItemId: '',
               shipmentItemId: shipmentItem.shipmentItemId,
-              'container.id': shipmentItem['container.id'],
-              'product.id': shipmentItem['product.id'],
-              'binLocation.id': shipmentItem['binLocation.id'],
+              'container.id': shipmentItem['container.id'] ?? '',
+              'product.id': shipmentItem['product.id'] ?? '',
+              'binLocation.id': state.receiveLocation ?? '',
               recipient: '',
               quantityReceiving: state.quantityToReceive,
               cancelRemaining: cancelRemaining,
@@ -97,9 +95,9 @@ const InboundReceiveDetail = () => {
     const callback = (data: any) => {
       if (data?.error) {
         showPopup({
-          title: data.error.message ? 'In Bound order details' : null,
+          title: data.message ? 'Inbound order details' : null,
           message:
-            data.error.message ??
+            data.errorMessage ??
             `Failed to load Inbound order details value ${id}`,
           positiveButton: {
             text: 'Retry',
@@ -127,8 +125,8 @@ const InboundReceiveDetail = () => {
   const onComplete = (data: any) => {
     if (data?.error) {
       showPopup({
-        title: data.error.message ? 'In Bound order details' : null,
-        message: data.error.message ?? 'Failed to load Inbound order details',
+        title: data.errorMessage ? 'In Bound order details' : 'Error',
+        message: data.errorMessage ?? 'Failed to load Inbound order details',
         positiveButton: {
           text: 'Ok',
         },
@@ -153,16 +151,27 @@ const InboundReceiveDetail = () => {
       <View style={styles.itemView}>
         <View style={styles.rowItem}>
           <RenderData
-            title={'Shipment number'}
-            subText={shipmentData?.shipmentData}
+            title={'Shipment Number'}
+            subText={shipmentData?.shipmentNumber}
           />
+          <RenderData title={'Description'} subText={shipmentData?.name} />
+        </View>
+        <View style={styles.rowItem}>
           <RenderData
             title={'Product Code'}
             subText={shipmentItem['product.productCode']}
           />
+          <RenderData title={'Name'} subText={shipmentItem['product.name']} />
         </View>
         <View style={styles.rowItem}>
-          <RenderData title={'Lot Number'} subText={shipmentItem.lotNumber} />
+          <RenderData
+            title={'Lot / Serial Number'}
+            subText={shipmentItem.lotNumber ?? 'Default'}
+          />
+          <RenderData
+            title={'Expiration Date'}
+            subText={shipmentItem.expirationDate ?? 'N/A'}
+          />
         </View>
         <View style={styles.rowItem}>
           <RenderData
@@ -170,7 +179,7 @@ const InboundReceiveDetail = () => {
             subText={shipmentItem.quantityShipped}
           />
           <RenderData
-            title={'Quantity Remaining'}
+            title={'Quantity Received'}
             subText={shipmentItem.quantityReceived}
           />
         </View>
@@ -190,10 +199,9 @@ const InboundReceiveDetail = () => {
     const callback = (data: any) => {
       if (data?.error) {
         showPopup({
-          title: data.error.message ? 'internal location details' : null,
+          title: data.message ? 'internal location details' : '',
           message:
-            data.error.message ??
-            `Failed to load internal location value ${id}`,
+            data.errorMessage ?? `Failed to load internal location value ${id}`,
           positiveButton: {
             text: 'Retry',
             callback: () => {
@@ -203,11 +211,8 @@ const InboundReceiveDetail = () => {
           negativeButtonText: 'Cancel',
         });
       } else {
-        console.log(data);
-
         if (data && Object.keys(data).length !== 0) {
           let locationList: string[] = [];
-          console.log(data);
           data.data.map((item: any) => {
             locationList.push(item.name);
           });
@@ -222,7 +227,7 @@ const InboundReceiveDetail = () => {
     <ScrollView keyboardShouldPersistTaps="always" style={styles.container}>
       <RenderShipmentItem />
       <View style={styles.from}>
-        <Text style={styles.value}>{'Receiving Location'}</Text>
+        <Text style={styles.label}>{'Receiving Location'}</Text>
         <AutoInputInternalLocation
           label="AutoInputInternalLocation"
           data={state.internalLocation}
@@ -234,28 +239,18 @@ const InboundReceiveDetail = () => {
             }
           }}
         />
-        <InputBox
-          label={'Quantity Received'}
+        <InputSpinner
+          title={'Quantity to Receive'}
           value={state.quantityToReceive}
-          onChange={onChangeQuantity}
-          disabled={true}
-          keyboard={'number-pad'}
-        />
-        <InputBox
-          label={'Date Delivered'}
-          value={state.deliveryDate}
-          onChange={onChangeDate}
-          disabled={true}
-          keyboard={'number-pad'}
+          setValue={onChangeQuantity}
         />
         <InputBox
           value={state.comments}
           onChange={onChangeComment}
-          disabled={true}
-          editable={true}
+          disabled={false}
+          editable={false}
           label={'Comments'}
         />
-        <Radio title={'Cancel Remaining'} checked={cancelRemaining} />
       </View>
       <View style={styles.bottom}>
         <Button title="Receive" onPress={onReceive} />

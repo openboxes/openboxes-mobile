@@ -1,10 +1,9 @@
 import {StyleSheet} from 'react-native';
-import Theme from '../../utils/Theme';
+import {device} from '../../constants';
 
 export default StyleSheet.create({
   mainContainer: {
     flexDirection: 'row',
-    flex: 1,
     marginVertical: 5,
   },
   itemContainer: {
@@ -25,16 +24,23 @@ export default StyleSheet.create({
   autoCompleteInputContainer: {
     borderWidth: 1,
   },
-  textInput: {
-    fontSize: 15,
-    color: Theme.colors.text,
-    width: '100%',
-    textTransform: 'capitalize',
-    textAlign: 'left',
-  },
   clearButton: {
     width: 25,
     height: 25,
     margin: 5,
+  },
+  container: {
+    backgroundColor: 'white',
+  },
+  option: {
+    color: 'black',
+  },
+  textInput: {
+    borderWidth: 1,
+    borderColor: 'grey',
+    padding: 10,
+    height: 40,
+    width: device.windowWidth - 20,
+    borderRadius: 4,
   },
 });

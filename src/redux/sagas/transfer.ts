@@ -19,6 +19,7 @@ function* updateStockTransfer(action: any) {
             type: UPDATE_INTERNAL_STOCK_TRANSFER_SUCCESS,
             payload: response,
         });
+        yield action.callback(response.data);
         yield NavigationService.navigate('Drawer');
         yield put(hideScreenLoading());
     } catch (e) {

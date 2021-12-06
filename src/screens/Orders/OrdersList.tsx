@@ -1,10 +1,10 @@
 import {
-  FlatList,
   ListRenderItemInfo,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
+  FlatList
 } from 'react-native';
 import React, {ReactElement} from 'react';
 import Theme from '../../utils/Theme';
@@ -16,16 +16,18 @@ export interface Props {
 }
 
 export default function OrdersList(props: Props) {
-  return props.orders ? (
-    <FlatList
-      data={props.orders}
-      renderItem={(item: ListRenderItemInfo<Order>) =>
-        renderOrder(item.item, () => props.onOrderTapped(item.item))
-      }
-      keyExtractor={order => order.id}
-      style={styles.list}
-    />
-  ) : null;
+  return (
+    props.orders ? (
+      <FlatList
+        data={props.orders}
+        renderItem={(item: ListRenderItemInfo<Order>) =>
+          renderOrder(item.item, () => props.onOrderTapped(item.item))
+        }
+        keyExtractor={order => order.id}
+        style={styles.list}
+      />
+    ) : null
+  );
 }
 
 function renderOrder(order: Order, onOrderTapped: () => void): ReactElement {
@@ -45,8 +47,8 @@ function renderOrder(order: Order, onOrderTapped: () => void): ReactElement {
       </View>
       <View style={styles.row}>
         <View style={styles.col50}>
-          <Text style={styles.label}>Name</Text>
-          <Text style={styles.value}>{order.name}</Text>
+          <Text style={styles.label}>Destination</Text>
+          <Text style={styles.value}>{order.destination?.name}</Text>
         </View>
         <View style={styles.col50}>
           <Text style={styles.label}>Requested Delivery Date</Text>
@@ -54,14 +56,6 @@ function renderOrder(order: Order, onOrderTapped: () => void): ReactElement {
         </View>
       </View>
       <View style={styles.row}>
-        <View style={styles.col50}>
-          <Text style={styles.label}>Origin</Text>
-          <Text style={styles.value}>{order.origin?.name}</Text>
-        </View>
-        <View style={styles.col50}>
-          <Text style={styles.label}>Destination</Text>
-          <Text style={styles.value}>{order.destination?.name}</Text>
-        </View>
       </View>
     </TouchableOpacity>
   );
@@ -76,6 +70,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     flex: 1,
     borderRadius: Theme.roundness,
+    backgroundColor: Theme.colors.background,
     borderColor: Theme.colors.backdrop,
     borderWidth: 1,
     margin: 4,
@@ -133,5 +128,5 @@ const styles = StyleSheet.create({
   value: {
     fontSize: 16,
     color: Theme.colors.text,
-  },
+  }
 });

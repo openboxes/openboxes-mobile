@@ -97,6 +97,18 @@ $ npx react-native start
 We are currently using bitrise.io for automated builds.
 https://app.bitrise.io/dashboard/builds
 
-## 📜 Notes
-- Release builds are distributed from `restructure` branch and all pull requests are done to `restructure` branch.
-````
+### On Android
+```
+yarn android
+```
+
+Depending on whether an Android device is already connected to the machine, it will try running the app on that device,
+or it will try launching an emulator.
+
+### On iOS
+```
+yarn ios
+```
+
+[**Sentry**](https://sentry.io/organizations/openboxes/projects/openboxes-mobile) - for error logging
+

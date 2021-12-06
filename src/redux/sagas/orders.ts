@@ -4,7 +4,7 @@ import {
   GET_ORDERS_REQUEST_SUCCESS,
   GET_PICKLIST_REQUEST,
   GET_PICKLIST_ITEM_REQUEST,
-  SUBMIT_PICKLIST_ITEM_PICKUP_REQUEST, GET_STOCK_MOVEMENT_LIST
+  SUBMIT_PICKLIST_ITEM_PICKUP_REQUEST, GET_STOCK_MOVEMENT_LIST, SUBMIT_PICKLIST_ITEM_PICKUP_SUCCESS
 } from '../actions/orders';
 import {hideScreenLoading, showScreenLoading} from '../actions/main';
 import * as api from '../../apis';
@@ -101,10 +101,10 @@ function* submitPickListItem(action: any) {
         action.payload.requestBody,
     );
     yield put({
-      type: GET_LOCATIONS_REQUEST_SUCCESS,
-      payload: response.data,
+      type: SUBMIT_PICKLIST_ITEM_PICKUP_SUCCESS,
+      payload: response,
     });
-    yield action.callback(response.data);
+    yield action.callback(response);
   } catch (error) {
     if (error.code != 401) {
       yield action.callback({

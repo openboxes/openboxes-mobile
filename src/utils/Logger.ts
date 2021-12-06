@@ -1,3 +1,4 @@
+/* eslint-disable no-dupe-class-members */
 export interface Logger {
   i(message: string): void;
   d(message: string): void;

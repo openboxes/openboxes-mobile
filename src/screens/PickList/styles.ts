@@ -1,103 +1,108 @@
-import {StyleSheet} from "react-native";
-import Theme from "../../utils/Theme";
+import {StyleSheet} from 'react-native';
+import Theme from '../../utils/Theme';
+import {ratio, device} from '../../constants';
 
 export default StyleSheet.create({
   screenContainer: {
     display: 'flex',
     flexDirection: 'column',
+    justifyContent:  'center',
     flex: 1,
   },
-  from:{
-    flex:1,
+  inputContainer: {
+    borderWidth:1,
+    borderRadius: 4,
+    display: 'flex',
+    flexDirection: 'column',
+    paddingHorizontal: 10,
+  },
+  from: {
+    flex: 1,
+    marginBottom: 40,
   },
   contentContainer: {
-    display: "flex",
+    display: 'flex',
     flex: 1,
-    flexDirection: "column",
-    padding: 8
+    flexDirection: 'column',
+    padding: 8,
   },
   listItemContainer: {
-    display: "flex",
-    flexDirection: "column",
-    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
     margin: 4,
     padding: 4,
-    justifyContent: "center"
+    justifyContent: 'center',
   },
   name: {
     fontSize: 17,
     color: Theme.colors.text,
-    fontWeight: "bold"
+    fontWeight: 'bold',
   },
   boxHeading: {
     fontSize: 15,
     color: Theme.colors.text,
-    fontWeight: "bold",
-    marginTop: 8
+    fontWeight: 'bold',
+    marginTop: 8,
   },
   box: {
-    borderColor: Theme.colors.onBackground,
+    //borderColor: Theme.colors.onBackground,
     borderWidth: 1,
     borderRadius: 8,
     marginTop: 8,
-    padding: 8
-  },
-  descriptionLabel: {
-    fontSize: 20,
-    color: Theme.colors.text,
-    fontWeight: "bold",
-    marginTop: 8
-  },
-  descriptionText: {
-    fontSize: 16,
-    color: Theme.colors.text,
-    borderColor: Theme.colors.onBackground,
-    borderWidth: 1,
-    borderRadius: 8,
-    marginTop: 8,
-    padding: 8
-  },
-  detailsLabel: {
-    fontSize: 20,
-    color: Theme.colors.text,
-    fontWeight: "bold",
-    marginTop: 8
-  },
-  detailsContainer: {
     padding: 8,
-    borderColor: Theme.colors.onBackground,
-    borderWidth: 1,
-    borderRadius: 8,
-    marginTop: 8
   },
-  detailsItemContainer: {
-    display: "flex",
-    flexDirection: "row",
-    flex: 0
+  topRow: {
+    flexDirection: 'row',
+    // borderColor: Theme.colors.onBackground,
+    // borderBottomWidth: 1,
+    // marginTop: 1,
+    // padding: 2,
+    width: '100%',
+    // borderLeftWidth: 1,
+    // borderTopWidth: 1,
+    // borderTopColor: "black",
+    // borderBottomWidth: 1,
+    // borderBottomColor: "black",
+    // borderRightWidth: 1,
+    // borderRightColor: "black",
+    textAlign: 'center',
   },
-  detailsItemName: {
-    fontSize: 16,
-    color: Theme.colors.text,
-    fontWeight: "bold"
+  row: {
+    flexDirection: 'row',
+    //borderColor: Theme.colors.onBackground,
+    // borderBottomWidth: 1,
+    // marginTop: 1,
+    // padding: 2,
+    width: '100%',
+    // borderLeftWidth: 1,
+    // borderLeftColor: "black",
+    // borderBottomWidth: 1,
+    // borderBottomColor: "black",
+    // borderRightWidth: 1,
+    // borderRightColor: "black"
   },
-  detailsItemValue: {
-    fontSize: 16,
-    color: Theme.colors.text,
-    marginStart: 8
+  col30: {
+    display: 'flex',
+    flexDirection: 'column',
+    flex: 0,
+    marginStart: 4,
+    width: '30%',
+    // borderRightWidth: 1,
+    // borderRightColor: "black"
   },
-  container: {
-    flexWrap: 'wrap',
-    alignItems: 'flex-start', // if you want to fill rows left to right
-    borderColor: Theme.colors.onBackground,
-    borderWidth: 1,
-    borderRadius: 8,
+  col40: {
+    display: 'flex',
+    flexDirection: 'column',
+    flex: 0,
+    marginStart: 4,
+    width: '40%',
+    borderRightWidth: 1,
+    // borderRightColor: "black",
+    // justifyContent: 'center', //Centered horizontally
+    // alignItems: 'center', //Centered vertically
   },
-  itemView: {
-    marginTop: 5,
-  },
-
   textAlign: {
-    textAlign: "right"
+    textAlign: 'right',
   },
   tinyLogo: {
     width: '100%',
@@ -108,60 +113,93 @@ export default StyleSheet.create({
     height: 58,
   },
   content: {
-    display: "flex",
-    flexDirection: "column",
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center"
+    display: 'flex',
+    flexDirection: 'column',
+    flex: 0,
+    marginStart: 4,
+    width: '50%',
+    // borderRightWidth: 1,
+    // borderRightColor: "black"
   },
   list: {
-    width: "100%"
+    width: '100%',
   },
   listItemNameContainer: {
-    display: "flex",
-    flexDirection: "column",
+    display: 'flex',
+    flexDirection: 'column',
     flex: 0,
     marginStart: 4,
-    width: "50%"
+    width: '50%',
   },
   listItemCategoryContainer: {
-    display: "flex",
-    flexDirection: "column",
+    display: 'flex',
+    flexDirection: 'column',
     flex: 0,
     marginStart: 4,
-    marginTop: 4
+    marginTop: 4,
   },
   listItemCategoryLabel: {
     fontSize: 12,
-    color: Theme.colors.placeholder
+    color: Theme.colors.placeholder,
   },
   listItemCategory: {
     fontSize: 16,
-    color: Theme.colors.text
-  },
-  row: {
-    flexDirection: 'row',
-    borderColor: Theme.colors.onBackground,
-    // borderBottomWidth: 1,
-    marginTop: 1,
-    padding: 2,
-    width: '100%'
+    color: Theme.colors.text,
   },
   col50: {
-    display: "flex",
-    flexDirection: "column",
+    display: 'flex',
+    flexDirection: 'column',
     flex: 0,
     marginStart: 4,
-    width: "50%"
-
+    width: '50%',
   },
   label: {
     fontSize: 12,
-    color: Theme.colors.placeholder
+    color: Theme.colors.placeholder,
+    width: '60%',
   },
   value: {
     fontSize: 16,
-    color: Theme.colors.text
+    color: Theme.colors.text,
+    // justifyContent: 'center'
+    // width: "70%"
+  },
+  info: {
+    fontSize: 12,
+    color: '#000000',
+    // justifyContent: 'center'
+    // width: "70%"
+  },
+  textInput: {
+    fontSize: 16,
+    color: Theme.colors.text,
+    borderRadius: 5,
+    borderWidth: 2,
+    borderColor: '#e7edd8',
+  },
+  rowItem: {
+    flexDirection: 'row',
+    borderColor: Theme.colors.background,
+    marginTop: 1,
+    padding: 2,
+    marginStart: 4,
+    width: '100%',
+    alignItems: 'center',
+  },
+  columnItem: {
+    display: 'flex',
+    flexDirection: 'column',
+    flex: 0,
+    width: '50%',
+  },
+  bottom: {
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: ratio.height * 100,
+  },
+  swiperView: {
+    height: device.windowHeight - 100,
+    justifyContent: 'center'
   }
-})
-
+});

@@ -1,132 +1,166 @@
+/* eslint-disable no-shadow */
 import React, {Component} from 'react';
-import {Props, State} from './types'
-import {TextInput, View, Text, Image, Button,Alert} from "react-native";
-import SelectDropdown from 'react-native-select-dropdown'
-import {RootState} from "../../redux/reducers";
-import {DispatchProps} from "./types";
-import styles from './styles'
-import {hideScreenLoading, showScreenLoading} from "../../redux/actions/main";
-import {connect} from "react-redux";
-import {getBinLocationsAction} from "../../redux/actions/locations";
-import {createPutawayOderAction} from "../../redux/actions/putaways";
+import {DispatchProps, Props, State} from './types';
+import {
+  View,
+  Text,
+  ToastAndroid,
+} from 'react-native';
+import {RootState} from '../../redux/reducers';
+import styles from './styles';
+import {hideScreenLoading, showScreenLoading} from '../../redux/actions/main';
+import {connect} from 'react-redux';
+import {getBinLocationsAction} from '../../redux/actions/locations';
+import {createPutawayOderAction} from '../../redux/actions/putaways';
+import AutoInputBinLocation from '../../components/AutoInputBinLocation';
+import InputSpinner from '../../components/InputSpinner'
+import InputBox from '../../components/InputBox';
+import Button from "../../components/Button"
 
-const arrowDown = require('../../assets/images/arrow-down.png')
+class PutawayItem extends Component<Props, State> {
+  constructor(props: Props) {
+    super(props);
 
+    const { item } = this.props.route.params;
 
-class PutawayItem extends Component <Props, State> {
+    this.state = {
+      selectedLocation: null,
+      quantity: item ? item.quantity : 0,
+    };
+  }
 
-    constructor(props: Props) {
-        super(props);
+  UNSAFE_componentWillMount() {
+    this.props.getBinLocationsAction();
+  }
 
-        this.state = {
-            selectedLocation: null,
-            quantity: '1'
-        }
+  create = () => {
+    const { selectedLocation, createPutawayOderAction } = this.props;
+    const { item } = this.props.route.params;
+    const { currentLocation } = this.props;
+    const data = {
+      putawayNumber: '',
+      putawayStatus: 'PENDING',
+      putawayDate: '',
+      putawayAssignee: '',
+      'origin.id': selectedLocation?.id,
+      'destination.id': selectedLocation?.id,
+      putawayItems: [
+        {
+          putawayStatus: 'PENDING',
+          'product.id': item['product.id'],
+          'inventoryItem.id': item['inventoryItem.id'],
+          'putawayFacility.id': selectedLocation?.id,
+          'currentLocation.id': item['currentLocation.id'],
+          'putawayLocation.id': this.state?.selectedLocation?.id,
+          quantity: this.state?.quantity,
+        },
+      ],
+      'orderedBy.id': '',
+      sortBy: null,
+    };
+
+    createPutawayOderAction(data, ({ message, error }) => {
+      ToastAndroid.show(message, ToastAndroid.SHORT);
+      if (!error) {
+        this.props.navigation.navigate('PutawayCandidates', { forceRefresh: true });
+      }
+    });
+  };
+
+  changeQuantity = quantity => {
+    const { item } = this.props.route.params;
+    if (quantity > item.quantity) {
+      ToastAndroid.showWithGravity(
+        'Quantity to put away can not be grater then received quantity',
+        ToastAndroid.SHORT,
+        ToastAndroid.CENTER,
+      );
     }
 
-    componentWillMount() {
-        this.props.getBinLocationsAction()
-    }
+    this.setState({ quantity });
+  };
 
-    create = () => {
-        const {SelectedLocation, createPutawayOderAction} = this.props
-        const {item} = this.props.route.params
+  render() {
+    const { item } = this.props.route.params;
+    const { locations } = this.props;
+    const { quantity } = this.state;
 
-        const data = {
-            "putawayNumber": "",
-            "putawayStatus": "PENDING",
-            "putawayDate": "",
-            "putawayAssignee": "",
-            "origin.id": SelectedLocation.id,
-            // "origin.name": "Main Warehouse",
-            "destination.id":  SelectedLocation.id,
-            // "destination.name": "Main Warehouse",
-            "putawayItems": [
-                {
-                    "putawayStatus": "PENDING",
-                    "product.id": item["product.id"],
-                    "inventoryItem.id": item["inventoryItem.id"],
-                    "putawayFacility.id": SelectedLocation.id,
-                    "currentLocation.id": item["currentLocation.id"],
-                    "putawayLocation.id": this.state.selectedLocation.id,
-                    "quantity": this.state.quantity
-                }
-            ],
-            "orderedBy.id": "1",
-            "sortBy": null
-        }
+    return (
+      <View style={styles.container}>
+        <View style={styles.childContainer}>
+          <InputBox
+            label="Product Code"
+            value={item['product.productCode']}
+            disabled={true}
+            editable={false}
+          />
+          <InputBox
+            label="Product Name"
+            value={item['product.name']}
+            disabled={true}
+            editable={false}
+          />
+          <InputBox
+            label="Lot Number"
+            value={item['inventoryItem.lotNumber'] ?? 'Default'}
+            disabled={true}
+            editable={false}
+          />
+          <InputBox
+            label="Current Location"
+            value={item['currentLocation.name'] ?? 'Default'}
+            disabled={true}
+            editable={false}
+          />
+          <InputBox
+            label="Received Quantity"
+            value={item['quantity'].toString() ?? '0'}
+            disabled={true}
+            editable={false}
+          />
 
-        createPutawayOderAction(data, ()=>{
-            Alert.alert("Order created successfully");
-        })
-    }
+          <View style={styles.divider} />
 
-    render() {
-        const {item} = this.props.route.params
-        const {locations} = this.props
-        const {quantity} = this.state
-        return (
-            <View style={styles.container}>
-                <View style={{flex: 1}}>
-                    <View style={styles.row}>
-                        <Text>Product Code</Text>
-                        <TextInput value={item['product.productCode']}/>
-                    </View>
-                    <View style={styles.row}>
-                        <Text>Product Name</Text>
-                        <TextInput value={item['product.name']}/>
-                    </View>
-                    <View style={styles.row}>
-                        <Text>Lot Number</Text>
-                        <TextInput value={item['inventoryItem.lotNumber']}/>
-                    </View>
-
-                    <SelectDropdown
-                        data={locations}
-                        onSelect={(selectedLocation) => {
-                            this.setState({selectedLocation})
-                        }}
-                        defaultButtonText={"Select Location"}
-                        renderDropdownIcon={() => <Image style={styles.arrowDownIcon} source={arrowDown}/>}
-                        buttonStyle={styles.select}
-                        buttonTextAfterSelection={(selectedLocation, index) => selectedLocation.name}
-                        rowTextForSelection={(selectedLocation, index) => selectedLocation.name}
-                    />
-                    <View style={styles.row}>
-                        <Text>Quantity</Text>
-                        <View style={styles.quantityBox}>
-                            <TextInput
-                                style={styles.quantityInput}
-                                keyboardType='number-pad'
-                                value={quantity}
-                                onChangeText={(quantity)=>{this.setState({quantity})}}
-                            />
-                            <Text style={styles.quantityText}>{`/ ${item.quantity}`}</Text>
-                        </View>
-
-                    </View>
-                </View>
-                <Button
-                    style={{padding: 20}}
-                    title={'Create Putaway'}
-                    onPress={this.create}
-                />
-            </View>
-        )
-    }
+          <View>
+            <Text>Putaway Location</Text>
+            <AutoInputBinLocation
+                placeholder="Default"
+                data={locations.map(({name}) => name)}
+                selectedData={(selectedLocation: any) => {
+              this.setState({selectedLocation});
+            }}
+            />
+          </View>
+          <View style={styles.inputSpinner}>
+            <InputSpinner
+              title="Quantity to Pick"
+              value={quantity}
+              setValue={this.changeQuantity}
+            />
+          </View>
+        </View>
+        <Button
+          disabled={quantity > item.quantity}
+          style={styles.submitButton}
+          title="Create Putaway"
+          onPress={this.create}
+        />
+      </View>
+    );
+  }
 }
 
-
 const mapStateToProps = (state: RootState) => ({
-    locations: state.locationsReducer.locations,
-    SelectedLocation: state.locationsReducer.SelectedLocation,
+  locations: state.locationsReducer.locations,
+  currentLocation: state.mainReducer.currentLocation,
+  selectedLocation: state.locationsReducer.SelectedLocation,
 });
 
 const mapDispatchToProps: DispatchProps = {
-    getBinLocationsAction,
-    createPutawayOderAction,
-    showScreenLoading,
-    hideScreenLoading,
+  getBinLocationsAction,
+  createPutawayOderAction,
+  showScreenLoading,
+  hideScreenLoading,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(PutawayItem);

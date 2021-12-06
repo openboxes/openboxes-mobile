@@ -1,11 +1,10 @@
-import PutAway from "../../data/putaway/PutAway";
-import {NavigationState} from "../PutAwayDetail/State";
-import {fetchPutAwayFromOrderAction} from "../../redux/actions/putaways";
 import {Shipment} from "../../data/container/Shipment";
+import {OutboundVM} from "./OutboundVM";
 
 export interface State {
     error: string | null
     shipment: Shipment | null
+    shipmentData: OutboundVM| null
 }
 
 
@@ -27,6 +26,10 @@ export interface DispatchProps {
         id: string,
         callback: (data: any) => void
     ) => void;
+}
+
+export interface OutboundDetailOwnProps {
+    containers: any
 }
 
 export type Props = OwnProps & StateProps & DispatchProps
