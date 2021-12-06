@@ -9,11 +9,6 @@ export default StyleSheet.create({
   childContainer: {
     flex: 1,
   },
-  row: {
-    borderWidth: 2,
-    marginVertical: 5,
-    padding: 5,
-  },
   arrowDownIcon: {
     height: 15,
     width: 15,
@@ -37,5 +32,17 @@ export default StyleSheet.create({
   },
   quantityText: {
     fontSize: 23,
+  },
+  inputSpinner: {
+    flex: 1,
+    alignItems: 'center',
+    marginTop: 0,
+    paddingTop: 0
+  },
+  divider: {
+    marginVertical: 30,
+  },
+  submitButton: {
+    padding: 20,
   },
 });

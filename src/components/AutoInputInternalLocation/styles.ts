@@ -37,7 +37,7 @@ export default StyleSheet.create({
   },
   textInput: {
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: 'grey',
     padding: 10,
     height: 40,
     width: device.windowWidth - 20,
