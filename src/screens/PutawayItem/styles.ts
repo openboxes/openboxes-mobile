@@ -1,4 +1,4 @@
-import {StyleSheet} from 'react-native';
+import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
   container: {
@@ -35,14 +35,12 @@ export default StyleSheet.create({
   },
   inputSpinner: {
     flex: 1,
-    alignItems: 'center',
-    marginTop: 0,
-    paddingTop: 0
+    alignItems: 'center'
   },
   divider: {
-    marginVertical: 30,
+    marginVertical: 8,
   },
   submitButton: {
-    padding: 20,
+    padding: 10,
   },
 });
