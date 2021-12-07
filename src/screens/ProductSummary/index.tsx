@@ -9,6 +9,7 @@ import {getLocationProductSummary} from '../../redux/actions/locations';
 import {searchProductGloballyAction} from '../../redux/actions/products';
 import {RootState} from '../../redux/reducers';
 import BarCodeSearchHeader from '../Products/BarCodeSearchHeader';
+import _ from 'lodash';
 
 const ProductSummary = () => {
   const navigation = useNavigation<any>();
@@ -20,14 +21,16 @@ const ProductSummary = () => {
     productSummary: [],
   });
 
+
   useEffect(() => {
     getProductSummary(location.id);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const getProductSummary = (id: string) => {
     const callback = (data: any) => {
       if (data?.error) {
         showPopup({
-          title: data.errorMessage ? `Product Summary details` : null,
+          title: data.errorMessage ? 'Product Summary details' : null,
           message:
             data.errorMessage ?? `Failed to load Product Summary details ${id}`,
           positiveButton: {
@@ -40,7 +43,9 @@ const ProductSummary = () => {
         });
       } else {
         if (data && Object.keys(data).length !== 0) {
-          state.productSummary = data;
+          state.productSummary = _.filter(data, function (o) {
+            return o.quantityOnHand > 0;
+         });
         }
         setState({...state});
       }
@@ -82,14 +87,16 @@ const ProductSummary = () => {
         );
       } else {
         console.log(data);
-        if (data.length == 0) {
+        if (data.length === 0) {
           showPopup({
             message: `No search results found for product name "${query}"`,
             positiveButton: {text: 'Ok'},
           });
         } else {
           if (data && Object.keys(data).length !== 0) {
-            state.productSummary = data.data;
+            state.productSummary = _.filter(data, function (o) {
+              return o.quantityOnHand > 0;
+           });
           }
           setState({...state});
         }
