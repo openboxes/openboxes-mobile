@@ -35,11 +35,6 @@ class PutawayItem extends Component<Props, State> {
     const { item } = this.props.route.params;
     const { currentLocation } = this.props;
 
-    if (!this.state.selectedLocation?.length) {
-      ToastAndroid.show('Please selected Putaway Location', ToastAndroid.SHORT);
-      return;
-    }
-
     const data = {
       putawayNumber: '',
       putawayStatus: 'PENDING',
