@@ -48,7 +48,7 @@ class Products extends React.Component<Props, State> {
     const actionCallback = (data: any) => {
       if (data?.error) {
         showPopup({
-          title: data.errorMessage ? 'Failed to fetch products' : "Error",
+          title: data.errorMessage ? 'Failed to fetch products' : 'Error',
           message: data.errorMessage ?? 'Failed to fetch products',
           positiveButton: {
             text: 'Retry',
@@ -96,9 +96,9 @@ class Products extends React.Component<Props, State> {
   onSearchBoxVisibilityChange = (visible: boolean) => {
     if (!visible) {
       const error =
-          !this.props.products || this.props.products.length === 0
-              ? 'No products found'
-              : null;
+        !this.props.products || this.props.products.length === 0
+          ? 'No products found'
+          : null;
       this.setState({
         error: error,
         searchBoxVisible: false,
@@ -126,11 +126,11 @@ class Products extends React.Component<Props, State> {
       if (data?.error) {
         showPopup({
           title: data.errorMessage
-              ? `Failed to load search results with name = "${query}"`
-              : null,
+            ? `Failed to load search results with name = "${query}"`
+            : null,
           message:
-              data.errorMessage ??
-              `Failed to load search results with name = "${query}"`,
+            data.errorMessage ??
+            `Failed to load search results with name = "${query}"`,
           positiveButton: {
             text: 'Retry',
             callback: () => {
@@ -181,11 +181,11 @@ class Products extends React.Component<Props, State> {
       if (data?.error) {
         showPopup({
           title: data.errorMessage
-              ? `Failed to load search results with code = "${query}"`
-              : null,
+            ? `Failed to load search results with code = "${query}"`
+            : null,
           message:
-              data.errorMessage ??
-              `Failed to load search results with code = "${query}"`,
+            data.errorMessage ??
+            `Failed to load search results with code = "${query}"`,
           positiveButton: {
             text: 'Retry',
             callback: () => {
@@ -226,17 +226,17 @@ class Products extends React.Component<Props, State> {
       if (data?.error) {
         showPopup({
           title: data.errorMessage
-              ? `Failed to load search results for products in category = ${category.name}`
-              : null,
+            ? `Failed to load search results for products in category = ${category.name}`
+            : null,
           message:
-              data.errorMessage ??
-              `Failed to load search results for products in category = ${category.name}`,
+            data.errorMessage ??
+            `Failed to load search results for products in category = ${category.name}`,
           positiveButton: {
             text: 'Retry',
             callback: () => {
               this.props.searchProductSByCategoryAction(
-                  category,
-                  actionCallback,
+                category,
+                actionCallback,
               );
             },
           },
@@ -310,11 +310,11 @@ class Products extends React.Component<Props, State> {
       if (data?.error) {
         showPopup({
           title: data.errorMessage
-              ? `Failed to load search results with value = "${query}"`
-              : null,
+            ? `Failed to load search results with value = "${query}"`
+            : null,
           message:
-              data.errorMessage ??
-              `Failed to load search results with value = "${query}"`,
+            data.errorMessage ??
+            `Failed to load search results with value = "${query}"`,
           positiveButton: {
             text: 'Retry',
             callback: () => {
@@ -351,47 +351,47 @@ class Products extends React.Component<Props, State> {
   render() {
     const vm = vmMapper(this.state);
     return (
-        <View style={styles.screenContainer}>
-          <ProductsSearchHeader
-              subtitle={vm.subtitle}
-              searchBoxVisible={vm.searchBoxVisible}
-              onBackButtonPress={this.onBackButtonPress}
-              onSearchQuerySubmitted={this.onSearchQuerySubmitted}
-              onSearchBoxVisibilityChange={this.onSearchBoxVisibilityChange}
+      <View style={styles.screenContainer}>
+        <ProductsSearchHeader
+          subtitle={vm.subtitle}
+          searchBoxVisible={vm.searchBoxVisible}
+          onBackButtonPress={this.onBackButtonPress}
+          onSearchQuerySubmitted={this.onSearchQuerySubmitted}
+          onSearchBoxVisibilityChange={this.onSearchBoxVisibilityChange}
+        />
+        <ProductsSearchCodeHeader
+          subtitle={vm.subtitle}
+          searchBoxProductCodeVisible={vm.searchBoxProductCodeVisible}
+          onBackButtonPress={this.onBackButtonPress}
+          onSearchProductCodeQuerySubmitted={
+            this.onSearchProductCodeQuerySubmitted
+          }
+          onSearchBoxVisibilityChange={this.onSearchBoxVisibilityChange}
+        />
+        <BarCodeSearchHeader
+          placeholder={'Search by product code or name'}
+          subtitle={vm.subtitle}
+          onBarCodeSearchQuerySubmitted={this.onBarCodeSearchQuerySubmitted}
+          searchBox={false}
+          autoSearch={true}
+        />
+        <View style={styles.content}>
+          <ProductsList
+            products={vm.list}
+            onProductTapped={product => {
+              this.props.navigation.navigate('ProductDetails', {product});
+            }}
           />
-          <ProductsSearchCodeHeader
-              subtitle={vm.subtitle}
-              searchBoxProductCodeVisible={vm.searchBoxProductCodeVisible}
-              onBackButtonPress={this.onBackButtonPress}
-              onSearchProductCodeQuerySubmitted={
-                this.onSearchProductCodeQuerySubmitted
-              }
-              onSearchBoxVisibilityChange={this.onSearchBoxVisibilityChange}
+          {vm?.list?.length === 0 && (
+            <CentralMessage message={vm.centralErrorMessage} />
+          )}
+          <ProductCategoryPickerPopup
+            visible={vm.categoryPickerPopupVisible}
+            onCategoryChosen={this.onCategoryChosen}
+            onCancelPressed={this.hideCategoryPickerPopup}
           />
-          <BarCodeSearchHeader
-              placeholder={'Search by product code or name'}
-              subtitle={vm.subtitle}
-              onBarCodeSearchQuerySubmitted={this.onBarCodeSearchQuerySubmitted}
-              searchBox={false}
-              autoSearch={true}
-          />
-          <View style={styles.content}>
-            <ProductsList
-                products={vm.list}
-                onProductTapped={product => {
-                  this.props.navigation.navigate('ProductDetails', {product});
-                }}
-            />
-            {vm?.list?.length === 0 && (
-                <CentralMessage message={vm.centralErrorMessage}/>
-            )}
-            <ProductCategoryPickerPopup
-                visible={vm.categoryPickerPopupVisible}
-                onCategoryChosen={this.onCategoryChosen}
-                onCancelPressed={this.hideCategoryPickerPopup}
-            />
-          </View>
         </View>
+      </View>
     );
   }
 }

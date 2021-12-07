@@ -9,6 +9,7 @@ import {getLocationProductSummary} from '../../redux/actions/locations';
 import {searchProductGloballyAction} from '../../redux/actions/products';
 import {RootState} from '../../redux/reducers';
 import BarCodeSearchHeader from '../Products/BarCodeSearchHeader';
+import _ from 'lodash';
 
 const ProductSummary = () => {
   const navigation = useNavigation<any>();
@@ -20,8 +21,10 @@ const ProductSummary = () => {
     productSummary: [],
   });
 
+
   useEffect(() => {
     getProductSummary(location.id);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const getProductSummary = (id: string) => {
     const callback = (data: any) => {
@@ -40,7 +43,10 @@ const ProductSummary = () => {
         });
       } else {
         if (data && Object.keys(data).length !== 0) {
-          state.productSummary = data;
+          state.productSummary = _.filter(
+            data,
+            item => item.quantityOnHand > 0,
+          );
         }
         setState({...state});
       }
@@ -89,7 +95,10 @@ const ProductSummary = () => {
           });
         } else {
           if (data && Object.keys(data).length !== 0) {
-            state.productSummary = data.data;
+            state.productSummary = _.filter(
+              data,
+              item => item.quantityOnHand > 0,
+            );
           }
           setState({...state});
         }
