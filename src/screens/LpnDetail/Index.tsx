@@ -247,53 +247,15 @@ class LpnDetail extends React.Component<Props, State> {
             />
           </View>
         </View>
-        <Text style={styles.value}>{'Status'}</Text>
-        <SelectDropdown
-          data={containerStatus}
-          onSelect={(selectedItem, index) => {
-            console.log(selectedItem, index);
-            const {id} = this.props.route.params;
-            this.getContainerStatusDetails(id);
-          }}
-          defaultValueByIndex={0}
-          renderDropdownIcon={renderIcon}
-          buttonStyle={styles.select}
-          buttonTextAfterSelection={(selectedItem, index) => selectedItem}
-          rowTextForSelection={(item, index) => item}
-        />
-        <FlatList
-          data={this.state.container?.shipmentItems}
-          renderItem={(
-            shipmentItem: ListRenderItemInfo<ContainerShipmentItem>,
-          ) => (
-            <TouchableOpacity
-              style={styles.listItemContainer}
-              onPress={() => this.onTapped(shipmentItem)}>
-              <View style={styles.row}>
-                <View style={styles.col50}>
-                  <Text style={styles.label}>Product Code</Text>
-                  <Text style={styles.value}>
-                    {shipmentItem.item?.inventoryItem?.product?.productCode}
-                  </Text>
-                </View>
-                <View style={styles.col50}>
-                  <Text style={styles.label}>Product</Text>
-                  <Text style={styles.value}>
-                    {shipmentItem.item?.inventoryItem?.product?.name}
-                  </Text>
-                </View>
-              </View>
-              <View style={styles.row}>
-                <View style={styles.col50}>
-                  <Text style={styles.label}>Quantity</Text>
-                  <Text style={styles.value}>{shipmentItem.item.quantity}</Text>
-                </View>
-              </View>
-            </TouchableOpacity>
-          )}
-          keyExtractor={item => item.id}
-          style={styles.list}
-        />
+        <PrintModal
+          visible={this.state.visible}
+          closeModal={this.closeModal}
+          type={'containers'}
+          product={this.state.containerDetails?.product}
+          defaultBarcodeLabelUrl={
+            this.state.containerDetails?.defaultBarcodeLabelUrl
+          }
+      />
       </View>
     );
   }
