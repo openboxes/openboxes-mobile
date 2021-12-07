@@ -43,9 +43,10 @@ const ProductSummary = () => {
         });
       } else {
         if (data && Object.keys(data).length !== 0) {
-          state.productSummary = _.filter(data, function (o) {
-            return o.quantityOnHand > 0;
-         });
+          state.productSummary = _.filter(
+            data,
+            item => item.quantityOnHand > 0,
+          );
         }
         setState({...state});
       }
@@ -94,9 +95,10 @@ const ProductSummary = () => {
           });
         } else {
           if (data && Object.keys(data).length !== 0) {
-            state.productSummary = _.filter(data, function (o) {
-              return o.quantityOnHand > 0;
-           });
+            state.productSummary = _.filter(
+              data,
+              item => item.quantityOnHand > 0,
+            );
           }
           setState({...state});
         }
