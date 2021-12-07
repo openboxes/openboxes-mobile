@@ -1,15 +1,18 @@
-import React, {useEffect, useState} from 'react';
-import {Text, View} from 'react-native';
+/* eslint-disable complexity */
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react/jsx-sort-props */
+import React, { useEffect, useState } from 'react';
+import { Text, View } from 'react-native';
 import styles from './styles';
 import Button from '../../components/Button';
 
 import InputBox from '../../components/InputBox';
-import {useNavigation, useRoute} from '@react-navigation/native';
-import {useDispatch} from 'react-redux';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { useDispatch } from 'react-redux';
 import showPopup from '../../components/Popup';
 import {
   getShipmentPacking,
-  submitShipmentDetails,
+  submitShipmentDetails
 } from '../../redux/actions/packing';
 import AutoInputInternalLocation from '../../components/AutoInputInternalLocation';
 import InputSpinner from '../../components/InputSpinner';
@@ -18,7 +21,7 @@ const ShipItemDetails = () => {
   const route = useRoute();
   const dispatch = useDispatch();
   const navigation = useNavigation();
-  const {item}: any = route.params;
+  const { item }: any = route.params;
   const [state, setState] = useState<any>({
     error: '',
     quantityPicked: '0',
@@ -27,7 +30,7 @@ const ShipItemDetails = () => {
     shipmentDetails: null,
     container: null,
     containerId: '',
-    containerList: '',
+    containerList: ''
   });
   const [selectedContainerItem, setSelectedContainerItem] = useState<number>(0);
 
@@ -45,9 +48,9 @@ const ShipItemDetails = () => {
             text: 'Retry',
             callback: () => {
               dispatch(getShipmentPacking(id, callback));
-            },
+            }
           },
-          negativeButtonText: 'Cancel',
+          negativeButtonText: 'Cancel'
         });
       } else {
         if (data && Object.keys(data).length !== 0) {
@@ -57,9 +60,9 @@ const ShipItemDetails = () => {
             containerList.push(dataItem.name);
           });
           state.containerList = containerList;
-          setState({...state});
+          setState({ ...state });
         }
-        setState({...state});
+        setState({ ...state });
       }
     };
     dispatch(getShipmentPacking(id, callback));
@@ -68,7 +71,7 @@ const ShipItemDetails = () => {
   const submitShipmentDetail = (id: string) => {
     const request = {
       'container.id': state.container.id,
-      quantityToPack: state.quantityPicked,
+      quantityToPack: state.quantityPicked
     };
     const callback = (data: any) => {
       if (data?.error) {
@@ -79,14 +82,14 @@ const ShipItemDetails = () => {
             text: 'Retry',
             callback: () => {
               dispatch(submitShipmentDetails(id, request, callback));
-            },
+            }
           },
-          negativeButtonText: 'Cancel',
+          negativeButtonText: 'Cancel'
         });
       } else {
-        setState({...state});
+        setState({ ...state });
         navigation.navigate('OutboundStockDetails', {
-          shipmentId: item.shipment.id,
+          shipmentId: item.shipment.id
         });
       }
     };
@@ -96,7 +99,7 @@ const ShipItemDetails = () => {
   const quantityPickedChange = (query: string) => {
     setState({
       ...state,
-      quantityPicked: query,
+      quantityPicked: query
     });
   };
   return (
@@ -144,46 +147,33 @@ const ShipItemDetails = () => {
             <Text style={styles.value}>{item.quantityRemaining}</Text>
           </View>
         </View>
-      </View>
-      <Text>{'Container'}</Text>
-      <AutoInputInternalLocation
-        label="AutoInputInternalContainer"
-        data={state.containerList ? state.containerList : []}
-        selectedContainerItem={selectedContainerItem}
-        selectedData={(selectedItem: any, index: number) => {
-          setSelectedContainerItem(index);
-          state.containerId = selectedItem;
-          const container = state.shipmentDetails.availableContainers[index];
-          setState({
-            ...state,
-            containerId: selectedItem,
-            container: container,
-            selectedContainerItem: index,
-          });
-        }}
-      />
-      <InputSpinner
-        title={'Quantity to Pick'}
-        value={state.quantityPicked}
-        setValue={quantityPickedChange}
-      />
-      <View style={styles.bottom}>
-        <Button
-          title="PACK ITEM"
-          onPress={() => {
-            submitShipmentDetail(item.id);
-          }}
-        />
-        <InputBox
-          label={'Quantity to Pick'}
-          value={state.quantityPicked}
-          onChange={quantityPickedChange}
-          disabled={false}
-          editable={false}
-          onEndEdit={quantityPickedChange}
-          keyboard={'number-pad'}
-          showSelect={false}
-        />
+        <View style={styles.textContainer}>
+          <Text style={styles.label}>{'Container'}</Text>
+          <AutoInputInternalLocation
+            label="AutoInputInternalContainer"
+            data={state.containerList ? state.containerList : []}
+            selectedContainerItem={selectedContainerItem}
+            selectedData={(selectedItem: any, index: number) => {
+              setSelectedContainerItem(index);
+              state.containerId = selectedItem;
+              const container =
+                state.shipmentDetails.availableContainers[index];
+              setState({
+                ...state,
+                containerId: selectedItem,
+                container: container,
+                selectedContainerItem: index
+              });
+            }}
+          />
+        </View>
+        <View style={styles.alignCenterContent}>
+          <InputSpinner
+            title={'Quantity to Pick'}
+            value={state.quantityPicked}
+            setValue={quantityPickedChange}
+          />
+        </View>
         <View style={styles.bottom}>
           <Button
             title="PACK ITEM"
