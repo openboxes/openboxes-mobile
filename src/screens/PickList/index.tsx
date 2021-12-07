@@ -1,19 +1,12 @@
 import React, {useEffect, useState} from 'react';
-import {DispatchProps} from './types';
 import styles from './styles';
 import {ListRenderItemInfo, ScrollView, Text, View} from 'react-native';
 import {pickListVMMapper} from './PickListVMMapper';
-import {hideScreenLoading, showScreenLoading} from '../../redux/actions/main';
-import {connect, useDispatch} from 'react-redux';
+import {hideScreenLoading} from '../../redux/actions/main';
+import {useDispatch} from 'react-redux';
 import showPopup from '../../components/Popup';
-import {
-  getPickListItemAction,
-  submitPickListItem,
-} from '../../redux/actions/orders';
-import {
-  searchProductByCodeAction,
-  searchProductGloballyAction,
-} from '../../redux/actions/products';
+import {getPickListItemAction, submitPickListItem,} from '../../redux/actions/orders';
+import {searchProductByCodeAction, searchProductGloballyAction,} from '../../redux/actions/products';
 import {searchLocationByLocationNumber} from '../../redux/actions/locations';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import Button from '../../components/Button';
@@ -22,7 +15,6 @@ import InputBox from '../../components/InputBox';
 import Carousel from 'react-native-snap-carousel';
 import {device} from '../../constants';
 import {PicklistItem} from '../../data/picklist/PicklistItem';
-import InputSpinner from '../../components/InputSpinner';
 
 const PickOrderItem = () => {
   const route = useRoute();
@@ -456,7 +448,7 @@ const PickOrderItem = () => {
                       keyboard={'number-pad'}
                       showSelect={false}
                     />
-                    <Button title="Pick Item" onPress={formSubmit} />
+                    <Button title="Pick Item" onPress={formSubmit}/>
                   </View>
                 </ScrollView>
                 <View style={styles.bottom}></View>
@@ -469,12 +461,4 @@ const PickOrderItem = () => {
   );
 };
 
-const mapDispatchToProps: DispatchProps = {
-  showScreenLoading,
-  hideScreenLoading,
-  getPickListItemAction,
-  submitPickListItem,
-  searchProductByCodeAction,
-  searchLocationByLocationNumber,
-};
-export default connect(null, mapDispatchToProps)(PickOrderItem);
+export default PickOrderItem;
