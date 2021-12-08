@@ -159,4 +159,7 @@ export default StyleSheet.create({
     fontSize: 16,
     color: Theme.colors.text,
   },
+  bottomList:{
+    paddingBottom:150
+  }
 });
