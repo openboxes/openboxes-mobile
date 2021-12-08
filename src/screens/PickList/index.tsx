@@ -451,7 +451,6 @@ const PickOrderItem = () => {
                     <Button title="Pick Item" onPress={formSubmit} />
                   </View>
                 </ScrollView>
-                <View style={styles.bottom}></View>
               </View>
             );
           }}
