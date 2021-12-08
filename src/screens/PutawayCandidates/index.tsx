@@ -38,7 +38,15 @@ class PutawayCandidates extends Component<Props> {
     if (!this.state.refreshing) {
       const {candidates} = this.props;
       let updatedList = candidates.filter(candidate => candidate.putawayStatus === 'READY');
-      updatedList = updatedList.sort((a: any, b: any) => b['currentLocation.name'] - a['currentLocation.name']);
+      updatedList = updatedList.sort((a: any, b: any) =>
+        {
+          let fa = a['currentLocation.name'].toLowerCase(), fb = b['currentLocation.name'].toLowerCase();
+          if (fa < fb)
+            return -1;
+          if (fa > fb)
+            return 1;
+          return 0;
+        });
       if (updatedList.length !== this.state.updatedList.length) {
         this.setState({updatedList})
       }
