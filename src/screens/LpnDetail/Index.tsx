@@ -20,6 +20,7 @@ import {connect} from 'react-redux';
 import styles from './styles';
 import Button from '../../components/Button';
 import showPopup from '../../components/Popup';
+import PrintModal from '../../components/PrintModal';
 
 import SelectDropdown from 'react-native-select-dropdown';
 const containerStatus = [
@@ -245,6 +246,15 @@ class LpnDetail extends React.Component<Props, State> {
             />
           </View>
         </View>
+        <PrintModal
+          visible={this.state.visible}
+          closeModal={this.closeModal}
+          type={'containers'}
+          product={this.state.containerDetails?.product}
+          defaultBarcodeLabelUrl={
+            this.state.containerDetails?.defaultBarcodeLabelUrl
+          }
+      />
       </View>
     );
   }
