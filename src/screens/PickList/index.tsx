@@ -8,11 +8,11 @@ import {connect, useDispatch} from 'react-redux';
 import showPopup from '../../components/Popup';
 import {
   getPickListItemAction,
-  submitPickListItem
+  submitPickListItem,
 } from '../../redux/actions/orders';
 import {
   searchProductByCodeAction,
-  searchProductGloballyAction
+  searchProductGloballyAction,
 } from '../../redux/actions/products';
 import {searchLocationByLocationNumber} from '../../redux/actions/locations';
 import {useNavigation, useRoute} from '@react-navigation/native';
