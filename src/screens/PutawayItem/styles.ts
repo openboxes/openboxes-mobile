@@ -1,4 +1,4 @@
-import {StyleSheet} from 'react-native';
+import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
   container: {
@@ -8,11 +8,6 @@ export default StyleSheet.create({
   },
   childContainer: {
     flex: 1,
-  },
-  row: {
-    borderWidth: 2,
-    marginVertical: 5,
-    padding: 5,
   },
   arrowDownIcon: {
     height: 15,
@@ -37,5 +32,15 @@ export default StyleSheet.create({
   },
   quantityText: {
     fontSize: 23,
+  },
+  inputSpinner: {
+    flex: 1,
+    alignItems: 'center'
+  },
+  divider: {
+    marginVertical: 8,
+  },
+  submitButton: {
+    padding: 10,
   },
 });

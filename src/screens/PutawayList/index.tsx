@@ -1,17 +1,10 @@
 import {DispatchProps, Props, State} from './types';
 import React, {ReactElement} from 'react';
-// import Order from "../../../data/order/Order";
 import {getOrdersAction} from '../../redux/actions/orders';
-import {
-  View,
-  FlatList,
-  ListRenderItemInfo,
-  Text,
-  TouchableOpacity,
-} from 'react-native';
+import {FlatList, ListRenderItemInfo, Text, TouchableOpacity, View,} from 'react-native';
 import BarCodeSearchHeader from '../Products/BarCodeSearchHeader';
 import {connect} from 'react-redux';
-import {showScreenLoading, hideScreenLoading} from '../../redux/actions/main';
+import {hideScreenLoading, showScreenLoading} from '../../redux/actions/main';
 import {RootState} from '../../redux/reducers';
 import showPopup from '../../components/Popup';
 import styles from './styles';
@@ -45,8 +38,8 @@ class PutawayList extends React.Component<Props, State> {
     const actionCallback = (data: any) => {
       if (!data || data?.error) {
         showPopup({
-          title: data.error.message ? 'Failed to fetch Order' : null,
-          message: data.error.message ?? 'Failed to fetch Order with:' + query,
+          title: data.errorMessage ? 'Failed to fetch Order' : 'Error',
+          message: data.errorMessage ?? 'Failed to fetch Order with:' + query,
           positiveButton: {
             text: 'Retry',
             callback: () => {
@@ -58,9 +51,9 @@ class PutawayList extends React.Component<Props, State> {
       } else {
         if (data.length == 0) {
           showPopup({
-            title: data.error.message ? 'Failed to fetch Order' : null,
+            title: data.errorMessage ? 'Failed to fetch Order' : 'Error',
             message:
-              data.error.message ?? 'Failed to fetch Order with:' + query,
+              data.errorMessage ?? 'Failed to fetch Order with:' + query,
             positiveButton: {
               text: 'OK',
             },
@@ -120,7 +113,6 @@ class PutawayList extends React.Component<Props, State> {
   };
 
   // showPutAwayListScreen =()=> {
-  //   console.debug(">>>>> showPutAwayListScreen")
   //   this.setState({
   //     navigationState: new NavigationStateHere()
   //   })
@@ -131,7 +123,7 @@ class PutawayList extends React.Component<Props, State> {
   // }
 
   renderItem = (item: ListRenderItemInfo<PutAwayItems>) => {
-    return <PutAwayItem item={item.item} />;
+    return <PutAwayItem item={item.item}/>;
   };
 
   goToPutawayItemDetailScreen = (
@@ -144,13 +136,22 @@ class PutawayList extends React.Component<Props, State> {
     });
   };
   onPutAwayTapped = (putAway: PutAway) => {
-    this.props.navigation.navigate('PutawayDetail', {
-      // putAway,
-      putAway: putAway,
-      exit: () => {
-        this.props.navigation.navigate('PutawayList');
-      },
-    });
+    if (putAway?.putawayItems?.length > 1) {
+      this.props.navigation.navigate('PutawayDetail', {
+        putAway: putAway,
+        exit: () => {
+          this.props.navigation.navigate('PutawayList');
+        },
+      });
+    } else {
+      this.props.navigation.navigate('PutawayItemDetail', {
+        putAway: putAway,
+        putAwayItem: putAway?.putawayItems[0],
+        exit: () => {
+          this.props.navigation.navigate('PutawayList');
+        },
+      });
+    }
   };
 
   render() {
@@ -158,7 +159,7 @@ class PutawayList extends React.Component<Props, State> {
     return (
       <View style={styles.screenContainer}>
         {/*<Header*/}
-        {/*  title="PutAway List"*/}
+        {/*  title='PutAway List'*/}
         {/*  subtitle={'All Pending Put Away List'}*/}
         {/*  backButtonVisible={true}*/}
         {/*  onBackButtonPress={this.onBackButtonPress}*/}

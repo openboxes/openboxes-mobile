@@ -4,7 +4,7 @@ import {View, TextInput} from 'react-native';
 import {Props} from './types';
 import ModalSelector from 'react-native-modal-selector-searchable';
 
-export default function ({data, selectedData, initValue = '', placeholder = ''}: Props) {
+export default function ({data, selectedData, initValue = ''}: Props) {
   const [query, setQuery] = useState(initValue);
 
   return (
@@ -30,7 +30,7 @@ export default function ({data, selectedData, initValue = '', placeholder = ''}:
         <TextInput
           style={styles.textInput}
           editable={false}
-          placeholder={placeholder ?? ''}
+          placeholder=""
           value={query}
         />
       </ModalSelector>

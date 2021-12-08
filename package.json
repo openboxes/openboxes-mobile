@@ -7,7 +7,8 @@
     "ios": "react-native run-ios",
     "start": "react-native start",
     "test": "jest",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "format": "prettier-eslint --eslint-config-path ./.eslintrc.js --write '**/*.ts' '**/*.tsx' '**/*.js' '**/*.jsx'"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^1.15.9",
@@ -15,6 +16,7 @@
     "@react-navigation/native": "^6.0.4",
     "@react-navigation/stack": "^6.0.9",
     "@reduxjs/toolkit": "^1.6.2",
+    "@sentry/react-native": "^3.2.4",
     "@types/react-native-snap-carousel": "3.8.5",
     "@types/react-native-vector-icons": "^6.4.9",
     "@types/react-redux": "^7.1.19",
@@ -26,6 +28,7 @@
     "react-native": "0.66.0",
     "react-native-autocomplete-input": "^5.0.2",
     "react-native-datawedge-intents": "^0.1.8",
+    "react-native-dotenv": "^3.3.0",
     "react-native-gesture-handler": "^1.10.3",
     "react-native-input-spinner": "^1.7.12",
     "react-native-modal-selector-searchable": "^2.1.4",
@@ -51,13 +54,20 @@
     "@types/lodash": "4.14.168",
     "@types/react-native": "^0.65.0",
     "@types/react-native-datawedge-intents": "^0.1.1",
-    "@types/react-test-renderer": "^17.0.1",
     "babel-jest": "^26.6.3",
-    "eslint": "^7.14.0",
     "jest": "^26.6.3",
     "metro-react-native-babel-preset": "^0.66.2",
     "react-test-renderer": "17.0.2",
-    "typescript": "^3.8.3"
+    "typescript": "^3.8.3",
+    "@types/react-test-renderer": "17.0.1",
+    "prettier": "^2.3.0",
+    "prettier-eslint": "^13.0.0",
+    "prettier-eslint-cli": "^5.0.1",
+    "eslint": "7.14.0",
+    "eslint-config-prettier": "^6.15.0",
+    "eslint-plugin-prettier": "^3.1.2",
+    "husky": "^3.0.3",
+    "lint-staged": "^9.2.1"
   },
   "resolutions": {
     "@types/react": "^17"

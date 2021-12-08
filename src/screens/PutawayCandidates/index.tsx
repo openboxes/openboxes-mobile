@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Props} from './types';
+import {DispatchProps, Props} from './types';
 import {
   FlatList,
   Text,
@@ -9,11 +9,11 @@ import {
   Alert,
 } from 'react-native';
 import {RootState} from '../../redux/reducers';
-import {DispatchProps} from './types';
 import styles from './styles';
 import {hideScreenLoading, showScreenLoading} from '../../redux/actions/main';
 import {connect} from 'react-redux';
 import {getCandidates} from '../../redux/actions/putaways';
+import showPopup from "../../components/Popup";
 
 class PutawayCandidates extends Component<Props> {
   constructor(props: Props) {
@@ -21,6 +21,7 @@ class PutawayCandidates extends Component<Props> {
 
     this.state = {
       refreshing: false,
+      updatedList: [],
     };
   }
 
@@ -28,11 +29,27 @@ class PutawayCandidates extends Component<Props> {
     this.getScreenData();
   }
 
+  componentDidUpdate() {
+    if (this.props.route.params && this.props.route.params.forceRefresh) {
+      this.getScreenData();
+      this.props.navigation.setParams({ forceRefresh: false });
+    }
+
+    if (!this.state.refreshing) {
+      const {candidates} = this.props;
+      let updatedList = candidates.filter(candidate => candidate.putawayStatus === 'READY');
+      updatedList = updatedList.sort((a: any, b: any) => a['currentLocation.name'].toLowerCase().localeCompare(b['currentLocation.name'].toLowerCase()));
+      if (updatedList.length !== this.state.updatedList.length) {
+        this.setState({updatedList})
+      }
+    }
+  }
+
   getScreenData = async () => {
-    this.setState({refreshing: true});
-    const {SelectedLocation} = this.props;
+    this.setState({ refreshing: true });
+    const { SelectedLocation } = this.props;
     await this.props.getCandidates(SelectedLocation.id);
-    this.setState({refreshing: false});
+    this.setState({ refreshing: false });
   };
 
   renderItem = (item: any) => {
@@ -43,7 +60,7 @@ class PutawayCandidates extends Component<Props> {
           if (item.id) {
             Alert.alert('Item is already in a pending putaway');
           } else {
-            this.props.navigation.navigate('PutawayItem', {item});
+            this.props.navigation.navigate('PutawayItem', { item });
           }
         }}>
         <Text>{`Status - ${item['putawayStatus']}`}</Text>
@@ -62,20 +79,22 @@ class PutawayCandidates extends Component<Props> {
   };
 
   render() {
-    const {candidates} = this.props;
+    const {updatedList} = this.state;
     return (
       <SafeAreaView style={styles.container}>
-        <FlatList
-          refreshControl={
-            <RefreshControl
-              refreshing={this.state.refreshing}
-              onRefresh={this.getScreenData}
-            />
-          }
-          data={candidates}
-          renderItem={({item}) => this.renderItem(item)}
-          keyExtractor={(item, index) => index}
-        />
+        {updatedList.length ? (
+          <FlatList
+            refreshControl={
+              <RefreshControl
+                refreshing={this.state.refreshing}
+                onRefresh={this.getScreenData}
+              />
+            }
+            data={updatedList}
+            renderItem={({item}) => this.renderItem(item)}
+            keyExtractor={(item, index) => index}
+          />
+        ) : null}
       </SafeAreaView>
     );
   }

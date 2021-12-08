@@ -6,7 +6,6 @@ import showPopup from '../../components/Popup';
 import ProductsSearchHeader from './ProductsSearchHeader';
 import ProductsList from './ProductsList';
 import CentralMessage from './CentralMessage';
-import FloatingActionButtonMenu from './FloatingActionButtonMenu';
 import ProductCategoryPickerPopup from './ProductCategoryPickerPopup';
 import {ProductCategory} from '../../data/product/category/ProductCategory';
 import {DispatchProps, Props, State} from './types';
@@ -21,7 +20,7 @@ import {
   searchProductSByCategoryAction,
   searchProductsByNameAction,
 } from '../../redux/actions/products';
-import {showScreenLoading, hideScreenLoading} from '../../redux/actions/main';
+import {hideScreenLoading, showScreenLoading} from '../../redux/actions/main';
 import {RootState} from '../../redux/reducers';
 
 class Products extends React.Component<Props, State> {
@@ -49,8 +48,8 @@ class Products extends React.Component<Props, State> {
     const actionCallback = (data: any) => {
       if (data?.error) {
         showPopup({
-          title: data.error.message ? 'Failed to fetch products' : null,
-          message: data.error.message ?? 'Failed to fetch products',
+          title: data.errorMessage ? 'Failed to fetch products' : 'Error',
+          message: data.errorMessage ?? 'Failed to fetch products',
           positiveButton: {
             text: 'Retry',
             callback: () => {
@@ -126,11 +125,11 @@ class Products extends React.Component<Props, State> {
     const actionCallback = (data: any) => {
       if (data?.error) {
         showPopup({
-          title: data.error.message
+          title: data.errorMessage
             ? `Failed to load search results with name = "${query}"`
             : null,
           message:
-            data.error.message ??
+            data.errorMessage ??
             `Failed to load search results with name = "${query}"`,
           positiveButton: {
             text: 'Retry',
@@ -181,11 +180,11 @@ class Products extends React.Component<Props, State> {
     const actionCallback = (data: any) => {
       if (data?.error) {
         showPopup({
-          title: data.error.message
+          title: data.errorMessage
             ? `Failed to load search results with code = "${query}"`
             : null,
           message:
-            data.error.message ??
+            data.errorMessage ??
             `Failed to load search results with code = "${query}"`,
           positiveButton: {
             text: 'Retry',
@@ -226,11 +225,11 @@ class Products extends React.Component<Props, State> {
     const actionCallback = (data: any) => {
       if (data?.error) {
         showPopup({
-          title: data.error.message
+          title: data.errorMessage
             ? `Failed to load search results for products in category = ${category.name}`
             : null,
           message:
-            data.error.message ??
+            data.errorMessage ??
             `Failed to load search results for products in category = ${category.name}`,
           positiveButton: {
             text: 'Retry',
@@ -310,11 +309,11 @@ class Products extends React.Component<Props, State> {
     const actionCallback = (data: any) => {
       if (data?.error) {
         showPopup({
-          title: data.error.message
+          title: data.errorMessage
             ? `Failed to load search results with value = "${query}"`
             : null,
           message:
-            data.error.message ??
+            data.errorMessage ??
             `Failed to load search results with value = "${query}"`,
           positiveButton: {
             text: 'Retry',

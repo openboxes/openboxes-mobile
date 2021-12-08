@@ -4,13 +4,12 @@ import styles from './styles';
 import Location from '../../data/location/Location';
 import _, {Dictionary} from 'lodash';
 import {ScrollView, View} from 'react-native';
-import Header from '../../components/Header';
 import {List} from 'react-native-paper';
 import showPopup from '../../components/Popup';
-import {showScreenLoading, hideScreenLoading} from '../../redux/actions/main';
+import {hideScreenLoading, showScreenLoading} from '../../redux/actions/main';
 import {
-  setCurrentLocationAction,
   getLocationsAction,
+  setCurrentLocationAction,
 } from '../../redux/actions/locations';
 
 const NO_ORGANIZATION_NAME = 'No organization';
@@ -51,8 +50,8 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
     const actionCallback = (data: any) => {
       if (data?.error) {
         showPopup({
-          title: data.error.message ? 'Failed to load locations' : null,
-          message: data.error.message ?? 'Failed to load locations',
+          title: data.errorMessage ? 'Failed to load locations' : 'Error',
+          message: data.errorMessage ?? 'Failed to load locations',
           positiveButton: {
             text: 'Retry',
             callback: () => {
@@ -89,16 +88,16 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
     return _.keys(orgNameAndLocationsDictionary)
       .sort((leftOrgName: string, rightOrgName: string) => {
         if (
-          leftOrgName == NO_ORGANIZATION_NAME &&
-          rightOrgName == NO_ORGANIZATION_NAME
+          leftOrgName === NO_ORGANIZATION_NAME &&
+          rightOrgName === NO_ORGANIZATION_NAME
         ) {
           return 0;
-        } else if (leftOrgName == NO_ORGANIZATION_NAME) {
+        } else if (leftOrgName === NO_ORGANIZATION_NAME) {
           return 1;
-        } else if (rightOrgName == NO_ORGANIZATION_NAME) {
+        } else if (rightOrgName === NO_ORGANIZATION_NAME) {
           return -1;
         } else {
-          if (leftOrgName == rightOrgName) {
+          if (leftOrgName === rightOrgName) {
             return 0;
           } else if (leftOrgName > rightOrgName) {
             return 1;
@@ -117,7 +116,6 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
   };
 
   setCurrentLocation = async (orgName: string, location: Location) => {
-    console.log(55, location)
     showPopup({
       message: `Do you want to select current location as ${location.name}?`,
       positiveButton: {
