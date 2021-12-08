@@ -27,6 +27,9 @@ export default StyleSheet.create({
         fontSize: 12,
         color: Theme.colors.placeholder,
     },
+    bottomList:{
+      paddingBottom:150
+    },
     value: {
         fontSize: 16,
         color: Theme.colors.text,
