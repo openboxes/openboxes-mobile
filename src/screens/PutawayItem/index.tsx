@@ -2,7 +2,7 @@
 /* eslint-disable no-shadow */
 import React, { Component } from 'react';
 import { DispatchProps, Props, State } from './types';
-import { View, Text, ToastAndroid } from 'react-native';
+import { View, Text, ToastAndroid, ScrollView } from 'react-native';
 import { RootState } from '../../redux/reducers';
 import styles from './styles';
 import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
@@ -49,7 +49,7 @@ class PutawayItem extends Component<Props, State> {
           'inventoryItem.id': item['inventoryItem.id'],
           'putawayFacility.id': selectedLocation?.id,
           'currentLocation.id': item['currentLocation.id'],
-          'putawayLocation.id': this.state.selectedLocation,
+          'putawayLocation.id': this.state.selectedLocation?.id || "",
           quantity: this.state?.quantity
         }
       ],
@@ -75,6 +75,13 @@ class PutawayItem extends Component<Props, State> {
         ToastAndroid.CENTER
       );
     }
+    if (quantity <= 0) {
+      ToastAndroid.showWithGravity(
+        'Quantity to put away can not be less than 1',
+        ToastAndroid.SHORT,
+        ToastAndroid.CENTER
+      );
+    }
 
     this.setState({ quantity });
   };
@@ -85,65 +92,68 @@ class PutawayItem extends Component<Props, State> {
     const { quantity } = this.state;
 
     return (
-      <View style={styles.container}>
-        <View style={styles.childContainer}>
-          <InputBox
-            disabled
-            label="Product Code"
-            value={item['product.productCode']}
-            editable={false}
-          />
-          <InputBox
-            disabled
-            label="Product Name"
-            value={item['product.name']}
-            editable={false}
-          />
-          <InputBox
-            disabled
-            label="Lot Number"
-            value={item['inventoryItem.lotNumber'] ?? 'Default'}
-            editable={false}
-          />
-          <InputBox
-            disabled
-            label="Current Location"
-            value={item['currentLocation.name'] ?? 'Default'}
-            editable={false}
-          />
-          <InputBox
-            disabled
-            label="Received Quantity"
-            value={item['quantity'].toString() ?? '0'}
-            editable={false}
-          />
+      <ScrollView
+        style={{width: '100%', height: '100%'}}
+        keyboardShouldPersistTaps={true}
+      >
+        <View style={styles.container}>
+          <View style={styles.childContainer}>
+            <InputBox
+              disabled
+              label="Product Code"
+              value={item['product.productCode']}
+              editable={false}
+            />
+            <InputBox
+              disabled
+              label="Product Name"
+              value={item['product.name']}
+              editable={false}
+            />
+            <InputBox
+              disabled
+              label="Lot Number"
+              value={item['inventoryItem.lotNumber'] ?? 'Default'}
+              editable={false}
+            />
+            <InputBox
+              disabled
+              label="Current Location"
+              value={item['currentLocation.name'] ?? 'Default'}
+              editable={false}
+            />
+            <InputBox
+              disabled
+              label="Received Quantity"
+              value={item['quantity'].toString() ?? '0'}
+              editable={false}
+            />
 
-          <View style={styles.divider} />
-          <View>
-            <Text>Putaway Location</Text>
-            <AutoInputBinLocation
-              placeholder="Default"
-              data={locations.map(({ name }) => name)}
-              selectedData={(selectedLocation: any) => {
-                this.setState({ selectedLocation: selectedLocation });
-              }}
-            />
+            <View style={styles.divider} />
+            <View>
+              <Text>Putaway Location</Text>
+              <AutoInputBinLocation
+                placeholder="Default"
+                data={locations}
+                selectedData={(selectedLocation: any) => this.setState({ selectedLocation: selectedLocation })}
+              />
+            </View>
+            <View style={styles.inputSpinner}>
+              <InputSpinner
+                title="Quantity to Pick"
+                value={quantity}
+                setValue={this.changeQuantity}
+              />
+            </View>
           </View>
-          <View style={styles.inputSpinner}>
-            <InputSpinner
-              title="Quantity to Pick"
-              value={quantity}
-              setValue={this.changeQuantity}
-            />
-          </View>
+          <Button
+            disabled={quantity > item.quantity || quantity <= 0}
+            style={styles.submitButton}
+            title="Create Putaway"
+            onPress={this.create}
+          />
         </View>
-        <Button
-          disabled={quantity > item.quantity}
-          style={styles.submitButton}
-          title="Create Putaway"
-          onPress={this.create}
-        />
-      </View>
+      </ScrollView>
     );
   }
 }
