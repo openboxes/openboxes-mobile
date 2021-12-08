@@ -448,7 +448,7 @@ const PickOrderItem = () => {
                       keyboard={'number-pad'}
                       showSelect={false}
                     />
-                    <Button title="Pick Item" onPress={formSubmit}/>
+                    <Button title="Pick Item" onPress={formSubmit} />
                   </View>
                 </ScrollView>
                 <View style={styles.bottom}></View>
