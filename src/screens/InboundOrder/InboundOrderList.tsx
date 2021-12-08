@@ -58,7 +58,6 @@ const InboundOrderList = ({data}: InboundOrderProps) => {
   return (
     <FlatList
       data={data}
-      ListFooterComponent={<View style={styles.bottomList}></View>}
       keyExtractor={(item, index) => item + index}
       renderItem={RenderListItem}
     />
