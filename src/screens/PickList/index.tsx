@@ -6,8 +6,14 @@ import {pickListVMMapper} from './PickListVMMapper';
 import {hideScreenLoading, showScreenLoading} from '../../redux/actions/main';
 import {connect, useDispatch} from 'react-redux';
 import showPopup from '../../components/Popup';
-import {getPickListItemAction, submitPickListItem,} from '../../redux/actions/orders';
-import {searchProductByCodeAction, searchProductGloballyAction,} from '../../redux/actions/products';
+import {
+  getPickListItemAction,
+  submitPickListItem
+} from '../../redux/actions/orders';
+import {
+  searchProductByCodeAction,
+  searchProductGloballyAction
+} from '../../redux/actions/products';
 import {searchLocationByLocationNumber} from '../../redux/actions/locations';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import Button from '../../components/Button';
@@ -444,7 +450,7 @@ const PickOrderItem = () => {
                       title={"Quantity to Pick"}
                       setValue={quantityPickedChange}
                     />
-                    <Button title="Pick Item" onPress={formSubmit}/>
+                    <Button title="Pick Item" onPress={formSubmit} />
                   </View>
                 </ScrollView>
               </View>
