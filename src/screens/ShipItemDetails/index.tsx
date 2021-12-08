@@ -2,8 +2,6 @@ import React, {useEffect, useState} from 'react';
 import {Text, View} from 'react-native';
 import styles from './styles';
 import Button from '../../components/Button';
-
-import InputBox from '../../components/InputBox';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {useDispatch} from 'react-redux';
 import showPopup from '../../components/Popup';
@@ -66,8 +64,17 @@ const ShipItemDetails = () => {
   };
 
   const submitShipmentDetail = (id: string) => {
+    if (Number(state.quantityPicked) > Number(item.quantityRemaining)) {
+      showPopup({
+        message: 'Quantity Picked is higher than quantity remaining',
+        positiveButton: {
+          text: 'Ok',
+        },
+      });
+      return;
+    }
     const request = {
-      'container.id': state.container.id,
+      'container.id': state?.container?.id ?? '',
       quantityToPack: state.quantityPicked,
     };
     const callback = (data: any) => {
@@ -94,6 +101,7 @@ const ShipItemDetails = () => {
   };
 
   const quantityPickedChange = (query: string) => {
+
     setState({
       ...state,
       quantityPicked: query,
@@ -145,23 +153,25 @@ const ShipItemDetails = () => {
           </View>
         </View>
       </View>
-      <Text>{'Container'}</Text>
-      <AutoInputInternalLocation
-        label="AutoInputInternalContainer"
-        data={state.containerList ? state.containerList : []}
-        selectedContainerItem={selectedContainerItem}
-        selectedData={(selectedItem: any, index: number) => {
-          setSelectedContainerItem(index);
-          state.containerId = selectedItem;
-          const container = state.shipmentDetails.availableContainers[index];
-          setState({
-            ...state,
-            containerId: selectedItem,
-            container: container,
-            selectedContainerItem: index,
-          });
-        }}
-      />
+      <View style={styles.containerField}>
+        <Text>{'Container'}</Text>
+        <AutoInputInternalLocation
+          label="AutoInputInternalContainer"
+          data={state.containerList ? state.containerList : []}
+          selectedContainerItem={selectedContainerItem}
+          selectedData={(selectedItem: any, index: number) => {
+            setSelectedContainerItem(index);
+            state.containerId = selectedItem;
+            const container = state.shipmentDetails.availableContainers[index];
+            setState({
+              ...state,
+              containerId: selectedItem,
+              container: container,
+              selectedContainerItem: index,
+            });
+          }}
+        />
+      </View>
       <InputSpinner
         title={'Quantity to Pick'}
         value={state.quantityPicked}
@@ -169,29 +179,12 @@ const ShipItemDetails = () => {
       />
       <View style={styles.bottom}>
         <Button
+          disabled={state?.container?.id === null || Number(state.quantityPicked) === 0}
           title="PACK ITEM"
           onPress={() => {
             submitShipmentDetail(item.id);
           }}
         />
-        <InputBox
-          label={'Quantity to Pick'}
-          value={state.quantityPicked}
-          onChange={quantityPickedChange}
-          disabled={false}
-          editable={false}
-          onEndEdit={quantityPickedChange}
-          keyboard={'number-pad'}
-          showSelect={false}
-        />
-        <View style={styles.bottom}>
-          <Button
-            title="PACK ITEM"
-            onPress={() => {
-              submitShipmentDetail(item.id);
-            }}
-          />
-        </View>
       </View>
     </>
   );
