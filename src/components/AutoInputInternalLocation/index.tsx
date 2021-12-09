@@ -18,9 +18,8 @@ export default function ({
     <View style={styles.mainContainer}>
       <ModalSelector
         data={data.map((item, index) => ({
-          key: index,
-          label: item,
-          select: index === 0
+          key: item.id || index ,
+          label:item.name  || item ,
         }))}
         initValue=""
         supportedOrientations={['landscape']}

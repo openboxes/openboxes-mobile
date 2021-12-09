@@ -30,7 +30,7 @@ const ShipItemDetails = () => {
     containerId: '',
     containerList: ''
   });
-  const [selectedContainerItem, setSelectedContainerItem] = useState<number>(0);
+  const [selectedContainerItem, setSelectedContainerItem] = useState();
 
   useEffect(() => {
     getShipmentDetails(item.shipment.shipmentNumber);
@@ -55,12 +55,15 @@ const ShipItemDetails = () => {
           state.shipmentDetails = data;
           let containerList: any = [];
           data.availableContainers.map((dataItem: any) => {
-            containerList.push(dataItem.name);
+           const containerData ={
+             name: dataItem.name,
+             id: dataItem.id
+           }
+          containerList.push(containerData);
           });
           state.containerList = containerList;
           setState({ ...state });
         }
-        setState({ ...state });
       }
     };
     dispatch(getShipmentPacking(id, callback));
@@ -162,12 +165,6 @@ const ShipItemDetails = () => {
             selectedContainerItem={selectedContainerItem}
             selectedData={(selectedItem: any, index: number) => {
               setSelectedContainerItem(selectedItem);
-              const container = state.shipmentDetails.availableContainers[index];
-              setState({
-                ...state,
-                containerId: selectedItem,
-                container: container,
-              });
             }}
           />
         </View>
@@ -180,7 +177,7 @@ const ShipItemDetails = () => {
         </View>
         <View style={styles.bottom}>
           <Button
-            disabled={!state?.container?.id || Number(state.quantityPicked) <= 0}
+            disabled={!selectedContainerItem?.id || Number(state.quantityPicked) <= 0}
             title="PACK ITEM"
             onPress={() => {
               submitShipmentDetail(item.id);
