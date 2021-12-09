@@ -59,7 +59,6 @@ export default StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     height: ratio.height * 100,
-    position: 'absolute',
     bottom: 10
   },
   textContainer: {

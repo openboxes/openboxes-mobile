@@ -104,7 +104,6 @@ const ShipItemDetails = () => {
   };
 
   const quantityPickedChange = (query: string) => {
-
     setState({
       ...state,
       quantityPicked: query
@@ -159,18 +158,15 @@ const ShipItemDetails = () => {
           <Text style={styles.label}>{'Container'}</Text>
           <AutoInputInternalLocation
             label="AutoInputInternalContainer"
-            data={state.containerList ? state.containerList : []}
+            data={state.containerList ?? []}
             selectedContainerItem={selectedContainerItem}
             selectedData={(selectedItem: any, index: number) => {
-              setSelectedContainerItem(index);
-              state.containerId = selectedItem;
-              const container =
-                state.shipmentDetails.availableContainers[index];
+              setSelectedContainerItem(selectedItem);
+              const container = state.shipmentDetails.availableContainers[index];
               setState({
                 ...state,
                 containerId: selectedItem,
                 container: container,
-                selectedContainerItem: index
               });
             }}
           />
@@ -184,6 +180,7 @@ const ShipItemDetails = () => {
         </View>
         <View style={styles.bottom}>
           <Button
+            disabled={!state?.container?.id || Number(state.quantityPicked) <= 0}
             title="PACK ITEM"
             onPress={() => {
               submitShipmentDetail(item.id);

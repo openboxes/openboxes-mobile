@@ -141,7 +141,7 @@ function* submitShipmentItems(action: any) {
     yield hideScreenLoading();
   } catch (e) {
     console.log('function* submitShipmentItems', e.response);
-    showPopup({message: "Fail to submit ShipmentItems", positiveButton: "ok"});
+    showPopup({message: "Fail to submit ShipmentItems "+e.response, positiveButton: "ok"});
   }
 }
 
