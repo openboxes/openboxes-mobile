@@ -5,8 +5,14 @@ import {pickListVMMapper} from './PickListVMMapper';
 import {hideScreenLoading} from '../../redux/actions/main';
 import {useDispatch} from 'react-redux';
 import showPopup from '../../components/Popup';
-import {getPickListItemAction, submitPickListItem,} from '../../redux/actions/orders';
-import {searchProductByCodeAction, searchProductGloballyAction,} from '../../redux/actions/products';
+import {
+  getPickListItemAction,
+  submitPickListItem,
+} from '../../redux/actions/orders';
+import {
+  searchProductByCodeAction,
+  searchProductGloballyAction,
+} from '../../redux/actions/products';
 import {searchLocationByLocationNumber} from '../../redux/actions/locations';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import Button from '../../components/Button';
