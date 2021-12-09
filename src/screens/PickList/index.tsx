@@ -371,10 +371,10 @@ const PickOrderItem = () => {
     let picklistItemData = pickListItemData;
     picklistItemData[index].quantityToPick = parseInt(query); 
     setPickListItemData([ ...picklistItemData ]);
-    /* setState({
+    setState({
       ...state,
       quantityPicked: query,
-    }); */
+    });
   };
 
   const onChangeProduct = (text: string) => {
