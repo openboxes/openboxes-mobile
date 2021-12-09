@@ -111,7 +111,7 @@ const AdjustStock = () => {
       showPopup({
         title: errorTitle,
         message: errorMessage,
-        negativeButtonText: 'Cancel',
+        negativeButtonText: 'Cancel'
       });
       return Promise.resolve(null);
     }
@@ -124,7 +124,7 @@ const AdjustStock = () => {
       quantityAvailable: item.quantityAvailableToPromise,
       reasonCode: reasonCode ?? 'CORRECTION',
       quantityAdjusted: quantityAdjusted,
-      comments: comments,
+      comments: comments
     };
     submitStockAdjustments(request);
   };
@@ -139,9 +139,9 @@ const AdjustStock = () => {
             text: 'Retry',
             callback: () => {
               dispatch(stockAdjustments(requestBody, callback));
-            },
+            }
           },
-          negativeButtonText: 'Cancel',
+          negativeButtonText: 'Cancel'
         });
       } else {
         if (data && Object.keys(data).length !== 0) {

@@ -23,6 +23,7 @@ import Carousel from 'react-native-snap-carousel';
 import {device} from '../../constants';
 import {PicklistItem} from '../../data/picklist/PicklistItem';
 import InputSpinner from '../../components/InputSpinner';
+import * as Sentry from '@sentry/react-native';
 
 const PickOrderItem = () => {
   const route = useRoute();
@@ -43,7 +44,6 @@ const PickOrderItem = () => {
     binLocationName: '',
   });
   const vm = pickListVMMapper(route.params);
-  console.log('VM', vm);
   useEffect(() => {
     getPickListItem();
   }, []);
@@ -94,7 +94,6 @@ const PickOrderItem = () => {
             searchProductGloballyAction,
           );
         } else {
-          console.log(data);
           if (data.length == 0) {
             showPopup({
               message: `No search results found for product name "${query}"`,
@@ -139,7 +138,6 @@ const PickOrderItem = () => {
               positiveButton: {text: 'Ok'},
             });
           } else {
-            console.log(data);
             if (data && Object.keys(data).length !== 0) {
               if (state.binLocation === '' || state.binLocation === data.name) {
                 state.binLocation = data;
@@ -164,7 +162,6 @@ const PickOrderItem = () => {
 
   const getPickListItem = async () => {
     try {
-      // showProgressBar("Fetching PickList Item")
       const {pickListItem}: any = route.params;
       const actionCallback = (data: any) => {
         const currentState = {...state};
@@ -172,14 +169,11 @@ const PickOrderItem = () => {
         currentState.binLocationName = data?.['binLocation.name'] ?? 'Default';
         currentState.lotNumber = data?.lotNumber ?? 'Default';
         currentState.pickListItem = data;
-        console.log(currentState);
         setState(currentState);
       };
-      console.debug('pickListItem?.id::');
-      console.debug(pickListItem?.id);
       dispatch(getPickListItemAction(pickListItem?.id, actionCallback));
     } catch (e) {
-      console.log('pickListItem?.id::', e.message);
+      Sentry.captureException('Error while getting Pick List Item', e);
     }
   };
 
@@ -202,7 +196,6 @@ const PickOrderItem = () => {
         showPopup({
           title: errorTitle,
           message: errorMessage,
-          // positiveButtonText: "Retry",
           negativeButtonText: 'Cancel',
         });
         return Promise.resolve(null);
@@ -225,8 +218,6 @@ const PickOrderItem = () => {
         forceUpdate: false,
       };
       const actionCallback = (data: any) => {
-        console.debug('data after submit');
-        console.debug(data);
         if (data?.error) {
           showPopup({
             title: data.errorMessage ? `Failed to load results` : null,
@@ -283,8 +274,6 @@ const PickOrderItem = () => {
     }
 
     const actionCallback = (data: any) => {
-      console.debug('product searched completed');
-      console.debug(data.data.length);
       if (!data || data.data.length == 0) {
         showPopup({
           message: 'Product not found with ProductCode:' + state.productCode,
@@ -299,8 +288,6 @@ const PickOrderItem = () => {
         });
         return;
       } else if (data.data.length == 1) {
-        console.debug('data.length');
-        console.debug(data.length);
         setState({
           ...state,
           product: data.data[0],
@@ -446,10 +433,12 @@ const PickOrderItem = () => {
                       onChange={onChangeBin}
                       editable={false}
                     />
+                    <View style={styles.inputSpinner}>
                     <InputSpinner
                       title={"Quantity to Pick"}
                       setValue={quantityPickedChange}
                     />
+                    </View>
                     <Button title="Pick Item" onPress={formSubmit} />
                   </View>
                 </ScrollView>
