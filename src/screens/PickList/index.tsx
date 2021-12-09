@@ -446,20 +446,13 @@ const PickOrderItem = () => {
                       onChange={onChangeBin}
                       editable={false}
                     />
-                    <InputBox
-                      label={'Quantity to Pick'}
-                      value={state.quantityPicked}
-                      onChange={quantityPickedChange}
-                      disabled={false}
-                      editable={false}
-                      onEndEdit={quantityPickedChange}
-                      keyboard={'number-pad'}
-                      showSelect={false}
+                    <InputSpinner
+                      title={"Quantity to Pick"}
+                      setValue={quantityPickedChange}
                     />
                     <Button title="Pick Item" onPress={formSubmit} />
                   </View>
                 </ScrollView>
-                <View style={styles.bottom}></View>
               </View>
             );
           }}
