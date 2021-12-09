@@ -19,7 +19,7 @@ const InternalTransfer = () => {
   const barcodeData = useEventListener();
   const dispatch = useDispatch();
   const location = useSelector(
-    (state: RootState) => state.mainReducer.currentLocation,
+    (state: RootState) => state.locationsReducer.SelectedLocation,
   );
   const [state, setState] = useState<any>({
     productCode: '',

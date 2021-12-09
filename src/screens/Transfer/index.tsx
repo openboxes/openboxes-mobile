@@ -15,7 +15,7 @@ const Transfer = () => {
     const route = useRoute();
     const {item}: any = route.params
     const dispatch = useDispatch();
-    const location = useSelector((rootState: RootState) => rootState.mainReducer.currentLocation)
+    const location = useSelector((rootState: RootState) => rootState.locationsReducer.SelectedLocation)
     const [state, setState] = useState<any>({
         binToLocation: "",
         binToLocationData: "",

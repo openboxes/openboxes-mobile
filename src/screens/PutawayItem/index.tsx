@@ -150,7 +150,7 @@ class PutawayItem extends Component<Props, State> {
 
 const mapStateToProps = (state: RootState) => ({
   locations: state.locationsReducer.locations,
-  currentLocation: state.mainReducer.currentLocation,
+  currentLocation: state.locationsReducer.SelectedLocation,
   selectedLocation: state.locationsReducer.SelectedLocation
 });
 

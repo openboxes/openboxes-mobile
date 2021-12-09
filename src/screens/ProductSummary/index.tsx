@@ -15,7 +15,7 @@ const ProductSummary = () => {
   const navigation = useNavigation<any>();
   const dispatch = useDispatch();
   const location = useSelector(
-    (state: RootState) => state.mainReducer.currentLocation,
+    (state: RootState) => state.locationsReducer.SelectedLocation,
   );
   const [state, setState] = useState<any>({
     productSummary: [],

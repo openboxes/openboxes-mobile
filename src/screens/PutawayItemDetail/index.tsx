@@ -19,7 +19,7 @@ const PutawayItemDetail = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const location = useSelector(
-    (state: RootState) => state.mainReducer.currentLocation,
+    (state: RootState) => state.locationsReducer.SelectedLocation,
   );
   const [state, setState] = useState<any>({
     error: null,

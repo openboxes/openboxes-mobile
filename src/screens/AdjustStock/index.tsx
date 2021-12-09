@@ -92,7 +92,7 @@ const AdjustStock = () => {
   const { item }: any = route.params;
   const navigation = useNavigation();
   const location = useSelector(
-    (state: RootState) => state.mainReducer.currentLocation,
+    (state: RootState) => state.locationsReducer.SelectedLocation,
   );
 
   const [comments, setComments] = useState('');

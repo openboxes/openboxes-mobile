@@ -18,7 +18,7 @@ const InternalLocationDetails = () => {
   const dispatch = useDispatch();
   const route = useRoute();
   const location = useSelector(
-      (state: RootState) => state.mainReducer.currentLocation,
+      (state: RootState) => state.locationsReducer.SelectedLocation,
   );
   const [state, setState] = useState<any>({
     error: null,
