@@ -92,7 +92,6 @@ class OrderDetails extends React.Component<Props, State> {
             </View>
           </View>
           <View style={styles.bottomList}>
-            {console.log(this.state.pickList?.picklistItems)}
             <FlatList
               data={this.state.pickList?.picklistItems}
               ListEmptyComponent={this.renderEmptyContainer()}
