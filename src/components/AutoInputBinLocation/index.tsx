@@ -10,10 +10,9 @@ export default function ({data, selectedData, initValue = ''}: Props) {
   return (
     <View style={styles.mainContainer}>
       <ModalSelector
-        data={data.map((item, index) => ({
-          key: index,
-          label: item,
-          select: index === 0,
+        data={data.map(item => ({
+          key: item.key || item.id,
+          label: item.label || item.name,
         }))}
         initValue=""
         supportedOrientations={['landscape']}
@@ -24,9 +23,9 @@ export default function ({data, selectedData, initValue = ''}: Props) {
         cancelButtonAccessibilityLabel={'Cancel Button'}
         onChange={(option: {label: React.SetStateAction<string>; key: any}) => {
           setQuery(option.label);
-          selectedData?.(option.label, option.key);
+          selectedData?.({ id: option.key, name: option.label });
         }}
-        onCancel={() => setQuery('')}>
+      >
         <TextInput
           style={styles.textInput}
           editable={false}

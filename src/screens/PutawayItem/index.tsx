@@ -1,21 +1,18 @@
+/* eslint-disable complexity */
 /* eslint-disable no-shadow */
-import React, {Component} from 'react';
-import {DispatchProps, Props, State} from './types';
-import {
-  View,
-  Text,
-  ToastAndroid,
-} from 'react-native';
-import {RootState} from '../../redux/reducers';
+import React, { Component } from 'react';
+import { DispatchProps, Props, State } from './types';
+import { View, Text, ToastAndroid, ScrollView } from 'react-native';
+import { RootState } from '../../redux/reducers';
 import styles from './styles';
-import {hideScreenLoading, showScreenLoading} from '../../redux/actions/main';
-import {connect} from 'react-redux';
-import {getBinLocationsAction} from '../../redux/actions/locations';
-import {createPutawayOderAction} from '../../redux/actions/putaways';
+import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
+import { connect } from 'react-redux';
+import { getBinLocationsAction } from '../../redux/actions/locations';
+import { createPutawayOderAction } from '../../redux/actions/putaways';
 import AutoInputBinLocation from '../../components/AutoInputBinLocation';
-import InputSpinner from '../../components/InputSpinner'
+import InputSpinner from '../../components/InputSpinner';
 import InputBox from '../../components/InputBox';
-import Button from "../../components/Button"
+import Button from '../../components/Button';
 
 class PutawayItem extends Component<Props, State> {
   constructor(props: Props) {
@@ -25,7 +22,7 @@ class PutawayItem extends Component<Props, State> {
 
     this.state = {
       selectedLocation: null,
-      quantity: item ? item.quantity : 0,
+      quantity: item ? item.quantity : 0
     };
   }
 
@@ -37,6 +34,7 @@ class PutawayItem extends Component<Props, State> {
     const { selectedLocation, createPutawayOderAction } = this.props;
     const { item } = this.props.route.params;
     const { currentLocation } = this.props;
+
     const data = {
       putawayNumber: '',
       putawayStatus: 'PENDING',
@@ -51,29 +49,37 @@ class PutawayItem extends Component<Props, State> {
           'inventoryItem.id': item['inventoryItem.id'],
           'putawayFacility.id': selectedLocation?.id,
           'currentLocation.id': item['currentLocation.id'],
-          'putawayLocation.id': this.state?.selectedLocation?.id,
-          quantity: this.state?.quantity,
-        },
+          'putawayLocation.id': this.state.selectedLocation?.id || "",
+          quantity: this.state?.quantity
+        }
       ],
       'orderedBy.id': '',
-      sortBy: null,
+      sortBy: null
     };
-
     createPutawayOderAction(data, ({ message, error }) => {
       ToastAndroid.show(message, ToastAndroid.SHORT);
       if (!error) {
-        this.props.navigation.navigate('PutawayCandidates', { forceRefresh: true });
+        this.props.navigation.navigate('PutawayCandidates', {
+          forceRefresh: true
+        });
       }
     });
   };
 
-  changeQuantity = quantity => {
+  changeQuantity = (quantity) => {
     const { item } = this.props.route.params;
     if (quantity > item.quantity) {
       ToastAndroid.showWithGravity(
         'Quantity to put away can not be grater then received quantity',
         ToastAndroid.SHORT,
-        ToastAndroid.CENTER,
+        ToastAndroid.CENTER
+      );
+    }
+    if (quantity <= 0) {
+      ToastAndroid.showWithGravity(
+        'Quantity to put away can not be less than 1',
+        ToastAndroid.SHORT,
+        ToastAndroid.CENTER
       );
     }
 
@@ -86,66 +92,68 @@ class PutawayItem extends Component<Props, State> {
     const { quantity } = this.state;
 
     return (
-      <View style={styles.container}>
-        <View style={styles.childContainer}>
-          <InputBox
-            label="Product Code"
-            value={item['product.productCode']}
-            disabled={true}
-            editable={false}
-          />
-          <InputBox
-            label="Product Name"
-            value={item['product.name']}
-            disabled={true}
-            editable={false}
-          />
-          <InputBox
-            label="Lot Number"
-            value={item['inventoryItem.lotNumber'] ?? 'Default'}
-            disabled={true}
-            editable={false}
-          />
-          <InputBox
-            label="Current Location"
-            value={item['currentLocation.name'] ?? 'Default'}
-            disabled={true}
-            editable={false}
-          />
-          <InputBox
-            label="Received Quantity"
-            value={item['quantity'].toString() ?? '0'}
-            disabled={true}
-            editable={false}
-          />
+      <ScrollView
+        style={{width: '100%', height: '100%'}}
+        keyboardShouldPersistTaps={true}
+      >
+        <View style={styles.container}>
+          <View style={styles.childContainer}>
+            <InputBox
+              disabled
+              label="Product Code"
+              value={item['product.productCode']}
+              editable={false}
+            />
+            <InputBox
+              disabled
+              label="Product Name"
+              value={item['product.name']}
+              editable={false}
+            />
+            <InputBox
+              disabled
+              label="Lot Number"
+              value={item['inventoryItem.lotNumber'] ?? 'Default'}
+              editable={false}
+            />
+            <InputBox
+              disabled
+              label="Current Location"
+              value={item['currentLocation.name'] ?? 'Default'}
+              editable={false}
+            />
+            <InputBox
+              disabled
+              label="Received Quantity"
+              value={item['quantity'].toString() ?? '0'}
+              editable={false}
+            />
 
-          <View style={styles.divider} />
-
-          <View>
-            <Text>Putaway Location</Text>
-            <AutoInputBinLocation
+            <View style={styles.divider} />
+            <View>
+              <Text>Putaway Location</Text>
+              <AutoInputBinLocation
                 placeholder="Default"
-                data={locations.map(({name}) => name)}
-                selectedData={(selectedLocation: any) => {
-              this.setState({selectedLocation});
-            }}
-            />
+                data={locations}
+                selectedData={(selectedLocation: any) => this.setState({ selectedLocation: selectedLocation })}
+              />
+            </View>
+            <View style={styles.inputSpinner}>
+              <InputSpinner
+                title="Quantity to Pick"
+                value={quantity}
+                setValue={this.changeQuantity}
+              />
+            </View>
           </View>
-          <View style={styles.inputSpinner}>
-            <InputSpinner
-              title="Quantity to Pick"
-              value={quantity}
-              setValue={this.changeQuantity}
-            />
-          </View>
+          <Button
+            disabled={quantity > item.quantity || quantity <= 0}
+            style={styles.submitButton}
+            title="Create Putaway"
+            onPress={this.create}
+          />
         </View>
-        <Button
-          disabled={quantity > item.quantity}
-          style={styles.submitButton}
-          title="Create Putaway"
-          onPress={this.create}
-        />
-      </View>
+      </ScrollView>
     );
   }
 }
@@ -153,14 +161,14 @@ class PutawayItem extends Component<Props, State> {
 const mapStateToProps = (state: RootState) => ({
   locations: state.locationsReducer.locations,
   currentLocation: state.mainReducer.currentLocation,
-  selectedLocation: state.locationsReducer.SelectedLocation,
+  selectedLocation: state.locationsReducer.SelectedLocation
 });
 
 const mapDispatchToProps: DispatchProps = {
   getBinLocationsAction,
   createPutawayOderAction,
   showScreenLoading,
-  hideScreenLoading,
+  hideScreenLoading
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(PutawayItem);

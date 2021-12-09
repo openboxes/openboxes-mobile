@@ -7,7 +7,10 @@ import {ScrollView, View} from 'react-native';
 import {List} from 'react-native-paper';
 import showPopup from '../../components/Popup';
 import {hideScreenLoading, showScreenLoading} from '../../redux/actions/main';
-import {getLocationsAction, setCurrentLocationAction,} from '../../redux/actions/locations';
+import {
+  getLocationsAction,
+  setCurrentLocationAction,
+} from '../../redux/actions/locations';
 
 const NO_ORGANIZATION_NAME = 'No organization';
 
@@ -22,8 +25,8 @@ interface StateProps {
 interface DispatchProps {
   getLocationsAction: (callback: (locations: any) => void) => void;
   setCurrentLocationAction: (
-      location: Location,
-      callback: (data: any) => void,
+    location: Location,
+    callback: (data: any) => void,
   ) => void;
   showScreenLoading: (message?: string) => void;
   hideScreenLoading: () => void;
@@ -47,7 +50,7 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
     const actionCallback = (data: any) => {
       if (data?.error) {
         showPopup({
-          title: data.errorMessage ? 'Failed to load locations' : "Error",
+          title: data.errorMessage ? 'Failed to load locations' : 'Error',
           message: data.errorMessage ?? 'Failed to load locations',
           positiveButton: {
             text: 'Retry',
@@ -59,7 +62,7 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
         });
       } else {
         const orgNameAndLocationsDictionary =
-            this.getSortedOrgNameAndLocationsDictionary(data);
+          this.getSortedOrgNameAndLocationsDictionary(data);
         this.setState({
           orgNameAndLocationsDictionary: orgNameAndLocationsDictionary,
         });
@@ -70,46 +73,46 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
   };
 
   getSortedOrgNameAndLocationsDictionary = (
-      locations: Location[],
+    locations: Location[],
   ): Dictionary<Location[]> => {
     let orgNameAndLocationsDictionary = _.groupBy(
-        locations,
-        (location: Location) => {
-          if (location.organizationName) {
-            return location.organizationName;
-          } else {
-            return NO_ORGANIZATION_NAME;
-          }
-        },
+      locations,
+      (location: Location) => {
+        if (location.organizationName) {
+          return location.organizationName;
+        } else {
+          return NO_ORGANIZATION_NAME;
+        }
+      },
     );
     return _.keys(orgNameAndLocationsDictionary)
-        .sort((leftOrgName: string, rightOrgName: string) => {
-          if (
-              leftOrgName == NO_ORGANIZATION_NAME &&
-              rightOrgName == NO_ORGANIZATION_NAME
-          ) {
+      .sort((leftOrgName: string, rightOrgName: string) => {
+        if (
+          leftOrgName === NO_ORGANIZATION_NAME &&
+          rightOrgName === NO_ORGANIZATION_NAME
+        ) {
+          return 0;
+        } else if (leftOrgName === NO_ORGANIZATION_NAME) {
+          return 1;
+        } else if (rightOrgName === NO_ORGANIZATION_NAME) {
+          return -1;
+        } else {
+          if (leftOrgName === rightOrgName) {
             return 0;
-          } else if (leftOrgName == NO_ORGANIZATION_NAME) {
+          } else if (leftOrgName > rightOrgName) {
             return 1;
-          } else if (rightOrgName == NO_ORGANIZATION_NAME) {
-            return -1;
           } else {
-            if (leftOrgName == rightOrgName) {
-              return 0;
-            } else if (leftOrgName > rightOrgName) {
-              return 1;
-            } else {
-              return -1;
-            }
+            return -1;
           }
-        })
-        .reduce(
-            (acc: {}, orgName: string) => ({
-              ...acc,
-              [orgName]: orgNameAndLocationsDictionary[orgName],
-            }),
-            {},
-        );
+        }
+      })
+      .reduce(
+        (acc: {}, orgName: string) => ({
+          ...acc,
+          [orgName]: orgNameAndLocationsDictionary[orgName],
+        }),
+        {},
+      );
   };
 
   setCurrentLocation = async (orgName: string, location: Location) => {
@@ -126,8 +129,8 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
                   text: 'Try Again',
                   callback: () => {
                     this.props.setCurrentLocationAction(
-                        location,
-                        actionCallback,
+                      location,
+                      actionCallback,
                     );
                   },
                 },
@@ -148,42 +151,42 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
 
   render() {
     return (
-        <View style={styles.container}>
-          {/*<Header title="Choose Location" backButtonVisible={false} />*/}
-          <ScrollView style={styles.scrollView}>
-            <List.AccordionGroup>
-              {_.map(
-                  _.keys(this.state.orgNameAndLocationsDictionary),
-                  (orgName: string) => {
-                    return (
-                        <List.Accordion
-                            title={orgName}
-                            id={`orgName_${orgName}`}
-                            left={props => (
-                                <List.Icon {...props} icon="office-building"/>
-                            )}
-                            key={`orgName_${orgName}`}>
-                          {_.map(
-                              this.state.orgNameAndLocationsDictionary[orgName],
-                              location => {
-                                return (
-                                    <List.Item
-                                        title={location.name}
-                                        key={`orgName_${orgName}_locationName_${location.name}`}
-                                        onPress={() =>
-                                            this.setCurrentLocation(orgName, location)
-                                        }
-                                    />
-                                );
-                              },
-                          )}
-                        </List.Accordion>
-                    );
-                  },
-              )}
-            </List.AccordionGroup>
-          </ScrollView>
-        </View>
+      <View style={styles.container}>
+        {/*<Header title="Choose Location" backButtonVisible={false} />*/}
+        <ScrollView style={styles.scrollView}>
+          <List.AccordionGroup>
+            {_.map(
+              _.keys(this.state.orgNameAndLocationsDictionary),
+              (orgName: string) => {
+                return (
+                  <List.Accordion
+                    title={orgName}
+                    id={`orgName_${orgName}`}
+                    left={props => (
+                      <List.Icon {...props} icon="office-building" />
+                    )}
+                    key={`orgName_${orgName}`}>
+                    {_.map(
+                      this.state.orgNameAndLocationsDictionary[orgName],
+                      location => {
+                        return (
+                          <List.Item
+                            title={location.name}
+                            key={`orgName_${orgName}_locationName_${location.name}`}
+                            onPress={() =>
+                              this.setCurrentLocation(orgName, location)
+                            }
+                          />
+                        );
+                      },
+                    )}
+                  </List.Accordion>
+                );
+              },
+            )}
+          </List.AccordionGroup>
+        </ScrollView>
+      </View>
     );
   }
 }

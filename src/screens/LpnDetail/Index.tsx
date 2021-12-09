@@ -7,20 +7,20 @@ import {
   Text,
   Image,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
 import {ContainerShipmentItem} from '../../data/container/ContainerShipmentItem';
 import {
   fetchContainer,
   getContainer,
-  getContainerStatus,
+  getContainerStatus
 } from '../../redux/actions/lpn';
 import {getShipmentPacking} from '../../redux/actions/packing';
 import {connect} from 'react-redux';
 import styles from './styles';
 import Button from '../../components/Button';
-import PrintModal from '../../components/PrintModal';
 import showPopup from '../../components/Popup';
+import PrintModal from '../../components/PrintModal';
 
 import SelectDropdown from 'react-native-select-dropdown';
 const containerStatus = [
@@ -29,7 +29,7 @@ const containerStatus = [
   'LOADED',
   'UNLOADED',
   'UNPACKING',
-  'UNPACKED',
+  'UNPACKED'
 ];
 const renderIcon = () => {
   return (
@@ -52,14 +52,14 @@ class LpnDetail extends React.Component<Props, State> {
     this.state = {
       container: null,
       visible: false,
-      containerDetails: null,
+      containerDetails: null
     };
   }
   getContainerStatusDetails = (id: string) => {
     if (!id) {
       showPopup({
         message: 'id is empty',
-        positiveButton: {text: 'Ok'},
+        positiveButton: {text: 'Ok'}
       });
       return;
     }
@@ -75,9 +75,9 @@ class LpnDetail extends React.Component<Props, State> {
             text: 'Retry',
             callback: () => {
               this.props.getContainerStatus(id, actionCallback);
-            },
+            }
           },
-          negativeButtonText: 'Cancel',
+          negativeButtonText: 'Cancel'
         });
       } else {
         this.showShipmentReadyToPackScreen(data['shipment.id']);
@@ -94,7 +94,7 @@ class LpnDetail extends React.Component<Props, State> {
     if (!id) {
       showPopup({
         message: 'id is empty',
-        positiveButton: {text: 'Ok'},
+        positiveButton: {text: 'Ok'}
       });
       return;
     }
@@ -111,9 +111,9 @@ class LpnDetail extends React.Component<Props, State> {
             text: 'Retry',
             callback: () => {
               this.props.getContainer(id, actionCallback);
-            },
+            }
           },
-          negativeButtonText: 'Cancel',
+          negativeButtonText: 'Cancel'
         });
       } else {
         const {id} = this.props.route.params;
@@ -141,7 +141,7 @@ class LpnDetail extends React.Component<Props, State> {
       const {shipmentNumber} = this.props.route.params;
       data.shipmentNumber = shipmentNumber;
       this.setState({
-        container: data,
+        container: data
       });
     };
     this.props.fetchContainer(id, actionCallback);
@@ -194,7 +194,6 @@ class LpnDetail extends React.Component<Props, State> {
           <SelectDropdown
             data={containerStatus}
             onSelect={(selectedItem, index) => {
-              console.log(selectedItem, index);
               const {id} = this.props.route.params;
               this.getContainerStatusDetails(id);
             }}
@@ -247,53 +246,15 @@ class LpnDetail extends React.Component<Props, State> {
             />
           </View>
         </View>
-        <Text style={styles.value}>{'Status'}</Text>
-        <SelectDropdown
-          data={containerStatus}
-          onSelect={(selectedItem, index) => {
-            console.log(selectedItem, index);
-            const {id} = this.props.route.params;
-            this.getContainerStatusDetails(id);
-          }}
-          defaultValueByIndex={0}
-          renderDropdownIcon={renderIcon}
-          buttonStyle={styles.select}
-          buttonTextAfterSelection={(selectedItem, index) => selectedItem}
-          rowTextForSelection={(item, index) => item}
-        />
-        <FlatList
-          data={this.state.container?.shipmentItems}
-          renderItem={(
-            shipmentItem: ListRenderItemInfo<ContainerShipmentItem>,
-          ) => (
-            <TouchableOpacity
-              style={styles.listItemContainer}
-              onPress={() => this.onTapped(shipmentItem)}>
-              <View style={styles.row}>
-                <View style={styles.col50}>
-                  <Text style={styles.label}>Product Code</Text>
-                  <Text style={styles.value}>
-                    {shipmentItem.item?.inventoryItem?.product?.productCode}
-                  </Text>
-                </View>
-                <View style={styles.col50}>
-                  <Text style={styles.label}>Product</Text>
-                  <Text style={styles.value}>
-                    {shipmentItem.item?.inventoryItem?.product?.name}
-                  </Text>
-                </View>
-              </View>
-              <View style={styles.row}>
-                <View style={styles.col50}>
-                  <Text style={styles.label}>Quantity</Text>
-                  <Text style={styles.value}>{shipmentItem.item.quantity}</Text>
-                </View>
-              </View>
-            </TouchableOpacity>
-          )}
-          keyExtractor={item => item.id}
-          style={styles.list}
-        />
+        <PrintModal
+          visible={this.state.visible}
+          closeModal={this.closeModal}
+          type={'containers'}
+          product={this.state.containerDetails?.product}
+          defaultBarcodeLabelUrl={
+            this.state.containerDetails?.defaultBarcodeLabelUrl
+          }
+      />
       </View>
     );
   }
@@ -303,7 +264,7 @@ const mapDispatchToProps: DispatchProps = {
   fetchContainer,
   getShipmentPacking,
   getContainer,
-  getContainerStatus,
+  getContainerStatus
 };
 
 export default connect(null, mapDispatchToProps)(LpnDetail);

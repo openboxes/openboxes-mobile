@@ -211,10 +211,6 @@ const PutawayItemDetail = () => {
   const formSubmit = () => {
     let errorTitle = '';
     let errorMessage = '';
-    if (state.binToLocation == null) {
-      errorTitle = 'Bin Location!';
-      errorMessage = 'Please scan Bin Location.';
-    }
     if (errorTitle !== '') {
       showPopup({
         title: errorTitle,
@@ -241,7 +237,7 @@ const PutawayItemDetail = () => {
           'product.id': state.putAwayItem?.['product.id'],
           'inventoryItem.id': state.putAwayItem?.['inventoryItem.id'],
           'putawayFacility.id': state.putAwayItem?.['putawayFacility.id'],
-          'putawayLocation.id': state.putAwayItem?.['putawayLocation.id'],
+          'putawayLocation.id': state.putAwayItem?.['putawayLocation.id'] || "",
           quantity: state.putAwayItem?.quantity,
         },
       ],
