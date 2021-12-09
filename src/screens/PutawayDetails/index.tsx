@@ -4,14 +4,14 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
-import React, {ReactElement} from 'react';
+import React, { ReactElement } from 'react';
 import Theme from '../../utils/Theme';
-import {Order} from '../../data/order/Order';
+import { Order } from '../../data/order/Order';
 import PutAway from '../../data/putaway/PutAway';
 import PutAwayItems from '../../data/putaway/PutAwayItems';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import PutAwayItem from '../../components/PutAwayItem';
 
 export interface Props {
@@ -28,28 +28,30 @@ class PutawayDetail extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      putAway: null,
+      putAway: null
     };
   }
 
   componentDidMount() {
-    const {putAway} = this.props.route.params;
+    const { putAway } = this.props.route.params;
     this.setState({
-      putAway: putAway,
+      putAway: putAway
     });
   }
 
   goToPutawayItemDetailScreen = (
     putAway: PutAway,
-    putAwayItem: PutAwayItems,
+    putAwayItem: PutAwayItems
   ) => {
-    this.props.navigation.navigate('PutawayItemDetail', {
-      putAway,
-      putAwayItem: putAwayItem,
-      exit: () => {
-        this.props.navigation.navigate('PutawayList');
-      },
-    });
+    if (putAway?.putawayItems?.length > 1) {
+      this.props.navigation.navigate('PutawayItemDetail', {
+        putAway,
+        putAwayItem: putAwayItem,
+        exit: () => {
+          this.props.navigation.navigate('PutawayList');
+        }
+      });
+    }
   };
 
   render() {
@@ -92,12 +94,12 @@ class PutawayDetail extends React.Component<Props, State> {
                 onItemTapped={() =>
                   this.goToPutawayItemDetailScreen(
                     this.state.putAway,
-                    putAwayItem.item,
+                    putAwayItem.item
                   )
                 }
               />
             )}
-            keyExtractor={item => item.id}
+            keyExtractor={(item) => item.id}
             style={styles.list}
           />
         }
@@ -113,10 +115,10 @@ const styles = StyleSheet.create({
     display: 'flex',
     flex: 1,
     flexDirection: 'column',
-    padding: 8,
+    padding: 8
   },
   list: {
-    width: '100%',
+    width: '100%'
   },
   listItemContainer: {
     display: 'flex',
@@ -127,36 +129,36 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     margin: 4,
     padding: 4,
-    justifyContent: 'center',
+    justifyContent: 'center'
   },
   listItemNameContainer: {
     display: 'flex',
     flexDirection: 'column',
     flex: 0,
-    marginStart: 4,
+    marginStart: 4
   },
   listItemNameLabel: {
     fontSize: 12,
-    color: Theme.colors.placeholder,
+    color: Theme.colors.placeholder
   },
   listItemName: {
     fontSize: 16,
-    color: Theme.colors.text,
+    color: Theme.colors.text
   },
   listItemCategoryContainer: {
     display: 'flex',
     flexDirection: 'column',
     flex: 0,
     marginStart: 4,
-    marginTop: 4,
+    marginTop: 4
   },
   listItemCategoryLabel: {
     fontSize: 12,
-    color: Theme.colors.placeholder,
+    color: Theme.colors.placeholder
   },
   listItemCategory: {
     fontSize: 16,
-    color: Theme.colors.text,
+    color: Theme.colors.text
   },
   row: {
     flexDirection: 'row',
@@ -164,21 +166,21 @@ const styles = StyleSheet.create({
     // borderBottomWidth: 1,
     marginTop: 1,
     padding: 2,
-    width: '100%',
+    width: '100%'
   },
   col50: {
     display: 'flex',
     flexDirection: 'column',
     flex: 0,
     marginStart: 4,
-    width: '50%',
+    width: '50%'
   },
   label: {
     fontSize: 12,
-    color: Theme.colors.placeholder,
+    color: Theme.colors.placeholder
   },
   value: {
     fontSize: 16,
-    color: Theme.colors.text,
-  },
+    color: Theme.colors.text
+  }
 });
