@@ -33,7 +33,6 @@ class PutawayItem extends Component<Props, State> {
   create = () => {
     const { selectedLocation, createPutawayOderAction } = this.props;
     const { item } = this.props.route.params;
-    const { currentLocation } = this.props;
 
     const data = {
       putawayNumber: '',
@@ -150,7 +149,6 @@ class PutawayItem extends Component<Props, State> {
 
 const mapStateToProps = (state: RootState) => ({
   locations: state.locationsReducer.locations,
-  currentLocation: state.locationsReducer.SelectedLocation,
   selectedLocation: state.locationsReducer.SelectedLocation
 });
 

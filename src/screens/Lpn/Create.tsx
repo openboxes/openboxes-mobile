@@ -61,7 +61,7 @@ class CreateLpn extends React.Component<Props, State> {
   };
 
   getShipmentOrigin = () => {
-    const {currentLocation} = this.props;
+    const {selectedLocation} = this.props;
     const actionCallback = (data: any) => {
       if (data?.error) {
         showPopup({
@@ -82,7 +82,7 @@ class CreateLpn extends React.Component<Props, State> {
         });
       }
     };
-    this.props.getShipmentOrigin(currentLocation?.id ?? '', actionCallback);
+    this.props.getShipmentOrigin(selectedLocation?.id ?? '', actionCallback);
   };
 
   saveLpn = () => {
@@ -177,7 +177,7 @@ class CreateLpn extends React.Component<Props, State> {
 }
 
 const mapStateToProps = (state: RootState) => ({
-  currentLocation: state.locationsReducer.SelectedLocation,
+  selectedLocation: state.locationsReducer.SelectedLocation,
 });
 const mapDispatchToProps: DispatchProps = {
   getShipmentPacking,
