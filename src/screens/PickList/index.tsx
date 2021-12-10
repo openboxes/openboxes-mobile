@@ -29,9 +29,10 @@ const PickOrderItem = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const barcodeData = useEventListener();
+  const [pickListItemData, setPickListItemData] = useState<any>([]);
   const [state, setState] = useState<any>({
     error: '',
-    pickListItem: null,
+    pickListItem: [],
     order: null,
     productSearchQuery: '',
     binLocationSearchQuery: '',
@@ -161,6 +162,12 @@ const PickOrderItem = () => {
       );
     }
   };
+
+  useEffect(() => {
+    const data = vm? vm.order.picklist? vm.order.picklist.picklistItems : [] : [];
+    console.log('data', data)
+    setPickListItemData(data);
+  }, [])
 
   const getPickListItem = async () => {
     try {
@@ -360,8 +367,12 @@ const PickOrderItem = () => {
     onBinLocationBarCodeSearchQuerySubmitted();
   };
 
-  const quantityPickedChange = (query: string) => {
-    setState({
+  const quantityPickedChange = (query: string, index: number) => {
+    let picklistItemData = pickListItemData;
+    picklistItemData[index].quantityToPick = parseInt(query); 
+    setPickListItemData([ ...picklistItemData ]);
+    
+setState({
       ...state,
       quantityPicked: query,
     });
@@ -376,6 +387,7 @@ const PickOrderItem = () => {
     state.binLocationName = text;
     setState({...state});
   };
+ 
   return (
     <View style={styles.screenContainer}>
       <View style={styles.swiperView}>
@@ -385,7 +397,7 @@ const PickOrderItem = () => {
           sliderWidth={device.windowWidth}
           sliderHeight={device.windowHeight}
           itemWidth={device.windowWidth - 70}
-          data={vm?.order?.picklist?.picklistItems}
+          data={pickListItemData}
           firstItem={vm.selectedPinkItemIndex ? vm.selectedPinkItemIndex : 0}
           scrollEnabled={true}
           renderItem={({item, index}: ListRenderItemInfo<PicklistItem>) => {
@@ -446,13 +458,21 @@ const PickOrderItem = () => {
                       onChange={onChangeBin}
                       editable={false}
                     />
-                    <InputSpinner
-                      title={"Quantity to Pick"}
-                      setValue={quantityPickedChange}
+                    <InputBox
+                      label={'Quantity to Pick'}
+                      value={item.quantityToPick ? item.quantityToPick.toString() : ''}
+                      // value={state.quantityPicked}
+                      onChange={(value) => quantityPickedChange(value, index)}
+                      disabled={false}
+                      editable={false}
+                      onEndEdit={(value) => quantityPickedChange(value, index)}
+                      keyboard={'number-pad'}
+                      showSelect={false}
                     />
                     <Button title="Pick Item" onPress={formSubmit} />
                   </View>
                 </ScrollView>
+                <View style={styles.bottom}></View>
               </View>
             );
           }}
