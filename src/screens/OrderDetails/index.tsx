@@ -1,15 +1,15 @@
 import React from 'react';
 import styles from './styles';
-import {showScreenLoading, hideScreenLoading} from '../../redux/actions/main';
-import {connect} from 'react-redux';
-import {orderDetailsVMMapper} from './OrderDetailsVMMapper';
+import { showScreenLoading, hideScreenLoading } from '../../redux/actions/main';
+import { connect } from 'react-redux';
+import { orderDetailsVMMapper } from './OrderDetailsVMMapper';
 import Header from '../../components/Header';
-import {FlatList, ListRenderItemInfo, Text, View} from 'react-native';
-import {Item} from '../../data/picklist/Item';
-import {getPickListAction} from '../../redux/actions/orders';
-import {State, DispatchProps, Props} from './types';
+import { FlatList, ListRenderItemInfo, Text, View } from 'react-native';
+import { Item } from '../../data/picklist/Item';
+import { getPickListAction } from '../../redux/actions/orders';
+import { State, DispatchProps, Props } from './types';
 import PickListItem from './PickListItem';
-import {PicklistItem} from "../../data/picklist/PicklistItem";
+import { PicklistItem } from '../../data/picklist/PicklistItem';
 
 class OrderDetails extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -18,24 +18,24 @@ class OrderDetails extends React.Component<Props, State> {
     this.state = {
       pickList: null,
       error: null,
-      pickListItems: [],
+      pickListItems: []
     };
   }
 
   componentDidMount() {
-    const {order} = this.props.route.params;
+    const { order } = this.props.route.params;
     const actionCallback = (data: any) => {
       if (data?.length == 0) {
         this.setState({
           pickList: data,
           error: 'No Picklist found',
-          pickListItems: data,
+          pickListItems: data
         });
       } else {
         this.setState({
           pickList: data,
           error: null,
-          pickListItems: data ? data : [],
+          pickListItems: data ? data : []
         });
       }
     };
@@ -43,7 +43,7 @@ class OrderDetails extends React.Component<Props, State> {
   }
 
   onItemTapped = (item: PicklistItem, index: number) => {
-    const {order} = this.props.route.params;
+    const { order } = this.props.route.params;
     this.props.navigation.navigate('PickOrderItem', {
       order,
       pickListItem: item,
@@ -79,7 +79,9 @@ class OrderDetails extends React.Component<Props, State> {
           <View style={styles.row}>
             <View style={styles.col50}>
               <Text style={styles.label}>Destination</Text>
-              <Text style={styles.value}>{vm.destination.locationNumber}-{vm.destination.name}</Text>
+              <Text style={styles.value}>
+                {vm.destination.locationNumber}-{vm.destination.name}
+              </Text>
             </View>
             <View style={styles.col50}>
               <Text style={styles.label}>Requested Delivery Date</Text>
@@ -95,7 +97,7 @@ class OrderDetails extends React.Component<Props, State> {
             <FlatList
               data={this.state.pickList?.picklistItems}
               ListEmptyComponent={this.renderEmptyContainer()}
-              ListFooterComponent={<View style={styles.bottomList}></View>}
+              ListFooterComponent={<View style={styles.bottomList} />}
               renderItem={(item: ListRenderItemInfo<PicklistItem>) => (
                 <PickListItem
                   item={item.item}
@@ -104,7 +106,7 @@ class OrderDetails extends React.Component<Props, State> {
                   }}
                 />
               )}
-              keyExtractor={item => `${item.id}`}
+              keyExtractor={(item) => `${item.id}`}
               style={styles.list}
             />
           </View>
@@ -117,7 +119,7 @@ class OrderDetails extends React.Component<Props, State> {
 const mapDispatchToProps: DispatchProps = {
   getPickListAction,
   showScreenLoading,
-  hideScreenLoading,
+  hideScreenLoading
 };
 
 export default connect(null, mapDispatchToProps)(OrderDetails);

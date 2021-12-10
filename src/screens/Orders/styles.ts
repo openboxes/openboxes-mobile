@@ -1,4 +1,5 @@
-import {StyleSheet} from 'react-native';
+import { StyleSheet } from 'react-native';
+import Theme from '../../utils/Theme';
 
 export default StyleSheet.create({
   screenContainer: {
@@ -12,6 +13,11 @@ export default StyleSheet.create({
     flexDirection: 'column',
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'center'
   },
+  label: {
+    fontSize: 16,
+    color: Theme.colors.placeholder,
+    marginHorizontal: 10
+  }
 });
