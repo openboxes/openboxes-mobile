@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import styles from './styles';
-import {ListRenderItemInfo, ScrollView, Text, View} from 'react-native';
+import {ListRenderItemInfo, ScrollView, Text, View, ToastAndroid} from 'react-native';
 import {pickListVMMapper} from './PickListVMMapper';
 import {hideScreenLoading} from '../../redux/actions/main';
 import {useDispatch} from 'react-redux';
@@ -231,6 +231,7 @@ const PickOrderItem = () => {
           });
         } else {
           const {order, pickListItem}: any = route.params;
+          ToastAndroid.show('Pick item successfully!!', ToastAndroid.SHORT);
           // @ts-ignore
           navigation.navigate('OrderDetails', {
             order,

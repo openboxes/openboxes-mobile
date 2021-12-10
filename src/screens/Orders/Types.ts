@@ -1,4 +1,4 @@
-import {Order} from '../../data/order/Order';
+import { Order } from '../../data/order/Order';
 
 export interface OwnProps {
   exit: () => void;
@@ -12,7 +12,10 @@ export interface StateProps {
 export interface DispatchProps {
   showScreenLoading: (message?: string) => void;
   hideScreenLoading: () => void;
-  getOrdersAction: (value: string | null, callback: (data: any) => void) => void;
+  getOrdersAction: (
+    value: string | null,
+    callback: (data: any) => void
+  ) => void;
 }
 
 export type Props = OwnProps & StateProps & DispatchProps;
