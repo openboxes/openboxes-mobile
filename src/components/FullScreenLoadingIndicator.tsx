@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   progressMessage: {
-    marginTop: 8,
+    marginTop: 20,
     fontSize: 16,
   },
 });
