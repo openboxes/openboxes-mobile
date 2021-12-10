@@ -19,7 +19,7 @@ import {
 
 function* getOrders(action: any) {
   try {
-    yield put(showScreenLoading('Fetching products'));
+    yield put(showScreenLoading('Loading...'));
     const response: GetOrdersApiResponse = yield call(
       api.getOrders,
       action.payload
@@ -42,7 +42,7 @@ function* getOrders(action: any) {
 
 function* getStockMovement(action: any) {
   try {
-    yield put(showScreenLoading('Fetching getStockMovement'));
+    yield put(showScreenLoading('Loading...'));
     const response: GetOrdersApiResponse = yield call(
       api.getStockMovement,
       action.payload.direction,

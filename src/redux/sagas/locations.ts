@@ -22,7 +22,7 @@ import * as Sentry from '@sentry/react-native';
 
 function* getLocations(action: any) {
   try {
-    yield put(showScreenLoading('Fetching locations'));
+    yield put(showScreenLoading('Please wait...'));
     const response = yield call(api.getLocations);
     yield put({
       type: GET_LOCATIONS_REQUEST_SUCCESS,
@@ -42,7 +42,7 @@ function* getLocations(action: any) {
 
 function* setCurrentLocation(action: any) {
   try {
-    yield put(showScreenLoading('Setting current location'));
+    yield put(showScreenLoading('Please wait...'));
     const response = yield call(
       api.setCurrentLocation,
       action.payload.location
@@ -66,12 +66,7 @@ function* setCurrentLocation(action: any) {
 
 function* searchLocationByLocationNumber(action: any) {
   try {
-    yield put(
-      showScreenLoading(
-        'Fetching locations with locationNumber:' +
-          action.payload.locationNumber
-      )
-    );
+    yield put(showScreenLoading('Please wait...'));
     const response = yield call(
       api.searchLocationByLocationNumber,
       action.payload.locationNumber
@@ -94,7 +89,7 @@ function* searchLocationByLocationNumber(action: any) {
 
 function* getInternalLocations(action: any) {
   try {
-    yield put(showScreenLoading('Fetching InternalLocations'));
+    yield put(showScreenLoading('Please wait...'));
     const response = yield call(api.internalLocations, action.payload.location);
     yield put({
       type: GET_INTERNAL_LOCATIONS_SUCCESS,
@@ -112,7 +107,7 @@ function* getInternalLocations(action: any) {
 
 function* getInternalLocationsDetails(action: any) {
   try {
-    yield put(showScreenLoading('Fetching getInternalLocationsDetails'));
+    yield put(showScreenLoading('Loading...'));
     const response = yield call(
       api.internalLocationsDetails,
       action.payload.id,
@@ -134,7 +129,7 @@ function* getInternalLocationsDetails(action: any) {
 
 function* getInternalLocationDetails(action: any) {
   try {
-    yield put(showScreenLoading('Fetching getInternalLocationsDetails'));
+    yield put(showScreenLoading('Please wait...'));
     const response = yield call(api.internalLocationDetails, action.payload.id);
     yield put({
       type: GET_INTERNAL_LOCATION_DETAIL_SUCCESS,
@@ -151,7 +146,7 @@ function* getInternalLocationDetails(action: any) {
 }
 function* getBinLocations() {
   try {
-    yield put(showScreenLoading('Getting Bin locations'));
+    yield put(showScreenLoading('Please wait.. \n Getting Bin locations'));
     const response = yield call(api.getBinLocations);
     yield put({
       type: GET_BIN_LOCATIONS_REQUEST_SUCCESS,
@@ -165,7 +160,7 @@ function* getBinLocations() {
 
 function* fetchProductSummary(action: any) {
   try {
-    yield put(showScreenLoading('Fetching ProductSummary'));
+    yield put(showScreenLoading('Loading...'));
     const response = yield call(
       api.fetchProductSummary,
       action.payload.location

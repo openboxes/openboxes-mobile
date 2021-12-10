@@ -68,7 +68,7 @@ function* login(action: any) {
 }
 function* logout(action: any) {
   try {
-    yield put(showScreenLoading('Logging in'));
+    yield put(showScreenLoading('Logging out'));
     const data = yield call(api.logout, action.payload.data);
     yield put({
       type: LOGOUT_REQUEST_SUCCESS,

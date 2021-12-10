@@ -108,9 +108,7 @@ function* searchProductGlobally(action: any) {
 
 function* searchProductsByCategory(action: any) {
   try {
-    yield showScreenLoading(
-      `Searching for products in category "${action.payload.category.name}"`
-    );
+    yield showScreenLoading('Searching..');
     const data = yield call(
       api.searchProductsByCategory,
       action.payload.category
@@ -133,7 +131,7 @@ function* searchProductsByCategory(action: any) {
 
 function* searchBarcode(action: any) {
   try {
-    yield showScreenLoading(`Searching Barcode "${action.payload.id}"`);
+    yield showScreenLoading('Searching');
     const response = yield call(api.searchBarcode, action.payload.id);
     yield put({
       type: SEARCH_BARCODE_SUCCESS,
@@ -192,7 +190,7 @@ function* printLabel(action: any) {
 
 function* stockAdjustments(action: any) {
   try {
-    yield put(showScreenLoading('Saving stock adjustment'));
+    yield put(showScreenLoading('Please wait...'));
     const response = yield call(api.stockAdjustments, action.payload.data);
     yield put({
       type: STOCK_ADJUSTMENT_REQUEST_SUCCESS,
