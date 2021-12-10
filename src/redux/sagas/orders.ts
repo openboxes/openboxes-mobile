@@ -1,33 +1,40 @@
-import {takeLatest, put, call} from 'redux-saga/effects';
+import { takeLatest, put, call } from 'redux-saga/effects';
 import {
   GET_ORDERS_REQUEST,
   GET_ORDERS_REQUEST_SUCCESS,
   GET_PICKLIST_REQUEST,
   GET_PICKLIST_ITEM_REQUEST,
-  SUBMIT_PICKLIST_ITEM_PICKUP_REQUEST, GET_STOCK_MOVEMENT_LIST, SUBMIT_PICKLIST_ITEM_PICKUP_SUCCESS
+  SUBMIT_PICKLIST_ITEM_PICKUP_REQUEST,
+  GET_STOCK_MOVEMENT_LIST,
+  SUBMIT_PICKLIST_ITEM_PICKUP_SUCCESS
 } from '../actions/orders';
-import {hideScreenLoading, showScreenLoading} from '../actions/main';
+import { hideScreenLoading, showScreenLoading } from '../actions/main';
 import * as api from '../../apis';
 import GetOrdersApiResponse from '../../data/order/Order';
-import {GET_LOCATIONS_REQUEST_SUCCESS} from '../actions/locations';
-import GetPickListApiResponse from '../../data/picklist/Item';
-import {GetPickListItemApiResponse, GetPickListItemsApiResponse} from "../../data/picklist/PicklistItem";
+import { GET_LOCATIONS_REQUEST_SUCCESS } from '../actions/locations';
+import {
+  GetPickListItemApiResponse,
+  GetPickListItemsApiResponse
+} from '../../data/picklist/PicklistItem';
 
 function* getOrders(action: any) {
   try {
-    yield showScreenLoading('Fetching products');
-    const response: GetOrdersApiResponse = yield call(api.getOrders, action.payload);
+    yield put(showScreenLoading('Fetching products'));
+    const response: GetOrdersApiResponse = yield call(
+      api.getOrders,
+      action.payload
+    );
     yield put({
       type: GET_ORDERS_REQUEST_SUCCESS,
-      payload: response.data,
+      payload: response.data
     });
     yield action.callback(response.data);
-    yield hideScreenLoading();
+    yield put(hideScreenLoading());
   } catch (error) {
     if (error.code != 401) {
       yield action.callback({
         error: true,
-        message: error.message,
+        message: error.message
       });
     }
   }
@@ -35,19 +42,22 @@ function* getOrders(action: any) {
 
 function* getStockMovement(action: any) {
   try {
-    yield showScreenLoading('Fetching getStockMovement');
-    const response: GetOrdersApiResponse = yield call(api.getStockMovement, action.payload.direction, action.payload.status );
+    yield put(showScreenLoading('Fetching getStockMovement'));
+    const response: GetOrdersApiResponse = yield call(
+      api.getStockMovement,
+      action.payload.direction,
+      action.payload.status
+    );
     yield put({
       type: GET_ORDERS_REQUEST_SUCCESS,
-      payload: response.data,
+      payload: response.data
     });
     yield action.callback(response.data);
-    yield hideScreenLoading();
+    yield put(hideScreenLoading());
   } catch (e) {
-    console.log('function* getProducts', e.message);
     yield action.callback({
       error: true,
-      message: e.message,
+      message: e.message
     });
   }
 }
@@ -56,18 +66,18 @@ function* getPickList(action: any) {
   try {
     const response: GetPickListItemsApiResponse = yield call(
       api.getPickList,
-      action.payload.id,
+      action.payload.id
     );
     yield put({
       type: GET_LOCATIONS_REQUEST_SUCCESS,
-      payload: response.data,
+      payload: response.data
     });
     yield action.callback(response.data);
   } catch (error) {
     if (error.code != 401) {
       yield action.callback({
         error: true,
-        message: error.message,
+        message: error.message
       });
     }
   }
@@ -76,18 +86,18 @@ function* getPickListItem(action: any) {
   try {
     const response: GetPickListItemApiResponse = yield call(
       api.getPickListItem,
-      action.payload.id,
+      action.payload.id
     );
     yield put({
       type: GET_LOCATIONS_REQUEST_SUCCESS,
-      payload: response.data,
+      payload: response.data
     });
     yield action.callback(response.data);
   } catch (error) {
     if (error.code != 401) {
       yield action.callback({
         error: true,
-        message: error.message,
+        message: error.message
       });
     }
   }
@@ -96,20 +106,20 @@ function* getPickListItem(action: any) {
 function* submitPickListItem(action: any) {
   try {
     const response: GetPickListItemApiResponse = yield call(
-        api.submitPickListItem,
-        action.payload.id,
-        action.payload.requestBody,
+      api.submitPickListItem,
+      action.payload.id,
+      action.payload.requestBody
     );
     yield put({
       type: SUBMIT_PICKLIST_ITEM_PICKUP_SUCCESS,
-      payload: response,
+      payload: response
     });
     yield action.callback(response);
   } catch (error) {
     if (error.code != 401) {
       yield action.callback({
         error: true,
-        message: error.message,
+        message: error.message
       });
     }
   }

@@ -1,14 +1,15 @@
+/* eslint-disable complexity */
 import React from 'react';
-import {View} from 'react-native';
-import {connect} from 'react-redux';
+import { View } from 'react-native';
+import { connect } from 'react-redux';
 import styles from './styles';
 import showPopup from '../../components/Popup';
 import ProductsSearchHeader from './ProductsSearchHeader';
 import ProductsList from './ProductsList';
 import CentralMessage from './CentralMessage';
 import ProductCategoryPickerPopup from './ProductCategoryPickerPopup';
-import {ProductCategory} from '../../data/product/category/ProductCategory';
-import {DispatchProps, Props, State} from './types';
+import { ProductCategory } from '../../data/product/category/ProductCategory';
+import { DispatchProps, Props, State } from './types';
 // import {VM} from './VM';
 import vmMapper from './VMMapper';
 import ProductsSearchCodeHeader from './ProductsSearchCodeHeader';
@@ -18,10 +19,10 @@ import {
   searchProductByCodeAction,
   searchProductGloballyAction,
   searchProductSByCategoryAction,
-  searchProductsByNameAction,
+  searchProductsByNameAction
 } from '../../redux/actions/products';
-import {hideScreenLoading, showScreenLoading} from '../../redux/actions/main';
-import {RootState} from '../../redux/reducers';
+import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
+import { RootState } from '../../redux/reducers';
 
 class Products extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -36,7 +37,7 @@ class Products extends React.Component<Props, State> {
       searchByName: null,
       searchByProductCode: null,
       searchByCategory: null,
-      barcodeNo: '',
+      barcodeNo: ''
     };
   }
 
@@ -54,20 +55,20 @@ class Products extends React.Component<Props, State> {
             text: 'Retry',
             callback: () => {
               this.props.getProductsAction(actionCallback);
-            },
+            }
           },
-          negativeButtonText: 'Cancel',
+          negativeButtonText: 'Cancel'
         });
       } else {
         if (data.length === 0) {
           this.setState({
             error: 'No products found',
-            allProducts: data,
+            allProducts: data
           });
         } else {
           this.setState({
             error: null,
-            allProducts: data,
+            allProducts: data
           });
         }
       }
@@ -79,13 +80,13 @@ class Products extends React.Component<Props, State> {
 
   onSearchByProductNamePress = () => {
     this.setState({
-      searchBoxVisible: true,
+      searchBoxVisible: true
     });
   };
 
   onSearchByProductCodePress = () => {
     this.setState({
-      searchBoxProductCodeVisible: true,
+      searchBoxProductCodeVisible: true
     });
   };
 
@@ -104,7 +105,7 @@ class Products extends React.Component<Props, State> {
         searchBoxVisible: false,
         searchBoxProductCodeVisible: false,
         searchByName: null,
-        searchByProductCode: null,
+        searchByProductCode: null
       });
     }
   };
@@ -113,7 +114,7 @@ class Products extends React.Component<Props, State> {
     if (!query) {
       showPopup({
         message: 'Search query is empty',
-        positiveButton: {text: 'Ok'},
+        positiveButton: { text: 'Ok' }
       });
       return;
     }
@@ -135,26 +136,26 @@ class Products extends React.Component<Props, State> {
             text: 'Retry',
             callback: () => {
               this.props.searchProductsByNameAction(query, actionCallback);
-            },
+            }
           },
-          negativeButtonText: 'Cancel',
+          negativeButtonText: 'Cancel'
         });
       } else {
         if (data.length === 0) {
           this.setState({
             searchByName: {
               query: query,
-              results: null,
+              results: null
             },
-            error: `No search results found for product name "${query}"`,
+            error: `No search results found for product name "${query}"`
           });
         } else {
           this.setState({
             searchByName: {
               query: query,
-              results: data,
+              results: data
             },
-            error: null,
+            error: null
           });
         }
         this.props.hideScreenLoading();
@@ -168,7 +169,7 @@ class Products extends React.Component<Props, State> {
     if (!query) {
       showPopup({
         message: 'Search query is empty',
-        positiveButton: {text: 'Ok'},
+        positiveButton: { text: 'Ok' }
       });
       return;
     }
@@ -190,26 +191,26 @@ class Products extends React.Component<Props, State> {
             text: 'Retry',
             callback: () => {
               this.props.searchProductByCodeAction(query, actionCallback);
-            },
+            }
           },
-          negativeButtonText: 'Cancel',
+          negativeButtonText: 'Cancel'
         });
       } else {
         if (data.length === 0) {
           this.setState({
             searchByProductCode: {
               query: query,
-              results: null,
+              results: null
             },
-            error: `No search results found for product name "${query}"`,
+            error: `No search results found for product name "${query}"`
           });
         } else {
           this.setState({
             searchByProductCode: {
               query: query,
-              results: data,
+              results: data
             },
-            error: null,
+            error: null
           });
         }
         this.props.hideScreenLoading();
@@ -236,11 +237,11 @@ class Products extends React.Component<Props, State> {
             callback: () => {
               this.props.searchProductSByCategoryAction(
                 category,
-                actionCallback,
+                actionCallback
               );
-            },
+            }
           },
-          negativeButtonText: 'Cancel',
+          negativeButtonText: 'Cancel'
         });
       } else {
         if (data.length === 0) {
@@ -248,16 +249,16 @@ class Products extends React.Component<Props, State> {
             error: `No products found in category "${category.name}"`,
             searchByCategory: {
               category: category,
-              results: null,
-            },
+              results: null
+            }
           });
         } else {
           this.setState({
             error: null,
             searchByCategory: {
               category: category,
-              results: data,
-            },
+              results: data
+            }
           });
         }
         this.props.hideScreenLoading();
@@ -269,13 +270,13 @@ class Products extends React.Component<Props, State> {
 
   showCategoryPickerPopup = () => {
     this.setState({
-      categoryPickerPopupVisible: true,
+      categoryPickerPopupVisible: true
     });
   };
 
   hideCategoryPickerPopup = () => {
     this.setState({
-      categoryPickerPopupVisible: false,
+      categoryPickerPopupVisible: false
     });
   };
 
@@ -284,7 +285,7 @@ class Products extends React.Component<Props, State> {
     if (currState.searchByCategory) {
       this.setState({
         error: null,
-        searchByCategory: null,
+        searchByCategory: null
       });
     } else {
       this.props.navigation.back();
@@ -298,8 +299,8 @@ class Products extends React.Component<Props, State> {
       this.setState({
         searchByProductCode: {
           query: '',
-          results: this.state.allProducts,
-        },
+          results: this.state.allProducts
+        }
       });
       // showPopup({
       //   message: 'Search query is empty',
@@ -319,26 +320,26 @@ class Products extends React.Component<Props, State> {
             text: 'Retry',
             callback: () => {
               this.props.searchProductGloballyAction(query, actionCallback);
-            },
+            }
           },
-          negativeButtonText: 'Cancel',
+          negativeButtonText: 'Cancel'
         });
       } else {
         if (data.length === 0) {
           this.setState({
             searchByProductCode: {
               query: query,
-              results: null,
+              results: null
             },
-            error: `No search results found for product name "${query}"`,
+            error: `No search results found for product name "${query}"`
           });
         } else {
           this.setState({
             searchByProductCode: {
               query: query,
-              results: data,
+              results: data
             },
-            error: null,
+            error: null
           });
         }
         this.props.hideScreenLoading();
@@ -378,8 +379,8 @@ class Products extends React.Component<Props, State> {
         <View style={styles.content}>
           <ProductsList
             products={vm.list}
-            onProductTapped={product => {
-              this.props.navigation.navigate('ProductDetails', {product});
+            onProductTapped={(product) => {
+              this.props.navigation.navigate('ProductDetails', { product });
             }}
           />
           {vm?.list?.length === 0 && (
@@ -397,7 +398,7 @@ class Products extends React.Component<Props, State> {
 }
 
 const mapStateToProps = (state: RootState) => ({
-  products: state.productsReducer,
+  products: state.productsReducer
 });
 
 const mapDispatchToProps: DispatchProps = {
@@ -407,7 +408,7 @@ const mapDispatchToProps: DispatchProps = {
   searchProductGloballyAction,
   searchProductSByCategoryAction,
   showScreenLoading,
-  hideScreenLoading,
+  hideScreenLoading
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Products);
