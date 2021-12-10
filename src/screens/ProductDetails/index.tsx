@@ -46,7 +46,7 @@ class ProductDetails extends React.Component<Props, State> {
   }
 
   getProductDetails(id: string) {
-    this.props.showScreenLoading();
+    this.props.showScreenLoading('');
     if (!id) {
       showPopup({
         message: 'Product id is empty',
@@ -56,7 +56,6 @@ class ProductDetails extends React.Component<Props, State> {
     }
 
     const actionCallback = (data: any) => {
-      console.log(JSON.stringify(data));
       if (data?.error) {
         showPopup({
           title: data.errorMessage
