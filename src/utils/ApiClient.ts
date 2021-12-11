@@ -1,8 +1,9 @@
+/* eslint-disable complexity */
 import axios, {AxiosError, AxiosResponse} from 'axios';
 // import {logout} from '../redux/Dispatchers';
 import {createLogger} from './Logger';
 // import {environment} from './Environment';
-import * as NavigationService from "../NavigationService"
+import * as NavigationService from "../NavigationService";
 import {store} from "../../App";
 import {hideScreenLoading} from "../redux/actions/main";
 const logger = createLogger('ApiClient.ts');
@@ -14,9 +15,9 @@ class _ApiClient {
   setBaseUrl =(url:string)=>{
       this.client = axios.create({
         baseURL: url,
-        withCredentials: true,
+        withCredentials: true
       });
-      this.client.interceptors.response.use(this.handleApiSuccess, this.handleApiFailure)
+      this.client.interceptors.response.use(this.handleApiSuccess, this.handleApiFailure);
   }
 
   async get(endpoint: string, config = this.client.defaults){
@@ -42,11 +43,11 @@ class _ApiClient {
   handleApiFailure = async (error: AxiosError) => {
     let message = error.response?.data?.errorMessage;
     const code = error.response?.status;
-    console.log(444444, error.request)
+    console.log('ERROR :: ', error);
     switch (code) {
       case 401:
-        store.dispatch(hideScreenLoading())
-        NavigationService.navigate('Login')
+        store.dispatch(hideScreenLoading());
+        NavigationService.navigate('Login');
         message = message ?? 'Unauthorized';
         break;
       case 403:
@@ -64,7 +65,7 @@ class _ApiClient {
     }
     return Promise.reject({
       message: message,
-      code: code,
+      code: code
     });
   };
 }

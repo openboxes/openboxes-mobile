@@ -1,25 +1,26 @@
+/* eslint-disable complexity */
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, {useEffect, useState} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import styles from './styles';
 import _ from 'lodash';
-import {View} from 'react-native';
+import { View } from 'react-native';
 import showPopup from '../../components/Popup';
 import InputBox from '../../components/InputBox';
-import {hideScreenLoading} from '../../redux/actions/main';
+import { hideScreenLoading } from '../../redux/actions/main';
 import useEventListener from '../../hooks/useEventListener';
-import {searchProductGloballyAction} from '../../redux/actions/products';
-import {searchLocationByLocationNumber} from '../../redux/actions/locations';
+import { searchProductGloballyAction } from '../../redux/actions/products';
+import { searchLocationByLocationNumber } from '../../redux/actions/locations';
 import Button from '../../components/Button';
-import {updateStockTransfer} from '../../redux/actions/transfers';
-import {RootState} from '../../redux/reducers';
+import { updateStockTransfer } from '../../redux/actions/transfers';
+import { RootState } from '../../redux/reducers';
 
 const InternalTransfer = () => {
   const barcodeData = useEventListener();
   const dispatch = useDispatch();
   const location = useSelector(
-    (state: RootState) => state.mainReducer.currentLocation,
+    (state: RootState) => state.mainReducer.currentLocation
   );
   const [state, setState] = useState<any>({
     productCode: '',
@@ -30,7 +31,7 @@ const InternalTransfer = () => {
     binToLocation: '',
     quantity: '0',
     error: null,
-    searchProductCode: null,
+    searchProductCode: null
   });
 
   useEffect(() => {
@@ -43,7 +44,7 @@ const InternalTransfer = () => {
     data: any,
     query: any,
     actionCallback: any,
-    searchBarcode: any,
+    searchBarcode: any
   ) => {
     showPopup({
       title: data.error.message
@@ -56,17 +57,16 @@ const InternalTransfer = () => {
         text: 'Retry',
         callback: () => {
           dispatch(searchBarcode(query, actionCallback));
-        },
+        }
       },
-      negativeButtonText: 'Cancel',
+      negativeButtonText: 'Cancel'
     });
   };
   const onBarCodeScanned = (query: string) => {
-    // handleBarcodeScan(barcodeNo);
     if (!query) {
       showPopup({
         message: 'Search query is empty',
-        positiveButton: {text: 'Ok'},
+        positiveButton: { text: 'Ok' }
       });
       return;
     }
@@ -77,14 +77,13 @@ const InternalTransfer = () => {
             data,
             query,
             actionCallback,
-            searchProductGloballyAction,
+            searchProductGloballyAction
           );
         } else {
-          console.log(data);
-          if (data.length == 0) {
+          if (data.length === 0) {
             showPopup({
               message: `No search results found for product name "${query}"`,
-              positiveButton: {text: 'Ok'},
+              positiveButton: { text: 'Ok' }
             });
           } else {
             if (data && Object.keys(data).length !== 0) {
@@ -98,10 +97,10 @@ const InternalTransfer = () => {
               } else {
                 showPopup({
                   message: `You have scanned a wrong product barcode "${query}"`,
-                  positiveButton: {text: 'Ok'},
+                  positiveButton: { text: 'Ok' }
                 });
               }
-              setState({...state});
+              setState({ ...state });
             }
           }
           dispatch(hideScreenLoading());
@@ -115,16 +114,15 @@ const InternalTransfer = () => {
             data,
             query,
             actionLocationCallback,
-            searchLocationByLocationNumber,
+            searchLocationByLocationNumber
           );
         } else {
-          if (data.length == 0) {
+          if (data.length === 0) {
             showPopup({
               message: `No search results found for Location name "${query}"`,
-              positiveButton: {text: 'Ok'},
+              positiveButton: { text: 'Ok' }
             });
           } else {
-            console.log(data);
             if (data && Object.keys(data).length !== 0) {
               if (state.binFromLocation === '') {
                 state.fromData = data;
@@ -133,7 +131,7 @@ const InternalTransfer = () => {
                 state.toData = data;
                 state.binToLocation = data.name;
               }
-              setState({...state});
+              setState({ ...state });
             }
           }
           dispatch(hideScreenLoading());
@@ -144,21 +142,20 @@ const InternalTransfer = () => {
   };
 
   const onChangeProduct = (text: string) => {
-    setState({...state, productCode: text});
+    setState({ ...state, productCode: text });
   };
 
   const onChangeFrom = (text: string) => {
-    setState({...state, binFromLocation: text});
+    setState({ ...state, binFromLocation: text });
   };
   const onChangeBin = (text: string) => {
-    setState({...state, binToLocation: text});
+    setState({ ...state, binToLocation: text });
   };
   const onChangeQuantity = (text: string) => {
-    setState({...state, quantity: text});
+    setState({ ...state, quantity: text });
   };
 
   const onTransfer = () => {
-    // dispatch(showScreenLoading("Update Transfer"))
     const request: any = {
       status: 'COMPLETED',
       stockTransferNumber: '',
@@ -172,67 +169,65 @@ const InternalTransfer = () => {
           'location.id': location.id,
           'originBinLocation.id': state.fromData.id,
           'destinationBinLocation.id': state.toData.id,
-          quantity: state.quantity,
-        },
-      ],
+          quantity: state.quantity
+        }
+      ]
     };
-    // const actionCallback = (data: any) => {
-    //     if (data?.error) {
-    //         showPopup({
-    //             title: data.error.message
-    //                 ? `Failed to update`
-    //                 : null,
-    //             message:
-    //                 data.error.message ??
-    //                 `Failed to update`,
-    //             positiveButton: {
-    //                 text: 'Retry',
-    //                 callback: () => {
-    //                     dispatch(updateStockTransfer(request));
-    //                 },
-    //             },
-    //             negativeButtonText: 'Cancel',
-    //         });
-    //     } else {
-    //         if (data.length == 0) {
-    //             showPopup({
-    //                 message: `No search results`,
-    //                 positiveButton: {text: 'Ok'},
-    //             });
-    //         }
-    //         dispatch(hideScreenLoading());;
-    //     }
-    // };
-    dispatch(updateStockTransfer(request));
+    const actionCallback = (data: any) => {
+      console.log('### DATA ::', data);
+      if (data?.error) {
+        showPopup({
+          title: data.error.message ? 'Failed to update' : null,
+          message: data.error.message ?? 'Failed to update',
+          positiveButton: {
+            text: 'Retry',
+            callback: () => {
+              dispatch(updateStockTransfer(request, actionCallback));
+            }
+          },
+          negativeButtonText: 'Cancel'
+        });
+      } else {
+        if (data.length === 0) {
+          showPopup({
+            message: 'No search results',
+            positiveButton: { text: 'Ok' }
+          });
+          // eslint-disable-next-line prettier/prettier
+            }
+        dispatch(hideScreenLoading());
+      }
+    };
+    dispatch(updateStockTransfer(request, actionCallback));
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.from}>
         <InputBox
+          disabled
           value={state.productCode}
-          disabled={true}
-          onChange={onChangeProduct}
           label={'Product Code'}
+          onChange={onChangeProduct}
         />
         <InputBox
+          disabled
           value={state.binFromLocation}
           label={'From'}
-          disabled={true}
           onChange={onChangeFrom}
         />
         <InputBox
+          disabled
           value={state.binToLocation}
-          disabled={true}
-          onChange={onChangeBin}
           label={'To'}
+          onChange={onChangeBin}
         />
         <InputBox
+          disabled
           label={'Quantity to transfer'}
           value={state.quantity}
-          onChange={onChangeQuantity}
-          disabled={true}
           keyboard={'number-pad'}
+          onChange={onChangeQuantity}
         />
       </View>
       <View style={styles.bottom}>
@@ -240,7 +235,7 @@ const InternalTransfer = () => {
           title="TRANSFER"
           onPress={onTransfer}
           style={{
-            marginTop: 8,
+            marginTop: 8
           }}
         />
       </View>

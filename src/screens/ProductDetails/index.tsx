@@ -1,17 +1,19 @@
+/* eslint-disable complexity */
+/* eslint-disable prettier/prettier */
 /* eslint-disable react-native/no-inline-styles */
 import React from 'react';
-import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import styles from './styles';
 import PrintModal from '../../components/PrintModal';
 import Refresh from '../../components/Refresh';
-import {DispatchProps, Props, State} from './types';
-import {vmMapper} from './VMMapper';
-import {getProductByIdAction} from '../../redux/actions/products';
-import {hideScreenLoading, showScreenLoading} from '../../redux/actions/main';
-import {connect} from 'react-redux';
+import { DispatchProps, Props, State } from './types';
+import { vmMapper } from './VMMapper';
+import { getProductByIdAction } from '../../redux/actions/products';
+import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
+import { connect } from 'react-redux';
 import showPopup from '../../components/Popup';
-import {RootState} from '../../redux/reducers';
-import {Card} from 'react-native-paper';
+import { RootState } from '../../redux/reducers';
+import { Card } from 'react-native-paper';
 import RenderData from '../../components/RenderData';
 import Button from '../../components/Button';
 
@@ -20,24 +22,24 @@ class ProductDetails extends React.Component<Props, State> {
     super(props);
     this.state = {
       visible: false,
-      productDetails: {},
+      productDetails: {}
     };
   }
 
   getProduct = () => {
-    const {product} = this.props.route.params;
+    const { product } = this.props.route.params;
     console.log(product);
     this.getProductDetails(product.id);
   };
 
   closeModal = () => {
-    this.setState({visible: false});
+    this.setState({ visible: false });
   };
 
   handleClick = () => {
-    const {product} = this.props.route.params;
+    const { product } = this.props.route.params;
     this.props.getProductByIdAction(product.productCode, data => {
-      this.setState({visible: true});
+      this.setState({ visible: true });
     });
   };
 
@@ -50,7 +52,7 @@ class ProductDetails extends React.Component<Props, State> {
     if (!id) {
       showPopup({
         message: 'Product id is empty',
-        positiveButton: {text: 'Ok'},
+        positiveButton: { text: 'Ok' }
       });
       return;
     }
@@ -68,12 +70,12 @@ class ProductDetails extends React.Component<Props, State> {
             text: 'Retry',
             callback: () => {
               this.props.getProductByIdAction(id, actionCallback);
-            },
+            }
           },
-          negativeButtonText: 'Cancel',
+          negativeButtonText: 'Cancel'
         });
       } else {
-        this.setState({productDetails: data});
+        this.setState({ productDetails: data });
       }
     };
     this.props.hideScreenLoading();
@@ -85,15 +87,15 @@ class ProductDetails extends React.Component<Props, State> {
       item,
       imageUrl:
         this.state.productDetails?.defaultImageUrl ??
-        'https://reactnative.dev/img/tiny_logo.png',
+        'https://reactnative.dev/img/tiny_logo.png'
     });
   };
 
   renderListItem = (item: any, index: any) => (
     <TouchableOpacity
       key={index}
-      onPress={() => this.navigateToDetails(item)}
-      style={styles.itemView}>
+      style={styles.itemView}
+      onPress={() => this.navigateToDetails(item)}>
       <Card>
         <Card.Content>
           <View style={styles.rowItem}>
@@ -128,12 +130,12 @@ class ProductDetails extends React.Component<Props, State> {
   render() {
     const vm = vmMapper(this.state.productDetails, this.state);
     const product = this.props.selectedProduct;
-    const {visible} = this.state;
+    const { visible } = this.state;
     return (
       <View
         style={{
           flexDirection: 'column',
-          flex: 1,
+          flex: 1
         }}>
         <PrintModal
           visible={visible}
@@ -146,14 +148,14 @@ class ProductDetails extends React.Component<Props, State> {
           <Refresh onRefresh={this.getProduct}>
             <View style={styles.header}>
               <View style={styles.rowItem}>
-                <View style={{width: '75%'}}>
+                <View style={{ width: '75%' }}>
                   <Text style={styles.name}>{vm.productCode}</Text>
                   <Text style={styles.name}>{vm.name}</Text>
                 </View>
-                <View style={{width: '25%', alignItems: 'flex-end', flex: 1}}>
+                <View style={{ width: '25%', alignItems: 'flex-end', flex: 1 }}>
                   <Image
-                    style={{width: 50, height: 50, resizeMode: 'contain'}}
-                    source={{uri: vm.defaultImageUrl}}
+                    style={{ width: 50, height: 50, resizeMode: 'contain' }}
+                    source={{ uri: vm.defaultImageUrl }}
                   />
                 </View>
               </View>
@@ -280,12 +282,12 @@ class ProductDetails extends React.Component<Props, State> {
 }
 
 const mapStateToProps = (state: RootState) => ({
-  selectedProduct: state.productsReducer.selectedProduct,
+  selectedProduct: state.productsReducer.selectedProduct
 });
 const mapDispatchToProps: DispatchProps = {
   getProductByIdAction,
   showScreenLoading,
-  hideScreenLoading,
+  hideScreenLoading
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProductDetails);
