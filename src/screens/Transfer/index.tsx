@@ -1,7 +1,8 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styles from './styles';
-import { ScrollView, View } from 'react-native';
+import { ScrollView, View, ToastAndroid} from 'react-native';
 import InputBox from '../../components/InputBox';
 import Button from '../../components/Button';
 import { RootState } from '../../redux/reducers';
@@ -124,60 +125,60 @@ const Transfer = () => {
       <View style={styles.container}>
         <View style={styles.from}>
           <InputBox
-            value={item?.product?.productCode}
-            disabled={true}
+            disabled
             editable={false}
             label={'Product Code'}
+            value={item?.product?.productCode}
           />
           <InputBox
-            value={item?.inventoryItem?.lotNumber ?? 'Default'}
-            disabled={true}
+            disabled
             editable={false}
             label={'Lot Number'}
+            value={item?.inventoryItem?.lotNumber ?? 'Default'}
           />
           <InputBox
-            value={item?.inventoryItem?.expirationDate ?? 'Never'}
-            disabled={true}
+            disabled
             editable={false}
             label={'Expiration Date'}
+            value={item?.inventoryItem?.expirationDate ?? 'Never'}
           />
           <InputBox
+            disabled
             value={item?.binLocation?.name ?? 'Default'}
             label={'From'}
-            disabled={true}
             editable={false}
           />
           <InputBox
+            disabled
             label={'Quantity Available to Transfer'}
             value={item?.quantityAvailableToPromise?.toString()}
-            disabled={true}
             editable={false}
           />
           <InputBox
             label={'Quantity to transfer'}
             value={state.quantity}
-            onChange={onChangeQuantity}
             disabled={false}
             editable={false}
             keyboard={'number-pad'}
+            onChange={onChangeQuantity}
           />
           <InputBox
             label={'Bin Location'}
             value={state.binToLocation}
-            onEndEdit={binLocationSearchQueryChange}
-            onChange={onChangeBin}
             disabled={false}
             editable={false}
             keyboard={'default'}
+            onChange={onChangeBin}
+            onEndEdit={binLocationSearchQueryChange}
           />
         </View>
         <View style={styles.bottom}>
           <Button
             title="TRANSFER"
-            onPress={onTransfer}
             style={{
               marginTop: 8
             }}
+            onPress={onTransfer}
           />
         </View>
       </View>
