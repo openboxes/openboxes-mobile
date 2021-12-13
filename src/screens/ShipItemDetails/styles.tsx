@@ -61,12 +61,10 @@ export default StyleSheet.create({
     marginTop: 10
   },
   bottom: {
-    width: '100%',
-    alignItems: 'center',
+    alignSelf: 'center',
     justifyContent: 'center',
-    height: ratio.height * 100,
-    position: 'absolute',
-    bottom: 10
+    position:"absolute",
+    bottom:10
   },
   textContainer: {
     flexDirection: 'column',
