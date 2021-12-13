@@ -17,6 +17,7 @@ function PrintModal(props: Props) {
       type: type,
       barcodeId: defaultBarcodeLabelUrl['id']
     });
+    props.closeModal();
   };
 
   const onChangeLabel = (text: string) => {
