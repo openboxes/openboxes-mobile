@@ -1,18 +1,15 @@
 import React from 'react';
 import showPopup from '../../components/Popup';
-import { saveAndUpdateLpn } from '../../redux/actions/lpn';
-import { DispatchProps, Props } from './Types';
-import { connect } from 'react-redux';
-import { Text, View } from 'react-native';
-import { Order } from '../../data/order/Order';
+import {saveAndUpdateLpn} from '../../redux/actions/lpn';
+import {DispatchProps, Props} from './Types';
+import {connect} from 'react-redux';
+import {Text, View} from 'react-native';
+import {Order} from '../../data/order/Order';
 import styles from './styles';
 import InputBox from '../../components/InputBox';
 import Button from '../../components/Button';
-import {
-  getShipmentOrigin,
-  getShipmentPacking
-} from '../../redux/actions/packing';
-import { RootState } from '../../redux/reducers';
+import {getShipmentOrigin, getShipmentPacking,} from '../../redux/actions/packing';
+import {RootState} from '../../redux/reducers';
 import AutoInputInternalLocation from '../../components/AutoInputInternalLocation';
 
 export interface State {
@@ -28,7 +25,7 @@ export interface State {
 class CreateLpn extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    const { id, shipmentDetail } = this.props?.route?.params ?? '';
+    const {id, shipmentDetail} = this.props?.route?.params ?? '';
     this.state = {
       stockMovements: shipmentDetail?.shipmentNumber || null,
       stockMovement: shipmentDetail?.shipmentNumber || null,
@@ -37,7 +34,7 @@ class CreateLpn extends React.Component<Props, State> {
 
       name: null,
       containerNumber: null,
-      stockMovementId: id || null
+      stockMovementId: id || null,
     };
   }
 
@@ -49,11 +46,11 @@ class CreateLpn extends React.Component<Props, State> {
     const actionCallback = (data: any) => {
       if (data?.error) {
         showPopup({
-          title: data.errorMessage ? 'Container' : 'Error',
+          title: data.errorMessage ? 'Container' : "Error",
           message: data.errorMessage ?? 'Failed to fetch Container List',
           positiveButton: {
-            text: 'Ok'
-          }
+            text: 'Ok',
+          },
         });
       } else {
         let stockMovementList: string[] = [];
@@ -63,15 +60,15 @@ class CreateLpn extends React.Component<Props, State> {
   };
 
   getShipmentOrigin = () => {
-    const { currentLocation } = this.props;
+    const {selectedLocation} = this.props;
     const actionCallback = (data: any) => {
       if (data?.error) {
         showPopup({
-          title: data.errorMessage ? 'StockMovements' : 'Error',
+          title: data.errorMessage ? 'StockMovements' : "Error",
           message: data.errorMessage ?? 'Failed to fetch StockMovements',
           positiveButton: {
-            text: 'Ok'
-          }
+            text: 'Ok',
+          },
         });
       } else {
         let stockMovementList: string[] = [];
@@ -84,7 +81,7 @@ class CreateLpn extends React.Component<Props, State> {
         });
       }
     };
-    this.props.getShipmentOrigin(currentLocation?.id ?? '', actionCallback);
+    this.props.getShipmentOrigin(selectedLocation?.id ?? '', actionCallback);
   };
 
   saveLpn = () => {
@@ -92,7 +89,7 @@ class CreateLpn extends React.Component<Props, State> {
       name: this.state.name,
       containerNumber: this.state.containerNumber,
       'containerType.id': '2',
-      'shipment.id': this.state.stockMovementId
+      'shipment.id': this.state.stockMovementId,
     };
     const actionCallback = (data: any) => {
       if (data?.error) {
@@ -179,7 +176,7 @@ class CreateLpn extends React.Component<Props, State> {
 }
 
 const mapStateToProps = (state: RootState) => ({
-  currentLocation: state.mainReducer.currentLocation
+  selectedLocation: state.locationsReducer.SelectedLocation,
 });
 const mapDispatchToProps: DispatchProps = {
   getShipmentPacking,
