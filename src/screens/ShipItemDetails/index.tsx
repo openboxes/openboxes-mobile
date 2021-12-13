@@ -2,7 +2,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/jsx-sort-props */
 import React, { useEffect, useState } from 'react';
-import { Text, View } from 'react-native';
+import { Text, View, ToastAndroid } from 'react-native';
 import styles from './styles';
 import Button from '../../components/Button';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -91,6 +91,11 @@ const ShipItemDetails = () => {
           negativeButtonText: 'Cancel'
         });
       } else {
+        ToastAndroid.showWithGravity(
+          'Shipment Detail Submitted successfully!',
+          ToastAndroid.SHORT,
+          ToastAndroid.CENTER
+        );
         setState({ ...state });
         navigation.navigate('OutboundStockDetails', {
           shipmentId: item.shipment.id
