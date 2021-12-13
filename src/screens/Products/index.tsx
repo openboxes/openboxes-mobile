@@ -73,7 +73,7 @@ class Products extends React.Component<Props, State> {
       }
       this.props.hideScreenLoading();
     };
-    this.props.showScreenLoading('Lodging..');
+    this.props.showScreenLoading('Loading..');
     this.props.getProductsAction(actionCallback);
   };
 

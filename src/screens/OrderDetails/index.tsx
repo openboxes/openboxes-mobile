@@ -91,11 +91,10 @@ class OrderDetails extends React.Component<Props, State> {
               <Text style={styles.label}>Picklist</Text>
             </View>
           </View>
-          <View style={styles.row}>
+          <View style={styles.bottomList}>
             <FlatList
               data={this.state.pickList?.picklistItems}
               ListEmptyComponent={this.renderEmptyContainer()}
-              ListFooterComponent={<View style={styles.bottomList}></View>}
               renderItem={(item: ListRenderItemInfo<PicklistItem>) => (
                 <PickListItem
                   item={item.item}

@@ -160,6 +160,6 @@ export default StyleSheet.create({
     color: Theme.colors.text,
   },
   bottomList:{
-    paddingBottom:150
+    flex:1
   }
 });

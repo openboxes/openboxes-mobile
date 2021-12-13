@@ -55,8 +55,7 @@ export default StyleSheet.create({
     padding:10
   },
   bottom: {
-    width: '100%',
-    alignItems: 'center',
+    alignSelf: 'center',
     justifyContent: 'center',
     height: ratio.height * 100,
     bottom: 10
