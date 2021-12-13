@@ -2,11 +2,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/jsx-sort-props */
 import React, { useEffect, useState } from 'react';
-import { Text, View } from 'react-native';
+import { Text, View, ToastAndroid } from 'react-native';
 import styles from './styles';
 import Button from '../../components/Button';
-
-import InputBox from '../../components/InputBox';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
 import showPopup from '../../components/Popup';
@@ -70,8 +68,8 @@ const ShipItemDetails = () => {
 
   const submitShipmentDetail = (id: string) => {
     const request = {
-      'container.id': state.container.id,
-      quantityToPack: state.quantityPicked
+      'container.id': state?.container?.id,
+      quantityToPack: state?.quantityPicked
     };
     const callback = (data: any) => {
       if (data?.error) {
@@ -87,6 +85,11 @@ const ShipItemDetails = () => {
           negativeButtonText: 'Cancel'
         });
       } else {
+        ToastAndroid.showWithGravity(
+          'Shipment Detail Submitted successfully!',
+          ToastAndroid.SHORT,
+          ToastAndroid.CENTER
+        );
         setState({ ...state });
         navigation.navigate('OutboundStockDetails', {
           shipmentId: item.shipment.id

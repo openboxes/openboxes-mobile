@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styles from './styles';
-import { ScrollView, View, ToastAndroid} from 'react-native';
+import { ScrollView, View } from 'react-native';
 import InputBox from '../../components/InputBox';
 import Button from '../../components/Button';
 import { RootState } from '../../redux/reducers';
