@@ -22,7 +22,7 @@ import InputBox from '../../components/InputBox';
 import Carousel from 'react-native-snap-carousel';
 import {device} from '../../constants';
 import {PicklistItem} from '../../data/picklist/PicklistItem';
-import InputSpinner from '../../components/InputSpinner';
+import * as Sentry from '@sentry/react-native';
 
 const PickOrderItem = () => {
   const route = useRoute();
@@ -44,7 +44,6 @@ const PickOrderItem = () => {
     binLocationName: '',
   });
   const vm = pickListVMMapper(route.params);
-  console.log('VM', vm);
   useEffect(() => {
     getPickListItem();
   }, []);
@@ -95,7 +94,6 @@ const PickOrderItem = () => {
             searchProductGloballyAction,
           );
         } else {
-          console.log(data);
           if (data.length == 0) {
             showPopup({
               message: `No search results found for product name "${query}"`,
@@ -140,7 +138,6 @@ const PickOrderItem = () => {
               positiveButton: {text: 'Ok'},
             });
           } else {
-            console.log(data);
             if (data && Object.keys(data).length !== 0) {
               if (state.binLocation === '' || state.binLocation === data.name) {
                 state.binLocation = data;
@@ -165,7 +162,6 @@ const PickOrderItem = () => {
 
   useEffect(() => {
     const data = vm? vm.order.picklist? vm.order.picklist.picklistItems : [] : [];
-    console.log('data', data)
     setPickListItemData(data);
   }, [])
 
@@ -179,14 +175,11 @@ const PickOrderItem = () => {
         currentState.binLocationName = data?.['binLocation.name'] ?? 'Default';
         currentState.lotNumber = data?.lotNumber ?? 'Default';
         currentState.pickListItem = data;
-        console.log(currentState);
         setState(currentState);
       };
-      console.debug('pickListItem?.id::');
-      console.debug(pickListItem?.id);
       dispatch(getPickListItemAction(pickListItem?.id, actionCallback));
     } catch (e) {
-      console.log('pickListItem?.id::', e.message);
+      Sentry.captureException('Error while getPickListItem', e.message);
     }
   };
 

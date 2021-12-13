@@ -1,15 +1,18 @@
 import React from 'react';
 import showPopup from '../../components/Popup';
-import {saveAndUpdateLpn} from '../../redux/actions/lpn';
-import {DispatchProps, Props} from './Types';
-import {connect} from 'react-redux';
-import {Text, View} from 'react-native';
-import {Order} from '../../data/order/Order';
+import { saveAndUpdateLpn } from '../../redux/actions/lpn';
+import { DispatchProps, Props } from './Types';
+import { connect } from 'react-redux';
+import { Text, View } from 'react-native';
+import { Order } from '../../data/order/Order';
 import styles from './styles';
 import InputBox from '../../components/InputBox';
 import Button from '../../components/Button';
-import {getShipmentOrigin, getShipmentPacking,} from '../../redux/actions/packing';
-import {RootState} from '../../redux/reducers';
+import {
+  getShipmentOrigin,
+  getShipmentPacking
+} from '../../redux/actions/packing';
+import { RootState } from '../../redux/reducers';
 import AutoInputInternalLocation from '../../components/AutoInputInternalLocation';
 
 export interface State {
@@ -25,7 +28,7 @@ export interface State {
 class CreateLpn extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    const {id, shipmentDetail} = this.props?.route?.params ?? '';
+    const { id, shipmentDetail } = this.props?.route?.params ?? '';
     this.state = {
       stockMovements: shipmentDetail?.shipmentNumber || null,
       stockMovement: shipmentDetail?.shipmentNumber || null,
@@ -34,12 +37,11 @@ class CreateLpn extends React.Component<Props, State> {
 
       name: null,
       containerNumber: null,
-      stockMovementId: id || null,
+      stockMovementId: id || null
     };
   }
 
   componentDidMount() {
-
     this.getShipmentOrigin();
   }
 
@@ -47,11 +49,11 @@ class CreateLpn extends React.Component<Props, State> {
     const actionCallback = (data: any) => {
       if (data?.error) {
         showPopup({
-          title: data.errorMessage ? 'Container' : "Error",
+          title: data.errorMessage ? 'Container' : 'Error',
           message: data.errorMessage ?? 'Failed to fetch Container List',
           positiveButton: {
-            text: 'Ok',
-          },
+            text: 'Ok'
+          }
         });
       } else {
         let stockMovementList: string[] = [];
@@ -61,15 +63,15 @@ class CreateLpn extends React.Component<Props, State> {
   };
 
   getShipmentOrigin = () => {
-    const {currentLocation} = this.props;
+    const { currentLocation } = this.props;
     const actionCallback = (data: any) => {
       if (data?.error) {
         showPopup({
-          title: data.errorMessage ? 'StockMovements' : "Error",
+          title: data.errorMessage ? 'StockMovements' : 'Error',
           message: data.errorMessage ?? 'Failed to fetch StockMovements',
           positiveButton: {
-            text: 'Ok',
-          },
+            text: 'Ok'
+          }
         });
       } else {
         let stockMovementList: string[] = [];
@@ -78,7 +80,7 @@ class CreateLpn extends React.Component<Props, State> {
         });
         this.setState({
           stockMovementList: stockMovementList,
-          stockMovements: data,
+          stockMovements: data
         });
       }
     };
@@ -90,7 +92,7 @@ class CreateLpn extends React.Component<Props, State> {
       name: this.state.name,
       containerNumber: this.state.containerNumber,
       'containerType.id': '2',
-      'shipment.id': this.state.stockMovementId,
+      'shipment.id': this.state.stockMovementId
     };
     const actionCallback = (data: any) => {
       if (data?.error) {
@@ -101,15 +103,15 @@ class CreateLpn extends React.Component<Props, State> {
             text: 'Retry',
             callback: () => {
               this.props.saveAndUpdateLpn(requestBody, actionCallback);
-            },
+            }
           },
-          negativeButtonText: 'Cancel',
+          negativeButtonText: 'Cancel'
         });
       } else {
         if (data && Object.keys(data).length !== 0) {
           this.props.navigation.navigate('LpnDetail', {
             id: data.id,
-            shipmentNumber: this.state.stockMovement,
+            shipmentNumber: this.state.stockMovement
           });
         }
       }
@@ -119,70 +121,70 @@ class CreateLpn extends React.Component<Props, State> {
 
   onChangeName = (text: string) => {
     this.setState({
-      name: text,
+      name: text
     });
   };
 
   onChangeContainerNumber = (text: string) => {
     this.setState({
-      containerNumber: text,
+      containerNumber: text
     });
   };
 
-
   render() {
     return (
-        <View style={styles.container}>
-          <View style={styles.from}>
-            <Text style={styles.label}>Shipment Number</Text>
-            <AutoInputInternalLocation
-                label="AutoInputInternalLocation"
-                data={this.state.stockMovementList}
-                selectedData={(selectedItem: any, index: number) => {
-                  const stockMovement = this.state.stockMovements?.find(
-                      i => i.shipmentNumber === selectedItem,
-                  );
-                  this.setState({
-                    stockMovement: selectedItem,
-                    stockMovementId: stockMovement?.id,
-                  });
-                }} initValue={this.state.stockMovements}
-            />
-            <InputBox
-                value={this.state.name}
-                onChange={this.onChangeName}
-                editable={false}
-                label={'Name'}
-            />
-            <InputBox
-                value={this.state.containerNumber}
-                onChange={this.onChangeContainerNumber}
-                editable={false}
-                label={'Container Number'}
-            />
-          </View>
-          <View style={styles.bottom}>
-            <Button
-                title="Submit"
-                onPress={this.saveLpn}
-                // eslint-disable-next-line react-native/no-inline-styles
-                style={{
-                  marginTop: 8,
-                }}
-            />
-          </View>
+      <View style={styles.container}>
+        <View style={styles.from}>
+          <Text style={styles.label}>Shipment Number</Text>
+          <AutoInputInternalLocation
+            label="AutoInputInternalLocation"
+            data={this.state.stockMovementList}
+            selectedData={(selectedItem: any, index: number) => {
+              const stockMovement = this.state.stockMovements?.find(
+                (i) => i.shipmentNumber === selectedItem
+              );
+              this.setState({
+                stockMovement: selectedItem,
+                stockMovementId: stockMovement?.id
+              });
+            }}
+            initValue={this.state.stockMovements}
+          />
+          <InputBox
+            value={this.state.name}
+            onChange={this.onChangeName}
+            editable={false}
+            label={'Name'}
+          />
+          <InputBox
+            value={this.state.containerNumber}
+            onChange={this.onChangeContainerNumber}
+            editable={false}
+            label={'Container Number'}
+          />
         </View>
+        <View style={styles.bottom}>
+          <Button
+            title="Submit"
+            onPress={this.saveLpn}
+            // eslint-disable-next-line react-native/no-inline-styles
+            style={{
+              marginTop: 8
+            }}
+          />
+        </View>
+      </View>
     );
   }
 }
 
 const mapStateToProps = (state: RootState) => ({
-  currentLocation: state.mainReducer.currentLocation,
+  currentLocation: state.mainReducer.currentLocation
 });
 const mapDispatchToProps: DispatchProps = {
   getShipmentPacking,
   getShipmentOrigin,
-  saveAndUpdateLpn,
+  saveAndUpdateLpn
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(CreateLpn);
