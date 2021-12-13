@@ -161,7 +161,7 @@ const PickOrderItem = () => {
   };
 
   useEffect(() => {
-    const data = vm? vm.order.picklist? vm.order.picklist.picklistItems : [] : [];
+    const data = vm? vm.order.picklist? vm.order.picklist.picklistItems : [];
     setPickListItemData(data);
   }, [])
 
