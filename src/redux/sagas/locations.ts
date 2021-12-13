@@ -146,7 +146,7 @@ function* getInternalLocationDetails(action: any) {
 }
 function* getBinLocations() {
   try {
-    yield put(showScreenLoading('Please wait.. \n Getting Bin locations'));
+    yield put(showScreenLoading('Please wait..'));
     const response = yield call(api.getBinLocations);
     yield put({
       type: GET_BIN_LOCATIONS_REQUEST_SUCCESS,
