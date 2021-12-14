@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Text, View} from 'react-native';
+import {Text, View, ScrollView} from 'react-native';
 import styles from './styles';
 import showPopup from '../../components/Popup';
 import {useNavigation, useRoute} from '@react-navigation/native';
@@ -299,6 +299,8 @@ const PutawayItemDetail = () => {
     setState({...state, quantity: text});
   };
   return (
+    <>
+    <ScrollView>
     <View style={styles.contentContainer}>
       <View style={styles.rowItem}>
         <View style={styles.columnItem}>
@@ -379,15 +381,15 @@ const PutawayItemDetail = () => {
           keyboard={'number-pad'}
         />
       </View>
-      <View>
-        <Button
+    </View>
+    </ScrollView>
+    <Button
           title="Putaway"
           style={styles.buttonContainer}
           onPress={formSubmit}
           disabled={false}
         />
-      </View>
-    </View>
+    </>
   );
 };
 

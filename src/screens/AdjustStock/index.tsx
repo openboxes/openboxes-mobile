@@ -1,17 +1,17 @@
 /* eslint-disable no-shadow */
 import React, { useEffect, useState } from 'react';
-import {useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styles from './styles';
 import { ScrollView, View, ToastAndroid } from 'react-native';
 import InputBox from '../../components/InputBox';
 import Button from '../../components/Button';
 import showPopup from '../../components/Popup';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import DropDown from "react-native-paper-dropdown";
+import DropDown from 'react-native-paper-dropdown';
 import RenderData from '../../components/RenderData';
 import { RootState } from '../../redux/reducers';
 import { stockAdjustments } from '../../redux/actions/products';
-import InputSpinner from "../../components/InputSpinner";
+import InputSpinner from '../../components/InputSpinner';
 
 const reasonCodes = [
   {
@@ -92,7 +92,7 @@ const AdjustStock = () => {
   const { item }: any = route.params;
   const navigation = useNavigation();
   const location = useSelector(
-    (state: RootState) => state.mainReducer.currentLocation,
+    (state: RootState) => state.mainReducer.currentLocation
   );
 
   const [comments, setComments] = useState('');
@@ -111,7 +111,7 @@ const AdjustStock = () => {
       showPopup({
         title: errorTitle,
         message: errorMessage,
-        negativeButtonText: 'Cancel',
+        negativeButtonText: 'Cancel'
       });
       return Promise.resolve(null);
     }
@@ -124,7 +124,7 @@ const AdjustStock = () => {
       quantityAvailable: item.quantityAvailableToPromise,
       reasonCode: reasonCode ?? 'CORRECTION',
       quantityAdjusted: quantityAdjusted,
-      comments: comments,
+      comments: comments
     };
     submitStockAdjustments(request);
   };
@@ -139,15 +139,15 @@ const AdjustStock = () => {
             text: 'Retry',
             callback: () => {
               dispatch(stockAdjustments(requestBody, callback));
-            },
+            }
           },
-          negativeButtonText: 'Cancel',
+          negativeButtonText: 'Cancel'
         });
       } else {
         if (data && Object.keys(data).length !== 0) {
           ToastAndroid.show(
             'Stock adjustment saved successfully',
-            ToastAndroid.SHORT,
+            ToastAndroid.SHORT
           );
           navigation.goBack();
           route?.params?.onSelect(data?.data[0]);
@@ -195,11 +195,11 @@ const AdjustStock = () => {
     <ScrollView style={styles.container}>
       <RenderItem />
       <View style={styles.from}>
-          <InputSpinner
-              title={'Quantity Adjusted'}
-              value={quantityAdjusted}
-              setValue={setQuantityAdjusted}
-          />
+        <InputSpinner
+          title={'Quantity Adjusted'}
+          value={quantityAdjusted}
+          setValue={setQuantityAdjusted}
+        />
         <View style={styles.dropDownDivider} />
         <DropDown
           label="Reason Code"
