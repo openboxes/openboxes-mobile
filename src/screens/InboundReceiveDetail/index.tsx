@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styles from './styles';
-import { Image, ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import InputBox from '../../components/InputBox';
 import Button from '../../components/Button';
 import showPopup from '../../components/Popup';
@@ -87,9 +87,6 @@ const InboundReceiveDetail = () => {
     setState({ ...state, comments: text });
   };
 
-  const onChangeDate = (text: string) => {
-    setState({ ...state, deliveryDate: text });
-  };
   const onChangeQuantity = (text: string) => {
     setState({ ...state, quantityToReceive: text });
   };
@@ -188,14 +185,6 @@ const InboundReceiveDetail = () => {
       </View>
     );
   };
-  const renderIcon = () => {
-    return (
-      <Image
-        style={styles.arrowDownIcon}
-        source={require('../../assets/images/arrow-down.png')}
-      />
-    );
-  };
 
   const getInternalLocation = (id: string = '') => {
     const callback = (data: any) => {
@@ -214,11 +203,7 @@ const InboundReceiveDetail = () => {
         });
       } else {
         if (data && Object.keys(data).length !== 0) {
-          let locationList: string[] = [];
-          // data.data.map((item: any) => {
-          //   locationList.push(item.name);
-          // });
-          state.internalLocation = data.data; //locationList;
+          state.internalLocation = data.data;
         }
         setState({ ...state });
       }
@@ -235,7 +220,6 @@ const InboundReceiveDetail = () => {
           data={state.internalLocation}
           getMoreData={(d: any) => console.debug('get More data api call', d)} // for calling api for more results
           selectedData={(selectedItem: any) => {
-            console.log('SELECTED ITEM :: ', JSON.stringify(selectedItem));
             if (selectedItem) {
               state.receiveLocation = selectedItem;
               setState({ ...state });
