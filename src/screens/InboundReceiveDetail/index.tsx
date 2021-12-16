@@ -1,25 +1,26 @@
-import React, {useEffect, useState} from 'react';
-import {useDispatch, useSelector} from 'react-redux';
+/* eslint-disable complexity */
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import styles from './styles';
-import {Image, ScrollView, Text, View} from 'react-native';
+import { Image, ScrollView, Text, View } from 'react-native';
 import InputBox from '../../components/InputBox';
 import Button from '../../components/Button';
 import showPopup from '../../components/Popup';
-import {useNavigation, useRoute} from '@react-navigation/native';
-import {submitPartialReceiving} from '../../redux/actions/inboundorder';
-import {getInternalLocations} from '../../redux/actions/locations';
-import {RootState} from '../../redux/reducers';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { submitPartialReceiving } from '../../redux/actions/inboundorder';
+import { getInternalLocations } from '../../redux/actions/locations';
+import { RootState } from '../../redux/reducers';
 import AutoInputInternalLocation from '../../components/AutoInputInternalLocation';
 import InputSpinner from '../../components/InputSpinner';
 
 const InboundReceiveDetail = () => {
   const dispatch = useDispatch();
   const route = useRoute();
-  const {shipmentItem, shipmentData, shipmentId}: any = route.params;
+  const { shipmentItem, shipmentData, shipmentId }: any = route.params;
   const [cancelRemaining, setCancelRemaining] = useState(false);
   const navigation = useNavigation();
   const location = useSelector(
-    (state: RootState) => state.mainReducer.currentLocation,
+    (state: RootState) => state.mainReducer.currentLocation
   );
   const [state, setState] = useState<any>({
     comments: '',
@@ -27,16 +28,17 @@ const InboundReceiveDetail = () => {
     receiveLocation: shipmentItem['binLocation.name'],
     deliveryDate: shipmentData.expectedDeliveryDate,
     quantityToReceive: shipmentItem.quantityRemaining.toString(),
-    error: null,
+    error: null
   });
   useEffect(() => {
     getInternalLocation(location.id);
   }, [shipmentItem]);
 
+  // eslint-disable-next-line complexity
   const onReceive = () => {
     let errorTitle = '';
     let errorMessage = '';
-    if (state.quantityToReceive == null || state.quantityToReceive == '') {
+    if (state.quantityToReceive === null || state.quantityToReceive === '') {
       errorTitle = 'Quantity!';
       errorMessage = 'Please fill the Quantity to Receive';
     } else if (
@@ -50,7 +52,7 @@ const InboundReceiveDetail = () => {
       showPopup({
         title: errorTitle,
         message: errorMessage,
-        negativeButtonText: 'Cancel',
+        negativeButtonText: 'Cancel'
       });
       return Promise.resolve(null);
     }
@@ -67,29 +69,29 @@ const InboundReceiveDetail = () => {
               shipmentItemId: shipmentItem.shipmentItemId,
               'container.id': shipmentItem['container.id'] ?? '',
               'product.id': shipmentItem['product.id'] ?? '',
-              'binLocation.id': state.receiveLocation ?? '',
+              'binLocation.id': state.receiveLocation?.id ?? '',
               recipient: '',
               quantityReceiving: state.quantityToReceive,
               cancelRemaining: cancelRemaining,
               quantityOnHand: '',
-              comment: state.comments,
-            },
-          ],
-        },
-      ],
+              comment: state.comments
+            }
+          ]
+        }
+      ]
     };
     submitReceiving(shipmentId, request);
   };
 
   const onChangeComment = (text: string) => {
-    setState({...state, comments: text});
+    setState({ ...state, comments: text });
   };
 
   const onChangeDate = (text: string) => {
-    setState({...state, deliveryDate: text});
+    setState({ ...state, deliveryDate: text });
   };
   const onChangeQuantity = (text: string) => {
-    setState({...state, quantityToReceive: text});
+    setState({ ...state, quantityToReceive: text });
   };
   const submitReceiving = (id: string, requestBody: any) => {
     const callback = (data: any) => {
@@ -103,20 +105,20 @@ const InboundReceiveDetail = () => {
             text: 'Retry',
             callback: () => {
               dispatch(submitPartialReceiving(id, requestBody, callback));
-            },
+            }
           },
-          negativeButtonText: 'Cancel',
+          negativeButtonText: 'Cancel'
         });
       } else {
         if (data && Object.keys(data).length !== 0) {
-          if (data.receiptId !== '' && data.receipt != '') {
+          if (data.receiptId !== '' && data.receipt !== '') {
             const receiptStatus = {
-              receiptStatus: 'COMPLETED',
+              receiptStatus: 'COMPLETED'
             };
             dispatch(submitPartialReceiving(id, receiptStatus, onComplete));
           }
         }
-        setState({...state});
+        setState({ ...state });
       }
     };
     dispatch(submitPartialReceiving(id, requestBody, callback));
@@ -128,8 +130,8 @@ const InboundReceiveDetail = () => {
         title: data.errorMessage ? 'In Bound order details' : 'Error',
         message: data.errorMessage ?? 'Failed to load Inbound order details',
         positiveButton: {
-          text: 'Ok',
-        },
+          text: 'Ok'
+        }
       });
     } else {
       if (data && Object.keys(data).length !== 0) {
@@ -137,7 +139,7 @@ const InboundReceiveDetail = () => {
       }
     }
   };
-  const RenderData = ({title, subText}: any): JSX.Element => {
+  const RenderData = ({ title, subText }: any): JSX.Element => {
     return (
       <View style={styles.columnItem}>
         <Text style={styles.label}>{title}</Text>
@@ -206,19 +208,19 @@ const InboundReceiveDetail = () => {
             text: 'Retry',
             callback: () => {
               dispatch(getInternalLocations(id, callback));
-            },
+            }
           },
-          negativeButtonText: 'Cancel',
+          negativeButtonText: 'Cancel'
         });
       } else {
         if (data && Object.keys(data).length !== 0) {
           let locationList: string[] = [];
-          data.data.map((item: any) => {
-            locationList.push(item.name);
-          });
-          state.internalLocation = locationList;
+          // data.data.map((item: any) => {
+          //   locationList.push(item.name);
+          // });
+          state.internalLocation = data.data; //locationList;
         }
-        setState({...state});
+        setState({ ...state });
       }
     };
     dispatch(getInternalLocations(id, callback));
@@ -231,11 +233,12 @@ const InboundReceiveDetail = () => {
         <AutoInputInternalLocation
           label="AutoInputInternalLocation"
           data={state.internalLocation}
-          getMoreData={(d: any) => console.log('get More data api call', d)} // for calling api for more results
+          getMoreData={(d: any) => console.debug('get More data api call', d)} // for calling api for more results
           selectedData={(selectedItem: any) => {
+            console.log('SELECTED ITEM :: ', JSON.stringify(selectedItem));
             if (selectedItem) {
               state.receiveLocation = selectedItem;
-              setState({...state});
+              setState({ ...state });
             }
           }}
         />
@@ -246,10 +249,10 @@ const InboundReceiveDetail = () => {
         />
         <InputBox
           value={state.comments}
-          onChange={onChangeComment}
           disabled={false}
           editable={false}
           label={'Comments'}
+          onChange={onChangeComment}
         />
       </View>
       <View style={styles.bottom}>
