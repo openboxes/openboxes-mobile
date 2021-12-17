@@ -55,7 +55,7 @@ class LpnDetail extends React.Component<Props, State> {
       containerDetails: null
     };
   }
-  getContainerStatusDetails = (id: string,status:string) => {
+  getContainerStatusDetails = (id: string, status: string) => {
     if (!id) {
       showPopup({
         message: 'id is empty',
