@@ -180,7 +180,7 @@ const ShipItemDetails = () => {
             disabled={!selectedContainerItem?.id || Number(state.quantityPicked) <= 0}
             title="PACK ITEM"
             onPress={() => {
-              submitShipmentDetail(item.id);
+              submitShipmentDetail(item?.id);
             }}
           />
         </View>
