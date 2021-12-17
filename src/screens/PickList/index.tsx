@@ -167,7 +167,6 @@ const PickOrderItem = () => {
 
   const getPickListItem = async () => {
     try {
-      // showProgressBar("Fetching PickList Item")
       const {pickListItem}: any = route.params;
       const actionCallback = (data: any) => {
         const currentState = {...state};
@@ -202,7 +201,6 @@ const PickOrderItem = () => {
         showPopup({
           title: errorTitle,
           message: errorMessage,
-          // positiveButtonText: "Retry",
           negativeButtonText: 'Cancel',
         });
         return Promise.resolve(null);
@@ -225,8 +223,6 @@ const PickOrderItem = () => {
         forceUpdate: false,
       };
       const actionCallback = (data: any) => {
-        console.debug('data after submit');
-        console.debug(data);
         if (data?.error) {
           showPopup({
             title: data.errorMessage ? `Failed to load results` : null,
@@ -283,8 +279,6 @@ const PickOrderItem = () => {
     }
 
     const actionCallback = (data: any) => {
-      console.debug('product searched completed');
-      console.debug(data.data.length);
       if (!data || data.data.length == 0) {
         showPopup({
           message: 'Product not found with ProductCode:' + state.productCode,
@@ -299,8 +293,6 @@ const PickOrderItem = () => {
         });
         return;
       } else if (data.data.length == 1) {
-        console.debug('data.length');
-        console.debug(data.length);
         setState({
           ...state,
           product: data.data[0],

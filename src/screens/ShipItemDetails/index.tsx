@@ -70,7 +70,7 @@ const ShipItemDetails = () => {
 
   const submitShipmentDetail = (id: string) => {
     const request = {
-      'container.id': state.container.id,
+      'container.id': state.container?.id,
       quantityToPack: state.quantityPicked
     };
     const callback = (data: any) => {
@@ -178,7 +178,7 @@ const ShipItemDetails = () => {
           <Button
             title="PACK ITEM"
             onPress={() => {
-              submitShipmentDetail(item.id);
+              submitShipmentDetail(item?.id);
             }}
           />
         </View>
