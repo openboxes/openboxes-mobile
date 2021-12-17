@@ -55,7 +55,7 @@ class LpnDetail extends React.Component<Props, State> {
       containerDetails: null
     };
   }
-  getContainerStatusDetails = (id: string) => {
+  getContainerStatusDetails = (id: string,status:string) => {
     if (!id) {
       showPopup({
         message: 'id is empty',
@@ -83,7 +83,10 @@ class LpnDetail extends React.Component<Props, State> {
         this.showShipmentReadyToPackScreen(data['shipment.id']);
       }
     };
-    this.props.getContainerStatus(id, actionCallback);
+    const statusData={
+      "containerStatus":status
+    }
+    this.props.getContainerStatus(id,statusData, actionCallback);
   };
 
   showShipmentReadyToPackScreen = (id: string) => {
@@ -195,7 +198,7 @@ class LpnDetail extends React.Component<Props, State> {
             data={containerStatus}
             onSelect={(selectedItem, index) => {
               const {id} = this.props.route.params;
-              this.getContainerStatusDetails(id);
+              this.getContainerStatusDetails(id,selectedItem);
             }}
             defaultValueByIndex={0}
             renderDropdownIcon={renderIcon}

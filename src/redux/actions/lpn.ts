@@ -39,11 +39,12 @@ export function getContainer(id: string, callback: (data: any) => void) {
 
 export function getContainerStatus(
     id: string,
+    status:any,
     callback: (data: any) => void,
 ) {
     return {
         type: GET_CONTAINER_STATUS_DETAIL,
-        payload: {id},
+        payload: {id,status},
         callback
     }
 }
