@@ -48,7 +48,7 @@ const InboundOrder = () => {
   };
 
   return (
-      <View style={{zIndex: -1}}>
+      <View style={{flex: 1,zIndex: -1}}>
         <BarCodeSearchHeader
             onBarCodeSearchQuerySubmitted={getInboundOrderList}
             searchBox={false}
