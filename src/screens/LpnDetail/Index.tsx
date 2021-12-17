@@ -13,7 +13,7 @@ import {ContainerShipmentItem} from '../../data/container/ContainerShipmentItem'
 import {
   fetchContainer,
   getContainer,
-  getContainerStatus
+  updateContainerStatus
 } from '../../redux/actions/lpn';
 import {getShipmentPacking} from '../../redux/actions/packing';
 import {connect} from 'react-redux';
@@ -55,7 +55,7 @@ class LpnDetail extends React.Component<Props, State> {
       containerDetails: null
     };
   }
-  getContainerStatusDetails = (id: string, status: string) => {
+  updateContainerStatus = (id: string, status: string) => {
     if (!id) {
       showPopup({
         message: 'id is empty',
@@ -198,7 +198,7 @@ class LpnDetail extends React.Component<Props, State> {
             data={containerStatus}
             onSelect={(selectedItem, index) => {
               const {id} = this.props.route.params;
-              this.getContainerStatusDetails(id, selectedItem);
+              this.updateContainerStatus(id, selectedItem);
             }}
             defaultValueByIndex={0}
             renderDropdownIcon={renderIcon}
@@ -267,7 +267,7 @@ const mapDispatchToProps: DispatchProps = {
   fetchContainer,
   getShipmentPacking,
   getContainer,
-  getContainerStatus
+  updateContainerStatus
 };
 
 export default connect(null, mapDispatchToProps)(LpnDetail);

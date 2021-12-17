@@ -61,7 +61,7 @@ function* getContainerDetail(action: any) {
   }
 }
 
-function* getStatusDetails(action: any) {
+function* updateContainerStatus(action: any) {
     try {
         console.log("sagas getStatusDetails:" + action.payload.id)
         const response = yield call(
@@ -88,5 +88,5 @@ export default function* watcher() {
   yield takeLatest(SAVE_OR_UPDATE_LPN, saveAndUpdateLpn);
   yield takeLatest(FETCH_CONTAINER_DETAIL, fetchContainer);
   yield takeLatest(GET_CONTAINER_DETAIL, getContainerDetail);
-  yield takeLatest(GET_CONTAINER_STATUS_DETAIL, getStatusDetails);
+  yield takeLatest(GET_CONTAINER_STATUS_DETAIL, updateContainerStatus);
 }

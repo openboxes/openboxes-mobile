@@ -37,7 +37,7 @@ export function getContainer(id: string, callback: (data: any) => void) {
   };
 }
 
-export function getContainerStatus(
+export function updateContainerStatus(
     id: string,
     status: any,
     callback: (data: any) => void,
