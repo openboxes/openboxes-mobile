@@ -161,7 +161,7 @@ const PickOrderItem = () => {
   };
 
   useEffect(() => {
-    const data = vm? vm.order.picklist? vm.order.picklist.picklistItems : [];
+    const data =  vm.order.picklist? vm.order.picklist.picklistItems : [];
     setPickListItemData(data);
   }, [])
 
@@ -443,17 +443,13 @@ setState({
                       onChange={onChangeBin}
                       editable={false}
                     />
-                    <InputBox
-                      label={'Quantity to Pick'}
-                      value={item.quantityToPick ? item.quantityToPick.toString() : ''}
-                      // value={state.quantityPicked}
-                      onChange={(value) => quantityPickedChange(value, index)}
-                      disabled={false}
-                      editable={false}
-                      onEndEdit={(value) => quantityPickedChange(value, index)}
-                      keyboard={'number-pad'}
-                      showSelect={false}
+                     <View style={styles.inputSpinner}>
+                    <InputSpinner
+                      title={"Quantity to Pick"}
+                      setValue={(value) => quantityPickedChange(value, index)}
+                      value={item.quantityToPick}
                     />
+                    </View>
                     <Button title="Pick Item" onPress={formSubmit} />
                   </View>
                 </ScrollView>
