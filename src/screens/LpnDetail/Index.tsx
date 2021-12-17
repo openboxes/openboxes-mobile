@@ -83,10 +83,10 @@ class LpnDetail extends React.Component<Props, State> {
         this.showShipmentReadyToPackScreen(data['shipment.id']);
       }
     };
-    const statusData={
-      "containerStatus":status
+    const statusData = {
+      "containerStatus": status,
     }
-    this.props.getContainerStatus(id,statusData, actionCallback);
+    this.props.getContainerStatus(id, statusData, actionCallback);
   };
 
   showShipmentReadyToPackScreen = (id: string) => {
@@ -198,7 +198,7 @@ class LpnDetail extends React.Component<Props, State> {
             data={containerStatus}
             onSelect={(selectedItem, index) => {
               const {id} = this.props.route.params;
-              this.getContainerStatusDetails(id,selectedItem);
+              this.getContainerStatusDetails(id, selectedItem);
             }}
             defaultValueByIndex={0}
             renderDropdownIcon={renderIcon}

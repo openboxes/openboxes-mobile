@@ -67,7 +67,7 @@ function* getStatusDetails(action: any) {
         const response = yield call(
             api.getStatusDetails,
             action.payload.id,
-          action.payload.status
+            action.payload.status
         );
         console.log(response.data)
         yield put({
