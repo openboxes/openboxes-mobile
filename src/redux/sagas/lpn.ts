@@ -65,7 +65,7 @@ function* getStatusDetails(action: any) {
     try {
         console.log("sagas getStatusDetails:" + action.payload.id)
         const response = yield call(
-            api.getStatusDetails,
+            api.updateContainerStatus,
             action.payload.id,
             action.payload.status
         );
