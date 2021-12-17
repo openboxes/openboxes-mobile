@@ -46,11 +46,11 @@ const InternalTransfer = () => {
     searchBarcode: any,
   ) => {
     showPopup({
-      title: data.error.message
+      title: data.errorMessage
         ? `Failed to load search results with value = "${query}"`
         : null,
       message:
-        data.error.message ??
+        data.errorMessage ??
         `Failed to load search results with value = "${query}"`,
       positiveButton: {
         text: 'Retry',
@@ -179,11 +179,11 @@ const InternalTransfer = () => {
     // const actionCallback = (data: any) => {
     //     if (data?.error) {
     //         showPopup({
-    //             title: data.error.message
+    //             title: data.errorMessage
     //                 ? `Failed to update`
     //                 : null,
     //             message:
-    //                 data.error.message ??
+    //                 data.errorMessage ??
     //                 `Failed to update`,
     //             positiveButton: {
     //                 text: 'Retry',
