@@ -86,7 +86,7 @@ class LpnDetail extends React.Component<Props, State> {
     const statusData = {
       "containerStatus": status,
     }
-    this.props.getContainerStatus(id, statusData, actionCallback);
+    this.props.updateContainerStatus(id, statusData, actionCallback);
   };
 
   showShipmentReadyToPackScreen = (id: string) => {
