@@ -33,7 +33,7 @@ function* getLocations(action: any) {
     if (error.code != 401) {
       yield action.callback({
         error: true,
-        message: error.message,
+        message: errorMessage,
       });
     }
   }
@@ -57,7 +57,7 @@ function* setCurrentLocation(action: any) {
     if (error.code != 401) {
       yield action.callback({
         error: true,
-        message: error.message,
+        message: errorMessage,
       });
     }
   }
@@ -77,7 +77,7 @@ function* searchLocationByLocationNumber(action: any) {
     if (error.code != 401) {
       yield action.callback({
         error: true,
-        message: error.message,
+        message: errorMessage,
       });
     }
   }

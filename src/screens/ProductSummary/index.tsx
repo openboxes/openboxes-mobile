@@ -61,11 +61,11 @@ const ProductSummary = () => {
     searchBarcode: any,
   ) => {
     showPopup({
-      title: data.error.message
+      title: data.errorMessage
         ? `Failed to load search results with value = "${query}"`
         : null,
       message:
-        data.error.message ??
+        data.errorMessage ??
         `Failed to load search results with value = "${query}"`,
       positiveButton: {
         text: 'Retry',

@@ -37,7 +37,7 @@ function* getProducts(action: any) {
         if (error.code != 401) {
             yield action.callback({
                 error: true,
-                message: error.message,
+                message: errorMessage,
             });
         }
     }
@@ -59,7 +59,7 @@ function* searchProductsByName(action: any) {
         if (error.code != 401) {
             yield action.callback({
                 error: true,
-                message: error.message,
+                message: errorMessage,
             });
         }
     }
@@ -84,7 +84,7 @@ function* searchProductByCode(action: any) {
         if (error.code != 401) {
             yield action.callback({
                 error: true,
-                message: error.message,
+                message: errorMessage,
             });
         }
     }
@@ -106,7 +106,7 @@ function* searchProductGlobally(action: any) {
         if (error.code != 401) {
             yield action.callback({
                 error: true,
-                message: error.message,
+                message: errorMessage,
             });
         }
     }
@@ -131,7 +131,7 @@ function* searchProductsByCategory(action: any) {
         if (error.code != 401) {
             yield action.callback({
                 error: true,
-                message: error.message,
+                message: errorMessage,
             });
         }
     }
@@ -153,7 +153,7 @@ function* searchBarcode(action: any) {
         if (error.code != 401) {
             yield action.callback({
                 error: true,
-                message: error.message,
+                message: errorMessage,
             });
         }
     }
@@ -174,7 +174,7 @@ function* getProductById(action: any) {
         if (error.code != 401) {
             yield action.callback({
                 error: true,
-                message: error.message,
+                message: errorMessage,
             });
         }
     }
