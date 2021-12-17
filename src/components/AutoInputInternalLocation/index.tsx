@@ -18,8 +18,8 @@ export default function ({
     <View style={styles.mainContainer}>
       <ModalSelector
         data={data.map((item, index) => ({
-          key: index,
-          label: item,
+          key: item?.id || index,
+          label: item?.name || item,
           select: index === 0
         }))}
         initValue=""
@@ -34,7 +34,10 @@ export default function ({
           key: any;
         }) => {
           setQuery(option.label);
-          selectedData?.(option.label, option.key);
+          selectedData?.({
+            id: option.key,
+            label: option.label
+          });
         }}
         onCancel={() => setQuery('')}
       >
