@@ -20,6 +20,19 @@ class OrderDetails extends React.Component<Props, State> {
       error: null,
       pickListItems: []
     };
+    this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
+  }
+
+  componentWillUnmount() {
+    BackHandler.removeEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick
+    );
+  }
+
+  handleBackButtonClick() {
+    this.props.navigation.goBack(null);
+    return true;
   }
 
   componentDidMount() {
@@ -40,6 +53,11 @@ class OrderDetails extends React.Component<Props, State> {
       }
     };
     this.props.getPickListAction(order?.picklist?.id, actionCallback);
+
+    BackHandler.addEventListener(
+      'hardwareBackPress',
+      this.handleBackButtonClick
+    );
   }
 
   onItemTapped = (item: PicklistItem, index: number) => {

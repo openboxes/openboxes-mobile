@@ -181,7 +181,7 @@ const ShipItemDetails = () => {
           <Button
             title="PACK ITEM"
             onPress={() => {
-              submitShipmentDetail(item.id);
+              submitShipmentDetail(item?.id);
             }}
           />
         </View>

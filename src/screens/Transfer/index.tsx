@@ -1,4 +1,3 @@
-/* eslint-disable react-native/no-inline-styles */
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styles from './styles';
