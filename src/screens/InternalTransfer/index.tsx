@@ -158,7 +158,6 @@ const InternalTransfer = () => {
   };
 
   const onTransfer = () => {
-    // dispatch(showScreenLoading("Update Transfer"))
     const request: any = {
       status: 'COMPLETED',
       stockTransferNumber: '',
@@ -176,33 +175,6 @@ const InternalTransfer = () => {
         },
       ],
     };
-    // const actionCallback = (data: any) => {
-    //     if (data?.error) {
-    //         showPopup({
-    //             title: data.errorMessage
-    //                 ? `Failed to update`
-    //                 : null,
-    //             message:
-    //                 data.errorMessage ??
-    //                 `Failed to update`,
-    //             positiveButton: {
-    //                 text: 'Retry',
-    //                 callback: () => {
-    //                     dispatch(updateStockTransfer(request));
-    //                 },
-    //             },
-    //             negativeButtonText: 'Cancel',
-    //         });
-    //     } else {
-    //         if (data.length == 0) {
-    //             showPopup({
-    //                 message: `No search results`,
-    //                 positiveButton: {text: 'Ok'},
-    //             });
-    //         }
-    //         dispatch(hideScreenLoading());;
-    //     }
-    // };
     dispatch(updateStockTransfer(request));
   };
 
