@@ -66,11 +66,11 @@ class LpnDetail extends React.Component<Props, State> {
     const actionCallback = (data: any) => {
       if (data?.error) {
         showPopup({
-          title: data.error.message
+          title: data.errorMessage
             ? `Failed to load details with value = "${id}"`
             : null,
           message:
-            data.error.message ?? `Failed to load details with value = "${id}"`,
+            data.errorMessage ?? `Failed to load details with value = "${id}"`,
           positiveButton: {
             text: 'Retry',
             callback: () => {

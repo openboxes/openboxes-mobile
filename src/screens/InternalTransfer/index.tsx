@@ -1,4 +1,3 @@
-/* eslint-disable complexity */
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
@@ -47,11 +46,11 @@ const InternalTransfer = () => {
     searchBarcode: any
   ) => {
     showPopup({
-      title: data.error.message
+      title: data.errorMessage
         ? `Failed to load search results with value = "${query}"`
         : null,
       message:
-        data.error.message ??
+        data.errorMessage ??
         `Failed to load search results with value = "${query}"`,
       positiveButton: {
         text: 'Retry',
@@ -174,7 +173,6 @@ const InternalTransfer = () => {
       ]
     };
     const actionCallback = (data: any) => {
-      console.log('### DATA ::', data);
       if (data?.error) {
         showPopup({
           title: data.error.message ? 'Failed to update' : null,

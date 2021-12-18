@@ -87,11 +87,11 @@ class PutawayList extends React.Component<Props, State> {
   fetchPutAways = (query: any) => {
     const actionCallback = (data: any) => {
       if (!data || data?.error) {
-        const title = data.error.message
+        const title = data.errorMessage
           ? 'Failed to fetch PutAway Detail'
           : null;
         const message =
-          data.error.message ??
+          data.errorMessage ??
           'Failed to fetch PutAway Detail with OrderNumber:' + query;
         return Promise.resolve(null);
       } else {

@@ -45,7 +45,7 @@ function* getProducts(action: any) {
 
 function* searchProductsByName(action: any) {
   try {
-    yield showScreenLoading('Please wait...');
+    yield put(showScreenLoading('Please wait....'));
     const data = yield call(api.searchProductsByName, action.payload.name);
     yield put({
       type: SEARCH_PRODUCTS_BY_NAME_REQUEST_SUCCESS,
@@ -65,7 +65,7 @@ function* searchProductsByName(action: any) {
 
 function* searchProductByCode(action: any) {
   try {
-    yield showScreenLoading('Please wait...');
+    yield put(showScreenLoading('Please wait...'));
     const data = yield call(
       api.searchProductByCode,
       action.payload.productCode
@@ -88,7 +88,7 @@ function* searchProductByCode(action: any) {
 
 function* searchProductGlobally(action: any) {
   try {
-    yield showScreenLoading('Please wait..');
+    yield put(showScreenLoading('Please wait..'));
     const data = yield call(api.searchProductGlobally, action.payload.value);
     yield put({
       type: SEARCH_PRODUCT_GLOBALY_REQUEST_SUCCESS,
