@@ -1,11 +1,12 @@
 /* eslint-disable react-native/no-inline-styles */
+/* eslint-disable complexity */
 import * as React from 'react';
-import {Image, TouchableOpacity, View} from 'react-native';
-import {Menu, Provider} from 'react-native-paper';
-import {useDispatch} from 'react-redux';
-import {logout} from '../redux/actions/auth';
+import { Image, TouchableOpacity, View } from 'react-native';
+import { Menu, Provider } from 'react-native-paper';
+import { useDispatch } from 'react-redux';
+import { logout } from '../redux/actions/auth';
 
-const OptionMenu = ({route, navigation}: any) => {
+const OptionMenu = ({ route, navigation }: any) => {
   const dispatch = useDispatch();
   const [visible, setVisible] = React.useState(false);
   const openMenu = () => setVisible(true);
@@ -17,8 +18,9 @@ const OptionMenu = ({route, navigation}: any) => {
         style={{
           flexDirection: 'row',
           alignItems: 'flex-start',
-          alignContent: 'flex-start',
-        }}>
+          alignContent: 'flex-start'
+        }}
+      >
         <Image
           source={require('../assets/images/logo.png')}
           style={{
@@ -27,7 +29,7 @@ const OptionMenu = ({route, navigation}: any) => {
             height: 30,
             marginTop: 10,
             marginEnd:
-              route.name !== 'Login' && route.name !== 'Settings' ? 0 : 30,
+              route.name !== 'Login' && route.name !== 'Settings' ? 0 : 30
           }}
         />
         {route.name !== 'Login' && route.name !== 'Settings' ? (
@@ -36,39 +38,81 @@ const OptionMenu = ({route, navigation}: any) => {
               width: 350,
               position: 'absolute',
               top: 50,
-              left: 0,
+              left: -50
             }}
             visible={visible}
-            onDismiss={closeMenu}
             anchor={
-              <TouchableOpacity onPress={openMenu}>
+              <TouchableOpacity onPress={openMenu} style={{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}>
                 <Image
                   source={require('../assets/images/option.jpg')}
                   style={{
-                    resizeMode: 'stretch',
+                    resizeMode: 'center',
                     width: 40,
                     height: 40,
-                    marginRight: 10,
-                    zIndex: 123,
+                    marginHorizontal: 5,
+                    marginTop: 20,
+                    zIndex: 123
                   }}
                 />
               </TouchableOpacity>
-            }>
+            }
+            onDismiss={closeMenu}
+          >
             <Menu.Item
+              title="Dashboard"
               onPress={() => {
                 navigation.navigate('Dashboard');
                 closeMenu();
               }}
-              title="Dashboard"
             />
             <Menu.Item
+              title="User detail"
+              onPress={() => {
+                navigation.navigate('Placeholder');
+                closeMenu();
+              }}
+            />
+            <Menu.Item
+              style={{
+                width: '70%',
+              }}
+              title="App info / version"
+              onPress={() => {
+                navigation.navigate('Placeholder');
+                closeMenu();
+              }}
+            />
+            <Menu.Item
+              style={{
+                width: '70%',
+              }}
               onPress={() => {
                 navigation.navigate('Settings');
                 closeMenu();
               }}
               title="Settings"
             />
-            <Menu.Item onPress={handleLogout} title="Logout" />
+            <Menu.Item
+              style={{
+                width: '70%',
+              }}
+              onPress={() => {
+                navigation.navigate('Drawer');
+                closeMenu();
+              }}
+              title="Change location"
+            />
+            <Menu.Item
+              style={{
+                width: '70%',
+              }}
+              onPress={handleLogout}
+              title="Logout"
+            />
           </Menu>
         ) : null}
       </View>

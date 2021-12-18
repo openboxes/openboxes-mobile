@@ -30,7 +30,6 @@ import Settings from './screens/Settings';
 import PutawayItemDetail from './screens/PutawayItemDetail';
 import InboundOrder from './screens/InboundOrder';
 import InboundDetails from './screens/InboundDetails';
-import PutawayDetail from './screens/PutawayDetails';
 import CreateLpn from './screens/Lpn/Create';
 import LpnDetail from './screens/LpnDetail/Index';
 import PutawayCandidates from './screens/PutawayCandidates';
@@ -46,7 +45,8 @@ import ShipItemDetails from './screens/ShipItemDetails';
 import ApiClient from './utils/ApiClient';
 import OptionMenu from './components/OptionMenu';
 import ViewAvailableItem from './screens/ViewAvailableItem';
-// import PutawayDetails from "./screens/PutawayDetails";
+import PutawayDetails from './screens/PutawayDetails';
+import Placeholder from './screens/Placeholder';
 import {Provider} from 'react-native-paper';
 
 const Stack = createStackNavigator();
@@ -181,12 +181,11 @@ class Main extends Component<Props, State> {
                 component={PutawayCandidates}
               />
               <Stack.Screen name="PutawayItem" component={PutawayItem} />
-              {/*<Stack.Screen name="PutawayDetails" component={PutawayDetails} />*/}
               <Stack.Screen
                 name="PutawayItemDetail"
                 component={PutawayItemDetail}
               />
-              <Stack.Screen name="PutawayDetail" component={PutawayDetail} />
+              <Stack.Screen name="PutawayDetails" component={PutawayDetails} />
               <Stack.Screen name="InboundOrderList" component={InboundOrder} />
               <Stack.Screen name="InboundDetails" component={InboundDetails} />
               <Stack.Screen name="Packing" component={Packing} />
@@ -217,11 +216,14 @@ class Main extends Component<Props, State> {
                 component={InternalLocationDetails}
               />
               <Stack.Screen
-                name={'ViewAvailableItem'}
+                name="ViewAvailableItem"
                 component={ViewAvailableItem}
               />
-              {/*<Stack.Screen name="Drawer" component={DrawerNavigator} />*/}
-              {/*<Stack.Screen name="Drawer" component={DrawerNavigator} />*/}
+              <Stack.Screen
+                name="Placeholder"
+                options={{ title: 'Work in progress' }}
+                component={Placeholder}
+              />
             </Stack.Navigator>
           </NavigationContainer>
         </SafeAreaView>
