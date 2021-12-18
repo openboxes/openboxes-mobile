@@ -21,7 +21,7 @@ import InputBox from '../../components/InputBox';
 import Carousel from 'react-native-snap-carousel';
 import {device} from '../../constants';
 import {PicklistItem} from '../../data/picklist/PicklistItem';
-import InputSpinner from '../../components/InputSpinner';
+import InputSpinner from "../../components/InputSpinner";
 import * as Sentry from '@sentry/react-native';
 
 const PickOrderItem = () => {
@@ -29,9 +29,10 @@ const PickOrderItem = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const barcodeData = useEventListener();
+  const [pickListItemData, setPickListItemData] = useState<any>([]);
   const [state, setState] = useState<any>({
     error: '',
-    pickListItem: null,
+    pickListItem: [],
     order: null,
     productSearchQuery: '',
     binLocationSearchQuery: '',
@@ -159,6 +160,11 @@ const PickOrderItem = () => {
     }
   };
 
+  useEffect(() => {
+    const data =  vm.order.picklist? vm.order.picklist.picklistItems : [];
+    setPickListItemData(data);
+  }, [])
+
   const getPickListItem = async () => {
     try {
       const {pickListItem}: any = route.params;
@@ -172,7 +178,7 @@ const PickOrderItem = () => {
       };
       dispatch(getPickListItemAction(pickListItem?.id, actionCallback));
     } catch (e) {
-      Sentry.captureException('Error while getting Pick List Item', e);
+      Sentry.captureException('Error while getPickListItem', e.message);
     }
   };
 
@@ -346,8 +352,12 @@ const PickOrderItem = () => {
     onBinLocationBarCodeSearchQuerySubmitted();
   };
 
-  const quantityPickedChange = (query: string) => {
-    setState({
+  const quantityPickedChange = (query: string, index: number) => {
+    let picklistItemData = pickListItemData;
+    picklistItemData[index].quantityToPick = parseInt(query);
+    setPickListItemData([ ...picklistItemData ]);
+
+setState({
       ...state,
       quantityPicked: query,
     });
@@ -362,6 +372,7 @@ const PickOrderItem = () => {
     state.binLocationName = text;
     setState({...state});
   };
+
   return (
     <View style={styles.screenContainer}>
       <View style={styles.swiperView}>
@@ -371,7 +382,7 @@ const PickOrderItem = () => {
           sliderWidth={device.windowWidth}
           sliderHeight={device.windowHeight}
           itemWidth={device.windowWidth - 70}
-          data={vm?.order?.picklist?.picklistItems}
+          data={pickListItemData}
           firstItem={vm.selectedPinkItemIndex ? vm.selectedPinkItemIndex : 0}
           scrollEnabled={true}
           renderItem={({item, index}: ListRenderItemInfo<PicklistItem>) => {
@@ -432,15 +443,17 @@ const PickOrderItem = () => {
                       onChange={onChangeBin}
                       editable={false}
                     />
-                    <View style={styles.inputSpinner}>
+                     <View style={styles.inputSpinner}>
                     <InputSpinner
                       title={"Quantity to Pick"}
-                      setValue={quantityPickedChange}
+                      setValue={(value) => quantityPickedChange(value, index)}
+                      value={item.quantityToPick}
                     />
                     </View>
                     <Button title="Pick Item" onPress={formSubmit} />
                   </View>
                 </ScrollView>
+                <View style={styles.bottom}></View>
               </View>
             );
           }}
