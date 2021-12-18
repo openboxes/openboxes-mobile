@@ -18,8 +18,8 @@ export default function ({
     <View style={styles.mainContainer}>
       <ModalSelector
         data={data.map((item, index) => ({
-          key: item?.id || index ,
-          label:item?.name  || item ,
+          key: item?.id || index,
+          label:item?.name || item,
           select: index === 0
         }))}
         initValue=""
