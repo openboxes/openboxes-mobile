@@ -18,6 +18,7 @@ import * as api from '../../apis';
 import ShipmentsReadyToPackedResponse, {
   ShipmentReadyToPackedResponse,
 } from '../../data/container/Shipment';
+import showPopup from '../../components/Popup';
 
 function* getShipmentsReadyToBePacked(action: any) {
   try {
@@ -140,6 +141,7 @@ function* submitShipmentItems(action: any) {
     yield hideScreenLoading();
   } catch (e) {
     console.log('function* submitShipmentItems', e.response);
+    showPopup({message: `Fail to submit ShipmentItems ${e.response}`, positiveButton: "ok"});
   }
 }
 

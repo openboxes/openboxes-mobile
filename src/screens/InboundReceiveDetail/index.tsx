@@ -203,7 +203,15 @@ const InboundReceiveDetail = () => {
         });
       } else {
         if (data && Object.keys(data).length !== 0) {
-          state.internalLocation = data.data;
+          let locationList: any[] = [];
+          data.data.map((item: any) => {
+            const locationData ={
+              name: item.name,
+              id: item.id
+            }
+            locationList.push(locationData);
+          });
+          state.internalLocation = locationList;
         }
         setState({ ...state });
       }
@@ -221,7 +229,7 @@ const InboundReceiveDetail = () => {
           getMoreData={(d: any) => console.debug('get More data api call', d)} // for calling api for more results
           selectedData={(selectedItem: any) => {
             if (selectedItem) {
-              state.receiveLocation = selectedItem;
+              state.receiveLocation = selectedItem.name;
               setState({ ...state });
             }
           }}

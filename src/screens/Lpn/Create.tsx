@@ -18,7 +18,7 @@ export interface State {
   stockMovement: Order | null;
   name: string | null;
   containerNumber: string | null;
-  stockMovementList: string[] | [];
+  stockMovementList: any[] | [];
   stockMovementId: string | any;
 }
 
@@ -73,7 +73,11 @@ class CreateLpn extends React.Component<Props, State> {
       } else {
         let stockMovementList: string[] = [];
         data.map((item: any) => {
-          stockMovementList.push(item.shipmentNumber);
+         const shipmentData={
+            name: item.shipmentNumber,
+              id: item.id
+          }
+          stockMovementList.push(shipmentData);
         });
         this.setState({
           stockMovementList: stockMovementList,
@@ -137,12 +141,9 @@ class CreateLpn extends React.Component<Props, State> {
             label="AutoInputInternalLocation"
             data={this.state.stockMovementList}
             selectedData={(selectedItem: any, index: number) => {
-              const stockMovement = this.state.stockMovements?.find(
-                (i) => i.shipmentNumber === selectedItem
-              );
               this.setState({
-                stockMovement: selectedItem,
-                stockMovementId: stockMovement?.id
+                stockMovement: selectedItem.name,
+                stockMovementId: selectedItem?.id,
               });
             }}
             initValue={this.state.stockMovements}

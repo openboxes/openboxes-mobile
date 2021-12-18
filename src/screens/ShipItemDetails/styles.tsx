@@ -5,7 +5,7 @@ import { ratio } from '../../constants';
 export default StyleSheet.create({
   contentContainer: {
     padding: 16,
-    flex: 1
+    flex: 0
   },
   label: {
     fontSize: 12,
@@ -51,20 +51,14 @@ export default StyleSheet.create({
     paddingStart: 10,
     marginTop: 10
   },
-  inputField: {
-    width: '82%',
-    borderWidth: 2,
-    height: 40,
-    borderColor: 'grey',
-    backgroundColor: 'white',
-    borderRadius: 5,
-    marginTop: 10
+  containerField: {
+    padding:10
   },
   bottom: {
     alignSelf: 'center',
     justifyContent: 'center',
-    position:"absolute",
-    bottom:10
+    height: ratio.height * 100,
+    bottom: 10
   },
   textContainer: {
     flexDirection: 'column',
