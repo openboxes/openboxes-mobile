@@ -36,7 +36,6 @@ export default class ProductsSearchCodeHeader extends React.Component<
   }
 
   onSearchQueryChange(query: string) {
-    console.debug('query::' + query);
     this.setState({
       searchQuery: query,
     });
@@ -56,11 +55,11 @@ export default class ProductsSearchCodeHeader extends React.Component<
         placeholder={
           this.props.placeholder ? this.props.placeholder : 'Search by barcode'
         }
-        onChangeText={this.onSearchQueryChange}
         value={this.state.searchQuery}
         style={styles.searchBar}
-        autoFocus={true}
+        autoFocus={this.props.autoSearch}
         onSubmitEditing={this.onBarCodeSearchQuerySubmitted}
+        onChangeText={this.onSearchQueryChange}
       />
     );
   }

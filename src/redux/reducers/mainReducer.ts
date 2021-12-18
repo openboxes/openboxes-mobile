@@ -1,14 +1,15 @@
+/* eslint-disable complexity */
 import Location from '../../data/location/Location';
-import {Session} from '../../data/auth/Session';
+import { Session } from '../../data/auth/Session';
 import {
   SHOW_SCREEN_LOADING,
   HIDE_SCREEN_LOADING,
   GET_SESSION_REQUEST_SUCCESS,
   REFRESH_SCREEN,
 } from '../actions/main';
-import {SET_CURRENT_LOCATION_REQUEST_SUCCESS} from '../actions/locations';
-import {LOGIN_REQUEST_SUCCESS} from '../actions/auth';
-import {GET_PUTAWAY_CANDIDATES_REQUEST_SUCCESS} from '../actions/putaways';
+import { SET_CURRENT_LOCATION_REQUEST_SUCCESS } from '../actions/locations';
+import { LOGIN_REQUEST_SUCCESS } from '../actions/auth';
+import { GET_PUTAWAY_CANDIDATES_REQUEST_SUCCESS } from '../actions/putaways';
 import {
   GET_PRODUCT_BY_ID_REQUEST_SUCCESS,
   GET_PRODUCTS_REQUEST_SUCCESS,
@@ -45,7 +46,7 @@ function reducer(state = initialState, action: any) {
       };
     }
     case GET_SESSION_REQUEST_SUCCESS: {
-      const {location} = action.payload;
+      const { location } = action.payload;
       return {
         ...state,
         session: action.payload,
@@ -59,7 +60,7 @@ function reducer(state = initialState, action: any) {
       };
     }
     case SHOW_SCREEN_LOADING: {
-      const {message} = action.payload;
+      const { message } = action.payload;
       return {
         ...state,
         fullScreenLoadingIndicator: {

@@ -1,6 +1,6 @@
 import React from 'react';
-import {DispatchProps, Props} from './Types';
-import {Container} from '../../data/container/Container';
+import { DispatchProps, Props } from './Types';
+import { Container } from '../../data/container/Container';
 import {
   FlatList,
   ListRenderItemInfo,
@@ -9,14 +9,14 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
-import {ContainerShipmentItem} from '../../data/container/ContainerShipmentItem';
+import { ContainerShipmentItem } from '../../data/container/ContainerShipmentItem';
 import {
   fetchContainer,
   getContainer,
   updateContainerStatus
 } from '../../redux/actions/lpn';
-import {getShipmentPacking} from '../../redux/actions/packing';
-import {connect} from 'react-redux';
+import { getShipmentPacking } from '../../redux/actions/packing';
+import { connect } from 'react-redux';
 import styles from './styles';
 import Button from '../../components/Button';
 import showPopup from '../../components/Popup';
@@ -59,7 +59,7 @@ class LpnDetail extends React.Component<Props, State> {
     if (!id) {
       showPopup({
         message: 'id is empty',
-        positiveButton: {text: 'Ok'}
+        positiveButton: { text: 'Ok' }
       });
       return;
     }
@@ -90,14 +90,14 @@ class LpnDetail extends React.Component<Props, State> {
   };
 
   showShipmentReadyToPackScreen = (id: string) => {
-    this.props.navigation.navigate('OutboundStockDetails', {shipmentId: id});
+    this.props.navigation.navigate('OutboundStockDetails', { shipmentId: id });
   };
 
   getContainerDetails = (id: string) => {
     if (!id) {
       showPopup({
         message: 'id is empty',
-        positiveButton: {text: 'Ok'}
+        positiveButton: { text: 'Ok' }
       });
       return;
     }
@@ -119,29 +119,29 @@ class LpnDetail extends React.Component<Props, State> {
           negativeButtonText: 'Cancel'
         });
       } else {
-        const {id} = this.props.route.params;
-        data.product = {id};
-        this.setState({containerDetails: data, visible: true});
+        const { id } = this.props.route.params;
+        data.product = { id };
+        this.setState({ containerDetails: data, visible: true });
       }
     };
     this.props.getContainer(id, actionCallback);
   };
   handleClick = () => {
-    const {id} = this.props.route.params;
+    const { id } = this.props.route.params;
     this.getContainerDetails(id);
   };
   closeModal = () => {
-    this.setState({visible: false});
+    this.setState({ visible: false });
   };
 
   componentDidMount() {
-    const {id} = this.props.route.params;
+    const { id } = this.props.route.params;
     this.fetchContainerDetail(id);
   }
 
   fetchContainerDetail = (id: string) => {
     const actionCallback = (data: any) => {
-      const {shipmentNumber} = this.props.route.params;
+      const { shipmentNumber } = this.props.route.params;
       data.shipmentNumber = shipmentNumber;
       this.setState({
         container: data
@@ -151,7 +151,7 @@ class LpnDetail extends React.Component<Props, State> {
   };
 
   onTapped = (shipmentItem: ListRenderItemInfo<ContainerShipmentItem>) => {
-    this.props.navigation.navigate('Packing', {shipment: shipmentItem});
+    this.props.navigation.navigate('Packing', { shipment: shipmentItem });
   };
 
   render() {
@@ -197,7 +197,7 @@ class LpnDetail extends React.Component<Props, State> {
           <SelectDropdown
             data={containerStatus}
             onSelect={(selectedItem, index) => {
-              const {id} = this.props.route.params;
+              const { id } = this.props.route.params;
               this.updateContainerStatus(id, selectedItem);
             }}
             defaultValueByIndex={0}
@@ -209,11 +209,12 @@ class LpnDetail extends React.Component<Props, State> {
           <FlatList
             data={this.state.container?.shipmentItems}
             renderItem={(
-              shipmentItem: ListRenderItemInfo<ContainerShipmentItem>,
+              shipmentItem: ListRenderItemInfo<ContainerShipmentItem>
             ) => (
               <TouchableOpacity
                 style={styles.listItemContainer}
-                onPress={() => this.onTapped(shipmentItem)}>
+                onPress={() => this.onTapped(shipmentItem)}
+              >
                 <View style={styles.row}>
                   <View style={styles.col50}>
                     <Text style={styles.label}>Product Code</Text>
@@ -238,7 +239,7 @@ class LpnDetail extends React.Component<Props, State> {
                 </View>
               </TouchableOpacity>
             )}
-            keyExtractor={item => item.id}
+            keyExtractor={(item) => item.id}
             style={styles.list}
           />
           <View style={styles.bottom}>
@@ -257,7 +258,7 @@ class LpnDetail extends React.Component<Props, State> {
           defaultBarcodeLabelUrl={
             this.state.containerDetails?.defaultBarcodeLabelUrl
           }
-      />
+        />
       </View>
     );
   }

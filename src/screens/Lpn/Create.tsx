@@ -1,15 +1,18 @@
 import React from 'react';
 import showPopup from '../../components/Popup';
-import {saveAndUpdateLpn} from '../../redux/actions/lpn';
-import {DispatchProps, Props} from './Types';
-import {connect} from 'react-redux';
-import {Text, View} from 'react-native';
-import {Order} from '../../data/order/Order';
+import { saveAndUpdateLpn } from '../../redux/actions/lpn';
+import { DispatchProps, Props } from './Types';
+import { connect } from 'react-redux';
+import { Text, ToastAndroid, View } from 'react-native';
+import { Order } from '../../data/order/Order';
 import styles from './styles';
 import InputBox from '../../components/InputBox';
 import Button from '../../components/Button';
-import {getShipmentOrigin, getShipmentPacking,} from '../../redux/actions/packing';
-import {RootState} from '../../redux/reducers';
+import {
+  getShipmentOrigin,
+  getShipmentPacking
+} from '../../redux/actions/packing';
+import { RootState } from '../../redux/reducers';
 import AutoInputInternalLocation from '../../components/AutoInputInternalLocation';
 
 export interface State {
@@ -23,18 +26,18 @@ export interface State {
 }
 
 class CreateLpn extends React.Component<Props, State> {
+  // eslint-disable-next-line complexity
   constructor(props: Props) {
     super(props);
-    const {id, shipmentDetail} = this.props?.route?.params ?? '';
+    const { id, shipmentDetail } = this.props?.route?.params ?? '';
     this.state = {
       stockMovements: shipmentDetail?.shipmentNumber || null,
       stockMovement: shipmentDetail?.shipmentNumber || null,
       stockMovementList: [],
       open: false,
-
       name: null,
       containerNumber: null,
-      stockMovementId: id || null,
+      stockMovementId: id || null
     };
   }
 
@@ -46,11 +49,11 @@ class CreateLpn extends React.Component<Props, State> {
     const actionCallback = (data: any) => {
       if (data?.error) {
         showPopup({
-          title: data.errorMessage ? 'Container' : "Error",
+          title: data.errorMessage ? 'Container' : 'Error',
           message: data.errorMessage ?? 'Failed to fetch Container List',
           positiveButton: {
-            text: 'Ok',
-          },
+            text: 'Ok'
+          }
         });
       } else {
         let stockMovementList: string[] = [];
@@ -60,15 +63,15 @@ class CreateLpn extends React.Component<Props, State> {
   };
 
   getShipmentOrigin = () => {
-    const {selectedLocation} = this.props;
+    const { selectedLocation } = this.props;
     const actionCallback = (data: any) => {
       if (data?.error) {
         showPopup({
-          title: data.errorMessage ? 'StockMovements' : "Error",
+          title: data.errorMessage ? 'StockMovements' : 'Error',
           message: data.errorMessage ?? 'Failed to fetch StockMovements',
           positiveButton: {
-            text: 'Ok',
-          },
+            text: 'Ok'
+          }
         });
       } else {
         let stockMovementList: string[] = [];
@@ -93,13 +96,14 @@ class CreateLpn extends React.Component<Props, State> {
       name: this.state.name,
       containerNumber: this.state.containerNumber,
       'containerType.id': '2',
-      'shipment.id': this.state.stockMovementId,
+      'shipment.id': this.state.stockMovementId
     };
+    // eslint-disable-next-line complexity
     const actionCallback = (data: any) => {
       if (data?.error) {
         showPopup({
-          title: data.errorMessage ? `Failed to Save` : null,
-          message: data.errorMessage ?? `Failed to Save`,
+          title: data.errorMessage ? 'Failed to Save' : null,
+          message: data.errorMessage ?? 'Failed to Save',
           positiveButton: {
             text: 'Retry',
             callback: () => {
@@ -109,6 +113,7 @@ class CreateLpn extends React.Component<Props, State> {
           negativeButtonText: 'Cancel'
         });
       } else {
+        ToastAndroid.show('LPN submitted successfully!!', ToastAndroid.SHORT);
         if (data && Object.keys(data).length !== 0) {
           this.props.navigation.navigate('LpnDetail', {
             id: data.id,
@@ -134,44 +139,44 @@ class CreateLpn extends React.Component<Props, State> {
 
   render() {
     return (
-      <View style={styles.container}>
-        <View style={styles.from}>
-          <Text style={styles.label}>Shipment Number</Text>
-          <AutoInputInternalLocation
-            label="AutoInputInternalLocation"
-            data={this.state.stockMovementList}
-            selectedData={(selectedItem: any, index: number) => {
-              this.setState({
-                stockMovement: selectedItem.name,
-                stockMovementId: selectedItem?.id,
-              });
-            }}
-            initValue={this.state.stockMovements}
-          />
-          <InputBox
-            value={this.state.name}
-            onChange={this.onChangeName}
-            editable={false}
-            label={'Name'}
-          />
-          <InputBox
-            value={this.state.containerNumber}
-            onChange={this.onChangeContainerNumber}
-            editable={false}
-            label={'Container Number'}
-          />
+        <View style={styles.container}>
+          <View style={styles.from}>
+            <Text style={styles.label}>Shipment Number</Text>
+            <AutoInputInternalLocation
+                label="AutoInputInternalLocation"
+                data={this.state.stockMovementList}
+                initValue={this.state.stockMovements}
+                selectedData={(selectedItem: any, index: number) => {
+                  this.setState({
+                    stockMovement: selectedItem.name,
+                    stockMovementId: selectedItem?.id,
+                  });
+                }}
+            />
+            <InputBox
+                value={this.state.name}
+                editable={false}
+                label={'Name'}
+                onChange={this.onChangeName}
+            />
+            <InputBox
+                value={this.state.containerNumber}
+                editable={false}
+                label={'Container Number'}
+                onChange={this.onChangeContainerNumber}
+            />
+          </View>
+          <View style={styles.bottom}>
+            <Button
+                title="Submit"
+                // eslint-disable-next-line react-native/no-inline-styles
+                style={{
+                  marginTop: 8,
+                }}
+                onPress={this.saveLpn}
+            />
+          </View>
         </View>
-        <View style={styles.bottom}>
-          <Button
-            title="Submit"
-            onPress={this.saveLpn}
-            // eslint-disable-next-line react-native/no-inline-styles
-            style={{
-              marginTop: 8
-            }}
-          />
-        </View>
-      </View>
     );
   }
 }

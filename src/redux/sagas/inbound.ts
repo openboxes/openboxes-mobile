@@ -1,34 +1,30 @@
-import {takeLatest, put, call} from 'redux-saga/effects';
+import { takeLatest, put, call } from 'redux-saga/effects';
 import {
   FETCH_INBOUND_ORDER_LIST_SUCCESS,
   FETCH_INBOUND_ORDER_LIST_REQUEST,
   FETCH_PARTIAL_RECEIVING_SUCCESS,
   FETCH_PARTIAL_RECEIVING_REQUEST,
   SUBMIT_PARTIAL_RECEIVING_REQUEST,
-  SUBMIT_PARTIAL_RECEIVING_SUCCESS,
+  SUBMIT_PARTIAL_RECEIVING_SUCCESS
 } from '../actions/inboundorder';
-import {hideScreenLoading, showScreenLoading} from '../actions/main';
+import { hideScreenLoading, showScreenLoading } from '../actions/main';
 import * as api from '../../apis';
-import showPopup from '../../components/Popup';
-import {Alert} from 'react-native';
+import { Alert } from 'react-native';
 
 function* fetchInboundOrderList(action: any) {
   try {
-    yield put(showScreenLoading('Fetching inbound orders'));
+    yield put(showScreenLoading('Please wait..'));
     const response: any = yield call(
       api.fetchInboundOrderList,
-      action.payload.id ?? '',
+      action.payload.id ?? ''
     );
-    console.log('Response', response);
     yield put({
       type: FETCH_INBOUND_ORDER_LIST_SUCCESS,
-      payload: response.data,
+      payload: response.data
     });
     yield action.callback(response.data);
     yield put(hideScreenLoading());
   } catch (e) {
-    console.log('function* fetchInboundOrder', e.message);
-    // console.log(e.response);
     Alert.alert(e.message);
     yield put(hideScreenLoading());
   }
@@ -36,22 +32,19 @@ function* fetchInboundOrderList(action: any) {
 
 function* submitPartialReceiving(action: any) {
   try {
-    yield put(showScreenLoading('Submit Receive orders'));
+    yield put(showScreenLoading('Please wait..'));
     const response: any = yield call(
       api.submitPartialReceiving,
       action.payload.id,
-      action.payload.body,
+      action.payload.body
     );
     yield put({
       type: SUBMIT_PARTIAL_RECEIVING_SUCCESS,
-      payload: response.data,
+      payload: response.data
     });
     if (action.callback) yield action.callback(response);
     yield put(hideScreenLoading());
   } catch (e) {
-    console.log('function* submitPartialReceiving', e.message);
-    console.log('message: ', e.message);
-    console.log('checking status');
     Alert.alert(e.message);
     // FIXME e.response is undefined
     // if (e.response.status == 401) {
@@ -70,21 +63,18 @@ function* submitPartialReceiving(action: any) {
 
 function* fetchPartialReceiving(action: any) {
   try {
-    yield put(showScreenLoading('Fetching Partial Receiving'));
+    yield put(showScreenLoading('Please wait...'));
     const response: any = yield call(
       api.fetchPartialReceiving,
-      action.payload.id ?? '',
+      action.payload.id ?? ''
     );
-    console.log('Response', response);
     yield put({
       type: FETCH_PARTIAL_RECEIVING_SUCCESS,
-      payload: response.data,
+      payload: response.data
     });
     yield action.callback(response.data);
     yield put(hideScreenLoading());
   } catch (e) {
-    console.log('function* PartialReceiving', e.message);
-    //console.log(e.response);
     Alert.alert(e.message);
     yield put(hideScreenLoading());
   }

@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import styles from './styles';
 import {Text, TouchableOpacity, View} from 'react-native';
-import {PicklistItem} from "../../data/picklist/PicklistItem";
+import {PicklistItem} from '../../data/picklist/PicklistItem';
 
 interface Props {
   item: PicklistItem;
@@ -22,7 +22,7 @@ class PickListItem extends Component<Props> {
           </View>
           <View style={styles.col50}>
             <Text style={styles.label}>Product Name</Text>
-            <Text style={styles.value}>{item?.["product.name"]}</Text>
+            <Text style={styles.value}>{item?.['product.name']}</Text>
           </View>
         </View>
         <View style={styles.row}>
