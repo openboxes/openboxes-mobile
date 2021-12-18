@@ -19,7 +19,7 @@ export default function ({
       <ModalSelector
         data={data.map((item, index) => ({
           key: item?.id || index,
-          label:item?.name || item,
+          label: item?.name || item,
           select: index === 0
         }))}
         initValue=""

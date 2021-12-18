@@ -22,13 +22,9 @@ const ShipItemDetails = () => {
   const { item }: any = route.params;
   const [state, setState] = useState<any>({
     error: '',
-    quantityPicked: '0',
-    product: null,
-    productCode: '',
+    quantityPicked: 0,
     shipmentDetails: null,
-    container: null,
-    containerId: '',
-    containerList: ''
+    containerList: []
   });
   const [selectedContainerItem, setSelectedContainerItem] = useState();
 
@@ -52,17 +48,13 @@ const ShipItemDetails = () => {
         });
       } else {
         if (data && Object.keys(data).length !== 0) {
-          state.shipmentDetails = data;
-          let containerList: any = [];
-          data.availableContainers.map((dataItem: any) => {
-           const containerData ={
-             name: dataItem.name,
-             id: dataItem.id
-           }
-          containerList.push(containerData);
+          setState({
+            shipmentDetails: data,
+            containerList: data.availableContainers.map((dataItem: any) => ({
+              name: dataItem.name,
+              id: dataItem.id
+            }))
           });
-          state.containerList = containerList;
-          setState({ ...state });
         }
       }
     };
@@ -79,10 +71,12 @@ const ShipItemDetails = () => {
       });
       return;
     }
+
     const request = {
-      'container.id': state?.container?.id ?? '',
+      'container.id': selectedContainerItem?.id ?? '',
       quantityToPack: state.quantityPicked
     };
+
     const callback = (data: any) => {
       if (data?.error) {
         showPopup({
@@ -122,7 +116,7 @@ const ShipItemDetails = () => {
           </View>
           <View style={styles.columnItem}>
             <Text style={styles.label}>{'Container'}</Text>
-            <Text style={styles.value}>{item.container.name ?? 'Default'}</Text>
+            <Text style={styles.value}>{item?.container?.name ?? 'Default'}</Text>
           </View>
         </View>
         <View style={styles.rowItem}>
@@ -163,9 +157,7 @@ const ShipItemDetails = () => {
             label="AutoInputInternalContainer"
             data={state.containerList ?? []}
             selectedContainerItem={selectedContainerItem}
-            selectedData={(selectedItem: any, index: number) => {
-              setSelectedContainerItem(selectedItem);
-            }}
+            selectedData={(selectedItem: any, index: number) => setSelectedContainerItem(selectedItem)}
           />
         </View>
         <View style={styles.alignCenterContent}>
