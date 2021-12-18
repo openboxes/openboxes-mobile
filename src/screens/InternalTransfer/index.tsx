@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styles from './styles';
-import _ from 'lodash';
 import { View } from 'react-native';
 import showPopup from '../../components/Popup';
 import InputBox from '../../components/InputBox';
