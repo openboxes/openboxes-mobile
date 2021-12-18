@@ -38,18 +38,23 @@ const OptionMenu = ({ route, navigation }: any) => {
               width: 350,
               position: 'absolute',
               top: 50,
-              left: 0
+              left: -50
             }}
             visible={visible}
             anchor={
-              <TouchableOpacity onPress={openMenu}>
+              <TouchableOpacity onPress={openMenu} style={{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}>
                 <Image
                   source={require('../assets/images/option.jpg')}
                   style={{
-                    resizeMode: 'stretch',
+                    resizeMode: 'center',
                     width: 40,
                     height: 40,
-                    marginRight: 10,
+                    marginHorizontal: 5,
+                    marginTop: 20,
                     zIndex: 123
                   }}
                 />
@@ -67,6 +72,7 @@ const OptionMenu = ({ route, navigation }: any) => {
             <Menu.Item
               title="User detail"
               onPress={() => {
+                navigation.navigate('Placeholder');
                 closeMenu();
               }}
             />
@@ -76,6 +82,7 @@ const OptionMenu = ({ route, navigation }: any) => {
               }}
               title="App info / version"
               onPress={() => {
+                navigation.navigate('Placeholder');
                 closeMenu();
               }}
             />
@@ -89,12 +96,14 @@ const OptionMenu = ({ route, navigation }: any) => {
               }}
               title="Settings"
             />
-            <Menu.Item onPress={handleLogout} title="Logout" />
             <Menu.Item
               style={{
                 width: '70%',
               }}
-              onPress={() =>  closeMenu()}
+              onPress={() => {
+                navigation.navigate('Drawer');
+                closeMenu();
+              }}
               title="Change location"
             />
             <Menu.Item
@@ -104,8 +113,6 @@ const OptionMenu = ({ route, navigation }: any) => {
               onPress={handleLogout}
               title="Logout"
             />
-            <Menu.Item title="Change location" onPress={() => closeMenu()} />
-            <Menu.Item title="Logout" onPress={handleLogout} />
           </Menu>
         ) : null}
       </View>
