@@ -12,7 +12,7 @@ export function getContainerDetail(id: string) {
   return apiClient.get(`/containers/${id}/details`);
 }
 
-export function getStatusDetails(id: string) {
-    return apiClient.post(`/containers/${id}`,{});
+export function updateContainerStatus(id: string, status: any) {
+    return apiClient.post(`/containers/${id}`,{ status });
 }
 

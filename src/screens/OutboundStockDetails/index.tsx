@@ -28,11 +28,11 @@ class OutboundStockDetails extends React.Component<Props, State> {
     const {shipmentId} = this.props.route.params;
     const actionCallback = (data: any) => {
       if (!data || data?.error) {
-        const title = data.error.message
+        const title = data.errorMessage
             ? 'Failed to fetch Shipments Detail'
             : null;
         const message =
-            data.error.message ??
+            data.errorMessage ??
             'Failed to fetch PutAway Detail with OrderNumber:';
         return Promise.resolve(null);
       } else {

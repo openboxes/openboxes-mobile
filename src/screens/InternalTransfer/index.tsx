@@ -46,11 +46,11 @@ const InternalTransfer = () => {
     searchBarcode: any,
   ) => {
     showPopup({
-      title: data.error.message
+      title: data.errorMessage
         ? `Failed to load search results with value = "${query}"`
         : null,
       message:
-        data.error.message ??
+        data.errorMessage ??
         `Failed to load search results with value = "${query}"`,
       positiveButton: {
         text: 'Retry',
@@ -158,7 +158,6 @@ const InternalTransfer = () => {
   };
 
   const onTransfer = () => {
-    // dispatch(showScreenLoading("Update Transfer"))
     const request: any = {
       status: 'COMPLETED',
       stockTransferNumber: '',
@@ -176,33 +175,6 @@ const InternalTransfer = () => {
         },
       ],
     };
-    // const actionCallback = (data: any) => {
-    //     if (data?.error) {
-    //         showPopup({
-    //             title: data.error.message
-    //                 ? `Failed to update`
-    //                 : null,
-    //             message:
-    //                 data.error.message ??
-    //                 `Failed to update`,
-    //             positiveButton: {
-    //                 text: 'Retry',
-    //                 callback: () => {
-    //                     dispatch(updateStockTransfer(request));
-    //                 },
-    //             },
-    //             negativeButtonText: 'Cancel',
-    //         });
-    //     } else {
-    //         if (data.length == 0) {
-    //             showPopup({
-    //                 message: `No search results`,
-    //                 positiveButton: {text: 'Ok'},
-    //             });
-    //         }
-    //         dispatch(hideScreenLoading());;
-    //     }
-    // };
     dispatch(updateStockTransfer(request));
   };
 
