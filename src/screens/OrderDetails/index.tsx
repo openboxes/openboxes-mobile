@@ -3,9 +3,13 @@ import styles from './styles';
 import { showScreenLoading, hideScreenLoading } from '../../redux/actions/main';
 import { connect } from 'react-redux';
 import { orderDetailsVMMapper } from './OrderDetailsVMMapper';
-import Header from '../../components/Header';
-import { FlatList, ListRenderItemInfo, Text, View } from 'react-native';
-import { Item } from '../../data/picklist/Item';
+import {
+  FlatList,
+  ListRenderItemInfo,
+  Text,
+  View,
+  BackHandler
+} from 'react-native';
 import { getPickListAction } from '../../redux/actions/orders';
 import { State, DispatchProps, Props } from './types';
 import PickListItem from './PickListItem';
