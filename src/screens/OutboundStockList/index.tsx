@@ -49,13 +49,6 @@ class OutboundStockList extends React.Component<Props, State> {
         });
       } else {
         if (data?.length > 0) {
-          // this.onPackingTapped(data[0])
-          // this.setState({
-          //     showList: true,
-          //     putAway: data[0],
-          //     putAwayList: data,
-          //     showDetail: true
-          // })
           this.setState({
             shipments: data
           });

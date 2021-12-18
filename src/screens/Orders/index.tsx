@@ -52,9 +52,6 @@ class Index extends React.Component<Props, State> {
             allOrders: data,
             resultCount: data.length
           });
-          if (data.length === 1) {
-            this.goToOrderDetailsScreen(data[0]);
-          }
         }
       }
 
@@ -62,10 +59,6 @@ class Index extends React.Component<Props, State> {
     };
     this.props.showScreenLoading('Loading..');
     this.props.getOrdersAction(query, actionCallback);
-  };
-
-  onBackButtonPress = () => {
-    this.props.exit();
   };
 
   goToOrderDetailsScreen = (order: Order) => {
@@ -94,7 +87,6 @@ class Index extends React.Component<Props, State> {
             orders={this.state.allOrders}
             onOrderTapped={this.goToOrderDetailsScreen}
           />
-          {/*<CentralMessage message={this.state.centralErrorMessage}/>*/}
         </View>
       </View>
     );
