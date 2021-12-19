@@ -27,7 +27,7 @@ const InboundReceiveDetail = () => {
     internalLocation: [],
     receiveLocation: shipmentItem['binLocation.name'],
     deliveryDate: shipmentData.expectedDeliveryDate,
-    quantityToReceive: shipmentItem.quantityRemaining.toString(),
+    quantityToReceive: Number(shipmentItem.quantityRemaining) || 0,
     error: null
   });
   useEffect(() => {
@@ -38,13 +38,10 @@ const InboundReceiveDetail = () => {
   const onReceive = () => {
     let errorTitle = '';
     let errorMessage = '';
-    if (state.quantityToReceive === null || state.quantityToReceive === '') {
+    if (!Number(state.quantityToReceive)) {
       errorTitle = 'Quantity!';
       errorMessage = 'Please fill the Quantity to Receive';
-    } else if (
-      parseInt(state.quantityToReceive, 10) >
-      parseInt(state.quantityRemaining, 10)
-    ) {
+    } else if (Number(state.quantityToReceive) > Number(shipmentItem.quantityRemaining)) {
       errorTitle = 'Quantity!';
       errorMessage = 'Quantity to Receive is greater than quantity remaining';
     }
@@ -234,11 +231,13 @@ const InboundReceiveDetail = () => {
             }
           }}
         />
-        <InputSpinner
-          title={'Quantity to Receive'}
-          value={state.quantityToReceive}
-          setValue={onChangeQuantity}
-        />
+        <View style={styles.inputSpinner}>
+          <InputSpinner
+            title={'Quantity to Receive'}
+            value={state.quantityToReceive}
+            setValue={onChangeQuantity}
+          />
+        </View>
         <InputBox
           value={state.comments}
           disabled={false}
