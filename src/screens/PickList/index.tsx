@@ -1,33 +1,29 @@
 import React, {useEffect, useState} from 'react';
+import _ from 'lodash';
 import styles from './styles';
-import {ListRenderItemInfo, ScrollView, Text, View, ToastAndroid} from 'react-native';
-import {pickListVMMapper} from './PickListVMMapper';
-import {hideScreenLoading} from '../../redux/actions/main';
-import {useDispatch} from 'react-redux';
+import { ListRenderItemInfo, ScrollView, Text, View, ToastAndroid } from 'react-native';
+import { pickListVMMapper } from './PickListVMMapper';
+import { hideScreenLoading } from '../../redux/actions/main';
+import { useDispatch } from 'react-redux';
 import showPopup from '../../components/Popup';
-import {
-  getPickListItemAction,
-  submitPickListItem,
-} from '../../redux/actions/orders';
+import { submitPickListItem } from '../../redux/actions/orders';
 import {
   searchProductByCodeAction,
   searchProductGloballyAction,
 } from '../../redux/actions/products';
-import {searchLocationByLocationNumber} from '../../redux/actions/locations';
-import {useNavigation, useRoute} from '@react-navigation/native';
+import { searchLocationByLocationNumber } from '../../redux/actions/locations';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import Button from '../../components/Button';
 import useEventListener from '../../hooks/useEventListener';
 import InputBox from '../../components/InputBox';
 import Carousel from 'react-native-snap-carousel';
-import {device} from '../../constants';
-import {PicklistItem} from '../../data/picklist/PicklistItem';
+import { device } from '../../constants';
+import { PicklistItem } from '../../data/picklist/PicklistItem';
 import InputSpinner from '../../components/InputSpinner';
-import * as Sentry from '@sentry/react-native';
 
 const PickOrderItem = () => {
   const route = useRoute();
   const dispatch = useDispatch();
-  const navigation = useNavigation();
   const barcodeData = useEventListener();
   const [pickListItemData, setPickListItemData] = useState<any>([]);
   const [state, setState] = useState<any>({
@@ -43,10 +39,9 @@ const PickOrderItem = () => {
     lotNumber: '',
     binLocationName: '',
   });
+  const navigation = useNavigation();
   const vm = pickListVMMapper(route.params);
-  useEffect(() => {
-    getPickListItem();
-  }, []);
+
   useEffect(() => {
     if (barcodeData && Object.keys(barcodeData).length !== 0) {
       onBarCodeScanned(barcodeData.data);
@@ -75,8 +70,8 @@ const PickOrderItem = () => {
       negativeButtonText: 'Cancel',
     });
   };
+
   const onBarCodeScanned = (query: string) => {
-    // handleBarcodeScan(barcodeNo);
     if (!query) {
       showPopup({
         message: 'Search query is empty',
@@ -163,39 +158,20 @@ const PickOrderItem = () => {
   useEffect(() => {
     const data =  vm.order.picklist? vm.order.picklist.picklistItems : [];
     setPickListItemData(data);
-  }, [])
+  }, []);
 
-  const getPickListItem = async () => {
-    try {
-      const {pickListItem}: any = route.params;
-      const actionCallback = (data: any) => {
-        const currentState = {...state};
-        currentState.productCode = data?.productCode;
-        currentState.binLocationName = data?.['binLocation.name'] ?? 'Default';
-        currentState.lotNumber = data?.lotNumber ?? 'Default';
-        currentState.pickListItem = data;
-        setState(currentState);
-      };
-      dispatch(getPickListItemAction(pickListItem?.id, actionCallback));
-    } catch (e) {
-      Sentry.captureException('Error while getPickListItem', e.message);
-    }
-  };
+  const formSubmit = (id: string) => {
+    const itemToSave = _.find(pickListItemData, item => item.id === id);
 
-  const formSubmit = () => {
     try {
       let errorTitle = '';
       let errorMessage = '';
-      /*if (state.product == null) {
-                    errorTitle = 'Product Code!';
-                    errorMessage = 'Please scan Product Code.';
-                  } else */
-      if (state.quantityPicked == null || state.quantityPicked == '') {
-        errorTitle = 'Quantity Pick!';
+      if (!Number(itemToSave.quantityToPick)) {
+        errorTitle = 'Quantity To Pick!';
         errorMessage = 'Please pick some quantity.';
-      } else if (vm.picklistItems.quantityPicked === state.quantityPicked) {
-        errorTitle = 'Quantity Pick!';
-        errorMessage = 'Quantity picked is not valid';
+      } else if (Number(itemToSave.quantityToPick) === Number(itemToSave.quantityRemaining)) {
+        errorTitle = 'Quantity To Pick!';
+        errorMessage = 'Quantity to pick cannot exceed quantity remaining!';
       }
       if (errorTitle != '') {
         showPopup({
@@ -205,33 +181,24 @@ const PickOrderItem = () => {
         });
         return Promise.resolve(null);
       }
+
       const requestBody = {
-        'product.id': state.pickListItem.product?.id,
-        productCode: state.pickListItem.product.productCode,
-        'inventoryItem.id': state.pickListItem.inventoryItem.id,
-        'binLocation.id': state.pickListItem.binLocation
-          ? state.pickListItem.binLocation?.id
-          : '',
-        'binLocation.locationNumber': state.pickListItem.binLocation
-          ? state.pickListItem.binLocation?.locationNumber
-          : state.binLocationSearchQuery,
-        quantityPicked: state.quantityPicked,
-        'picker.id': '',
-        datePicked: '',
-        reasonCode: '',
-        comment: '',
-        forceUpdate: false,
+        // TODO: If scanning will be involved, the product id should be validated or updated within 'pickListItemData'
+        'product.id': itemToSave['product.id'],
+        productCode: itemToSave.productCode,
+        quantityPicked: itemToSave.quantityToPick,
       };
+
       const actionCallback = (data: any) => {
         if (data?.error) {
           showPopup({
-            title: data.errorMessage ? `Failed to load results` : null,
-            message: data.errorMessage ?? `Failed to load results`,
+            title: data.message ? 'Failed to load results' : null,
+            message: data.message || 'Failed to load results',
             negativeButtonText: 'Cancel',
           });
         } else {
           const {order, pickListItem}: any = route.params;
-          ToastAndroid.show('Pick item successfully!!', ToastAndroid.SHORT);
+          ToastAndroid.show('Picked item successfully!', ToastAndroid.SHORT);
           // @ts-ignore
           navigation.navigate('OrderDetails', {
             order,
@@ -239,12 +206,13 @@ const PickOrderItem = () => {
           });
         }
       };
+
       dispatch(
         submitPickListItem(
-          state.pickListItem?.id as string,
+          itemToSave.id as string,
           requestBody,
           actionCallback,
-        ),
+        )
       );
     } catch (e) {
       const title = e.message ? 'Failed submit item' : null;
@@ -252,11 +220,9 @@ const PickOrderItem = () => {
       showPopup({
         title: title,
         message: message,
-        // positiveButtonText: "Retry",
         negativeButtonText: 'Cancel',
       });
       return Promise.resolve(null);
-    } finally {
     }
   };
 
@@ -358,7 +324,7 @@ const PickOrderItem = () => {
     picklistItemData[index].quantityToPick = parseInt(query);
     setPickListItemData([ ...picklistItemData ]);
 
-setState({
+    setState({
       ...state,
       quantityPicked: query,
     });
@@ -421,7 +387,7 @@ setState({
                   </View>
                   <View style={styles.from}>
                     <InputBox
-                      value={state.productCode}
+                      value={item.productCode}
                       disabled={true}
                       editable={false}
                       onEndEdit={productSearchQueryChange}
@@ -429,7 +395,7 @@ setState({
                       label={'Product Code'}
                     />
                     <InputBox
-                      value={state.lotNumber}
+                      value={item.lotNumber}
                       label={'Lot Number'}
                       disabled={true}
                       onEndEdit={binLocationSearchQueryChange}
@@ -437,7 +403,7 @@ setState({
                       editable={false}
                     />
                     <InputBox
-                      value={state.binLocationName}
+                      value={item['binLocation.name']}
                       label={'Bin Location'}
                       disabled={true}
                       onEndEdit={binLocationSearchQueryChange}
@@ -448,10 +414,10 @@ setState({
                     <InputSpinner
                       title={"Quantity to Pick"}
                       setValue={(value) => quantityPickedChange(value, index)}
-                      value={item.quantityToPick}
+                      value={item.quantityRemaining}
                     />
                     </View>
-                    <Button title="Pick Item" onPress={formSubmit} />
+                    <Button title="Pick Item" onPress={() => formSubmit(item.id)} />
                   </View>
                 </ScrollView>
                 <View style={styles.bottom}></View>

@@ -34,7 +34,7 @@ function* getOrders(action: any) {
     if (error.code != 401) {
       yield action.callback({
         error: true,
-        message: errorMessage
+        message: error.message
       });
     }
   }
@@ -77,11 +77,12 @@ function* getPickList(action: any) {
     if (error.code != 401) {
       yield action.callback({
         error: true,
-        message: errorMessage
+        message: error.message
       });
     }
   }
 }
+
 function* getPickListItem(action: any) {
   try {
     const response: GetPickListItemApiResponse = yield call(
@@ -97,7 +98,7 @@ function* getPickListItem(action: any) {
     if (error.code != 401) {
       yield action.callback({
         error: true,
-        message: errorMessage
+        message: error.message,
       });
     }
   }
@@ -119,7 +120,7 @@ function* submitPickListItem(action: any) {
     if (error.code != 401) {
       yield action.callback({
         error: true,
-        message: errorMessage
+        message: error.message
       });
     }
   }
