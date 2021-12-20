@@ -24,10 +24,9 @@ export function getPickListAction(
   id: string,
   callback: (products: any) => void,
 ) {
-  console.log('action OK');
   return {
     type: GET_PICKLIST_REQUEST,
-    payload: {id},
+    payload: { id },
     callback,
   };
 }
@@ -36,10 +35,9 @@ export function getPickListItemAction(
     id: string,
     callback: (products: any) => void,
 ) {
-  console.log('action OK');
   return {
     type: GET_PICKLIST_ITEM_REQUEST,
-    payload: {id},
+    payload: { id },
     callback,
   };
 }
@@ -49,10 +47,9 @@ export function submitPickListItem(
     requestBody: any,
     callback: (data: any) => void,
 ) {
-  console.log('action OK');
   return {
     type: SUBMIT_PICKLIST_ITEM_PICKUP_REQUEST,
-    payload: {id, requestBody},
+    payload: { id, requestBody },
     callback,
   };
 }
@@ -60,7 +57,7 @@ export function submitPickListItem(
 export function getStockMovements(direction: string | null, status: string | null, callback: (products: any) => void) {
   return {
     type: GET_STOCK_MOVEMENT_LIST,
-    payload: {direction, status},
+    payload: { direction, status },
     callback,
   };
 }
