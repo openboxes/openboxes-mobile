@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import { DispatchProps, Props, State } from './types';
 import React, { ReactElement } from 'react';
 import { getOrdersAction } from '../../redux/actions/orders';
@@ -32,10 +33,7 @@ class PutawayList extends React.Component<Props, State> {
     };
   }
   componentDidMount() {
-    this.searchOrder('');
-  }
-
-  componentDidMount() {
+   // this.searchOrder('');
     this.fetchPutAways(null);
   }
 
@@ -141,12 +139,15 @@ class PutawayList extends React.Component<Props, State> {
     });
   };
   onPutAwayTapped = (putAway: PutAway) => {
-    this.props.navigation.navigate('PutawayDetails', {
-      putAway: putAway,
-      exit: () => {
-        this.props.navigation.navigate('PutawayList');
-      }
-    });
+    console.log('PUT AWAY :::', JSON.stringify(putAway));
+    if (putAway?.putawayItems[0]?.quantity > 1) {
+      this.props.navigation.navigate('PutawayDetails', {
+        putAway: putAway,
+        exit: () => {
+          this.props.navigation.navigate('PutawayList');
+        }
+      });
+    }
   };
 
   render() {
