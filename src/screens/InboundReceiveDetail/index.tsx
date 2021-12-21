@@ -226,7 +226,7 @@ const InboundReceiveDetail = () => {
           getMoreData={(d: any) => console.debug('get More data api call', d)} // for calling api for more results
           selectedData={(selectedItem: any) => {
             if (selectedItem) {
-              state.receiveLocation = selectedItem.name;
+              state.receiveLocation = selectedItem;
               setState({ ...state });
             }
           }}
