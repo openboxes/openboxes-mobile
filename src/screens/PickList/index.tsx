@@ -169,7 +169,7 @@ const PickOrderItem = () => {
       if (!Number(itemToSave.quantityToPick)) {
         errorTitle = 'Quantity To Pick!';
         errorMessage = 'Please pick some quantity.';
-      } else if (Number(itemToSave.quantityToPick) === Number(itemToSave.quantityRemaining)) {
+      } else if (Number(itemToSave.quantityToPick) > Number(itemToSave.quantityRemaining)) {
         errorTitle = 'Quantity To Pick!';
         errorMessage = 'Quantity to pick cannot exceed quantity remaining!';
       }
