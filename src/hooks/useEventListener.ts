@@ -13,8 +13,6 @@ import {
   PROPERTY,
   VERSION,
 } from './constant';
-import {searchBarcode} from "../redux/actions/products";
-import showPopup from "../components/Popup";
 import {useDispatch} from "react-redux";
 
 const useEventListener = () => {

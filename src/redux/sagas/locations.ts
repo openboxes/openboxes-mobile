@@ -34,7 +34,7 @@ function* getLocations(action: any) {
     if (error.code != 401) {
       yield action.callback({
         error: true,
-        message: errorMessage
+        errorMessage: error.message
       });
     }
   }
@@ -58,7 +58,7 @@ function* setCurrentLocation(action: any) {
     if (error.code !== 401) {
       yield action.callback({
         error: true,
-        message: errorMessage
+        errorMessage: error.message
       });
     }
   }
@@ -81,7 +81,7 @@ function* searchLocationByLocationNumber(action: any) {
     if (error.code != 401) {
       yield action.callback({
         error: true,
-        message: errorMessage
+        errorMessage: error.message
       });
     }
   }
@@ -100,7 +100,7 @@ function* getInternalLocations(action: any) {
   } catch (e) {
     yield action.callback({
       error: true,
-      message: e.message
+      errorMessage: e.message
     });
   }
 }
@@ -122,7 +122,7 @@ function* getInternalLocationsDetails(action: any) {
   } catch (e) {
     yield action.callback({
       error: true,
-      message: e.message
+      errorMessage: e.message
     });
   }
 }
@@ -140,7 +140,7 @@ function* getInternalLocationDetails(action: any) {
   } catch (e) {
     yield action.callback({
       error: true,
-      message: e.message
+      errorMessage: e.message
     });
   }
 }
@@ -174,7 +174,7 @@ function* fetchProductSummary(action: any) {
   } catch (e) {
     yield action.callback({
       error: true,
-      message: e.message
+      errorMessage: e.message
     });
   }
 }
