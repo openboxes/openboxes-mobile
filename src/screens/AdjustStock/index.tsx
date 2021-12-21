@@ -96,7 +96,7 @@ const AdjustStock = () => {
   );
 
   const [comments, setComments] = useState('');
-  const [quantityAdjusted, setQuantityAdjusted] = useState('');
+  const [quantityAdjusted, setQuantityAdjusted] = useState('0');
   const [reasonCode, setReasonCode] = useState(null);
   const [showDropDown, setShowDropDown] = useState(false);
 
@@ -221,7 +221,7 @@ const AdjustStock = () => {
       </View>
       <View style={styles.bottom}>
         <Button
-          disabled={!comments || !reasonCode || !quantityAdjusted}
+          disabled={!comments || !reasonCode}
           title="Adjust Stock"
           onPress={onSave}
         />
