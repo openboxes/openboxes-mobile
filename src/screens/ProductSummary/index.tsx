@@ -19,7 +19,8 @@ const ProductSummary = () => {
     (state: RootState) => state.mainReducer.currentLocation
   );
   const [state, setState] = useState<any>({
-    productSummary: []
+    productSummary: [],
+    productData:[],
   });
 
   useEffect(() => {
@@ -48,6 +49,7 @@ const ProductSummary = () => {
             data,
             (item: { quantityOnHand: number }) => item.quantityOnHand > 0
           );
+          state.productData = state.productSummary
         }
         setState({ ...state });
       }
@@ -55,57 +57,13 @@ const ProductSummary = () => {
     dispatch(getLocationProductSummary(id, callback));
   };
 
-  const showErrorPopup = (
-    data: any,
-    query: any,
-    actionCallback: any,
-    searchBarcode: any
-  ) => {
-    showPopup({
-      title: data.errorMessage
-        ? `Failed to load search results with value = "${query}"`
-        : null,
-      message:
-        data.errorMessage ??
-        `Failed to load search results with value = "${query}"`,
-      positiveButton: {
-        text: 'Retry',
-        callback: () => {
-          dispatch(searchBarcode(query, actionCallback));
-        }
-      },
-      negativeButtonText: 'Cancel'
-    });
-  };
-
   const searchProduct = (query: string) => {
-    // eslint-disable-next-line complexity
-    const actionCallback = (data: any) => {
-      if (data?.error) {
-        showErrorPopup(
-          data,
-          query,
-          actionCallback,
-          searchProductGloballyAction
-        );
-      } else {
-        if (data.length === 0) {
-          showPopup({
-            message: `No search results found for product name "${query}"`,
-            positiveButton: { text: 'Ok' }
-          });
-        } else {
-          if (data && Object.keys(data).length !== 0) {
-            state.productSummary = _.filter(
-              data,
-              (item: { quantityOnHand: number }) => item.quantityOnHand > 0
-            );
-          }
-          setState({ ...state });
-        }
-      }
-    };
-    dispatch(searchProductGloballyAction(query, actionCallback));
+        if (query && Object.keys(query).length !== 0) {
+              state.productSummary = _.filter(
+              state.productSummary,
+              (item: { productCode: string, productName: string }) => item.productCode.includes(query) || item.productName.includes(query));
+        } else state.productSummary = state.productData;
+        setState({ ...state });
   };
 
   const RenderData = ({ title, subText }: any): JSX.Element => {
