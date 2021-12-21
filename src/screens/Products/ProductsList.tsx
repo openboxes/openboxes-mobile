@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import React, {ReactElement} from 'react';
 import Theme from '../../utils/Theme';
-
+import EmptyView from '../../components/EmptyView';
 export interface Props {
   products: Product[] | null;
   onProductTapped: (product: Product) => void;
@@ -19,6 +19,7 @@ export default function ProductsList(props: Props) {
   return props.products ? (
     <FlatList
       data={props.products}
+      ListEmptyComponent={<EmptyView />}
       renderItem={(item: ListRenderItemInfo<Product>) =>
         renderProduct(item.item, () => props.onProductTapped(item.item))
       }

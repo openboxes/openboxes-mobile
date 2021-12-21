@@ -1,14 +1,14 @@
 import React from 'react';
-import {View, Text, FlatList, TouchableOpacity} from 'react-native';
+import { View, Text, FlatList, TouchableOpacity } from 'react-native';
 import InboundOrderProps from './types';
-import {Card} from 'react-native-paper';
+import { Card } from 'react-native-paper';
 import styles from './styles';
-import {useNavigation} from '@react-navigation/native';
-
-const InboundOrderList = ({data}: InboundOrderProps) => {
+import { useNavigation } from '@react-navigation/native';
+import EmptyView from '../../components/EmptyView';
+const InboundOrderList = ({ data }: InboundOrderProps) => {
   const navigation = useNavigation<any>();
 
-  const RenderOrderData = ({title, subText}: any): JSX.Element => {
+  const RenderOrderData = ({ title, subText }: any): JSX.Element => {
     return (
       <View style={styles.columnItem}>
         <Text style={styles.label}>{title}</Text>
@@ -18,15 +18,16 @@ const InboundOrderList = ({data}: InboundOrderProps) => {
   };
 
   const navigateToInboundDetails = (item: any) => {
-    navigation.navigate('InboundDetails', {shipmentDetails: item});
+    navigation.navigate('InboundDetails', { shipmentDetails: item });
   };
 
-  const RenderListItem = ({item, index}: any): JSX.Element => {
+  const RenderListItem = ({ item, index }: any): JSX.Element => {
     return (
       <TouchableOpacity
         onPress={() => navigateToInboundDetails(item)}
         style={styles.itemView}
-        key={index}>
+        key={index}
+      >
         <Card>
           <Card.Content>
             <View style={styles.rowItem}>
@@ -55,12 +56,14 @@ const InboundOrderList = ({data}: InboundOrderProps) => {
       </TouchableOpacity>
     );
   };
-  return (
+  return data.length > 0 ? (
     <FlatList
       data={data}
       keyExtractor={(item, index) => item + index}
       renderItem={RenderListItem}
     />
+  ) : (
+    <EmptyView />
   );
 };
 export default InboundOrderList;

@@ -19,7 +19,7 @@ import PutAwayItem from '../../components/PutAwayItem';
 import PutAwayItems from '../../data/putaway/PutAwayItems';
 import { fetchPutAwayFromOrderAction } from '../../redux/actions/putaways';
 import PutAway from '../../data/putaway/PutAway';
-
+import EmptyView from '../../components/EmptyView';
 class PutawayList extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
@@ -128,6 +128,7 @@ class PutawayList extends React.Component<Props, State> {
           <View style={styles.contentContainer}>
             <FlatList
               data={this.state.putAwayList}
+              ListEmptyComponent={<EmptyView />}
               renderItem={(item: ListRenderItemInfo<PutAway>) => (
                 <TouchableOpacity
                   style={styles.listItemContainer}

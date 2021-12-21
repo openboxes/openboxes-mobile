@@ -14,7 +14,7 @@ import PutAway from '../../data/putaway/PutAway';
 import PutAwayItems from '../../data/putaway/PutAwayItems';
 import { connect } from 'react-redux';
 import PutAwayItem from '../../components/PutAwayItem';
-
+import EmptyView from '../../components/EmptyView';
 export interface Props {
   putAway: PutAway | null;
   exit: () => void;
@@ -87,6 +87,7 @@ class PutawayDetail extends React.Component<Props, State> {
         {
           <FlatList
             data={this.state.putAway?.putawayItems}
+            ListEmptyComponent={<EmptyView />}
             renderItem={(putAwayItem: ListRenderItemInfo<PutAwayItems>) => (
               <PutAwayItem
                 item={putAwayItem.item}

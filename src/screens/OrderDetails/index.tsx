@@ -14,7 +14,7 @@ import { getPickListAction } from '../../redux/actions/orders';
 import { State, DispatchProps, Props } from './types';
 import PickListItem from './PickListItem';
 import { PicklistItem } from '../../data/picklist/PicklistItem';
-
+import EmptyView from '../../components/EmptyView';
 class OrderDetails extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
@@ -73,16 +73,6 @@ class OrderDetails extends React.Component<Props, State> {
     });
   };
 
-  renderEmptyContainer() {
-    return (
-      <View style={styles.row}>
-        <View style={styles.col50}>
-          <Text style={styles.value}>No picklist items</Text>
-        </View>
-      </View>
-    );
-  }
-
   render() {
     const vm = orderDetailsVMMapper(this.props.route?.params, this.state);
     return (
@@ -118,7 +108,9 @@ class OrderDetails extends React.Component<Props, State> {
           <View style={styles.bottomList}>
             <FlatList
               data={this.state.pickList?.picklistItems}
-              ListEmptyComponent={this.renderEmptyContainer()}
+              ListEmptyComponent={
+                <EmptyView description="No Pick List Items, yet!!" />
+              }
               ListFooterComponent={<View style={styles.bottomList} />}
               renderItem={(item: ListRenderItemInfo<PicklistItem>) => (
                 <PickListItem

@@ -21,6 +21,7 @@ import styles from './styles';
 import Button from '../../components/Button';
 import showPopup from '../../components/Popup';
 import PrintModal from '../../components/PrintModal';
+import EmptyView from '../../components/EmptyView';
 
 import SelectDropdown from 'react-native-select-dropdown';
 const containerStatus = [
@@ -208,6 +209,7 @@ class LpnDetail extends React.Component<Props, State> {
           />
           <FlatList
             data={this.state.container?.shipmentItems}
+            ListEmptyComponent={<EmptyView />}
             renderItem={(
               shipmentItem: ListRenderItemInfo<ContainerShipmentItem>
             ) => (
