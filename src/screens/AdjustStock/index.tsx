@@ -96,7 +96,7 @@ const AdjustStock = () => {
   );
 
   const [comments, setComments] = useState('');
-  const [quantityAdjusted, setQuantityAdjusted] = useState('0');
+  const [quantityAdjusted, setQuantityAdjusted] = useState(item.quantityAvailableToPromise);
   const [reasonCode, setReasonCode] = useState(null);
   const [showDropDown, setShowDropDown] = useState(false);
 
