@@ -109,7 +109,10 @@ class OrderDetails extends React.Component<Props, State> {
             <FlatList
               data={this.state.pickList?.picklistItems}
               ListEmptyComponent={
-                <EmptyView description="No Pick List Items, yet!!" />
+                <EmptyView
+                  title="Order Detail"
+                  description="There are no items to pick, yet!!"
+                />
               }
               ListFooterComponent={<View style={styles.bottomList} />}
               renderItem={(item: ListRenderItemInfo<PicklistItem>) => (

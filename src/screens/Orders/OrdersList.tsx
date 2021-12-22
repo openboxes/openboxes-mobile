@@ -23,7 +23,9 @@ export default function OrdersList(props: Props) {
       renderItem={(item: ListRenderItemInfo<Order>) =>
         renderOrder(item.item, () => props.onOrderTapped(item.item))
       }
-      ListEmptyComponent={<EmptyView />}
+      ListEmptyComponent={
+        <EmptyView title="Picking" description="There are no items to pick" />
+      }
       keyExtractor={(order) => order.id}
       style={styles.list}
     />

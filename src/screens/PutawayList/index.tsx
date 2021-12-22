@@ -128,7 +128,12 @@ class PutawayList extends React.Component<Props, State> {
           <View style={styles.contentContainer}>
             <FlatList
               data={this.state.putAwayList}
-              ListEmptyComponent={<EmptyView />}
+              ListEmptyComponent={
+                <EmptyView
+                  title="Putaway"
+                  description="There are no items to putaway"
+                />
+              }
               renderItem={(item: ListRenderItemInfo<PutAway>) => (
                 <TouchableOpacity
                   style={styles.listItemContainer}

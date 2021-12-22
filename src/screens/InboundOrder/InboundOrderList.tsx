@@ -63,7 +63,7 @@ const InboundOrderList = ({ data }: InboundOrderProps) => {
       renderItem={RenderListItem}
     />
   ) : (
-    <EmptyView />
+    <EmptyView title="Receiving" description="There are no items to receive" />
   );
 };
 export default InboundOrderList;

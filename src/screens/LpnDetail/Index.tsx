@@ -209,7 +209,12 @@ class LpnDetail extends React.Component<Props, State> {
           />
           <FlatList
             data={this.state.container?.shipmentItems}
-            ListEmptyComponent={<EmptyView />}
+            ListEmptyComponent={
+              <EmptyView
+                title="LPN Details"
+                description="There are no items to LPN"
+              />
+            }
             renderItem={(
               shipmentItem: ListRenderItemInfo<ContainerShipmentItem>
             ) => (

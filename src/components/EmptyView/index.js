@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Text, View, Image } from 'react-native';
@@ -5,22 +6,26 @@ import styles from './EmptyViewStyle';
 import { Button } from 'react-native-paper';
 
 const EmptyView = ({
-  title = 'Oops!!!',
-  description = 'Your List is Empty, yet!!',
-  onPress
+  title = '',
+  description = 'No item found, List is Empty, yet!!',
+  onPress,
+  isRefresh = false,
+  uri = require('../../assets/images/packing.png')
 }) => {
+  console.log(
+    'this.props.fullScreenLoadingIndicator ',
+    this.props
+  );
   return (
     <View style={styles.container}>
-      <Image
-        source={require('../../assets/images/empty_box.png')}
-        style={styles.stashEmpty}
-        resizeMode={'contain'}
-      />
+      <Image source={uri} style={styles.stashEmpty} resizeMode={'contain'} />
       <Text style={styles.titleText}>{title}</Text>
       <Text style={styles.subTitleText}>{description}</Text>
-      <Button icon="refresh" mode="outlined" onPress={onPress}>
-        Refresh
-      </Button>
+      {isRefresh && (
+        <Button icon="refresh" mode="outlined" onPress={onPress}>
+          Refresh
+        </Button>
+      )}
     </View>
   );
 };

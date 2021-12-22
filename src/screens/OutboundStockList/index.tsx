@@ -77,7 +77,12 @@ class OutboundStockList extends React.Component<Props, State> {
         <View style={styles.contentContainer}>
           <FlatList
             data={this.state.shipments}
-            ListEmptyComponent={<EmptyView />}
+            ListEmptyComponent={
+              <EmptyView
+                title="Packing"
+                description=" There are no items to pack"
+              />
+            }
             renderItem={(shipment: ListRenderItemInfo<Shipment>) => (
               <TouchableOpacity
                 style={styles.listItemContainer}

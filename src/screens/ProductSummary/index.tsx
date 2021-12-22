@@ -160,7 +160,12 @@ const ProductSummary = () => {
       <FlatList
         renderItem={({ item, index }) => renderListItem(item, index)}
         data={state.productSummary}
-        ListEmptyComponent={<EmptyView />}
+        ListEmptyComponent={
+          <EmptyView
+            title="Inventory"
+            description="There are no items in inventory"
+          />
+        }
         keyExtractor={(item, index) => item + index}
       />
     </View>

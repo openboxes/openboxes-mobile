@@ -84,25 +84,29 @@ class PutawayDetail extends React.Component<Props, State> {
             </Text>
           </View>
         </View>
-        {
-          <FlatList
-            data={this.state.putAway?.putawayItems}
-            ListEmptyComponent={<EmptyView />}
-            renderItem={(putAwayItem: ListRenderItemInfo<PutAwayItems>) => (
-              <PutAwayItem
-                item={putAwayItem.item}
-                onItemTapped={() =>
-                  this.goToPutawayItemDetailScreen(
-                    this.state.putAway,
-                    putAwayItem.item
-                  )
-                }
-              />
-            )}
-            keyExtractor={(item) => item.id}
-            style={styles.list}
-          />
-        }
+
+        <FlatList
+          data={this.state.putAway?.putawayItems}
+          ListEmptyComponent={
+            <EmptyView
+              title="Putaway Details"
+              description="There are no items to putaway details"
+            />
+          }
+          renderItem={(putAwayItem: ListRenderItemInfo<PutAwayItems>) => (
+            <PutAwayItem
+              item={putAwayItem.item}
+              onItemTapped={() =>
+                this.goToPutawayItemDetailScreen(
+                  this.state.putAway,
+                  putAwayItem.item
+                )
+              }
+            />
+          )}
+          keyExtractor={(item) => item.id}
+          style={styles.list}
+        />
       </TouchableOpacity>
     );
   }

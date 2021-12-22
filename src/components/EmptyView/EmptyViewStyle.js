@@ -25,6 +25,6 @@ export default StyleSheet.create({
   },
   stashEmpty: {
     height: 250,
-    width: 219
+    width: 250
   }
 });

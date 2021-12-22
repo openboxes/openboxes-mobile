@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import React, { Component } from 'react';
 import { DispatchProps, Props } from './types';
 import {
@@ -69,7 +70,7 @@ class PutawayCandidates extends Component<Props> {
           }
         }}
       >
-        <Text>{`Status - ${item['putawayStatus']}`}</Text>
+        <Text>{`Status - ${item.putawayStatus}`}</Text>
         <Text>{`Product Code - ${item['product.productCode']}`}</Text>
         <Text>{`Product Name - ${item['product.name']}`}</Text>
         <Text>{`Bin Location - ${item['currentLocation.name']}`}</Text>
@@ -79,7 +80,7 @@ class PutawayCandidates extends Component<Props> {
         <Text>{`Expiry Date - ${
           item['inventoryItem.expirationDate'] ?? 'Never'
         }`}</Text>
-        <Text>{`Quantity - ${item['quantity']}`}</Text>
+        <Text>{`Quantity - ${item.quantity}`}</Text>
       </TouchableOpacity>
     );
   };
@@ -96,12 +97,16 @@ class PutawayCandidates extends Component<Props> {
                 onRefresh={this.getScreenData}
               />
             }
-            ListEmptyComponent={<EmptyView />}
             data={updatedList}
             renderItem={({ item }) => this.renderItem(item)}
             keyExtractor={(item, index) => index}
           />
-        ) : null}
+        ) : (
+          <EmptyView
+            title="Putaway Candidates"
+            description=" There are no items in Putaway Candidates"
+          />
+        )}
       </SafeAreaView>
     );
   }
