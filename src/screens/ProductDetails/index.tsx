@@ -28,7 +28,6 @@ class ProductDetails extends React.Component<Props, State> {
 
   getProduct = () => {
     const { product } = this.props.route.params;
-    console.log(product);
     this.getProductDetails(product.id);
   };
 
@@ -38,7 +37,7 @@ class ProductDetails extends React.Component<Props, State> {
 
   handleClick = () => {
     const { product } = this.props.route.params;
-    this.props.getProductByIdAction(product.productCode, data => {
+    this.props.getProductByIdAction(product.id, data => {
       this.setState({ visible: true });
     });
   };
