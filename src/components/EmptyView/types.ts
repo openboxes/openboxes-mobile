@@ -6,8 +6,4 @@ export interface OwnProps {
   onPress?: () => void;
 }
 
-export interface StateProps {}
-
-export interface DispatchProps {}
-
-export type Props = OwnProps & StateProps & DispatchProps;
+export type Props = OwnProps;
