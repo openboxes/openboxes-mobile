@@ -34,7 +34,7 @@ function* fetchPutAwayFromOrder(action: any) {
     if (error.code != 401) {
       yield action.callback({
         error: true,
-        message: errorMessage
+        errorMessage: error.message
       });
     }
   }
@@ -56,7 +56,7 @@ function* submitPutawayItem(action: any) {
     if (error.code != 401) {
       yield action.callback({
         error: true,
-        message: errorMessage
+        errorMessage: error.message
       });
     }
   }
@@ -89,7 +89,7 @@ function* createPutawayOder(action: any) {
   } catch (error) {
     yield put(hideScreenLoading());
     yield action.callback({
-      message: errorMessage,
+      errorMessage: error.message,
       error: true
     });
   }

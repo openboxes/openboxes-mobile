@@ -38,7 +38,7 @@ function* fetchContainer(action: any) {
   } catch (e) {
     yield action.callback({
       error: true,
-      message: e.message,
+      errorMessage: e.message,
     });
   }
 }
@@ -56,7 +56,7 @@ function* getContainerDetail(action: any) {
     console.log('function* getContainer', e.message);
     yield action.callback({
       error: true,
-      message: e.message,
+      errorMessage: e.message,
     });
   }
 }
@@ -79,7 +79,7 @@ function* updateContainerStatus(action: any) {
         console.log('function* getStatusDetails', e.message);
         yield action.callback({
             error: true,
-            message: e.message,
+            errorMessage: e.message,
         });
     }
 }

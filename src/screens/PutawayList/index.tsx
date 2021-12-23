@@ -1,5 +1,6 @@
+/* eslint-disable complexity */
 import { DispatchProps, Props, State } from './types';
-import React, { ReactElement } from 'react';
+import React from 'react';
 import { getOrdersAction } from '../../redux/actions/orders';
 import {
   FlatList,
@@ -32,10 +33,6 @@ class PutawayList extends React.Component<Props, State> {
     };
   }
   componentDidMount() {
-    this.searchOrder('');
-  }
-
-  componentDidMount() {
     this.fetchPutAways(null);
   }
 
@@ -55,7 +52,7 @@ class PutawayList extends React.Component<Props, State> {
           negativeButtonText: 'Cancel'
         });
       } else {
-        if (data.length == 0) {
+        if (data.length === 0) {
           showPopup({
             title: data.errorMessage ? 'Failed to fetch Order' : 'Error',
             message: data.errorMessage ?? 'Failed to fetch Order with:' + query,
@@ -68,64 +65,33 @@ class PutawayList extends React.Component<Props, State> {
           });
         } else if (data.length === 1) {
           this.fetchPutAway(data[0]['id']);
-          // this.setState({showList: true})
-          // this.showPutAwayDetailsScreen(data[0])
         } else {
-          console.debug('orders found::' + data.length);
           this.setState({
             error: null
           });
-          //this.showPutAwayDetailsScreen(orders[0])
         }
       }
       this.props.hideScreenLoading();
     };
     this.props.getOrdersAction(query, actionCallback);
-    // this.fetchPutAway(query)
   };
 
   fetchPutAways = (query: any) => {
     const actionCallback = (data: any) => {
       if (!data || data?.error) {
-        const title = data.errorMessage
-          ? 'Failed to fetch PutAway Detail'
-          : null;
-        const message =
-          data.errorMessage ??
-          'Failed to fetch PutAway Detail with OrderNumber:' + query;
         return Promise.resolve(null);
       } else {
-        if (data?.length == 1) {
-          this.onPutAwayTapped(data[0]);
-          // this.setState({
-          //     showList: true,
-          //     putAway: data[0],
-          //     putAwayList: data,
-          //     showDetail: true
-          // })
-        } else {
-          this.setState({
-            showList: true,
-            putAwayList: data,
-            putAway: null
-          });
-        }
+        this.setState({
+          showList: true,
+          putAwayList: data,
+          putAway: null
+        });
       }
       this.props.hideScreenLoading();
     };
 
     this.props.fetchPutAwayFromOrderAction(query, actionCallback);
   };
-
-  // showPutAwayListScreen =()=> {
-  //   this.setState({
-  //     navigationState: new NavigationStateHere()
-  //   })
-  // }
-
-  // showPutAwayDetailsScreen = (order: Order) => {
-  //     this.props.navigation.navigate('PutAwayDetails', {orderId: order.id})
-  // }
 
   renderItem = (item: ListRenderItemInfo<PutAwayItems>) => {
     return <PutAwayItem item={item.item} />;
@@ -153,12 +119,6 @@ class PutawayList extends React.Component<Props, State> {
     const { showList } = this.state;
     return (
       <View style={styles.screenContainer}>
-        {/*<Header*/}
-        {/*  title='PutAway List'*/}
-        {/*  subtitle={'All Pending Put Away List'}*/}
-        {/*  backButtonVisible={true}*/}
-        {/*  onBackButtonPress={this.onBackButtonPress}*/}
-        {/*/>*/}
         <BarCodeSearchHeader
           onBarCodeSearchQuerySubmitted={this.searchOrder}
           placeHolder={'Search Orders by Name'}
@@ -203,59 +163,14 @@ class PutawayList extends React.Component<Props, State> {
                   </View>
                 </TouchableOpacity>
               )}
-              // renderItem={(item: ListRenderItemInfo<PutAwayItems>) => renderPutAwayItem(item.item, () => this.onItemTapped(this.props.order, item.item))}
-              // renderItem={this.renderItem}
               keyExtractor={(item) => item.id}
               style={styles.list}
             />
-            {/*<Text style={styles.name}>{vm.name}</Text>*/}
-
-            {/*<FlatList
-                                    data={this.state.putAway?.putawayItems}
-                                    renderItem={(item: ListRenderItemInfo<PicklistItem>) => (
-                                        <PutAwayItem
-                                            item={item.item}
-                                            onItemTapped={() => this.goToPutawayItemDetailScreen(this.state.putAway, item.item)}
-
-                                        />
-                                    )}
-                                    // renderItem={(item: ListRenderItemInfo<PutAwayItems>) => renderPutAwayItem(item.item, () => this.onItemTapped(this.props.order, item.item))}
-                                    // renderItem={this.renderItem}
-                                    keyExtractor={item => item.id}
-                                    style={styles.list}
-                                />*/}
           </View>
         ) : null}
       </View>
     );
   }
-}
-
-function renderPutAway(putAway: PutAway): ReactElement {
-  return (
-    <TouchableOpacity style={styles.listItemContainer}>
-      <View style={styles.row}>
-        <View style={styles.col50}>
-          <Text style={styles.label}>PutAway Number</Text>
-          <Text style={styles.value}>{putAway?.putawayNumber}</Text>
-        </View>
-        <View style={styles.col50}>
-          <Text style={styles.label}>Status</Text>
-          <Text style={styles.value}>{putAway?.putawayStatus}</Text>
-        </View>
-      </View>
-      <View style={styles.row}>
-        <View style={styles.col50}>
-          <Text style={styles.label}>Origin</Text>
-          <Text style={styles.value}>{putAway?.['origin.name']}</Text>
-        </View>
-        <View style={styles.col50}>
-          <Text style={styles.label}>Destination</Text>
-          <Text style={styles.value}>{putAway?.['destination.name']}</Text>
-        </View>
-      </View>
-    </TouchableOpacity>
-  );
 }
 
 const mapStateToProps = (state: RootState) => ({

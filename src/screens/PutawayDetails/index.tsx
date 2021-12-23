@@ -44,15 +44,13 @@ class PutawayDetail extends React.Component<Props, State> {
     putAway: PutAway,
     putAwayItem: PutAwayItems
   ) => {
-    if (putAwayItem?.quantity > 1) {
-      this.props.navigation.navigate('PutawayItemDetail', {
-        putAway,
-        putAwayItem: putAwayItem,
-        exit: () => {
-          this.props.navigation.navigate('PutawayList');
-        }
-      });
-    }
+    this.props.navigation.navigate('PutawayItemDetail', {
+      putAway,
+      putAwayItem: putAwayItem,
+      exit: () => {
+        this.props.navigation.navigate('PutawayList');
+      }
+    });
   };
 
   render() {

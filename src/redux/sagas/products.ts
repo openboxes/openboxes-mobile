@@ -37,7 +37,7 @@ function* getProducts(action: any) {
     if (error.code != 401) {
       yield action.callback({
         error: true,
-        message: errorMessage
+        errorMessage: error.message
       });
     }
   }
@@ -57,7 +57,7 @@ function* searchProductsByName(action: any) {
     if (error.code !== 401) {
       yield action.callback({
         error: true,
-        message: errorMessage
+        errorMessage: error.message
       });
     }
   }
@@ -80,7 +80,7 @@ function* searchProductByCode(action: any) {
     if (error.code != 401) {
       yield action.callback({
         error: true,
-        message: errorMessage
+        errorMessage: error.message
       });
     }
   }
@@ -100,7 +100,7 @@ function* searchProductGlobally(action: any) {
     if (error.code != 401) {
       yield action.callback({
         error: true,
-        message: errorMessage
+        errorMessage: error.message
       });
     }
   }
@@ -123,7 +123,7 @@ function* searchProductsByCategory(action: any) {
     if (error.code != 401) {
       yield action.callback({
         error: true,
-        message: errorMessage
+        errorMessage: error.message
       });
     }
   }
@@ -137,13 +137,13 @@ function* searchBarcode(action: any) {
       type: SEARCH_BARCODE_SUCCESS,
       payload: response.data
     });
-    yield action.callback(response.data);
+    yield action.callback(response);
     yield put(hideScreenLoading());
   } catch (error) {
     if (error.code != 401) {
       yield action.callback({
         error: true,
-        message: errorMessage
+        errorMessage: error.message
       });
     }
   }
@@ -160,10 +160,11 @@ function* getProductById(action: any) {
     yield action.callback(response.data);
     yield put(hideScreenLoading());
   } catch (error) {
+    yield put(hideScreenLoading());
     if (error.code != 401) {
       yield action.callback({
         error: true,
-        message: errorMessage
+        errorMessage: error.message
       });
     }
   }
@@ -183,7 +184,7 @@ function* printLabel(action: any) {
     yield put(hideScreenLoading());
     yield action.callback({
       error: true,
-      message: e.message
+      errorMessage: e.message
     });
   }
 }
@@ -202,7 +203,7 @@ function* stockAdjustments(action: any) {
     yield put(hideScreenLoading());
     yield action.callback({
       error: true,
-      message: e.message
+      errorMessage: e.message
     });
   }
 }
