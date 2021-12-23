@@ -4,10 +4,9 @@ import styles from './EmptyViewStyle';
 import { Button } from 'react-native-paper';
 import { connect } from 'react-redux';
 import { RootState } from '../../redux/reducers';
-import { DispatchProps, Props } from './types';
+import { Props } from './types';
 
 function EmptyView(props: Props) {
-  console.log('Proper Values ::', props);
   const {
     fullScreenLoadingIndicator,
     title,
