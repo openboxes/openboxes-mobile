@@ -20,12 +20,15 @@ const InboundReceiveDetail = () => {
   const [cancelRemaining, setCancelRemaining] = useState(false);
   const navigation = useNavigation();
   const location = useSelector(
-    (state: RootState) => state.locationsReducer.SelectedLocation,
+    (state: RootState) => state.locationsReducer.SelectedLocation
   );
   const [state, setState] = useState<any>({
     comments: '',
     internalLocation: [],
-    receiveLocation: shipmentItem['binLocation.name'],
+    receiveLocation: {
+      id: shipmentItem['binLocation.id'],
+      label: shipmentItem['binLocation.name']
+    },
     deliveryDate: shipmentData.expectedDeliveryDate,
     quantityToReceive: Number(shipmentItem.quantityRemaining) || 0,
     error: null
@@ -34,14 +37,18 @@ const InboundReceiveDetail = () => {
     getInternalLocation(location.id);
   }, [shipmentItem]);
 
-  // eslint-disable-next-line complexity
   const onReceive = () => {
     let errorTitle = '';
     let errorMessage = '';
-    if (!Number(state.quantityToReceive)) {
+    if (state.receiveLocation.id === undefined || !state.receiveLocation.id) {
+      errorTitle = 'Receiving Locations';
+      errorMessage = 'Please select Receiving Locations!';
+    } else if (!Number(state.quantityToReceive)) {
       errorTitle = 'Quantity!';
       errorMessage = 'Please fill the Quantity to Receive';
-    } else if (Number(state.quantityToReceive) > Number(shipmentItem.quantityRemaining)) {
+    } else if (
+      Number(state.quantityToReceive) > Number(shipmentItem.quantityRemaining)
+    ) {
       errorTitle = 'Quantity!';
       errorMessage = 'Quantity to Receive is greater than quantity remaining';
     }
@@ -202,10 +209,10 @@ const InboundReceiveDetail = () => {
         if (data && Object.keys(data).length !== 0) {
           let locationList: any[] = [];
           data.data.map((item: any) => {
-            const locationData ={
+            const locationData = {
               name: item.name,
               id: item.id
-            }
+            };
             locationList.push(locationData);
           });
           state.internalLocation = locationList;
