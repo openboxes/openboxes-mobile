@@ -43,7 +43,7 @@ const InboundOrder = () => {
         if (data && Object.keys(data).length !== 0) {
           state.inboundOrder = data.filter((item: any) => {
             return (
-              (item?.origin?.name?.toLowerCase() ===
+              (item?.destination?.name?.toLowerCase() ===
                 location?.name?.toLowerCase() &&
                 item.status === 'SHIPPED') ||
               item.status === 'PARTIALLY_RECEIVED'
