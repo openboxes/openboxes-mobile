@@ -7,7 +7,6 @@ import { Card } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 import showPopup from '../../components/Popup';
 import { getLocationProductSummary } from '../../redux/actions/locations';
-import { searchProductGloballyAction } from '../../redux/actions/products';
 import { RootState } from '../../redux/reducers';
 import BarCodeSearchHeader from '../Products/BarCodeSearchHeader';
 import _ from 'lodash';
@@ -20,7 +19,7 @@ const ProductSummary = () => {
   );
   const [state, setState] = useState<any>({
     productSummary: [],
-    productData:[],
+    productData: [],
   });
 
   useEffect(() => {
@@ -58,12 +57,12 @@ const ProductSummary = () => {
   };
 
   const searchProduct = (query: string) => {
-        if (query && Object.keys(query).length !== 0) {
-              state.productSummary = _.filter(
-              state.productSummary,
-              (item: { productCode: string, productName: string }) => item.productCode.includes(query) || item.productName.includes(query));
-        } else state.productSummary = state.productData;
-        setState({ ...state });
+    if (query && Object.keys(query).length !== 0) {
+      state.productSummary = _.filter(
+        state.productSummary,
+        (item: { productCode: string, productName: string }) => item.productCode.includes(query) || item.productName.includes(query));
+    } else state.productSummary = state.productData;
+    setState({...state});
   };
 
   const RenderData = ({ title, subText }: any): JSX.Element => {
