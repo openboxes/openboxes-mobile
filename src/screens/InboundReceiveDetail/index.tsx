@@ -84,7 +84,7 @@ const InboundReceiveDetail = () => {
   const onChangeComment = (text: string) => {
     setState({ ...state, comments: text });
   };
-console.log(cancelRemaining)
+
   const onChangeQuantity = (text: string) => {
     setState({ ...state, quantityToReceive: text });
   };
@@ -250,7 +250,8 @@ console.log(cancelRemaining)
       </View>
       <Radio
         title={"Cancel all remaining"}
-        setValue={setCancelRemaining}
+        setChecked={setCancelRemaining}
+        checked={cancelRemaining}
         disabled={Number(state.quantityToReceive) === Number(shipmentItem.quantityRemaining)}
       />
       <View style={styles.bottom}>
