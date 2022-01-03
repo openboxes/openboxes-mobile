@@ -61,7 +61,9 @@ const ProductSummary = () => {
       state.productSummary = _.filter(
         state.productSummary,
         (item: { productCode: string, productName: string }) => item.productCode.includes(query) || item.productName.includes(query));
-    } else state.productSummary = state.productData;
+    } else {
+      state.productSummary = state.productData;
+    }
     setState({...state});
   };
 
