@@ -17,11 +17,11 @@ const Scan = () => {
 
   const onSuccess = (data: any, query: any) => {
     if (data.type === 'Product') {
-      navigateToProduct(data);
+      navigateToProduct(data.data);
     } else if (data.type === 'Location') {
       navigateToLocationDetails(query);
     } else if (data.type === 'Container') {
-      navigateToLPNDetails(data.id, data?.shipment?.shipmentNumber ?? '');
+      navigateToLPNDetails(data.data.id, data?.data?.shipmentNumber ?? '');
     }
   };
 
