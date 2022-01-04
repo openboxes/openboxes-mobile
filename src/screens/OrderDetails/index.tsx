@@ -111,7 +111,7 @@ class OrderDetails extends React.Component<Props, State> {
               ListEmptyComponent={
                 <EmptyView
                   title="Order Detail"
-                  description="There are no items to pick, yet!!"
+                  description="There are no items to pick"
                 />
               }
               ListFooterComponent={<View style={styles.bottomList} />}

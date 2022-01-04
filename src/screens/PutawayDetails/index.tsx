@@ -90,7 +90,7 @@ class PutawayDetail extends React.Component<Props, State> {
           ListEmptyComponent={
             <EmptyView
               title="Putaway Details"
-              description="There are no items to putaway details"
+              description="There are no items in this putaway"
             />
           }
           renderItem={(putAwayItem: ListRenderItemInfo<PutAwayItems>) => (

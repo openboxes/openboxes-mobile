@@ -1,4 +1,3 @@
-/* eslint-disable complexity */
 import React, { Component } from 'react';
 import { DispatchProps, Props } from './types';
 import {
@@ -104,7 +103,7 @@ class PutawayCandidates extends Component<Props> {
         ) : (
           <EmptyView
             title="Putaway Candidates"
-            description=" There are no items in Putaway Candidates"
+            description="There are no candidate items to Putaway"
           />
         )}
       </SafeAreaView>

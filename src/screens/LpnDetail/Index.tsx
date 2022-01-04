@@ -85,8 +85,8 @@ class LpnDetail extends React.Component<Props, State> {
       }
     };
     const statusData = {
-      "containerStatus": status,
-    }
+      containerStatus: status
+    };
     this.props.updateContainerStatus(id, statusData, actionCallback);
   };
 
@@ -210,10 +210,7 @@ class LpnDetail extends React.Component<Props, State> {
           <FlatList
             data={this.state.container?.shipmentItems}
             ListEmptyComponent={
-              <EmptyView
-                title="LPN Details"
-                description="There are no items to LPN"
-              />
+              <EmptyView title="LPN Details" description="There are no items" />
             }
             renderItem={(
               shipmentItem: ListRenderItemInfo<ContainerShipmentItem>

@@ -27,8 +27,8 @@ export default function ProductsList(props: Props) {
     />
   ) : (
     <EmptyView
-      title="No Items!"
-      description="There are no items in product list"
+      title="Product List"
+      description="There are no products on the list"
     />
   );
 }
