@@ -12,6 +12,7 @@ import { getInternalLocations } from '../../redux/actions/locations';
 import { RootState } from '../../redux/reducers';
 import AutoInputInternalLocation from '../../components/AutoInputInternalLocation';
 import InputSpinner from '../../components/InputSpinner';
+import Radio from "../../components/Radio";
 
 const InboundReceiveDetail = () => {
   const dispatch = useDispatch();
@@ -242,6 +243,7 @@ const InboundReceiveDetail = () => {
           <InputSpinner
             title={'Quantity to Receive'}
             value={state.quantityToReceive}
+            max={Number(shipmentItem.quantityRemaining)}
             setValue={onChangeQuantity}
           />
         </View>
@@ -253,6 +255,12 @@ const InboundReceiveDetail = () => {
           onChange={onChangeComment}
         />
       </View>
+      <Radio
+        title={"Cancel all remaining"}
+        setChecked={setCancelRemaining}
+        checked={cancelRemaining}
+        disabled={Number(state.quantityToReceive) === Number(shipmentItem.quantityRemaining)}
+      />
       <View style={styles.bottom}>
         <Button title="Receive" onPress={onReceive} />
       </View>

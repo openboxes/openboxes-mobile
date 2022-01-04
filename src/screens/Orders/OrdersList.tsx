@@ -10,7 +10,7 @@ import {
 import React, { ReactElement } from 'react';
 import Theme from '../../utils/Theme';
 import { Order } from '../../data/order/Order';
-
+import EmptyView from '../../components/EmptyView';
 export interface Props {
   orders: Order[] | null;
   onOrderTapped: (order: Order) => void;
@@ -22,6 +22,9 @@ export default function OrdersList(props: Props) {
       data={props.orders}
       renderItem={(item: ListRenderItemInfo<Order>) =>
         renderOrder(item.item, () => props.onOrderTapped(item.item))
+      }
+      ListEmptyComponent={
+        <EmptyView title="Picking" description="There are no items to pick" />
       }
       keyExtractor={(order) => order.id}
       style={styles.list}

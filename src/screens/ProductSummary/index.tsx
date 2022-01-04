@@ -11,6 +11,7 @@ import { searchProductGloballyAction } from '../../redux/actions/products';
 import { RootState } from '../../redux/reducers';
 import BarCodeSearchHeader from '../Products/BarCodeSearchHeader';
 import _ from 'lodash';
+import EmptyView from '../../components/EmptyView';
 
 const ProductSummary = () => {
   const navigation = useNavigation<any>();
@@ -159,6 +160,12 @@ const ProductSummary = () => {
       <FlatList
         renderItem={({ item, index }) => renderListItem(item, index)}
         data={state.productSummary}
+        ListEmptyComponent={
+          <EmptyView
+            title="Inventory"
+            description="There are no items in inventory"
+          />
+        }
         keyExtractor={(item, index) => item + index}
       />
     </View>

@@ -1,8 +1,8 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import * as NavigationService from './NavigationService';
-import {NavigationContainer} from '@react-navigation/native';
-import {createStackNavigator} from '@react-navigation/stack';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 import Login from './screens/Login';
 import Orders from './screens/Orders';
 import OrderDetails from './screens/OrderDetails';
@@ -15,15 +15,15 @@ import PutawayItem from './screens/PutawayItem';
 import DrawerNavigator from './screens/DrawerNavigator';
 import PickOrderItem from './screens/PickList';
 import FullScreenLoadingIndicator from './components/FullScreenLoadingIndicator';
-import {RootState} from './redux/reducers';
-import {connect} from 'react-redux';
+import { RootState } from './redux/reducers';
+import { connect } from 'react-redux';
 import SplashScreen from 'react-native-splash-screen';
-import {SafeAreaView} from 'react-native';
+import { SafeAreaView } from 'react-native';
 import Location from './data/location/Location';
-import {Session} from './data/auth/Session';
-import {getSessionAction} from './redux/actions/main';
+import { Session } from './data/auth/Session';
+import { getSessionAction } from './redux/actions/main';
 import showPopup from './components/Popup';
-import {colors} from './constants';
+import { colors } from './constants';
 import Scan from './screens/Scan';
 import PutawayList from './screens/PutawayList';
 import Settings from './screens/Settings';
@@ -47,7 +47,7 @@ import OptionMenu from './components/OptionMenu';
 import ViewAvailableItem from './screens/ViewAvailableItem';
 import PutawayDetails from './screens/PutawayDetails';
 import Placeholder from './screens/Placeholder';
-import {Provider} from 'react-native-paper';
+import { Provider } from 'react-native-paper';
 
 const Stack = createStackNavigator();
 export interface OwnProps {
@@ -79,12 +79,12 @@ class Main extends Component<Props, State> {
     super(props);
 
     this.state = {
-      launched: false,
+      launched: false
     };
   }
 
   UNSAFE_componentWillMount() {
-    AsyncStorage.getItem('API_URL').then(value => {
+    AsyncStorage.getItem('API_URL').then((value) => {
       if (!value) {
         NavigationService.navigate('Settings');
       } else {
@@ -117,8 +117,8 @@ class Main extends Component<Props, State> {
               text: 'Retry',
               callback: () => {
                 this.props.getSessionAction(actionCallback);
-              },
-            },
+              }
+            }
           });
         }
       };
@@ -132,11 +132,11 @@ class Main extends Component<Props, State> {
   }
 
   render() {
-    const {loggedIn} = this.props;
+    const { loggedIn } = this.props;
     const initialRouteName = !loggedIn ? 'Login' : 'Drawer';
     return (
       <Provider>
-        <SafeAreaView style={{flex: 1}}>
+        <SafeAreaView style={{ flex: 1 }}>
           <FullScreenLoadingIndicator
             visible={this.props.fullScreenLoadingIndicator.visible}
             message={this.props.fullScreenLoadingIndicator.message}
@@ -144,24 +144,25 @@ class Main extends Component<Props, State> {
           <NavigationContainer ref={NavigationService.navigationRef}>
             <Stack.Navigator
               initialRouteName={initialRouteName}
-              screenOptions={({route, navigation}) => ({
+              screenOptions={({ route, navigation }) => ({
                 headerRight: () => (
                   <OptionMenu route={route} navigation={navigation} />
                 ),
                 headerTitleContainerStyle: {
-                  width: '50%',
+                  width: '50%'
                 },
                 headerTintColor: '#ffffff',
                 headerStyle: {
-                  backgroundColor: colors.headerColor,
-                },
-              })}>
+                  backgroundColor: colors.headerColor
+                }
+              })}
+            >
               <Stack.Screen name="Login" component={Login} />
               <Stack.Screen
                 name="Drawer"
                 component={DrawerNavigator}
                 options={{
-                  headerShown: false,
+                  headerShown: false
                 }}
               />
               <Stack.Screen name="Orders" component={Orders} />
@@ -236,11 +237,11 @@ const mapStateToProps = (state: RootState) => ({
   loggedIn: state.mainReducer.loggedIn,
   fullScreenLoadingIndicator: state.mainReducer.fullScreenLoadingIndicator,
   currentLocation: state.mainReducer.currentLocation,
-  session: state.mainReducer.session,
+  session: state.mainReducer.session
 });
 
 const mapDispatchToProps: DispatchProps = {
-  getSessionAction,
+  getSessionAction
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Main);
