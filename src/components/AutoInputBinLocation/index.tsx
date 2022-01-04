@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import styles from './styles';
-import {Image, TextInput, TouchableOpacity, View} from 'react-native';
+import { Image, TextInput, TouchableOpacity, View } from 'react-native';
 import {Props} from './types';
 import ModalSelector from 'react-native-modal-selector-searchable';
 import CLEAR from '../../assets/images/icon_clear.png';
@@ -10,7 +10,7 @@ export default function ({data, selectedData, initValue = ''}: Props) {
 
   const clearSelection = () => {
     setQuery('');
-    selectedData?.({id: '', name: ''});
+    selectedData?.({ id: '', name: '' });
   }
 
   return (
@@ -29,7 +29,7 @@ export default function ({data, selectedData, initValue = ''}: Props) {
         cancelButtonAccessibilityLabel={'Cancel Button'}
         onChange={(option: { label: React.SetStateAction<string>; key: any }) => {
           setQuery(option.label);
-          selectedData?.({id: option.key, name: option.label});
+          selectedData?.({ id: option.key, name: option.label });
         }}
       >
         <TextInput
