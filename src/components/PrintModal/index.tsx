@@ -52,7 +52,7 @@ function PrintModal(props: Props) {
       </View>
     </Modal>
   );
-} 
+}
 
 const mapStateToProps = (state: RootState) => ({
   printModalVisible: state.productsReducer.printModalVisible

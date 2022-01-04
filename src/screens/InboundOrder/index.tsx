@@ -1,4 +1,3 @@
-/* eslint-disable complexity */
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { View } from 'react-native';

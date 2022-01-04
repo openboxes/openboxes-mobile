@@ -134,10 +134,6 @@ class Main extends Component<Props, State> {
   render() {
     const { loggedIn } = this.props;
     const initialRouteName = !loggedIn ? 'Login' : 'Drawer';
-    // console.log(
-    //   'currentLocation ::',
-    //   JSON.stringify(this.props.currentLocation)
-    // );
     return (
       <Provider>
         <SafeAreaView style={{ flex: 1 }}>
