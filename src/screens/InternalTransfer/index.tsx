@@ -1,4 +1,3 @@
-/* eslint-disable complexity */
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
@@ -173,7 +172,6 @@ const InternalTransfer = () => {
       ]
     };
     const actionCallback = (data: any) => {
-      console.log('### DATA ::', data);
       if (data?.error) {
         showPopup({
           title: data.error.message ? 'Failed to update' : null,

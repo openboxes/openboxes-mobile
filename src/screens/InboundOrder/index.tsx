@@ -3,13 +3,17 @@
 import { View } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import InboundOrderList from './InboundOrderList';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { fetchInboundOrderList } from '../../redux/actions/inboundorder';
 import showPopup from '../../components/Popup';
 import BarCodeSearchHeader from '../Products/BarCodeSearchHeader';
+import { RootState } from '../../redux/reducers';
 
 const InboundOrder = () => {
   const dispatch = useDispatch();
+  const location = useSelector(
+    (rootState: RootState) => rootState.mainReducer.currentLocation
+  );
   const [state, setState] = useState({
     inboundOrder: {}
   });
@@ -36,7 +40,9 @@ const InboundOrder = () => {
         if (data && Object.keys(data).length !== 0) {
           state.inboundOrder = data.filter((item: any) => {
             return (
-              item.status === 'SHIPPED' || item.status === 'PARTIALLY_RECEIVED'
+              (item?.destination?.id === location?.id &&
+                item.status === 'SHIPPED') ||
+              item.status === 'PARTIALLY_RECEIVED'
             );
           });
         }
