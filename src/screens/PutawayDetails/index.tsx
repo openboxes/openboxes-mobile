@@ -14,7 +14,7 @@ import PutAway from '../../data/putaway/PutAway';
 import PutAwayItems from '../../data/putaway/PutAwayItems';
 import { connect } from 'react-redux';
 import PutAwayItem from '../../components/PutAwayItem';
-
+import EmptyView from '../../components/EmptyView';
 export interface Props {
   putAway: PutAway | null;
   exit: () => void;
@@ -84,24 +84,29 @@ class PutawayDetail extends React.Component<Props, State> {
             </Text>
           </View>
         </View>
-        {
-          <FlatList
-            data={this.state.putAway?.putawayItems}
-            renderItem={(putAwayItem: ListRenderItemInfo<PutAwayItems>) => (
-              <PutAwayItem
-                item={putAwayItem.item}
-                onItemTapped={() =>
-                  this.goToPutawayItemDetailScreen(
-                    this.state.putAway,
-                    putAwayItem.item
-                  )
-                }
-              />
-            )}
-            keyExtractor={(item) => item.id}
-            style={styles.list}
-          />
-        }
+
+        <FlatList
+          data={this.state.putAway?.putawayItems}
+          ListEmptyComponent={
+            <EmptyView
+              title="Putaway Details"
+              description="There are no items in this putaway"
+            />
+          }
+          renderItem={(putAwayItem: ListRenderItemInfo<PutAwayItems>) => (
+            <PutAwayItem
+              item={putAwayItem.item}
+              onItemTapped={() =>
+                this.goToPutawayItemDetailScreen(
+                  this.state.putAway,
+                  putAwayItem.item
+                )
+              }
+            />
+          )}
+          keyExtractor={(item) => item.id}
+          style={styles.list}
+        />
       </TouchableOpacity>
     );
   }

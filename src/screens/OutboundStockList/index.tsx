@@ -14,7 +14,7 @@ import styles from './styles';
 import { getShipmentsReadyToBePacked } from '../../redux/actions/packing';
 import { Shipment } from '../../data/container/Shipment';
 import showPopup from '../../components/Popup';
-
+import EmptyView from '../../components/EmptyView';
 class OutboundStockList extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
@@ -77,6 +77,12 @@ class OutboundStockList extends React.Component<Props, State> {
         <View style={styles.contentContainer}>
           <FlatList
             data={this.state.shipments}
+            ListEmptyComponent={
+              <EmptyView
+                title="Packing"
+                description=" There are no items to pack"
+              />
+            }
             renderItem={(shipment: ListRenderItemInfo<Shipment>) => (
               <TouchableOpacity
                 style={styles.listItemContainer}
