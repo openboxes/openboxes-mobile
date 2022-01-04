@@ -43,4 +43,15 @@ export default StyleSheet.create({
     width: device.windowWidth - 20,
     borderRadius: 4,
   },
+  imageIcon :{
+    position:'absolute',
+    end:10,
+    width:30,
+    height:30,
+    bottom:5,
+    padding:10,
+    justifyContent:'center',
+    alignItems:"center",
+    zIndex:100
+  }
 });
