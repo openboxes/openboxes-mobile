@@ -12,7 +12,7 @@ import { RootState } from '../../redux/reducers';
 const InboundOrder = () => {
   const dispatch = useDispatch();
   const location = useSelector(
-      (rootState: RootState) => rootState.mainReducer.currentLocation
+    (rootState: RootState) => rootState.mainReducer.currentLocation
   );
   const [state, setState] = useState({
     inboundOrder: {}
@@ -40,8 +40,7 @@ const InboundOrder = () => {
         if (data && Object.keys(data).length !== 0) {
           state.inboundOrder = data.filter((item: any) => {
             return (
-              (item?.destination?.name?.toLowerCase() ===
-                location?.name?.toLowerCase() &&
+              (item?.destination?.id === location?.id &&
                 item.status === 'SHIPPED') ||
               item.status === 'PARTIALLY_RECEIVED'
             );
