@@ -34,7 +34,7 @@ function* getOrders(action: any) {
     if (error.code != 401) {
       yield action.callback({
         error: true,
-        message: error.message
+        errorMessage: error.message
       });
     }
   }
@@ -57,7 +57,7 @@ function* getStockMovement(action: any) {
   } catch (e) {
     yield action.callback({
       error: true,
-      message: e.message
+      errorMessage: e.message
     });
   }
 }
@@ -77,7 +77,7 @@ function* getPickList(action: any) {
     if (error.code != 401) {
       yield action.callback({
         error: true,
-        message: error.message
+        errorMessage: error.message
       });
     }
   }
@@ -98,7 +98,7 @@ function* getPickListItem(action: any) {
     if (error.code != 401) {
       yield action.callback({
         error: true,
-        message: error.message,
+        errorMessage: error.message,
       });
     }
   }
@@ -120,7 +120,7 @@ function* submitPickListItem(action: any) {
     if (error.code != 401) {
       yield action.callback({
         error: true,
-        message: error.message
+        errorMessage: error.message
       });
     }
   }

@@ -3,19 +3,17 @@
 import { View } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import InboundOrderList from './InboundOrderList';
+import { useDispatch, useSelector } from 'react-redux';
 import { fetchInboundOrderList } from '../../redux/actions/inboundorder';
 import showPopup from '../../components/Popup';
 import BarCodeSearchHeader from '../Products/BarCodeSearchHeader';
 import { RootState } from '../../redux/reducers';
-import { useDispatch, useSelector } from 'react-redux';
 
 const InboundOrder = () => {
   const dispatch = useDispatch();
-
   const location = useSelector(
-    (rootState: RootState) => rootState.mainReducer.currentLocation
+      (rootState: RootState) => rootState.mainReducer.currentLocation
   );
-
   const [state, setState] = useState({
     inboundOrder: {}
   });

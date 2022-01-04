@@ -1,10 +1,11 @@
-import React, {useEffect} from 'react';
-import {Text, View} from 'react-native';
+/* eslint-disable complexity */
+import React, { useEffect } from 'react';
+import { Text, View } from 'react-native';
 import styles from './styles';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import Product from '../../data/product/Product';
 import onBarcodeScanned from '../../hooks/onBarcodeScanned';
-
+import EmptyView from '../../components/EmptyView';
 const Scan = () => {
   const barcodeData = onBarcodeScanned();
   const navigation = useNavigation();
@@ -17,24 +18,24 @@ const Scan = () => {
 
   const onSuccess = (data: any, query: any) => {
     if (data.type === 'Product') {
-      navigateToProduct(data);
+      navigateToProduct(data.data);
     } else if (data.type === 'Location') {
       navigateToLocationDetails(query);
     } else if (data.type === 'Container') {
-      navigateToLPNDetails(data.id, data?.shipment?.shipmentNumber ?? '');
+      navigateToLPNDetails(data.data.id, data?.data?.shipmentNumber ?? '');
     }
   };
 
   const navigateToProduct = (product: Product | undefined) => {
     if (product) {
       // @ts-ignore
-      navigation.navigate('ProductDetails', {product});
+      navigation.navigate('ProductDetails', { product });
     }
   };
   const navigateToLocationDetails = (id: string | undefined) => {
     if (id) {
       // @ts-ignore
-      navigation.navigate('InternalLocationDetail', {id});
+      navigation.navigate('InternalLocationDetail', { id });
     }
   };
   const navigateToLPNDetails = (id: string | undefined, stockMovement: any) => {
@@ -42,7 +43,7 @@ const Scan = () => {
       // @ts-ignore
       navigation.navigate('LpnDetail', {
         id: id,
-        shipmentNumber: stockMovement,
+        shipmentNumber: stockMovement
       });
     }
   };
@@ -50,10 +51,16 @@ const Scan = () => {
   return (
     <View style={styles.screenContainer}>
       <View style={styles.countLabelAndIconContainer}>
-        {barcodeData && (
+        {barcodeData ? (
           <Text style={styles.countLabel}>
             {JSON.stringify(barcodeData?.query)}
           </Text>
+        ) : (
+          <EmptyView
+            uri={require('../../assets/images/logo.png')}
+            title="Scan"
+            description="Scan a barcode for a product code, internal location, or LPN to retrieve details "
+          />
         )}
       </View>
     </View>

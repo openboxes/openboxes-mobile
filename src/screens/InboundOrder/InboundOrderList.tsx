@@ -4,7 +4,7 @@ import InboundOrderProps from './types';
 import { Card } from 'react-native-paper';
 import styles from './styles';
 import { useNavigation } from '@react-navigation/native';
-
+import EmptyView from '../../components/EmptyView';
 const InboundOrderList = ({ data }: InboundOrderProps) => {
   const navigation = useNavigation<any>();
 
@@ -56,12 +56,14 @@ const InboundOrderList = ({ data }: InboundOrderProps) => {
       </TouchableOpacity>
     );
   };
-  return (
+  return data.length > 0 ? (
     <FlatList
       data={data}
       keyExtractor={(item, index) => item + index}
       renderItem={RenderListItem}
     />
+  ) : (
+    <EmptyView title="Receiving" description="There are no items to receive" />
   );
 };
 export default InboundOrderList;
