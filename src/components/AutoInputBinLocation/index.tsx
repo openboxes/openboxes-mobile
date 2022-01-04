@@ -39,7 +39,7 @@ export default function ({data, selectedData, initValue = ''}: Props) {
           value={query}
         />
       </ModalSelector>
-      {query != '' ?
+      {query ?
         <TouchableOpacity onPress={clearSelection}>
           <Image source={CLEAR} style={styles.imageIcon} />
         </TouchableOpacity> : null}
