@@ -1,15 +1,17 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styles from './styles';
-import { ScrollView, View } from 'react-native';
+import { ScrollView, View, Text } from 'react-native';
 import InputBox from '../../components/InputBox';
 import Button from '../../components/Button';
 import { RootState } from '../../redux/reducers';
 import { useRoute } from '@react-navigation/native';
 import { updateStockTransfer } from '../../redux/actions/transfers';
 import showPopup from '../../components/Popup';
-import { searchLocationByLocationNumber } from '../../redux/actions/locations';
+import { getBinLocationsAction } from '../../redux/actions/locations';
+import AutoInputBinLocation from "../../components/AutoInputBinLocation";
+import InputSpinner from "../../components/InputSpinner";
 
 const Transfer = () => {
   const route = useRoute();
@@ -18,63 +20,15 @@ const Transfer = () => {
   const location = useSelector(
     (rootState: RootState) => rootState.mainReducer.currentLocation
   );
-  const [state, setState] = useState<any>({
-    binToLocation: '',
-    binToLocationData: '',
-    quantity: '0'
-  });
-  const binLocationSearchQueryChange = (query: string) => {
-    setState({
-      ...state,
-      binLocationSearchQuery: query
-    });
-    onBinLocationBarCodeSearchQuerySubmitted();
-  };
+  const binLocations = useSelector(
+    (rootState: RootState) => rootState.locationsReducer.locations
+  );
+  const [binToLocationData, setBinToLocationData] = useState<any>({});
+  const [quantity, setQuantity] = useState(0)
+  useEffect(() => {
+    dispatch(getBinLocationsAction())
+  }, [])
 
-  const onBinLocationBarCodeSearchQuerySubmitted = () => {
-    if (!state.binToLocation) {
-      showPopup({
-        message: 'Search query is empty',
-        positiveButton: {
-          text: 'Ok'
-        }
-      });
-      return;
-    }
-
-    const actionCallback = (locationData: any) => {
-      if (!locationData || locationData.error) {
-        showPopup({
-          message:
-            'Bin Location not found with LocationNumber:' +
-            state.binLocationName,
-          positiveButton: {
-            text: 'Ok'
-          }
-        });
-        setState({
-          ...state,
-          binToLocation: '',
-          binLocationSearchQuery: ''
-        });
-      } else if (locationData) {
-        setState({
-          ...state,
-          binToLocationData: locationData,
-          binLocationSearchQuery: ''
-        });
-      }
-    };
-    dispatch(
-      searchLocationByLocationNumber(state.binToLocation, actionCallback)
-    );
-  };
-  const onChangeBin = (text: string) => {
-    setState({ ...state, binToLocation: text });
-  };
-  const onChangeQuantity = (text: string) => {
-    setState({ ...state, quantity: text });
-  };
 
   const onTransfer = () => {
     const request: any = {
@@ -89,8 +43,8 @@ const Transfer = () => {
           'inventoryItem.id': item.inventoryItem.id,
           'location.id': location.id,
           'originBinLocation.id': item?.binLocation?.id,
-          'destinationBinLocation.id': state.binToLocationData.id,
-          quantity: state.quantity
+          'destinationBinLocation.id': binToLocationData.id,
+          quantity: quantity
         }
       ]
     };
@@ -154,23 +108,20 @@ const Transfer = () => {
             value={item?.quantityAvailableToPromise?.toString()}
             editable={false}
           />
-          <InputBox
-            label={'Quantity to transfer'}
-            value={state.quantity}
-            disabled={false}
-            editable={false}
-            keyboard={'number-pad'}
-            onChange={onChangeQuantity}
-          />
-          <InputBox
-            label={'Bin Location'}
-            value={state.binToLocation}
-            disabled={false}
-            editable={false}
-            keyboard={'default'}
-            onChange={onChangeBin}
-            onEndEdit={binLocationSearchQueryChange}
-          />
+          <View style={styles.inputBin}>
+            <Text>Bin Location</Text>
+            <AutoInputBinLocation
+              data={binLocations}
+              selectedData={(selectedLocation: any) => setBinToLocationData(selectedLocation)}
+            />
+          </View>
+          <View style={styles.inputSpinner}>
+            <InputSpinner
+              title="Quantity to Transfer"
+              value={quantity}
+              setValue={setQuantity}
+            />
+          </View>
         </View>
         <View style={styles.bottom}>
           <Button
@@ -178,6 +129,7 @@ const Transfer = () => {
             style={{
               marginTop: 8
             }}
+            disabled={binToLocationData && quantity <= 0}
             onPress={onTransfer}
           />
         </View>
