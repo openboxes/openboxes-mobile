@@ -40,9 +40,9 @@ const InboundOrder = () => {
         if (data && Object.keys(data).length !== 0) {
           state.inboundOrder = data.filter((item: any) => {
             return (
-              (item?.destination?.id === location?.id &&
-                item.status === 'SHIPPED') ||
-              item.status === 'PARTIALLY_RECEIVED'
+              item?.destination?.id === location?.id &&
+              (item.status === 'SHIPPED' ||
+                item.status === 'PARTIALLY_RECEIVED')
             );
           });
         }
