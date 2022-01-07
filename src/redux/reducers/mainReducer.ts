@@ -14,6 +14,7 @@ import {
   GET_PRODUCT_BY_ID_REQUEST_SUCCESS,
   GET_PRODUCTS_REQUEST_SUCCESS,
 } from '../actions/products';
+import { FETCH_STOCK_TRANSFERS_SUCCESS } from '../actions/transfers';
 
 export interface State {
   loggedIn: boolean;
@@ -90,6 +91,18 @@ function reducer(state = initialState, action: any) {
       return {
         ...state,
         refreshing: false,
+      };
+    }
+    case SET_CURRENT_LOCATION_REQUEST_SUCCESS: {
+      return {
+        ...state,
+        currentLocation: action.payload,
+      };
+    }
+    case FETCH_STOCK_TRANSFERS_SUCCESS: {
+      return {
+        ...state,
+        transferms: action.payload,
       };
     }
 
