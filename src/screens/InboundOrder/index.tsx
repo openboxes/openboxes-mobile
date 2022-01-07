@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { View } from 'react-native';
@@ -40,9 +41,9 @@ const InboundOrder = () => {
         if (data && Object.keys(data).length !== 0) {
           state.inboundOrder = data.filter((item: any) => {
             return (
-              (item?.destination?.id === location?.id &&
-                item.status === 'SHIPPED') ||
-              item.status === 'PARTIALLY_RECEIVED'
+              item?.destination?.id === location?.id &&
+              (item.status === 'SHIPPED' ||
+                item.status === 'PARTIALLY_RECEIVED')
             );
           });
         }
