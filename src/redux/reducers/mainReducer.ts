@@ -93,12 +93,6 @@ function reducer(state = initialState, action: any) {
         refreshing: false,
       };
     }
-    case SET_CURRENT_LOCATION_REQUEST_SUCCESS: {
-      return {
-        ...state,
-        currentLocation: action.payload,
-      };
-    }
     case FETCH_STOCK_TRANSFERS_SUCCESS: {
       return {
         ...state,

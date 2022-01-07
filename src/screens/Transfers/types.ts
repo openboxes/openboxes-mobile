@@ -1,6 +1,4 @@
 import PutAway from "../../data/putaway/PutAway";
-import {NavigationState} from "../PutAwayDetail/State";
-import {fetchPutAwayFromOrderAction} from "../../redux/actions/putaways";
 
 export interface State {
     error: string | null

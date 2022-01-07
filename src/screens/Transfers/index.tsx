@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
-import { connect, useSelector } from 'react-redux';
+import { connect } from 'react-redux';
 import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
 import { RootState } from '../../redux/reducers';
 import styles from './styles';
