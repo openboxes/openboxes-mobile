@@ -113,7 +113,7 @@ const ProductSummary = () => {
     <View style={styles.mainContainer}>
       <BarCodeSearchHeader
         placeholder={'Search by product code or name'}
-        searchBox={true}
+        searchBox={false}
         autoSearch={true}
         onBarCodeSearchQuerySubmitted={(query) => searchProduct(query)}
       />
