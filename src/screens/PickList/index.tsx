@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useReducer} from 'react';
 import _ from 'lodash';
 import styles from './styles';
 import { ListRenderItemInfo, ScrollView, Text, View, ToastAndroid } from 'react-native';
@@ -21,26 +21,47 @@ import { device } from '../../constants';
 import { PicklistItem } from '../../data/picklist/PicklistItem';
 import InputSpinner from '../../components/InputSpinner';
 
+const reducer = (state = {}, action: any) => {
+  switch (action.type) {
+     case 'UPDATE_QUNTITY': {
+       let data = state;
+       state.quantityPicked = action.payload;
+      return ({...state, quantityPicked: action.payload});
+    }
+     case 'UPDATE':
+        return action.payload;
+     default:
+        return state;
+  }
+}
+const initialValue = {
+  error: '',
+  pickListItem: [],
+  order: null,
+  productSearchQuery: '',
+  binLocationSearchQuery: '',
+  quantityPicked: '0',
+  product: null,
+  productCode: '',
+  binLocation: null,
+  lotNumber: '',
+  binLocationName: '',
+};
+
 const PickOrderItem = () => {
   const route = useRoute();
   const dispatch = useDispatch();
   const barcodeData = useEventListener();
-  const [pickListItemData, setPickListItemData] = useState<any>([]);
-  const [state, setState] = useState<any>({
-    error: '',
-    pickListItem: [],
-    order: null,
-    productSearchQuery: '',
-    binLocationSearchQuery: '',
-    quantityPicked: '0',
-    product: null,
-    productCode: '',
-    binLocation: null,
-    lotNumber: '',
-    binLocationName: '',
-  });
+  // const [pickListItemData, setPickListItemData] = useState<any>([]);
+  // const [state, setState] = useState<any>(initialValue);
+  const [productData, producDispatch] = useReducer(reducer, initialValue);
   const navigation = useNavigation();
   const vm = pickListVMMapper(route.params);
+  const [pickListItemData1, dispatchPickListItemData] = useReducer((pickListItemDataState: any, action: any) => {
+    let picklistItems = pickListItemDataState;
+    picklistItems[action.index].quantityToPick = parseInt(action.query);
+    return picklistItems;
+  }, vm.order.picklist? vm.order.picklist.picklistItems : []);
 
   useEffect(() => {
     if (barcodeData && Object.keys(barcodeData).length !== 0) {
@@ -97,20 +118,21 @@ const PickOrderItem = () => {
           } else {
             if (data && Object.keys(data).length !== 0) {
               if (
-                state.pickListItem?.productCode !== data.data[0].productCode
+                productData.pickListItem?.productCode !== data.data[0].productCode
               ) {
                 showPopup({
                   message: `You have scanned a wrong product barcode "${query}"`,
                   positiveButton: {text: 'Ok'},
                 });
               } else {
-                state.quantityPicked = (
-                  parseInt(state.quantityPicked, 10) + 1
+                productData.quantityPicked = (
+                  parseInt(productData.quantityPicked, 10) + 1
                 ).toString();
-                state.product = data.data[0];
-                state.productCode = data.data[0].productCode;
+                productData.product = data.data[0];
+                productData.productCode = data.data[0].productCode;
               }
-              setState({...state});
+              producDispatch({type: 'UPDATE', payload: {...productData}})
+              //setState({...state});
             }
           }
           dispatch(hideScreenLoading());
@@ -134,11 +156,12 @@ const PickOrderItem = () => {
             });
           } else {
             if (data && Object.keys(data).length !== 0) {
-              if (state.binLocation === '' || state.binLocation === data.name) {
-                state.binLocation = data;
-                state.binLocationSearchQuery = '';
+              if (productData.binLocation === '' || productData.binLocation === data.name) {
+                productData.binLocation = data;
+                productData.binLocationSearchQuery = '';
               }
-              setState({...state});
+              producDispatch({type: 'UPDATE', payload: {...productData}})
+              //setState({...state});
             } else {
               showPopup({
                 message: `You have scanned a wrong bin location barcode "${query}"`,
@@ -155,14 +178,9 @@ const PickOrderItem = () => {
     }
   };
 
-  useEffect(() => {
-    const data =  vm.order.picklist? vm.order.picklist.picklistItems : [];
-    setPickListItemData(data);
-  }, []);
-
   const formSubmit = (id: string) => {
-    const itemToSave = _.find(pickListItemData, item => item.id === id);
-
+    const itemToSave = _.find(pickListItemData1, item => item.id === id);
+    console.log('quantityToPick', itemToSave.quantityToPick);  
     try {
       let errorTitle = '';
       let errorMessage = '';
@@ -227,15 +245,19 @@ const PickOrderItem = () => {
   };
 
   const productSearchQueryChange = (query: string) => {
-    setState({
-      ...state,
-      productSearchQuery: query,
-    });
+    console.log('productSearchQueryChange', query)
+    // setState({
+    //   ...state,
+    //   productSearchQuery: query,
+    // });
+    producDispatch({type: 'UPDATE', payload: {...productData,
+      productSearchQuery: query + '343434',
+    }})
     onProductBarCodeSearchQuerySubmitted();
   };
 
   const onProductBarCodeSearchQuerySubmitted = () => {
-    if (!state.productCode) {
+    if (!productData.productCode) {
       showPopup({
         message: 'Search query is empty',
         positiveButton: {
@@ -248,31 +270,42 @@ const PickOrderItem = () => {
     const actionCallback = (data: any) => {
       if (!data || data.data.length == 0) {
         showPopup({
-          message: 'Product not found with ProductCode:' + state.productCode,
+          message: 'Product not found with ProductCode:' + productData.productCode,
           positiveButton: {
             text: 'Ok',
           },
         });
-        setState({
-          ...state,
+        // setState({
+        //   ...state,
+        //   productCode: '',
+        //   productSearchQuery: '',
+        // });
+        producDispatch({type: 'UPDATE', payload: {
+          ...productData,
           productCode: '',
           productSearchQuery: '',
-        });
+        }})
         return;
       } else if (data.data.length == 1) {
-        setState({
-          ...state,
+        // setState({
+        //   ...state,
+        //   product: data.data[0],
+        //   quantityPicked: (parseInt(state.quantityPicked, 10) + 1).toString(),
+        //   productSearchQuery: '',
+        // });
+        producDispatch({type: 'UPDATE', payload: {
+          ...productData,
           product: data.data[0],
-          quantityPicked: (parseInt(state.quantityPicked, 10) + 1).toString(),
+          quantityPicked: (parseInt(productData.quantityPicked, 10) + 1).toString(),
           productSearchQuery: '',
-        });
+        }})
       }
     };
-    dispatch(searchProductByCodeAction(state.productCode, actionCallback));
+    dispatch(searchProductByCodeAction(productData.productCode, actionCallback));
   };
 
   const onBinLocationBarCodeSearchQuerySubmitted = () => {
-    if (!state.binLocationName) {
+    if (!productData.binLocationName) {
       showPopup({
         message: 'Search query is empty',
         positiveButton: {
@@ -287,59 +320,58 @@ const PickOrderItem = () => {
         showPopup({
           message:
             'Bin Location not found with LocationNumber:' +
-            state.binLocationName,
+            productData.binLocationName,
           positiveButton: {
             text: 'Ok',
           },
         });
-        setState({
-          ...state,
+        producDispatch({type: 'UPDATE', payload: {
+          ...productData,
           binLocationName: '',
           binLocationSearchQuery: '',
-        });
+        }});
+        producDispatch({type: 'UPDATE', payload: {
+          ...productData,
+          binLocationName: '',
+          binLocationSearchQuery: '',
+        }})
         return;
       } else if (location) {
-        setState({
-          ...state,
+        producDispatch({type: 'UPDATE', payload: {
+          ...productData,
           binLocation: location,
           binLocationSearchQuery: '',
-        });
+        }})
       }
     };
     dispatch(
-      searchLocationByLocationNumber(state.binLocationName, actionCallback),
+      searchLocationByLocationNumber(productData.binLocationName, actionCallback),
     );
   };
 
   const binLocationSearchQueryChange = (query: string) => {
-    setState({
-      ...state,
+    producDispatch({type: 'UPDATE', payload: {
+      ...productData,
       binLocationSearchQuery: query,
-    });
+    }});
     onBinLocationBarCodeSearchQuerySubmitted();
   };
 
   const quantityPickedChange = (query: string, index: number) => {
-    let picklistItemData = pickListItemData;
-    picklistItemData[index].quantityToPick = parseInt(query);
-    setPickListItemData([ ...picklistItemData ]);
-
-    setState({
-      ...state,
-      quantityPicked: query,
-    });
+    dispatchPickListItemData({query, index});
+    producDispatch({type: 'UPDATE_QUNTITY', payload: query});
   };
 
   const onChangeProduct = (text: string) => {
-    state.productCode = text;
-    setState({...state});
+    productData.productCode = text;
+    producDispatch({type: 'UPDATE', payload: { ...productData}});
+    // setState({...state});
   };
 
   const onChangeBin = (text: string) => {
-    state.binLocationName = text;
-    setState({...state});
+    productData.binLocationName = text;
+    producDispatch({type: 'UPDATE', payload: { ...productData}});
   };
-
   return (
     <View style={styles.screenContainer}>
       <View style={styles.swiperView}>
@@ -349,7 +381,7 @@ const PickOrderItem = () => {
           sliderWidth={device.windowWidth}
           sliderHeight={device.windowHeight}
           itemWidth={device.windowWidth - 70}
-          data={pickListItemData}
+          data={pickListItemData1}
           firstItem={vm.selectedPinkItemIndex ? vm.selectedPinkItemIndex : 0}
           scrollEnabled={true}
           renderItem={({item, index}: ListRenderItemInfo<PicklistItem>) => {
