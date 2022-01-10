@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useReducer} from 'react';
+import React, {useEffect, useReducer} from 'react';
 import _ from 'lodash';
 import styles from './styles';
 import { ListRenderItemInfo, ScrollView, Text, View, ToastAndroid } from 'react-native';
@@ -21,10 +21,9 @@ import { device } from '../../constants';
 import { PicklistItem } from '../../data/picklist/PicklistItem';
 import InputSpinner from '../../components/InputSpinner';
 
-const reducer = (state = {}, action: any) => {
+const reducer = (action: any, state = {}) => {
   switch (action.type) {
      case 'UPDATE_QUNTITY': {
-       let data = state;
        state.quantityPicked = action.payload;
       return ({...state, quantityPicked: action.payload});
     }
@@ -52,8 +51,6 @@ const PickOrderItem = () => {
   const route = useRoute();
   const dispatch = useDispatch();
   const barcodeData = useEventListener();
-  // const [pickListItemData, setPickListItemData] = useState<any>([]);
-  // const [state, setState] = useState<any>(initialValue);
   const [productData, producDispatch] = useReducer(reducer, initialValue);
   const navigation = useNavigation();
   const vm = pickListVMMapper(route.params);
@@ -132,7 +129,6 @@ const PickOrderItem = () => {
                 productData.productCode = data.data[0].productCode;
               }
               producDispatch({type: 'UPDATE', payload: {...productData}})
-              //setState({...state});
             }
           }
           dispatch(hideScreenLoading());
@@ -161,7 +157,6 @@ const PickOrderItem = () => {
                 productData.binLocationSearchQuery = '';
               }
               producDispatch({type: 'UPDATE', payload: {...productData}})
-              //setState({...state});
             } else {
               showPopup({
                 message: `You have scanned a wrong bin location barcode "${query}"`,
@@ -201,7 +196,6 @@ const PickOrderItem = () => {
       }
 
       const requestBody = {
-        // TODO: If scanning will be involved, the product id should be validated or updated within 'pickListItemData'
         'product.id': itemToSave['product.id'],
         productCode: itemToSave.productCode,
         quantityPicked: itemToSave.quantityToPick,
@@ -245,11 +239,6 @@ const PickOrderItem = () => {
   };
 
   const productSearchQueryChange = (query: string) => {
-    console.log('productSearchQueryChange', query)
-    // setState({
-    //   ...state,
-    //   productSearchQuery: query,
-    // });
     producDispatch({type: 'UPDATE', payload: {...productData,
       productSearchQuery: query + '343434',
     }})
@@ -275,11 +264,6 @@ const PickOrderItem = () => {
             text: 'Ok',
           },
         });
-        // setState({
-        //   ...state,
-        //   productCode: '',
-        //   productSearchQuery: '',
-        // });
         producDispatch({type: 'UPDATE', payload: {
           ...productData,
           productCode: '',
@@ -287,12 +271,7 @@ const PickOrderItem = () => {
         }})
         return;
       } else if (data.data.length == 1) {
-        // setState({
-        //   ...state,
-        //   product: data.data[0],
-        //   quantityPicked: (parseInt(state.quantityPicked, 10) + 1).toString(),
-        //   productSearchQuery: '',
-        // });
+      
         producDispatch({type: 'UPDATE', payload: {
           ...productData,
           product: data.data[0],
@@ -365,7 +344,6 @@ const PickOrderItem = () => {
   const onChangeProduct = (text: string) => {
     productData.productCode = text;
     producDispatch({type: 'UPDATE', payload: { ...productData}});
-    // setState({...state});
   };
 
   const onChangeBin = (text: string) => {
