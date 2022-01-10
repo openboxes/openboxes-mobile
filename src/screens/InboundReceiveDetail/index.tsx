@@ -230,7 +230,8 @@ const InboundReceiveDetail = () => {
         <Text style={styles.label}>{'Receiving Location'}</Text>
         <AutoInputInternalLocation
           label="AutoInputInternalLocation"
-          data={state.internalLocation}
+          data={state.internalLocation} 
+          initValue={state.receiveLocation.label || ''}
           getMoreData={(d: any) => console.debug('get More data api call', d)} // for calling api for more results
           selectedData={(selectedItem: any) => {
             if (selectedItem) {
