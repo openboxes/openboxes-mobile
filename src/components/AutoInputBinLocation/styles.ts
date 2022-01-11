@@ -40,7 +40,7 @@ export default StyleSheet.create({
     borderColor: '#ccc',
     padding: 10,
     height: 40,
-    width: device.windowWidth - 20,
+    width: device.windowWidth - 40,
     borderRadius: 4,
   },
   imageIcon :{

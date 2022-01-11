@@ -33,5 +33,13 @@ export default StyleSheet.create({
         shadowOpacity: 1,
         shadowRadius: 5,
         elevation: 10,
+    },
+    inputSpinner: {
+        flex: 1,
+        alignItems: 'center'
+    },
+    inputBin:{
+        marginTop:20,
+        flex: 1,
     }
 });
