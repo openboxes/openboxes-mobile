@@ -23,16 +23,16 @@ import InputSpinner from '../../components/InputSpinner';
 
 const reducer = (action: any, state = {}) => {
   switch (action.type) {
-     case 'UPDATE_QUNTITY': {
+     case 'UPDATE_QUNTITY':
        state.quantityPicked = action.payload;
       return ({...state, quantityPicked: action.payload});
-    }
      case 'UPDATE':
         return action.payload;
      default:
         return state;
   }
-}
+};
+
 const initialValue = {
   error: '',
   pickListItem: [],
@@ -54,7 +54,7 @@ const PickOrderItem = () => {
   const [productData, producDispatch] = useReducer(reducer, initialValue);
   const navigation = useNavigation();
   const vm = pickListVMMapper(route.params);
-  const [pickListItemData1, dispatchPickListItemData] = useReducer((pickListItemDataState: any, action: any) => {
+  const [pickListItemData, dispatchPickListItemData] = useReducer((pickListItemDataState: any, action: any) => {
     let picklistItems = pickListItemDataState;
     picklistItems[action.index].quantityToPick = parseInt(action.query);
     return picklistItems;
@@ -99,7 +99,7 @@ const PickOrderItem = () => {
     }
     if (query.includes('LOG-XXX')) {
       const actionCallback = (data: any) => {
-        if (data?.error) {
+        if (data && data.error) {
           showErrorPopup(
             data,
             query,
@@ -137,7 +137,7 @@ const PickOrderItem = () => {
       dispatch(searchProductGloballyAction(query, actionCallback));
     } else {
       const actionBinLocationCallback = (data: any) => {
-        if (data?.error) {
+        if (data && data.error) {
           showErrorPopup(
             data,
             query,
@@ -174,8 +174,8 @@ const PickOrderItem = () => {
   };
 
   const formSubmit = (id: string) => {
-    const itemToSave = _.find(pickListItemData1, item => item.id === id);
-    console.log('quantityToPick', itemToSave.quantityToPick);  
+    const itemToSave = _.find(pickListItemData, item => item.id === id);
+
     try {
       let errorTitle = '';
       let errorMessage = '';
@@ -202,11 +202,10 @@ const PickOrderItem = () => {
       };
 
       const actionCallback = (data: any) => {
-        if (data?.error) {
+        if (data && data.error) {
           showPopup({
-            title: data.message ? 'Failed to load results' : null,
-            message: data.message || 'Failed to load results',
-            negativeButtonText: 'Cancel',
+            title: data.errorMessage ? 'Failed to pick item' : null,
+            message: data.errorMessage || 'Failed to pick item',
           });
         } else {
           const {order, pickListItem}: any = route.params;
@@ -228,7 +227,7 @@ const PickOrderItem = () => {
       );
     } catch (e) {
       const title = e.message ? 'Failed submit item' : null;
-      const message = e.message ?? 'Failed submit item';
+      const message = e.message  || 'Failed submit item';
       showPopup({
         title: title,
         message: message,
@@ -241,7 +240,7 @@ const PickOrderItem = () => {
   const productSearchQueryChange = (query: string) => {
     producDispatch({type: 'UPDATE', payload: {...productData,
       productSearchQuery: query + '343434',
-    }})
+    }});
     onProductBarCodeSearchQuerySubmitted();
   };
 
@@ -268,16 +267,15 @@ const PickOrderItem = () => {
           ...productData,
           productCode: '',
           productSearchQuery: '',
-        }})
+        }});
         return;
       } else if (data.data.length == 1) {
-      
         producDispatch({type: 'UPDATE', payload: {
           ...productData,
           product: data.data[0],
           quantityPicked: (parseInt(productData.quantityPicked, 10) + 1).toString(),
           productSearchQuery: '',
-        }})
+        }});
       }
     };
     dispatch(searchProductByCodeAction(productData.productCode, actionCallback));
@@ -313,7 +311,7 @@ const PickOrderItem = () => {
           ...productData,
           binLocationName: '',
           binLocationSearchQuery: '',
-        }})
+        }});
         return;
       } else if (location) {
         producDispatch({type: 'UPDATE', payload: {
@@ -359,7 +357,7 @@ const PickOrderItem = () => {
           sliderWidth={device.windowWidth}
           sliderHeight={device.windowHeight}
           itemWidth={device.windowWidth - 70}
-          data={pickListItemData1}
+          data={pickListItemData}
           firstItem={vm.selectedPinkItemIndex ? vm.selectedPinkItemIndex : 0}
           scrollEnabled={true}
           renderItem={({item, index}: ListRenderItemInfo<PicklistItem>) => {
