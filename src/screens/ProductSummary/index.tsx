@@ -58,10 +58,10 @@ const ProductSummary = () => {
   };
 
   const searchProduct = (query: string) => {
-    if (query && Object.keys(query).length !== 0) {
+    if (query) {
       state.productSummary = _.filter(
-        state.productSummary,
-        (item: { productCode: string, productName: string }) => item.productCode.includes(query) || item.productName.includes(query));
+        state.productData,
+        (item: { productCode: string, productName: string }) => item.productCode.toLowerCase().includes(query.toLowerCase()) || item.productName.toLowerCase().includes(query.toLowerCase()));
     } else {
       state.productSummary = state.productData;
     }
@@ -112,7 +112,7 @@ const ProductSummary = () => {
   return (
     <View style={styles.mainContainer}>
       <BarCodeSearchHeader
-        placeholder={'Search Orders by Name'}
+        placeholder={'Search by product code or name'}
         searchBox={false}
         autoSearch={true}
         onBarCodeSearchQuerySubmitted={(query) => searchProduct(query)}
