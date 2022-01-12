@@ -64,12 +64,22 @@ class OrderDetails extends React.Component<Props, State> {
     );
   }
 
+  callBackUpdate = (data: undefined) => {
+    const updatePickUpList = this.state.pickList?.picklistItems;
+    const foundIndex = updatePickUpList.findIndex((x) => x.id === data?.id);
+    updatePickUpList[foundIndex] = data;
+    this.setState({
+      pickListItems: updatePickUpList
+    });
+  };
+
   onItemTapped = (item: PicklistItem, index: number) => {
     const { order } = this.props.route.params;
     this.props.navigation.navigate('PickOrderItem', {
       order,
       pickListItem: item,
-      selectedPinkItemIndex: index
+      selectedPinkItemIndex: index,
+      callBackUpdate: this.callBackUpdate
     });
   };
 

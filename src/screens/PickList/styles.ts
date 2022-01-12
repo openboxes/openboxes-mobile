@@ -10,11 +10,10 @@ export default StyleSheet.create({
     flex: 1
   },
   inputContainer: {
-    borderWidth: 1,
-    borderRadius: 4,
     display: 'flex',
     flexDirection: 'column',
-    paddingHorizontal: 10
+    paddingHorizontal: 10,
+    flex: 1
   },
   from: {
     flex: 1,

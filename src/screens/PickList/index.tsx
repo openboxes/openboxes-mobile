@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import _ from 'lodash';
 import styles from './styles';
-import { ListRenderItemInfo, ScrollView, Text, View, ToastAndroid } from 'react-native';
+import { ListRenderItemInfo, ScrollView, Text, View, ToastAndroid, Alert } from 'react-native';
 import { pickListVMMapper } from './PickListVMMapper';
 import { hideScreenLoading } from '../../redux/actions/main';
 import { useDispatch } from 'react-redux';
@@ -16,7 +16,6 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import Button from '../../components/Button';
 import useEventListener from '../../hooks/useEventListener';
 import InputBox from '../../components/InputBox';
-import Carousel from 'react-native-snap-carousel';
 import { device } from '../../constants';
 import { PicklistItem } from '../../data/picklist/PicklistItem';
 import InputSpinner from '../../components/InputSpinner';
@@ -25,10 +24,10 @@ const PickOrderItem = () => {
   const route = useRoute();
   const dispatch = useDispatch();
   const barcodeData = useEventListener();
-  const [pickListItemData, setPickListItemData] = useState<any>([]);
+  const [pickListItemData, setPickListItemData] = useState<any>(null);
   const [state, setState] = useState<any>({
     error: '',
-    pickListItem: [],
+    pickListItem: null,
     order: null,
     productSearchQuery: '',
     binLocationSearchQuery: '',
@@ -156,20 +155,18 @@ const PickOrderItem = () => {
   };
 
   useEffect(() => {
-    const data =  vm.order.picklist? vm.order.picklist.picklistItems : [];
-    setPickListItemData(data);
+    const pickListObj =  vm?.pickListItem;
+    setPickListItemData({...pickListObj, ...{quantityToPick: vm?.pickListItem?.quantityRemaining}});
   }, []);
 
-  const formSubmit = (id: string) => {
-    const itemToSave = _.find(pickListItemData, item => item.id === id);
-
+  const formSubmit = (itemToSave: any) => {
     try {
       let errorTitle = '';
       let errorMessage = '';
       if (!Number(itemToSave.quantityToPick)) {
         errorTitle = 'Quantity To Pick!';
         errorMessage = 'Please pick some quantity.';
-      } else if (Number(itemToSave.quantityToPick) > Number(itemToSave.quantityRemaining)) {
+    } else if (Number(itemToSave.quantityToPick) > Number(itemToSave.quantityRemaining)) {
         errorTitle = 'Quantity To Pick!';
         errorMessage = 'Quantity to pick cannot exceed quantity remaining!';
       }
@@ -183,12 +180,10 @@ const PickOrderItem = () => {
       }
 
       const requestBody = {
-        // TODO: If scanning will be involved, the product id should be validated or updated within 'pickListItemData'
         'product.id': itemToSave['product.id'],
         productCode: itemToSave.productCode,
-        quantityPicked: itemToSave.quantityToPick,
+        quantityPicked: itemToSave.quantityPicked,
       };
-
       const actionCallback = (data: any) => {
         if (data?.error) {
           showPopup({
@@ -199,14 +194,10 @@ const PickOrderItem = () => {
         } else {
           const {order, pickListItem}: any = route.params;
           ToastAndroid.show('Picked item successfully!', ToastAndroid.SHORT);
-          // @ts-ignore
-          navigation.navigate('OrderDetails', {
-            order,
-            pickList: pickListItem,
-          });
+          navigation.goBack();
+          route?.params?.callBackUpdate({...itemToSave,...{quantityRemaining: (itemToSave?.quantityRemaining - itemToSave?.quantityPicked)}});
         }
       };
-
       dispatch(
         submitPickListItem(
           itemToSave.id as string,
@@ -319,15 +310,21 @@ const PickOrderItem = () => {
     onBinLocationBarCodeSearchQuerySubmitted();
   };
 
-  const quantityPickedChange = (query: string, index: number) => {
-    let picklistItemData = pickListItemData;
-    picklistItemData[index].quantityToPick = parseInt(query);
-    setPickListItemData([ ...picklistItemData ]);
-
-    setState({
+  const quantityPickedChange = (query: string) => {
+    if(query > pickListItemData.quantityRemaining)
+    {
+      showPopup({
+        title: 'Quantity To Pick!',
+        message: 'Quantity to pick cannot exceed quantity remaining!',
+        negativeButtonText: 'Cancel',
+      });
+    } else {
+      setPickListItemData({...pickListItemData, ...{quantityPicked: query}});
+        setState({
       ...state,
       quantityPicked: query,
     });
+    }
   };
 
   const onChangeProduct = (text: string) => {
@@ -339,33 +336,21 @@ const PickOrderItem = () => {
     state.binLocationName = text;
     setState({...state});
   };
-
+  
   return (
+    pickListItemData ?
     <View style={styles.screenContainer}>
-      <View style={styles.swiperView}>
-        <Carousel
-          key={3}
-          dimensions={{width: device.windowWidth}}
-          sliderWidth={device.windowWidth}
-          sliderHeight={device.windowHeight}
-          itemWidth={device.windowWidth - 70}
-          data={pickListItemData}
-          firstItem={vm.selectedPinkItemIndex ? vm.selectedPinkItemIndex : 0}
-          scrollEnabled={true}
-          renderItem={({item, index}: ListRenderItemInfo<PicklistItem>) => {
-            return (
-              <View key={index}>
                 <ScrollView style={styles.inputContainer}>
                   <View style={styles.listItemContainer}>
                     <View style={styles.row}>
                       <View style={styles.col50}>
                         <Text style={styles.label}>Product Code</Text>
-                        <Text style={styles.value}>{item?.productCode}</Text>
+                        <Text style={styles.value}>{pickListItemData?.productCode}</Text>
                       </View>
                       <View style={styles.col50}>
                         <Text style={styles.label}>Product Name</Text>
                         <Text style={styles.value}>
-                          {item?.['product.name']}
+                          {pickListItemData?.['product.name']}
                         </Text>
                       </View>
                     </View>
@@ -374,20 +359,20 @@ const PickOrderItem = () => {
                       <View style={styles.col50}>
                         <Text style={styles.label}>Picked</Text>
                         <Text style={styles.value}>
-                          {item?.quantityPicked} / {item?.quantityRequested}
+                          {pickListItemData?.quantityPicked} / {pickListItemData?.quantityRequested}
                         </Text>
                       </View>
                       <View style={styles.col50}>
                         <Text style={styles.label}>Remaining</Text>
                         <Text style={styles.value}>
-                          {item?.quantityRemaining}
+                          {pickListItemData?.quantityRemaining}
                         </Text>
                       </View>
                     </View>
                   </View>
                   <View style={styles.from}>
                     <InputBox
-                      value={item.productCode}
+                      value={pickListItemData?.productCode}
                       disabled={true}
                       editable={false}
                       onEndEdit={productSearchQueryChange}
@@ -395,7 +380,7 @@ const PickOrderItem = () => {
                       label={'Product Code'}
                     />
                     <InputBox
-                      value={item.lotNumber}
+                      value={pickListItemData?.lotNumber}
                       label={'Lot Number'}
                       disabled={true}
                       onEndEdit={binLocationSearchQueryChange}
@@ -403,7 +388,7 @@ const PickOrderItem = () => {
                       editable={false}
                     />
                     <InputBox
-                      value={item['binLocation.name']}
+                      value={pickListItemData?.['binLocation.name']}
                       label={'Bin Location'}
                       disabled={true}
                       onEndEdit={binLocationSearchQueryChange}
@@ -413,20 +398,16 @@ const PickOrderItem = () => {
                      <View style={styles.inputSpinner}>
                     <InputSpinner
                       title={"Quantity to Pick"}
-                      setValue={(value) => quantityPickedChange(value, index)}
-                      value={item.quantityRemaining}
+                      setValue={(value) => quantityPickedChange(value)}
+                      value={pickListItemData?.quantityRemaining}
                     />
                     </View>
-                    <Button title="Pick Item" onPress={() => formSubmit(item.id)} />
+                    <Button title="Pick Item" onPress={() => formSubmit(pickListItemData)} />
                   </View>
                 </ScrollView>
-                <View style={styles.bottom}></View>
+                <View style={styles.bottom} />
               </View>
-            );
-          }}
-        />
-      </View>
-    </View>
+              : null
   );
 };
 
