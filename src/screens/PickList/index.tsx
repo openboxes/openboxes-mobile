@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from 'react';
-import _ from 'lodash';
 import styles from './styles';
 import { ScrollView, Text, View, ToastAndroid } from 'react-native';
 import { pickListVMMapper } from './PickListVMMapper';
