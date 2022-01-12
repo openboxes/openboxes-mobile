@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import _ from 'lodash';
 import styles from './styles';
-import { ListRenderItemInfo, ScrollView, Text, View, ToastAndroid, Alert } from 'react-native';
+import { ScrollView, Text, View, ToastAndroid } from 'react-native';
 import { pickListVMMapper } from './PickListVMMapper';
 import { hideScreenLoading } from '../../redux/actions/main';
 import { useDispatch } from 'react-redux';
@@ -16,8 +16,6 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import Button from '../../components/Button';
 import useEventListener from '../../hooks/useEventListener';
 import InputBox from '../../components/InputBox';
-import { device } from '../../constants';
-import { PicklistItem } from '../../data/picklist/PicklistItem';
 import InputSpinner from '../../components/InputSpinner';
 
 const PickOrderItem = () => {
@@ -192,7 +190,6 @@ const PickOrderItem = () => {
             negativeButtonText: 'Cancel',
           });
         } else {
-          const {order, pickListItem}: any = route.params;
           ToastAndroid.show('Picked item successfully!', ToastAndroid.SHORT);
           navigation.goBack();
           route?.params?.callBackUpdate({...itemToSave,...{quantityRemaining: (itemToSave?.quantityRemaining - itemToSave?.quantityPicked)}});
