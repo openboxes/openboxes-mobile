@@ -184,7 +184,7 @@ const TransferDetails = () => {
           <FlatList
             data={transferDetail?.stockTransferItems}
             horizontal={false}
-            numColumns={3}
+            numColumns={1}
             ListEmptyComponent={
               <EmptyView
                 title="Transfers"
