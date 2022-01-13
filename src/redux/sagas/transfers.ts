@@ -5,7 +5,7 @@ import {
   FETCH_STOCK_TRANSFERS,
   FETCH_STOCK_TRANSFERS_SUCCESS,
   FETCH_STOCK_TRANSFERS_DETAILS,
-  POST_STOCK_COMPLETE_TRANSFER
+  PUT_COMPLETE_STOCK_TRANSFER
 } from '../actions/transfers';
 import { hideScreenLoading, showScreenLoading } from '../actions/main';
 import * as api from '../../apis';
@@ -61,17 +61,17 @@ function* getStockTransfersSummary(action: any) {
   }
 }
 
-function* postCompleteStockTransfer(action: any) {
+function* completeStockTransfer(action: any) {
   try {
     yield put(showScreenLoading('Please wait...'));
     const response = yield call(
-      api.postCompleteStockTransfer,
-      action.payload.id
+      api.completeStockTransfer,
+      action.payload.stockTransfer
     );
     yield action.callback(response.data);
     yield put(hideScreenLoading());
   } catch (e) {
-    Sentry.captureException('Error while post complete Transfers', e.response);
+    Sentry.captureException('Error while completing Transfer', e.response);
     yield put(hideScreenLoading());
     yield action.callback({
       error: true,
@@ -84,5 +84,5 @@ export default function* watcher() {
   yield takeLatest(STOCK_TRANSFERS_REQUEST, stockTransfers);
   yield takeLatest(FETCH_STOCK_TRANSFERS_DETAILS, getStockTransfersSummary);
   yield takeLatest(FETCH_STOCK_TRANSFERS, getStockTransfers);
-  yield takeLatest(POST_STOCK_COMPLETE_TRANSFER, postCompleteStockTransfer);
+  yield takeLatest(PUT_COMPLETE_STOCK_TRANSFER, completeStockTransfer);
 }

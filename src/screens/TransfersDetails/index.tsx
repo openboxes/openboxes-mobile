@@ -16,7 +16,7 @@ import { useDispatch } from 'react-redux';
 import showPopup from '../../components/Popup';
 import {
   getStockTransfersSummary,
-  postCompleteStockTransfer
+  completeStockTransfer
 } from '../../redux/actions/transfers';
 import EmptyView from '../../components/EmptyView';
 import Button from '../../components/Button';
@@ -56,7 +56,7 @@ const TransferDetails = () => {
     dispatch(getStockTransfersSummary(id, callback));
   };
 
-  const completeTransfers = (item: any) => {
+  const completeTransfers = (stockTransfer: any) => {
     const callback = (data: any) => {
       if (data?.error) {
         showPopup({
@@ -65,7 +65,7 @@ const TransferDetails = () => {
           positiveButton: {
             text: 'Retry',
             callback: () => {
-              dispatch(postCompleteStockTransfer(item?.id, callback));
+              dispatch(completeStockTransfer(stockTransfer, callback));
             }
           },
           negativeButtonText: 'Cancel'
@@ -76,7 +76,7 @@ const TransferDetails = () => {
         route?.params?.onCallBackHandler(data);
       }
     };
-    dispatch(postCompleteStockTransfer(item?.id, callback));
+    dispatch(completeStockTransfer(stockTransfer, callback));
   };
 
   const RenderData = ({ title, subText }: any): JSX.Element => {
