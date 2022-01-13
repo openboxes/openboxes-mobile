@@ -49,7 +49,7 @@ module.exports = {
         message: 'Unexpected property on console object was called'
       }
     ],
-    complexity: ['error', { max: 4 }],
+    complexity: ['error', { max: 14 }],
     eqeqeq: ['error', 'always'],
     // react
     'react/no-unescaped-entities': ['error', { forbid: ['>', '"', '}'] }],

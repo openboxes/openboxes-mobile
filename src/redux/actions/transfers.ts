@@ -6,6 +6,10 @@ export const FETCH_STOCK_MOVEMENTS_SUCCESS = 'FETCH_STOCK_MOVEMENTS_SUCCESS';
 export const STOCK_TRANSFERS_REQUEST = 'STOCK_TRANSFERS_REQUEST';
 export const STOCK_TRANSFERS_REQUEST_SUCCESS =
   'STOCK_TRANSFERS_REQUEST_SUCCESS';
+export const FETCH_STOCK_TRANSFERS = 'FETCH_STOCK_TRANSFERS';
+export const FETCH_STOCK_TRANSFERS_SUCCESS = 'FETCH_STOCK_TRANSFERS_SUCCESS';
+export const FETCH_STOCK_TRANSFERS_DETAILS = 'FETCH_STOCK_TRANSFERS_DETAILS';
+export const PUT_COMPLETE_STOCK_TRANSFER = 'PUT_COMPLETE_STOCK_TRANSFER';
 
 export const updateStockTransfer = (
   data: any,
@@ -39,3 +43,32 @@ export function stockTransfersAction(
     callback
   };
 }
+
+export const getStockTransfers = (callback: (data: any) => void) => {
+  return {
+    type: FETCH_STOCK_TRANSFERS,
+    callback
+  };
+};
+
+export function getStockTransfersSummary(
+  id: string,
+  callback: (data: any) => void
+) {
+  return {
+    type: FETCH_STOCK_TRANSFERS_DETAILS,
+    payload: { id },
+    callback
+  };
+}
+
+export const completeStockTransfer = (
+  stockTransfer: any,
+  callback: (data: any) => void
+) => {
+  return {
+    type: PUT_COMPLETE_STOCK_TRANSFER,
+    payload: { stockTransfer },
+    callback
+  };
+};

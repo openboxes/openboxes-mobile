@@ -9,6 +9,7 @@ import OrderDetails from './screens/OrderDetails';
 import ProductDetails from './screens/ProductDetails';
 import Dashboard from './screens/Dashboard';
 import InternalTransfer from './screens/InternalTransfer';
+import Transfers from './screens/Transfers';
 import InboundReceiveDetail from './screens/InboundReceiveDetail';
 import Products from './screens/Products';
 import PutawayItem from './screens/PutawayItem';
@@ -39,6 +40,7 @@ import InternalLocationDetails from './screens/InternalLocationDetails';
 import OutboundStockList from './screens/OutboundStockList';
 import OutboundStockDetails from './screens/OutboundStockDetails';
 import ProductSummary from './screens/ProductSummary';
+import TransferDetails from './screens/TransfersDetails';
 import AdjustStock from './screens/AdjustStock';
 import Transfer from './screens/Transfer';
 import ShipItemDetails from './screens/ShipItemDetails';
@@ -172,6 +174,11 @@ class Main extends Component<Props, State> {
               <Stack.Screen
                 name="InternalTransfer"
                 component={InternalTransfer}
+              />
+              <Stack.Screen name="Transfers" component={Transfers} />
+              <Stack.Screen
+                component={TransferDetails}
+                name="TransferDetails"
               />
               <Stack.Screen name="Dashboard" component={Dashboard} />
               <Stack.Screen name="Scan" component={Scan} />
