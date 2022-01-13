@@ -39,7 +39,6 @@ export default function ({
             label: option.label
           });
         }}
-        onCancel={() => setQuery('')}
       >
         <TextInput
           style={styles.textInput}
