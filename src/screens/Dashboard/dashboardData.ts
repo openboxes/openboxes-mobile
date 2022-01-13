@@ -55,6 +55,11 @@ const dashboardData = [
     icon: require('../../assets/images/putaway.png'),
     navigationScreenName: 'PutawayCandidates',
   },
+  {
+    screenName: 'Transfers',
+    icon: require('../../assets/images/transfer.png'),
+    navigationScreenName: 'Transfers',
+  },
 ];
 
 export default dashboardData;
