@@ -203,7 +203,7 @@ const PickOrderItem = () => {
       );
     } catch (e) {
       const title = e.message ? 'Failed submit item' : null;
-      const message = e.message ?? 'Failed submit item';
+      const message = e.message || 'Failed submit item';
       showPopup({
         title: title,
         message: message,
@@ -332,7 +332,7 @@ const PickOrderItem = () => {
     state.binLocationName = text;
     setState({...state});
   };
-  
+
   return (
     pickListItemData ?
     <View style={styles.screenContainer}>
