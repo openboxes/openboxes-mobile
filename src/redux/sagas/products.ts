@@ -178,14 +178,18 @@ function* printLabel(action: any) {
       type: PRINT_LABEL_REQUEST_SUCCESS,
       payload: response
     });
-    yield action.callback(response);
+    if (action.callback) {
+      yield action.callback(response);
+    }
     yield put(hideScreenLoading());
   } catch (e) {
     yield put(hideScreenLoading());
-    yield action.callback({
-      error: true,
-      errorMessage: e.message
-    });
+    if (action.callback) {
+      yield action.callback({
+        error: true,
+        errorMessage: e.message
+      });
+    }
   }
 }
 
