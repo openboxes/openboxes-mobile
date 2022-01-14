@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import { RootState } from '../../redux/reducers';
 import InputBox from '../InputBox';
 import Button from '../../components/Button';
+import showPopup from '../Popup';
 
 function PrintModal(props: Props) {
   const [label, setLabel] = useState<any>('1');
@@ -16,8 +17,18 @@ function PrintModal(props: Props) {
       productId: product.id,
       type: type,
       barcodeId: defaultBarcodeLabelUrl['id']
-    });
+    }, printLabelActionCallback);
     props.closeModal();
+  };
+
+
+  const printLabelActionCallback = (data: any) => {
+    if (data?.error) {
+      showPopup({
+        title: 'Label printing failed',
+        message: data.errorMessage,
+      });
+    }
   };
 
   const onChangeLabel = (text: string) => {
