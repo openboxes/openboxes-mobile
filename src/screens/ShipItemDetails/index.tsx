@@ -168,7 +168,7 @@ const ShipItemDetails = () => {
         <View style={styles.alignCenterContent}>
           <InputSpinner
             title={'Quantity to Pick'}
-            value={state.quantityPicked}
+            value={item.quantityRemaining}
             setValue={quantityPickedChange}
           />
         </View>
