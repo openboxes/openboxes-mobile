@@ -6,7 +6,7 @@ import { ScrollView, View, Text } from 'react-native';
 import InputBox from '../../components/InputBox';
 import Button from '../../components/Button';
 import { RootState } from '../../redux/reducers';
-import { useRoute } from '@react-navigation/native';
+import { useRoute, useNavigation } from '@react-navigation/native';
 import { updateStockTransfer } from '../../redux/actions/transfers';
 import showPopup from '../../components/Popup';
 import { getBinLocationsAction } from '../../redux/actions/locations';
@@ -15,6 +15,7 @@ import InputSpinner from "../../components/InputSpinner";
 
 const Transfer = () => {
   const route = useRoute();
+  const navigation = useNavigation();
   const { item }: any = route.params;
   const dispatch = useDispatch();
   const location = useSelector(
@@ -66,7 +67,13 @@ const Transfer = () => {
           title: 'Submit',
           message: 'Successfully submit',
           positiveButton: {
-            text: 'ok'
+            text: 'ok',
+            callback: () => {
+              const product = {
+                id: item.inventoryItem.product.id
+              };
+              navigation.navigate('ProductDetails', { product }); 
+            },
           }
         });
       }
