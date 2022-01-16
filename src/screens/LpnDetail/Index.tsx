@@ -25,6 +25,7 @@ import EmptyView from '../../components/EmptyView';
 
 import SelectDropdown from 'react-native-select-dropdown';
 const containerStatus = [
+  'OPEN',
   'PACKING',
   'PACKED',
   'LOADED',
@@ -163,7 +164,7 @@ class LpnDetail extends React.Component<Props, State> {
             <View style={styles.col50}>
               <Text style={styles.label}>Shipment Number</Text>
               <Text style={styles.value}>
-                {this.state.container?.shipmentNumber}
+                {this.state.shipmentNumber}
               </Text>
             </View>
             <View style={styles.col50}>

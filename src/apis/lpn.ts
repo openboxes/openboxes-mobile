@@ -1,7 +1,7 @@
 import apiClient from '../utils/ApiClient';
 
 export function saveAndUpdateLpn(requestBody: any) {
-  return apiClient.post('/generic/container/', requestBody);
+  return apiClient.post('/containers/', requestBody);
 }
 
 export function fetchContainer(id: string) {
