@@ -16,13 +16,15 @@ import { RootState } from '../../redux/reducers';
 import { Card } from 'react-native-paper';
 import RenderData from '../../components/RenderData';
 import Button from '../../components/Button';
+import ProductImageSwiper from '../../components/Modals/ProductImageSwiper';
 
 class ProductDetails extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
       visible: false,
-      productDetails: {}
+      productDetails: {},
+      isModalVisible: false,
     };
   }
 
@@ -125,11 +127,11 @@ class ProductDetails extends React.Component<Props, State> {
       </Card>
     </TouchableOpacity>
   );
-
+                
   render() {
     const vm = vmMapper(this.state.productDetails, this.state);
     const product = this.props.selectedProduct;
-    const { visible } = this.state;
+    const { visible, isModalVisible } = this.state;
     return (
       <View
         style={{
@@ -151,12 +153,17 @@ class ProductDetails extends React.Component<Props, State> {
                   <Text style={styles.name}>{vm.productCode}</Text>
                   <Text style={styles.name}>{vm.name}</Text>
                 </View>
-                <View style={{ width: '25%', alignItems: 'flex-end', flex: 1 }}>
+                <TouchableOpacity 
+                  style={{ width: '25%', alignItems: 'flex-end', flex: 1 }}
+                  onPress={() => {
+                    this.setState({isModalVisible: true});
+                  }}
+                >
                   <Image
                     style={{ width: 50, height: 50, resizeMode: 'contain' }}
                     source={{ uri: vm.defaultImageUrl }}
                   />
-                </View>
+                </TouchableOpacity>
               </View>
             </View>
           </Refresh>
@@ -274,6 +281,14 @@ class ProductDetails extends React.Component<Props, State> {
               />
             </Card>
           </ScrollView>
+          {
+            isModalVisible && <ProductImageSwiper 
+              isModalVisible
+              onHideModal={() => {
+                console.log('call hide')
+                this.setState({isModalVisible: false})}}
+            />
+          }
         </View>
       </View>
     );
