@@ -79,7 +79,8 @@ const InboundReceiveDetail = () => {
               quantityReceiving: state.quantityToReceive,
               cancelRemaining: cancelRemaining,
               quantityOnHand: '',
-              comment: state.comments
+              comment: state.comments,
+              mobile: true
             }
           ]
         }
