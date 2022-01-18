@@ -174,7 +174,7 @@ const ShipItemDetails = () => {
         </View>
         <View style={styles.bottom}>
           <Button
-            disabled={!selectedContainerItem?.id || Number(state.quantityPicked) <= 0}
+            disabled={!(selectedContainerItem?.id && state.quantityPicked && state.quantityPicked > 0)}
             title="PACK ITEM"
             onPress={() => {
               submitShipmentDetail(item?.id);
