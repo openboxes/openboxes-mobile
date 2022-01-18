@@ -10,8 +10,6 @@ export default StyleSheet.create({
     flex: 1
   },
   inputContainer: {
-    borderWidth: 1,
-    borderRadius: 4,
     display: 'flex',
     flexDirection: 'column',
     paddingHorizontal: 10
@@ -166,7 +164,6 @@ export default StyleSheet.create({
     height: ratio.height * 100
   },
   swiperView: {
-    height: device.windowHeight - 100,
     justifyContent: 'center'
   },
   inputSpinner: {
