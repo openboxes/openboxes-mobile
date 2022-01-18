@@ -138,7 +138,6 @@ export default StyleSheet.create({
   row: {
     flexDirection: 'row',
     borderColor: Theme.colors.background,
-    // borderBottomWidth: 1,
     marginTop: 1,
     padding: 2,
     border: 0,
@@ -160,6 +159,7 @@ export default StyleSheet.create({
     color: Theme.colors.text,
   },
   bottomList:{
+    marginTop: 10,
     flex:1
   }
 });

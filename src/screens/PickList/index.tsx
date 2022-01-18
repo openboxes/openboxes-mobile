@@ -2,7 +2,6 @@ import React, {useEffect, useReducer} from 'react';
 import _ from 'lodash';
 import styles from './styles';
 import { ListRenderItemInfo, ScrollView, Text, View, ToastAndroid } from 'react-native';
-import { pickListVMMapper } from './PickListVMMapper';
 import { hideScreenLoading } from '../../redux/actions/main';
 import { useDispatch } from 'react-redux';
 import showPopup from '../../components/Popup';
@@ -12,7 +11,7 @@ import {
   searchProductGloballyAction,
 } from '../../redux/actions/products';
 import { searchLocationByLocationNumber } from '../../redux/actions/locations';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 import Button from '../../components/Button';
 import useEventListener from '../../hooks/useEventListener';
 import InputBox from '../../components/InputBox';
@@ -20,8 +19,9 @@ import Carousel from 'react-native-snap-carousel';
 import { device } from '../../constants';
 import { PicklistItem } from '../../data/picklist/PicklistItem';
 import InputSpinner from '../../components/InputSpinner';
+import {Card} from "react-native-paper";
 
-const reducer = (action: any, state = {}) => {
+const reducer = (action: any, state: any = {}) => {
   switch (action.type) {
      case 'UPDATE_QUNTITY':
        state.quantityPicked = action.payload;
@@ -47,18 +47,16 @@ const initialValue = {
   binLocationName: '',
 };
 
-const PickOrderItem = () => {
+const PickOrderItem = (props: any) => {
   const route = useRoute();
   const dispatch = useDispatch();
   const barcodeData = useEventListener();
   const [productData, producDispatch] = useReducer(reducer, initialValue);
-  const navigation = useNavigation();
-  const vm = pickListVMMapper(route.params);
   const [pickListItemData, dispatchPickListItemData] = useReducer((pickListItemDataState: any, action: any) => {
     let picklistItems = pickListItemDataState;
     picklistItems[action.index].quantityToPick = parseInt(action.query);
     return picklistItems;
-  }, vm.order.picklist? vm.order.picklist.picklistItems : []);
+  }, props.pickList? props.pickList.picklistItems : []);
 
   useEffect(() => {
     if (barcodeData && Object.keys(barcodeData).length !== 0) {
@@ -208,13 +206,8 @@ const PickOrderItem = () => {
             message: data.errorMessage || 'Failed to pick item',
           });
         } else {
-          const {order, pickListItem}: any = route.params;
           ToastAndroid.show('Picked item successfully!', ToastAndroid.SHORT);
-          // @ts-ignore
-          navigation.navigate('OrderDetails', {
-            order,
-            pickList: pickListItem,
-          });
+          props.successfulPickCallback();
         }
       };
 
@@ -348,6 +341,7 @@ const PickOrderItem = () => {
     productData.binLocationName = text;
     producDispatch({type: 'UPDATE', payload: { ...productData}});
   };
+
   return (
     <View style={styles.screenContainer}>
       <View style={styles.swiperView}>
@@ -358,78 +352,80 @@ const PickOrderItem = () => {
           sliderHeight={device.windowHeight}
           itemWidth={device.windowWidth - 70}
           data={pickListItemData}
-          firstItem={vm.selectedPinkItemIndex ? vm.selectedPinkItemIndex : 0}
+          firstItem={props.selectedPinkItemIndex ? props.selectedPinkItemIndex : 0}
           scrollEnabled={true}
           renderItem={({item, index}: ListRenderItemInfo<PicklistItem>) => {
             return (
-              <View key={index}>
-                <ScrollView style={styles.inputContainer}>
-                  <View style={styles.listItemContainer}>
-                    <View style={styles.row}>
-                      <View style={styles.col50}>
-                        <Text style={styles.label}>Product Code</Text>
-                        <Text style={styles.value}>{item?.productCode}</Text>
+              <Card key={index}>
+                <Card.Content>
+                  <ScrollView style={styles.inputContainer}>
+                    <View style={styles.listItemContainer}>
+                      <View style={styles.row}>
+                        <View style={styles.col50}>
+                          <Text style={styles.label}>Product Code</Text>
+                          <Text style={styles.value}>{item?.productCode}</Text>
+                        </View>
+                        <View style={styles.col50}>
+                          <Text style={styles.label}>Product Name</Text>
+                          <Text style={styles.value}>
+                            {item?.['product.name']}
+                          </Text>
+                        </View>
                       </View>
-                      <View style={styles.col50}>
-                        <Text style={styles.label}>Product Name</Text>
-                        <Text style={styles.value}>
-                          {item?.['product.name']}
-                        </Text>
-                      </View>
-                    </View>
 
-                    <View style={styles.row}>
-                      <View style={styles.col50}>
-                        <Text style={styles.label}>Picked</Text>
-                        <Text style={styles.value}>
-                          {item?.quantityPicked} / {item?.quantityRequested}
-                        </Text>
-                      </View>
-                      <View style={styles.col50}>
-                        <Text style={styles.label}>Remaining</Text>
-                        <Text style={styles.value}>
-                          {item?.quantityRemaining}
-                        </Text>
+                      <View style={styles.row}>
+                        <View style={styles.col50}>
+                          <Text style={styles.label}>Picked</Text>
+                          <Text style={styles.value}>
+                            {item?.quantityPicked} / {item?.quantityRequested}
+                          </Text>
+                        </View>
+                        <View style={styles.col50}>
+                          <Text style={styles.label}>Remaining</Text>
+                          <Text style={styles.value}>
+                            {item?.quantityRemaining}
+                          </Text>
+                        </View>
                       </View>
                     </View>
-                  </View>
-                  <View style={styles.from}>
-                    <InputBox
-                      value={item.productCode}
-                      disabled={true}
-                      editable={false}
-                      onEndEdit={productSearchQueryChange}
-                      onChange={onChangeProduct}
-                      label={'Product Code'}
-                    />
-                    <InputBox
-                      value={item.lotNumber}
-                      label={'Lot Number'}
-                      disabled={true}
-                      onEndEdit={binLocationSearchQueryChange}
-                      onChange={onChangeBin}
-                      editable={false}
-                    />
-                    <InputBox
-                      value={item['binLocation.name']}
-                      label={'Bin Location'}
-                      disabled={true}
-                      onEndEdit={binLocationSearchQueryChange}
-                      onChange={onChangeBin}
-                      editable={false}
-                    />
-                     <View style={styles.inputSpinner}>
-                    <InputSpinner
-                      title={"Quantity to Pick"}
-                      setValue={(value) => quantityPickedChange(value, index)}
-                      value={item.quantityRemaining}
-                    />
+                    <View style={styles.from}>
+                      <InputBox
+                        value={item.productCode}
+                        disabled={true}
+                        editable={false}
+                        onEndEdit={productSearchQueryChange}
+                        onChange={onChangeProduct}
+                        label={'Product Code'}
+                      />
+                      <InputBox
+                        value={item.lotNumber}
+                        label={'Lot Number'}
+                        disabled={true}
+                        onEndEdit={binLocationSearchQueryChange}
+                        onChange={onChangeBin}
+                        editable={false}
+                      />
+                      <InputBox
+                        value={item['binLocation.name']}
+                        label={'Bin Location'}
+                        disabled={true}
+                        onEndEdit={binLocationSearchQueryChange}
+                        onChange={onChangeBin}
+                        editable={false}
+                      />
+                      <View style={styles.inputSpinner}>
+                        <InputSpinner
+                          title={"Quantity to Pick"}
+                          setValue={(value: any) => quantityPickedChange(value, index)}
+                          value={item.quantityToPick}
+                        />
+                      </View>
+                      <Button title="Pick Item" onPress={() => formSubmit(item.id)} />
                     </View>
-                    <Button title="Pick Item" onPress={() => formSubmit(item.id)} />
-                  </View>
-                </ScrollView>
-                <View style={styles.bottom}></View>
-              </View>
+                  </ScrollView>
+                  <View style={styles.bottom}></View>
+                </Card.Content>
+              </Card>
             );
           }}
         />

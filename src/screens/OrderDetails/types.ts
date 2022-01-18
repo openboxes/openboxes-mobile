@@ -5,8 +5,9 @@ import {PicklistItem} from "../../data/picklist/PicklistItem";
 
 export interface State {
   pickList: PickList | null;
-  pickListItems: PicklistItem[] | [];
+  // pickListItems: PicklistItem[] | [];
   error: string | null;
+  initialPicklistItemIndex: number | 0;
 }
 
 export interface PicklistOwnProps {
@@ -27,6 +28,7 @@ export interface StateProps {
 export interface DispatchProps {
   showScreenLoading: (message?: string) => void;
   hideScreenLoading: () => void;
+  // useNavigation: () => void;
   getPickListAction: (id: any, callback: (data: any) => void) => void;
 }
 

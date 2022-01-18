@@ -1,20 +1,19 @@
+import _ from 'lodash';
 import React from 'react';
-import styles from './styles';
-import { showScreenLoading, hideScreenLoading } from '../../redux/actions/main';
 import { connect } from 'react-redux';
-import { orderDetailsVMMapper } from './OrderDetailsVMMapper';
 import {
-  FlatList,
-  ListRenderItemInfo,
   Text,
   View,
-  BackHandler
 } from 'react-native';
+
+import styles from './styles';
+import { showScreenLoading, hideScreenLoading } from '../../redux/actions/main';
+import { orderDetailsVMMapper } from './OrderDetailsVMMapper';
 import { getPickListAction } from '../../redux/actions/orders';
 import { State, DispatchProps, Props } from './types';
-import PickListItem from './PickListItem';
-import { PicklistItem } from '../../data/picklist/PicklistItem';
-import EmptyView from '../../components/EmptyView';
+import PickOrderItem from '../PickList';
+import showPopup from "../../components/Popup";
+
 class OrderDetails extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
@@ -22,58 +21,65 @@ class OrderDetails extends React.Component<Props, State> {
     this.state = {
       pickList: null,
       error: null,
-      pickListItems: []
+      initialPicklistItemIndex: 0,
     };
-    this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
-  }
-
-  componentWillUnmount() {
-    BackHandler.removeEventListener(
-      'hardwareBackPress',
-      this.handleBackButtonClick
-    );
-  }
-
-  handleBackButtonClick() {
-    this.props.navigation.goBack(null);
-    return true;
   }
 
   componentDidMount() {
+    this.getOrderDetails();
+  }
+
+  getOrderDetails() {
+    this.props.showScreenLoading('Loading');
     const { order } = this.props.route.params;
+
     const actionCallback = (data: any) => {
       if (data?.length == 0) {
+        this.props.hideScreenLoading();
         this.setState({
           pickList: data,
           error: 'No Picklist found',
-          pickListItems: data
         });
       } else {
+        const initialPicklistItemIndex = this.getInitiallyDisplayedPickItemIndex(data?.picklistItems);
+
+        if (initialPicklistItemIndex === -1) {
+          showPopup({
+            title: 'All items are picked',
+            message: 'Do you want to go back?',
+            positiveButton: {
+              text: 'Ok',
+              callback: () => this.props.navigation.navigate('Orders'),
+            },
+            negativeButtonText: 'Cancel',
+          });
+        }
+
         this.setState({
-          pickList: data,
+          pickList: null,
           error: null,
-          pickListItems: data ? data : []
-        });
+          initialPicklistItemIndex: 0
+        }, () => this.setState({
+          pickList: {
+            ...data,
+            picklistItems: _.map(data.picklistItems, (item: any) => ({ ...item, quantityToPick: item.quantityRemaining }))
+          },
+          error: null,
+          initialPicklistItemIndex
+        }, () => this.props.hideScreenLoading()));
       }
     };
-    this.props.getPickListAction(order?.picklist?.id, actionCallback);
 
-    BackHandler.addEventListener(
-      'hardwareBackPress',
-      this.handleBackButtonClick
-    );
+    this.props.getPickListAction(order?.picklist?.id, actionCallback);
   }
 
-  onItemTapped = (item: PicklistItem, index: number) => {
-    const { order } = this.props.route.params;
-    this.props.navigation.navigate('PickOrderItem', {
-      order,
-      pickListItem: item,
-      selectedPinkItemIndex: index
-    });
-  };
+  getInitiallyDisplayedPickItemIndex(picklistItems: any) {
+    return _.findIndex(picklistItems, (item: any) => Number(item.quantityRemaining) > 0);
+  }
 
   render() {
+    const { initialPicklistItemIndex, pickList } = this.state;
+
     const vm = orderDetailsVMMapper(this.props.route?.params, this.state);
     return (
       <View style={styles.screenContainer}>
@@ -100,32 +106,15 @@ class OrderDetails extends React.Component<Props, State> {
               <Text style={styles.value}>{vm.requestedDeliveryDate}</Text>
             </View>
           </View>
-          <View style={styles.row}>
-            <View style={styles.col50}>
-              <Text style={styles.label}>Picklist</Text>
-            </View>
-          </View>
           <View style={styles.bottomList}>
-            <FlatList
-              data={this.state.pickList?.picklistItems}
-              ListEmptyComponent={
-                <EmptyView
-                  title="Order Detail"
-                  description="There are no items to pick"
-                />
-              }
-              ListFooterComponent={<View style={styles.bottomList} />}
-              renderItem={(item: ListRenderItemInfo<PicklistItem>) => (
-                <PickListItem
-                  item={item.item}
-                  onPress={() => {
-                    this.onItemTapped(item.item, item.index);
-                  }}
-                />
-              )}
-              keyExtractor={(item) => `${item.id}`}
-              style={styles.list}
-            />
+            {pickList?.picklistItems && pickList?.picklistItems?.length > 0 &&
+              <PickOrderItem
+                pickList={pickList}
+                pickListItem={pickList?.picklistItems[initialPicklistItemIndex]}
+                selectedPinkItemIndex={initialPicklistItemIndex}
+                successfulPickCallback={() => this.getOrderDetails()}
+              />
+            }
           </View>
         </View>
       </View>
