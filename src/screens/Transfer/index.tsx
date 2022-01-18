@@ -2,11 +2,11 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styles from './styles';
-import { ScrollView, View, Text } from 'react-native';
+import { ScrollView, View, Text, ToastAndroid } from 'react-native';
 import InputBox from '../../components/InputBox';
 import Button from '../../components/Button';
 import { RootState } from '../../redux/reducers';
-import { useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { updateStockTransfer } from '../../redux/actions/transfers';
 import showPopup from '../../components/Popup';
 import { getBinLocationsAction } from '../../redux/actions/locations';
@@ -15,6 +15,7 @@ import InputSpinner from "../../components/InputSpinner";
 
 const Transfer = () => {
   const route = useRoute();
+  const navigation = useNavigation<any>();
   const { item }: any = route.params;
   const dispatch = useDispatch();
   const location = useSelector(
@@ -62,13 +63,9 @@ const Transfer = () => {
           negativeButtonText: 'Cancel'
         });
       } else {
-        showPopup({
-          title: 'Submit',
-          message: 'Successfully submit',
-          positiveButton: {
-            text: 'ok'
-          }
-        });
+        const product = { id: item.inventoryItem.product.id };
+        ToastAndroid.show('Transferred item successfully!', ToastAndroid.SHORT);
+        navigation.navigate('ProductDetails', { product });
       }
     };
     dispatch(updateStockTransfer(request, actionCallback));
