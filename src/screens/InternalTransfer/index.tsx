@@ -174,8 +174,8 @@ const InternalTransfer = () => {
     const actionCallback = (data: any) => {
       if (data?.error) {
         showPopup({
-          title: data.error.message ? 'Failed to update' : null,
-          message: data.error.message ?? 'Failed to update',
+          title: data.errorMessage ? 'Failed to update' : null,
+          message: data.errorMessage ?? 'Failed to update',
           positiveButton: {
             text: 'Retry',
             callback: () => {

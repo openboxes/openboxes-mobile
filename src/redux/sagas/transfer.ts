@@ -25,6 +25,10 @@ function* updateStockTransfer(action: any) {
     yield put(hideScreenLoading());
   } catch (e) {
     yield put(hideScreenLoading());
+    yield action.callback({
+      error: true,
+      errorMessage: e.message,
+    });
     Sentry.captureException('Error while updateStockTransfer API', e.response);
   }
 }
