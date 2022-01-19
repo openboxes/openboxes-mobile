@@ -24,8 +24,15 @@ class OutboundStockDetails extends React.Component<Props, State> {
     this.fetchShipment();
   }
 
+  componentDidUpdate() {
+    if (this.props.route.params.refetchShipment) {
+      this.fetchShipment();
+    }
+  }
+
   fetchShipment = () => {
     const { shipmentId } = this.props.route.params;
+    this.props.navigation.setParams({ refetchShipment : false });
     const actionCallback = (data: any) => {
       if (!data || data?.error) {
         return Promise.resolve(null);

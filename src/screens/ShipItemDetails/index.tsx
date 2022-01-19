@@ -18,7 +18,7 @@ import InputSpinner from '../../components/InputSpinner';
 const ShipItemDetails = () => {
   const route = useRoute();
   const dispatch = useDispatch();
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
   const { item }: any = route.params;
   const [state, setState] = useState<any>({
     error: '',
@@ -49,12 +49,14 @@ const ShipItemDetails = () => {
       } else {
         if (data && Object.keys(data).length !== 0) {
           setState({
+            quantityPicked: item.quantityRemaining || 0,
             shipmentDetails: data,
             containerList: data.availableContainers.map((dataItem: any) => ({
               name: dataItem.name,
               id: dataItem.id
             }))
           });
+          setSelectedContainerItem({ id: item?.container?.id || null })
         }
       }
     };
@@ -64,7 +66,7 @@ const ShipItemDetails = () => {
   const submitShipmentDetail = (id: string) => {
     if (Number(state.quantityPicked) > Number(item.quantityRemaining)) {
       showPopup({
-        message: 'Quantity Picked is higher than quantity remaining',
+        message: 'Quantity Picked is higher than quantity on shipment item',
         positiveButton: {
           text: 'Ok',
         },
@@ -73,6 +75,7 @@ const ShipItemDetails = () => {
     }
 
     const request = {
+      "action": "PACK",
       'container.id': selectedContainerItem?.id ?? '',
       quantityToPack: state.quantityPicked
     };
@@ -94,12 +97,12 @@ const ShipItemDetails = () => {
         ToastAndroid.showWithGravity(
           'Shipment Detail Submitted successfully!',
           ToastAndroid.SHORT,
-          ToastAndroid.CENTER
+          ToastAndroid.BOTTOM
         );
-        setState({ ...state });
         navigation.navigate('OutboundStockDetails', {
-          shipmentId: item.shipment.id
-        });
+          shipmentId: item.shipment.id,
+          refetchShipment: true,
+        })
       }
     };
     dispatch(submitShipmentDetails(id, request, callback));
@@ -162,6 +165,7 @@ const ShipItemDetails = () => {
             label="AutoInputInternalContainer"
             data={state.containerList ?? []}
             selectedContainerItem={selectedContainerItem}
+            initValue={item.container?.name || ''}
             selectedData={(selectedItem: any, index: number) => setSelectedContainerItem(selectedItem)}
           />
         </View>
@@ -174,7 +178,7 @@ const ShipItemDetails = () => {
         </View>
         <View style={styles.bottom}>
           <Button
-            disabled={!(selectedContainerItem?.id && state.quantityPicked && state.quantityPicked > 0)}
+            disabled={!(state.quantityPicked && state.quantityPicked > 0)}
             title="PACK ITEM"
             onPress={() => {
               submitShipmentDetail(item?.id);
