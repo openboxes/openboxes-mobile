@@ -41,10 +41,7 @@ const InboundReceiveDetail = () => {
   const onReceive = () => {
     let errorTitle = '';
     let errorMessage = '';
-    if (!state?.receiveLocation?.id) {
-      errorTitle = 'Receiving Locations';
-      errorMessage = 'Please select Receiving Locations!';
-    } else if (!Number(state.quantityToReceive)) {
+    if (!Number(state.quantityToReceive)) {
       errorTitle = 'Quantity!';
       errorMessage = 'Please fill the Quantity to Receive';
     } else if (
