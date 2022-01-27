@@ -8,30 +8,29 @@ export default StyleSheet.create({
     flex: 1,
   },
   cardContainer: {
+    height: 150,
     borderRadius: 5,
-    display: 'flex',
-    flexDirection: 'column',
     flex: 1,
-    backgroundColor:'white',
+    backgroundColor: 'white',
     margin: 5,
   },
   cardLabel: {
+    flex: 1,
     fontWeight: 'bold',
     fontSize: 14,
     marginTop: 5,
     marginBottom: 3,
     textAlign: 'center',
+    textAlignVertical: 'center',
   },
   cardImage: {
+    flex: 2,
     height: 100,
     width: 100,
     alignSelf: 'center',
   },
   card: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
+    height: '100%',
     padding: 5,
     shadowColor: '#00000021',
     shadowOffset: {
@@ -42,6 +41,5 @@ export default StyleSheet.create({
     shadowRadius: 8,
     elevation: 12,
     backgroundColor: 'white',
-    flexBasis: '42%',
   },
 });
