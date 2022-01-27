@@ -19,14 +19,14 @@ class Dashboard extends React.Component<Props, State> {
     return (
       <TouchableOpacity
         key={index}
-        style={styles.countContainer}
+        style={styles.cardContainer}
         onPress={() => {
           this.props.navigation.navigate(item.navigationScreenName);
         }}
       >
         <Card style={styles.card}>
-          <Image style={styles.cardImage} source={item.icon} />
-          <Text style={styles.countLabel}>{item.screenName}</Text>
+          <Image style={styles.cardImage} resizeMode='contain' source={item.icon} />
+          <Text style={styles.cardLabel}>{item.screenName}</Text>
         </Card>
       </TouchableOpacity>
     );

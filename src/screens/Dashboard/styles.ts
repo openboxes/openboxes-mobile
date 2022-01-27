@@ -7,27 +7,20 @@ export default StyleSheet.create({
     flexDirection: 'column',
     flex: 1,
   },
-  countContainer: {
-    borderRadius: 10,
+  cardContainer: {
+    borderRadius: 5,
     display: 'flex',
     flexDirection: 'column',
     flex: 1,
     backgroundColor:'white',
     margin: 5,
   },
-  countLabelAndIconContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    flex: 0,
-    alignItems: 'center',
-  },
-  countLabel: {
+  cardLabel: {
     fontWeight: 'bold',
     fontSize: 14,
     marginTop: 5,
     marginBottom: 3,
-    justifyContent: 'space-between',
-    alignSelf: 'center',
+    textAlign: 'center',
   },
   cardImage: {
     height: 100,
@@ -35,6 +28,10 @@ export default StyleSheet.create({
     alignSelf: 'center',
   },
   card: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
     padding: 5,
     shadowColor: '#00000021',
     shadowOffset: {

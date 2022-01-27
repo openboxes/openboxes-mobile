@@ -15,9 +15,24 @@ const dashboardData = [
     navigationScreenName: 'OutboundStockList',
   },
   {
-    screenName: 'Transfer',
-    icon: require('../../assets/images/transfer.png'),
-    navigationScreenName: 'InternalTransfer',
+    screenName: 'Receiving',
+    icon: require('../../assets/images/receiving.png'),
+    navigationScreenName: 'InboundOrderList',
+  },
+  {
+    screenName: 'Putaway Candidates',
+    icon: require('../../assets/images/putaway.png'),
+    navigationScreenName: 'PutawayCandidates',
+  },
+  {
+    screenName: 'Pending Putaways',
+    icon: require('../../assets/images/putaway.png'),
+    navigationScreenName: 'PutawayList',
+  },
+  {
+    screenName: 'Products',
+    icon: require('../../assets/images/product.png'),
+    navigationScreenName: 'Products',
   },
   {
     screenName: 'Inventory',
@@ -30,35 +45,14 @@ const dashboardData = [
     navigationScreenName: 'CreateLpn',
   },
   {
-    screenName: 'Receiving',
-    icon: require('../../assets/images/receiving.png'),
-    navigationScreenName: 'InboundOrderList',
-  },
-  {
-    screenName: 'Put Away',
-    icon: require('../../assets/images/putaway.png'),
-    navigationScreenName: 'PutawayList',
+    screenName: 'Pending Transfers',
+    icon: require('../../assets/images/transfer.png'),
+    navigationScreenName: 'Transfers',
   },
   {
     screenName: 'Scan',
     icon: require('../../assets/images/scan.jpg'),
     navigationScreenName: 'Scan',
-  },
-
-  {
-    screenName: 'Product',
-    icon: require('../../assets/images/product.png'),
-    navigationScreenName: 'Products',
-  },
-  {
-    screenName: 'Put Away Candidates',
-    icon: require('../../assets/images/putaway.png'),
-    navigationScreenName: 'PutawayCandidates',
-  },
-  {
-    screenName: 'Transfers',
-    icon: require('../../assets/images/transfer.png'),
-    navigationScreenName: 'Transfers',
   },
 ];
 
