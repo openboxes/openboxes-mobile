@@ -8,7 +8,6 @@ import Orders from './screens/Orders';
 import OrderDetails from './screens/OrderDetails';
 import ProductDetails from './screens/ProductDetails';
 import Dashboard from './screens/Dashboard';
-import InternalTransfer from './screens/InternalTransfer';
 import Transfers from './screens/Transfers';
 import InboundReceiveDetail from './screens/InboundReceiveDetail';
 import Products from './screens/Products';
@@ -171,10 +170,6 @@ class Main extends Component<Props, State> {
               <Stack.Screen name="OrderDetails" component={OrderDetails} />
               <Stack.Screen name="ProductDetails" component={ProductDetails} />
               <Stack.Screen name="PickOrderItem" component={PickOrderItem} />
-              <Stack.Screen
-                name="InternalTransfer"
-                component={InternalTransfer}
-              />
               <Stack.Screen name="Transfers" component={Transfers} />
               <Stack.Screen
                 component={TransferDetails}

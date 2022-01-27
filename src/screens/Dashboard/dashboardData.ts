@@ -15,11 +15,6 @@ const dashboardData = [
     navigationScreenName: 'OutboundStockList',
   },
   {
-    screenName: 'Transfer',
-    icon: require('../../assets/images/transfer.png'),
-    navigationScreenName: 'InternalTransfer',
-  },
-  {
     screenName: 'Inventory',
     icon: require('../../assets/images/inventory.png'),
     navigationScreenName: 'Product Summary',
@@ -56,7 +51,7 @@ const dashboardData = [
     navigationScreenName: 'PutawayCandidates',
   },
   {
-    screenName: 'Transfers',
+    screenName: 'Pending Transfers',
     icon: require('../../assets/images/transfer.png'),
     navigationScreenName: 'Transfers',
   },
