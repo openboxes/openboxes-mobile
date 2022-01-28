@@ -13,15 +13,20 @@ import {handleError} from './error';
 
 function* saveAndUpdateLpn(action: any) {
   try {
-    console.log('sagas saveAndUpdateLpn');
     const response: any = yield call(
       api.saveAndUpdateLpn,
       action.payload.requestBody,
     );
 
-    yield action.callback(response.data);
+    if (response.errorCode) {
+      yield action.callback({
+        error: true,
+        errorMessage: response.errorMessage,
+      })
+    } else {
+      yield action.callback(response.data);
+    }
   } catch (e) {
-    console.log('function* saveAndUpdateLpn', e.message);
     handleError(e);
   }
 }
