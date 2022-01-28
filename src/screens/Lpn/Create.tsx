@@ -114,12 +114,10 @@ class CreateLpn extends React.Component<Props, State> {
         });
       } else {
         ToastAndroid.show('LPN submitted successfully!!', ToastAndroid.SHORT);
-        if (data && Object.keys(data).length !== 0) {
-          this.props.navigation.navigate('LpnDetail', {
-            id: data.id,
-            shipmentNumber: this.state.stockMovement
-          });
-        }
+        this.props.navigation.navigate('LpnDetail', {
+          id: data.id,
+          shipmentNumber: this.state.stockMovement
+        });
       }
     };
     this.props.saveAndUpdateLpn(requestBody, actionCallback);
