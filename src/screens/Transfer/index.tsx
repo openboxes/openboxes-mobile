@@ -32,6 +32,21 @@ const Transfer = () => {
 
 
   const onTransfer = () => {
+    let errorTitle = '';
+    let errorMessage = '';
+    if (Number(item.quantityAvailableToPromise) < quantity) {
+      errorTitle = 'Quantity!';
+      errorMessage = 'Quantity to transfer is greater than quantity available';
+    }
+    if (errorTitle !== '') {
+      showPopup({
+        title: errorTitle,
+        message: errorMessage,
+        negativeButtonText: 'Cancel'
+      });
+      return Promise.resolve(null);
+    }
+
     const request: any = {
       status: 'COMPLETED',
       stockTransferNumber: '',
@@ -65,7 +80,7 @@ const Transfer = () => {
       } else {
         const product = { id: item.inventoryItem.product.id };
         ToastAndroid.show('Transferred item successfully!', ToastAndroid.SHORT);
-        navigation.navigate('ProductDetails', { product });
+        navigation.navigate('ProductDetails', { product, refetchProduct: true });
       }
     };
     dispatch(updateStockTransfer(request, actionCallback));

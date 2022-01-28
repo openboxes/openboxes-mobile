@@ -46,7 +46,15 @@ class ProductDetails extends React.Component<Props, State> {
     this.getProduct();
   }
 
+  componentDidUpdate() {
+    if (this.props.route.params.refetchProduct) {
+      const { product } = this.props.route.params;
+      this.getProductDetails(product.id);
+    }
+  }
+
   getProductDetails(id: string) {
+    this.props.navigation.setParams({ refetchProduct : false });
     this.props.showScreenLoading('');
     if (!id) {
       showPopup({
