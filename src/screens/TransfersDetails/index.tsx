@@ -65,7 +65,7 @@ const TransferDetails = () => {
           positiveButton: {
             text: 'Retry',
             callback: () => {
-              dispatch(completeStockTransfer(stockTransfer, callback));
+              dispatch(completeStockTransfer(stockTransfer?.id, callback));
             }
           },
           negativeButtonText: 'Cancel'
@@ -76,7 +76,7 @@ const TransferDetails = () => {
         route?.params?.onCallBackHandler(data);
       }
     };
-    dispatch(completeStockTransfer(stockTransfer, callback));
+    dispatch(completeStockTransfer(stockTransfer?.id, callback));
   };
 
   const RenderData = ({ title, subText }: any): JSX.Element => {

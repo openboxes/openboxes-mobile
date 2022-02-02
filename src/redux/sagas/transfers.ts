@@ -5,7 +5,7 @@ import {
   FETCH_STOCK_TRANSFERS,
   FETCH_STOCK_TRANSFERS_SUCCESS,
   FETCH_STOCK_TRANSFERS_DETAILS,
-  PUT_COMPLETE_STOCK_TRANSFER
+  POST_COMPLETE_STOCK_TRANSFER
 } from '../actions/transfers';
 import { hideScreenLoading, showScreenLoading } from '../actions/main';
 import * as api from '../../apis';
@@ -66,7 +66,7 @@ function* completeStockTransfer(action: any) {
     yield put(showScreenLoading('Please wait...'));
     const response = yield call(
       api.completeStockTransfer,
-      action.payload.stockTransfer
+      action.payload.id
     );
     yield action.callback(response.data);
     yield put(hideScreenLoading());
@@ -84,5 +84,5 @@ export default function* watcher() {
   yield takeLatest(STOCK_TRANSFERS_REQUEST, stockTransfers);
   yield takeLatest(FETCH_STOCK_TRANSFERS_DETAILS, getStockTransfersSummary);
   yield takeLatest(FETCH_STOCK_TRANSFERS, getStockTransfers);
-  yield takeLatest(PUT_COMPLETE_STOCK_TRANSFER, completeStockTransfer);
+  yield takeLatest(POST_COMPLETE_STOCK_TRANSFER, completeStockTransfer);
 }
