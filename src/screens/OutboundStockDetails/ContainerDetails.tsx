@@ -5,7 +5,7 @@ import {SectionList, Text, TouchableOpacity, View} from 'react-native';
 import {Container} from '../../data/container/Container';
 import {useNavigation} from '@react-navigation/native';
 import {Card} from 'react-native-paper';
-import Icon from 'react-native-vector-icons/Entypo';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import {colors} from '../../constants';
 
 interface Props {
@@ -81,8 +81,8 @@ const ContainerDetails = ({item}: any) => {
                 shipmentNumber: data[0]?.shipment?.shipmentNumber,
               });
             }}>
-            <Icon
-              name="info-with-circle"
+            <FontAwesome5
+              name="question-circle"
               size={20}
               color={colors.headerColor}
             />

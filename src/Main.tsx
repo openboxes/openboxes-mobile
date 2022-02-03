@@ -33,7 +33,6 @@ import InboundDetails from './screens/InboundDetails';
 import CreateLpn from './screens/Lpn/Create';
 import LpnDetail from './screens/LpnDetail/Index';
 import PutawayCandidates from './screens/PutawayCandidates';
-import Packing from './screens/Packing';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import InternalLocationDetails from './screens/InternalLocationDetails';
 import OutboundStockList from './screens/OutboundStockList';
@@ -191,7 +190,6 @@ class Main extends Component<Props, State> {
               <Stack.Screen name="PutawayDetails" component={PutawayDetails} />
               <Stack.Screen name="InboundOrderList" component={InboundOrder} />
               <Stack.Screen name="InboundDetails" component={InboundDetails} />
-              <Stack.Screen name="Packing" component={Packing} />
               <Stack.Screen name="Product Summary" component={ProductSummary} />
               <Stack.Screen name="CreateLpn" component={CreateLpn} />
               <Stack.Screen name="LpnDetail" component={LpnDetail} />

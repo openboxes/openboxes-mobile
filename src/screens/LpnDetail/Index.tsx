@@ -128,10 +128,12 @@ class LpnDetail extends React.Component<Props, State> {
     };
     this.props.getContainer(id, actionCallback);
   };
+
   handleClick = () => {
     const { id } = this.props.route.params;
     this.getContainerDetails(id);
   };
+
   closeModal = () => {
     this.setState({ visible: false });
   };
@@ -152,8 +154,8 @@ class LpnDetail extends React.Component<Props, State> {
     this.props.fetchContainer(id, actionCallback);
   };
 
-  onTapped = (shipmentItem: ListRenderItemInfo<ContainerShipmentItem>) => {
-    this.props.navigation.navigate('Packing', { shipment: shipmentItem });
+  onTapped = (listRenderItemInfo: ListRenderItemInfo<ContainerShipmentItem>) => {
+    this.props.navigation.navigate('ShipmentDetails', { item: listRenderItemInfo.item });
   };
 
   render() {
@@ -162,31 +164,23 @@ class LpnDetail extends React.Component<Props, State> {
         <View style={styles.contentContainer}>
           <View style={styles.row}>
             <View style={styles.col50}>
-              <Text style={styles.label}>Shipment Number</Text>
-              <Text style={styles.value}>
-                {this.state.shipmentNumber}
-              </Text>
-            </View>
-            <View style={styles.col50}>
               <Text style={styles.label}>Name</Text>
               <Text style={styles.value}>{this.state.container?.name}</Text>
             </View>
-          </View>
-          <View style={styles.row}>
             <View style={styles.col50}>
               <Text style={styles.label}>Container Number</Text>
               <Text style={styles.value}>
                 {this.state.container?.containerNumber}
               </Text>
             </View>
+          </View>
+          <View style={styles.row}>
             <View style={styles.col50}>
               <Text style={styles.label}>Container Type</Text>
               <Text style={styles.value}>
                 {this.state.container?.containerType?.name}
               </Text>
             </View>
-          </View>
-          <View style={styles.row}>
             <View style={styles.col50}>
               <Text style={styles.label}>Number of Items</Text>
               <Text style={styles.value}>
@@ -194,6 +188,7 @@ class LpnDetail extends React.Component<Props, State> {
               </Text>
             </View>
           </View>
+          <View style={styles.row} />
 
           <Text style={styles.value}>{'Status'}</Text>
           <SelectDropdown
@@ -235,6 +230,12 @@ class LpnDetail extends React.Component<Props, State> {
                   </View>
                 </View>
                 <View style={styles.row}>
+                  <View style={styles.col50}>
+                    <Text style={styles.label}>Shipment Number</Text>
+                    <Text style={styles.value}>
+                      {shipmentItem.item.shipment.shipmentNumber}
+                    </Text>
+                  </View>
                   <View style={styles.col50}>
                     <Text style={styles.label}>Quantity</Text>
                     <Text style={styles.value}>
