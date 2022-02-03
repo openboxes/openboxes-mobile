@@ -22,7 +22,7 @@ const Transfer = () => {
     (rootState: RootState) => rootState.mainReducer.currentLocation
   );
   const binLocations = useSelector(
-    (rootState: RootState) => rootState.locationsReducer.locations
+    (rootState: RootState) => rootState.locationsReducer.binLocations
   );
   const [binToLocationData, setBinToLocationData] = useState<any>({});
   const [quantity, setQuantity] = useState(0)

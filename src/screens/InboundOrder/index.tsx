@@ -13,14 +13,24 @@ import { RootState } from '../../redux/reducers';
 const InboundOrder = () => {
   const dispatch = useDispatch();
   const location = useSelector(
-    (rootState: RootState) => rootState.mainReducer.currentLocation
+    (rootState: RootState) => {
+      return rootState.mainReducer.currentLocation;
+    }
   );
   const [state, setState] = useState({
     inboundOrder: {}
   });
   useEffect(() => {
-    getInboundOrderList();
+    if (location?.id) {
+      getInboundOrderList(location?.id);
+    } else {
+      showPopup({
+        title: 'Current location context was not set properly.',
+        message: 'Please reload the app',
+      })
+    }
   }, []);
+
   const getInboundOrderList = (id: string = '') => {
     const callback = (data: any) => {
       if (data?.error) {
@@ -40,11 +50,7 @@ const InboundOrder = () => {
       } else {
         if (data && Object.keys(data).length !== 0) {
           state.inboundOrder = data.filter((item: any) => {
-            return (
-              item?.destination?.id === location?.id &&
-              (item.status === 'SHIPPED' ||
-                item.status === 'PARTIALLY_RECEIVED')
-            );
+            return (item.status === 'SHIPPED' || item.status === 'PARTIALLY_RECEIVED');
           });
         }
         setState({ ...state });

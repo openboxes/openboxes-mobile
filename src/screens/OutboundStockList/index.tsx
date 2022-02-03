@@ -39,7 +39,7 @@ class OutboundStockList extends React.Component<Props, State> {
             text: 'Retry',
             callback: () => {
               this.props.getShipmentsReadyToBePacked(
-                SelectedLocation.id,
+                currentLocation.id,
                 'PENDING',
                 actionCallback
               );
@@ -56,10 +56,10 @@ class OutboundStockList extends React.Component<Props, State> {
       }
       this.props.hideScreenLoading();
     };
-    const { SelectedLocation } = this.props;
+    const { currentLocation } = this.props;
     this.props.showScreenLoading('Loading..');
     this.props.getShipmentsReadyToBePacked(
-      SelectedLocation.id,
+      currentLocation.id,
       'PENDING',
       actionCallback
     );
@@ -142,7 +142,7 @@ class OutboundStockList extends React.Component<Props, State> {
 }
 
 const mapStateToProps = (state: RootState) => ({
-  SelectedLocation: state.locationsReducer.SelectedLocation
+  currentLocation: state.mainReducer.currentLocation
 });
 
 const mapDispatchToProps: DispatchProps = {

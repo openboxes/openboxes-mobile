@@ -21,7 +21,7 @@ const InboundReceiveDetail = () => {
   const [cancelRemaining, setCancelRemaining] = useState(false);
   const navigation = useNavigation();
   const location = useSelector(
-    (state: RootState) => state.locationsReducer.SelectedLocation
+    (state: RootState) => state.mainReducer.currentLocation
   );
   const [state, setState] = useState<any>({
     comments: '',

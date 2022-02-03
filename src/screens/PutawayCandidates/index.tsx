@@ -52,8 +52,8 @@ class PutawayCandidates extends Component<Props> {
 
   getScreenData = async () => {
     this.setState({ refreshing: true });
-    const { SelectedLocation } = this.props;
-    await this.props.getCandidates(SelectedLocation.id);
+    const { currentLocation } = this.props;
+    await this.props.getCandidates(currentLocation.id);
     this.setState({ refreshing: false });
   };
 
@@ -113,7 +113,7 @@ class PutawayCandidates extends Component<Props> {
 
 const mapStateToProps = (state: RootState) => ({
   candidates: state.putawayReducer.candidates,
-  SelectedLocation: state.locationsReducer.SelectedLocation
+  currentLocation: state.mainReducer.currentLocation
 });
 
 const mapDispatchToProps: DispatchProps = {
