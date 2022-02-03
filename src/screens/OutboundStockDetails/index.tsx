@@ -118,7 +118,7 @@ class OutboundStockDetails extends React.Component<Props, State> {
 }
 
 const mapStateToProps = (state: RootState) => ({
-  SelectedLocation: state.locationsReducer.SelectedLocation
+  currentLocation: state.mainReducer.currentLocation
 });
 
 const mapDispatchToProps: DispatchProps = {

@@ -4,8 +4,8 @@ export interface OwnProps {
 }
 
 export interface StateProps {
-  locations: any
-  SelectedLocation: any
+  binLocations: any
+  currentLocation: any
 }
 
 export interface DispatchProps {

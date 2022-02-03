@@ -1,13 +1,11 @@
 import {GET_BIN_LOCATIONS_REQUEST_SUCCESS, SET_CURRENT_LOCATION_REQUEST_SUCCESS} from "../actions/locations";
 
 export interface State {
-    locations: any;
-    SelectedLocation?: any;
+    binLocations: any;
 }
 
 const initialState: State = {
-    locations: [],
-    SelectedLocation: null,
+    binLocations: [],
 };
 
 function reducer(state = initialState, action: any) {
@@ -15,17 +13,9 @@ function reducer(state = initialState, action: any) {
         case GET_BIN_LOCATIONS_REQUEST_SUCCESS: {
             return {
                 ...state,
-                locations: action.payload,
+                binLocations: action.payload,
             };
         }
-        case SET_CURRENT_LOCATION_REQUEST_SUCCESS: {
-            const {location} = action.payload;
-            return {
-                ...state,
-                SelectedLocation: location,
-            };
-        }
-
         default: {
             return state;
         }

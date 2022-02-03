@@ -31,23 +31,22 @@ class PutawayItem extends Component<Props, State> {
   }
 
   create = () => {
-    const { selectedLocation, createPutawayOderAction } = this.props;
+    const { currentLocation, createPutawayOderAction } = this.props;
     const { item } = this.props.route.params;
-    const { currentLocation } = this.props;
 
     const data = {
       putawayNumber: '',
       putawayStatus: 'PENDING',
       putawayDate: '',
       putawayAssignee: '',
-      'origin.id': selectedLocation?.id,
-      'destination.id': selectedLocation?.id,
+      'origin.id': currentLocation?.id,
+      'destination.id': currentLocation?.id,
       putawayItems: [
         {
           putawayStatus: 'PENDING',
           'product.id': item['product.id'],
           'inventoryItem.id': item['inventoryItem.id'],
-          'putawayFacility.id': selectedLocation?.id,
+          'putawayFacility.id': currentLocation?.id,
           'currentLocation.id': item['currentLocation.id'],
           'putawayLocation.id': this.state.selectedLocation?.id || "",
           quantity: this.state?.quantity
@@ -66,7 +65,7 @@ class PutawayItem extends Component<Props, State> {
     });
   };
 
-  changeQuantity = (quantity) => {
+  changeQuantity = (quantity: any) => {
     const { item } = this.props.route.params;
     if (quantity > item.quantity) {
       ToastAndroid.showWithGravity(
@@ -88,7 +87,7 @@ class PutawayItem extends Component<Props, State> {
 
   render() {
     const { item } = this.props.route.params;
-    const { locations } = this.props;
+    const { binLocations } = this.props;
     const { quantity } = this.state;
 
     return (
@@ -134,8 +133,8 @@ class PutawayItem extends Component<Props, State> {
               <Text>Putaway Location</Text>
               <AutoInputBinLocation
                 placeholder="Default"
-                data={locations}
-                selectedData={(selectedLocation: any) => this.setState({ selectedLocation: selectedLocation })}
+                data={binLocations}
+                selectedData={(selectedLocation: any) => this.setState({ selectedLocation })}
               />
             </View>
             <View style={styles.inputSpinner}>
@@ -147,7 +146,7 @@ class PutawayItem extends Component<Props, State> {
             </View>
           </View>
           <Button
-            disabled={quantity > item.quantity || quantity <= 0}
+            disabled={quantity > item.quantity || Number(quantity) <= 0}
             style={styles.submitButton}
             title="Create Putaway"
             onPress={this.create}
@@ -159,9 +158,8 @@ class PutawayItem extends Component<Props, State> {
 }
 
 const mapStateToProps = (state: RootState) => ({
-  locations: state.locationsReducer.locations,
+  binLocations: state.locationsReducer.binLocations,
   currentLocation: state.mainReducer.currentLocation,
-  selectedLocation: state.locationsReducer.SelectedLocation
 });
 
 const mapDispatchToProps: DispatchProps = {

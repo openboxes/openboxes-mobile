@@ -80,9 +80,10 @@ function reducer(state = initialState, action: any) {
       };
     }
     case SET_CURRENT_LOCATION_REQUEST_SUCCESS: {
+      const { location } = action.payload;
       return {
         ...state,
-        currentLocation: action.payload,
+        currentLocation: location,
       };
     }
     case GET_PUTAWAY_CANDIDATES_REQUEST_SUCCESS:

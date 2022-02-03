@@ -180,7 +180,7 @@ class CreateLpn extends React.Component<Props, State> {
 }
 
 const mapStateToProps = (state: RootState) => ({
-  selectedLocation: state.locationsReducer.SelectedLocation,
+  selectedLocation: state.mainReducer.currentLocation,
 });
 const mapDispatchToProps: DispatchProps = {
   getShipmentPacking,

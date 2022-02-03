@@ -16,7 +16,7 @@ export interface OwnProps {
 
 export interface StateProps {
     outboundStockList: any,
-    SelectedLocation: any
+    currentLocation: any
 }
 
 export interface DispatchProps {

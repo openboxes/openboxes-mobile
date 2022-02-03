@@ -4,7 +4,7 @@ export interface OwnProps {
 
 export interface StateProps {
   candidates: any
-  SelectedLocation: any
+  currentLocation: any
 }
 
 export interface DispatchProps {
