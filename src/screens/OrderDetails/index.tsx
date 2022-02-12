@@ -2,6 +2,7 @@ import _ from 'lodash';
 import React from 'react';
 import { connect } from 'react-redux';
 import {
+  ScrollView,
   Text,
   View,
 } from 'react-native';
@@ -82,42 +83,44 @@ class OrderDetails extends React.Component<Props, State> {
 
     const vm = orderDetailsVMMapper(this.props.route?.params, this.state);
     return (
-      <View style={styles.screenContainer}>
-        <View style={styles.contentContainer}>
-          <View style={styles.row}>
-            <View style={styles.col50}>
-              <Text style={styles.label}>Identifier</Text>
-              <Text style={styles.value}>{vm.identifier}</Text>
+      <ScrollView>
+        <View style={styles.screenContainer}>
+          <View style={styles.contentContainer}>
+            <View style={styles.row}>
+              <View style={styles.col50}>
+                <Text style={styles.label}>Identifier</Text>
+                <Text style={styles.value}>{vm.identifier}</Text>
+              </View>
+              <View style={styles.col50}>
+                <Text style={styles.label}>Status</Text>
+                <Text style={styles.value}>{vm.status}</Text>
+              </View>
             </View>
-            <View style={styles.col50}>
-              <Text style={styles.label}>Status</Text>
-              <Text style={styles.value}>{vm.status}</Text>
+            <View style={styles.row}>
+              <View style={styles.col50}>
+                <Text style={styles.label}>Destination</Text>
+                <Text style={styles.value}>
+                  {vm.destination.locationNumber}-{vm.destination.name}
+                </Text>
+              </View>
+              <View style={styles.col50}>
+                <Text style={styles.label}>Requested Delivery Date</Text>
+                <Text style={styles.value}>{vm.requestedDeliveryDate}</Text>
+              </View>
             </View>
-          </View>
-          <View style={styles.row}>
-            <View style={styles.col50}>
-              <Text style={styles.label}>Destination</Text>
-              <Text style={styles.value}>
-                {vm.destination.locationNumber}-{vm.destination.name}
-              </Text>
+            <View style={styles.bottomList}>
+              {pickList?.picklistItems && pickList?.picklistItems?.length > 0 &&
+                <PickOrderItem
+                  pickList={pickList}
+                  pickListItem={pickList?.picklistItems[initialPicklistItemIndex]}
+                  selectedPinkItemIndex={initialPicklistItemIndex}
+                  successfulPickCallback={() => this.getOrderDetails()}
+                />
+              }
             </View>
-            <View style={styles.col50}>
-              <Text style={styles.label}>Requested Delivery Date</Text>
-              <Text style={styles.value}>{vm.requestedDeliveryDate}</Text>
-            </View>
-          </View>
-          <View style={styles.bottomList}>
-            {pickList?.picklistItems && pickList?.picklistItems?.length > 0 &&
-              <PickOrderItem
-                pickList={pickList}
-                pickListItem={pickList?.picklistItems[initialPicklistItemIndex]}
-                selectedPinkItemIndex={initialPicklistItemIndex}
-                successfulPickCallback={() => this.getOrderDetails()}
-              />
-            }
           </View>
         </View>
-      </View>
+      </ScrollView>
     );
   }
 }

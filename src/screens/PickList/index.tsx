@@ -1,7 +1,7 @@
 import React, {useEffect, useReducer} from 'react';
 import _ from 'lodash';
 import styles from './styles';
-import { ListRenderItemInfo, ScrollView, Text, View, ToastAndroid } from 'react-native';
+import { ListRenderItemInfo, Text, View, ToastAndroid } from 'react-native';
 import { hideScreenLoading } from '../../redux/actions/main';
 import { useDispatch } from 'react-redux';
 import showPopup from '../../components/Popup';
@@ -358,7 +358,7 @@ const PickOrderItem = (props: any) => {
             return (
               <Card key={index}>
                 <Card.Content>
-                  <ScrollView style={styles.inputContainer}>
+                  <View style={styles.inputContainer}>
                     <View style={styles.listItemContainer}>
                       <View style={styles.row}>
                         <View style={styles.col50}>
@@ -420,10 +420,9 @@ const PickOrderItem = (props: any) => {
                           value={item.quantityToPick}
                         />
                       </View>
-                      <Button title="Pick Item" onPress={() => formSubmit(item.id)} />
+                      <Button title="Pick Item" onPress={() => formSubmit(item.id)} disabled={!item?.quantityRemaining} />
                     </View>
-                  </ScrollView>
-                  <View style={styles.bottom}></View>
+                  </View>
                 </Card.Content>
               </Card>
             );
