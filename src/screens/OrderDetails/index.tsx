@@ -50,7 +50,7 @@ class OrderDetails extends React.Component<Props, State> {
             message: 'Do you want to go back?',
             positiveButton: {
               text: 'Ok',
-              callback: () => this.props.navigation.navigate('Orders'),
+              callback: () => this.props.navigation.navigate('Orders', { refetchOrders: true }),
             },
             negativeButtonText: 'Cancel',
           });

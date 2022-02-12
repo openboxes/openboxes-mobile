@@ -25,7 +25,14 @@ class Index extends React.Component<Props, State> {
     this.searchOrders(null);
   }
 
+  componentDidUpdate() {
+    if (this.props.route.params.refetchOrders) {
+      this.searchOrders(null);
+    }
+  }
+
   searchOrders = (query: string | null) => {
+    this.props.navigation.setParams({ refetchOrders : false });
     const actionCallback = (data: any) => {
       if (data?.error) {
         showPopup({
