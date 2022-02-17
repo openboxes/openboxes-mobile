@@ -71,7 +71,7 @@ const InboundOrderContainer = ({data,shipmentId, shipmentData}: InboundDetailPro
                         <RenderData title={"Quantity Received"} subText={item.quantityReceived}/>
                     </View>
                     <View style={styles.rowItem}>
-                        <RenderData title={"Quantity Remaining"} subText={item.quantityRemaining}/>
+                        <RenderData title={"Quantity Remaining"} subText={item.quantityRemaining > 0 ? item.quantityRemaining : 0}/>
                         <RenderData title={"Status"} subText={getStatus(item.quantityRemaining)}/>
                     </View>
                 </Card.Content>

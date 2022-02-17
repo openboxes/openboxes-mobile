@@ -2,7 +2,8 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styles from './styles';
-import { ScrollView, Text, View } from 'react-native';
+import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import DatePicker from 'react-native-datepicker';
 import InputBox from '../../components/InputBox';
 import Button from '../../components/Button';
 import showPopup from '../../components/Popup';
@@ -12,7 +13,8 @@ import { getInternalLocations } from '../../redux/actions/locations';
 import { RootState } from '../../redux/reducers';
 import AutoInputInternalLocation from '../../components/AutoInputInternalLocation';
 import InputSpinner from '../../components/InputSpinner';
-import Radio from "../../components/Radio";
+import Radio from '../../components/Radio';
+import CLEAR from '../../assets/images/icon_clear.png';
 
 const InboundReceiveDetail = () => {
   const dispatch = useDispatch();
@@ -30,6 +32,8 @@ const InboundReceiveDetail = () => {
       id: shipmentItem['binLocation.id'],
       label: shipmentItem['binLocation.name']
     },
+    lotNumber: '',
+    expirationDate: null,
     deliveryDate: shipmentData.expectedDeliveryDate,
     quantityToReceive: Number(shipmentItem.quantityRemaining) || 0,
     error: null
@@ -44,11 +48,6 @@ const InboundReceiveDetail = () => {
     if (!Number(state.quantityToReceive)) {
       errorTitle = 'Quantity!';
       errorMessage = 'Please fill the Quantity to Receive';
-    } else if (
-      Number(state.quantityToReceive) > Number(shipmentItem.quantityRemaining)
-    ) {
-      errorTitle = 'Quantity!';
-      errorMessage = 'Quantity to Receive is greater than quantity remaining';
     }
     if (errorTitle !== '') {
       showPopup({
@@ -58,6 +57,7 @@ const InboundReceiveDetail = () => {
       });
       return Promise.resolve(null);
     }
+
     const request = {
       receiptId: '',
       receiptStatus: 'PENDING',
@@ -72,6 +72,8 @@ const InboundReceiveDetail = () => {
               'container.id': shipmentItem['container.id'] ?? '',
               'product.id': shipmentItem['product.id'] ?? '',
               'binLocation.id': state.receiveLocation?.id ?? '',
+              lotNumber: state.lotNumber,
+              expirationDate: state.expirationDate,
               recipient: '',
               quantityReceiving: state.quantityToReceive,
               cancelRemaining: cancelRemaining,
@@ -83,11 +85,35 @@ const InboundReceiveDetail = () => {
         }
       ]
     };
+
+    if (
+      Number(state.quantityToReceive) > Number(shipmentItem.quantityRemaining)
+    ) {
+      showPopup({
+        title: 'Quantity to receive is greater than quantity remaining',
+        message: 'Are you sure you want to receive more?',
+        negativeButtonText: 'No',
+        positiveButton: {
+          text: 'Yes',
+          callback: () => submitReceiving(shipmentId, request),
+        }
+      });
+      return Promise.resolve(null);
+    }
+
     submitReceiving(shipmentId, request);
   };
 
   const onChangeComment = (text: string) => {
     setState({ ...state, comments: text });
+  };
+
+  const onChangeLotNumber = (text: string) => {
+    setState({ ...state, lotNumber: text });
+  };
+
+  const clearSelection = () => {
+    setState({ ...state, expirationDate: null });
   };
 
   const onChangeQuantity = (text: string) => {
@@ -238,11 +264,34 @@ const InboundReceiveDetail = () => {
             }
           }}
         />
+        <InputBox
+          value={state.lotNumber}
+          disabled={false}
+          editable={false}
+          label={'Lot Number'}
+          onChange={onChangeLotNumber}
+        />
+        <View style={styles.datePickerContainer}>
+          <DatePicker
+            style={styles.datePicker}
+            date={state.expirationDate}
+            mode="date"
+            placeholder="Expiration Date"
+            format="MM/DD/YYYY"
+            confirmBtnText="Confirm"
+            cancelBtnText="Cancel"
+            customStyles={styles.datePickerCustomStyle}
+            onDateChange={(date: any) => {setState({ ...state, expirationDate: date })}}
+          />
+          {state.expirationDate ?
+            <TouchableOpacity onPress={clearSelection}>
+              <Image source={CLEAR} style={styles.imageIcon} />
+            </TouchableOpacity> : null}
+        </View>
         <View style={styles.inputSpinner}>
           <InputSpinner
             title={'Quantity to Receive'}
             value={state.quantityToReceive}
-            max={Number(shipmentItem.quantityRemaining)}
             setValue={onChangeQuantity}
           />
         </View>

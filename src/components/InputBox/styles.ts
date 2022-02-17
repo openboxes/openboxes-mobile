@@ -10,7 +10,7 @@ export default StyleSheet.create({
         height: 40,
         alignSelf:"center",
         alignItems: 'center' ,
-        marginTop:20,
+        marginVertical: 5,
     },
     box: {
         flexDirection: 'row',

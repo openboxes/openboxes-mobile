@@ -6,12 +6,6 @@ export default StyleSheet.create({
     flexDirection: 'row',
     marginVertical: 5,
   },
-  itemContainer: {
-    flex: 1,
-    marginTop: 5,
-    height: 25,
-    borderColor: 'grey',
-  },
   autoCompleteContainer: {
     borderWidth: 2,
     borderRadius: 4,
