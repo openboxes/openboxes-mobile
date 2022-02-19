@@ -1,8 +1,3 @@
-import PutAwayItems from "../../data/putaway/PutAwayItems";
-import BinLocation from "../../data/picklist/BinLocation";
-import PutAway from "../../data/putaway/PutAway";
-import {fetchInboundOrderList} from "../../redux/actions/inboundorder";
-
 export interface State {
     error: string | null
     inboundOrder: any
@@ -17,9 +12,6 @@ export interface OwnProps {
     route: any;
 }
 
-export interface StateProps {
-}
-
 export interface DispatchProps {
     fetchInboundOrderList: (
         id: string,
@@ -28,5 +20,5 @@ export interface DispatchProps {
 
 }
 
-export type Props = StateProps & DispatchProps & OwnProps
+export type Props = DispatchProps & OwnProps
 export default InboundOrderProps
