@@ -38,8 +38,9 @@ function* getShipmentsReadyToBePacked(action: any) {
   } catch (e) {
     Sentry.captureException(
       'Error while getShipmentsReadyToBePacked API',
-      e.response
+      e.message
     );
+    yield put(hideScreenLoading());
   }
 }
 
@@ -59,8 +60,9 @@ function* getShipmentReadyToBePacked(action: any) {
   } catch (e) {
     Sentry.captureException(
       'Error while getShipmentReadyToBePacked API',
-      e.response
+      e.message
     );
+    yield put(hideScreenLoading());
   }
 }
 
@@ -75,7 +77,8 @@ function* getShipmentPacking(action: any) {
     yield action.callback(response.data);
     yield put(hideScreenLoading());
   } catch (e) {
-    Sentry.captureException('Error while getShipmentPacking API', e.response);
+    yield put(hideScreenLoading());
+    Sentry.captureException('Error while getShipmentPacking API', e.message);
   }
 }
 
@@ -90,9 +93,10 @@ function* getShipmentOriginById(action: any) {
     yield action.callback(response.data);
     yield put(hideScreenLoading());
   } catch (e) {
+    yield put(hideScreenLoading());
     Sentry.captureException(
       'Error while getShipmentOriginById API',
-      e.response
+      e.message
     );
   }
 }
@@ -108,9 +112,10 @@ function* getContainerDetail(action: any) {
     yield action.callback(response.data);
     yield put(hideScreenLoading());
   } catch (e) {
+    yield put(hideScreenLoading());
     Sentry.captureException(
       'Error while get Container Details API',
-      e.response
+      e.message
     );
   }
 }
@@ -126,7 +131,8 @@ function* getContainerType(action: any) {
     yield action.callback(response.data);
     yield put(hideScreenLoading());
   } catch (e) {
-    Sentry.captureException('Error while getContainerType API', e.response);
+    yield put(hideScreenLoading());
+    Sentry.captureException('Error while getContainerType API', e.message);
   }
 }
 
@@ -145,8 +151,12 @@ function* submitShipmentItems(action: any) {
     yield action.callback(response);
     yield put(hideScreenLoading());
   } catch (e) {
-    showPopup({message: `Fail to submit ShipmentItems ${e.response}`, positiveButton: "ok"});
-    Sentry.captureException('Error while submitShipmentItems API', e.response);
+    yield put(hideScreenLoading());
+    yield action.callback({
+      error: true,
+      errorMessage: e.message,
+    });
+    Sentry.captureException('Error while submit ShipmentItems API', e.message);
   }
 }
 

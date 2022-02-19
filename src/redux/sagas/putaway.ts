@@ -31,6 +31,7 @@ function* fetchPutAwayFromOrder(action: any) {
     yield action.callback(response.data);
     yield put(hideScreenLoading());
   } catch (error) {
+    yield put(hideScreenLoading());
     if (error.code != 401) {
       yield action.callback({
         error: true,
@@ -72,7 +73,8 @@ function* getCandidates(action: any) {
     });
     yield put(hideScreenLoading());
   } catch (e) {
-    Sentry.captureException('Error while get Candidates API', e.response);
+    yield put(hideScreenLoading());
+    Sentry.captureException('Error while get Candidates API', e.message);
   }
 }
 

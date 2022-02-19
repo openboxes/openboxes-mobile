@@ -29,7 +29,7 @@ function* updateStockTransfer(action: any) {
       error: true,
       errorMessage: e.message,
     });
-    Sentry.captureException('Error while updateStockTransfer API', e.response);
+    Sentry.captureException('Error while updateStockTransfer API', e.message);
   }
 }
 
@@ -44,8 +44,8 @@ function* getStockMovements(action: any) {
     yield action.callback(response.data);
     yield put(hideScreenLoading());
   } catch (e) {
-    Sentry.captureException('Error while getStockMovements API', e.response);
     yield put(hideScreenLoading());
+    Sentry.captureException('Error while getStockMovements API', e.message);
   }
 }
 

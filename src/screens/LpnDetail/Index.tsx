@@ -83,14 +83,14 @@ class LpnDetail extends React.Component<Props, State> {
           negativeButtonText: 'Cancel'
         });
       } else {
-        this.getContainerDetails(id)
+        this.getContainerDetails(id, false)
       }
     };
 
     this.props.updateContainerStatus(id, status, actionCallback);
   };
 
-  getContainerDetails = (id: string) => {
+  getContainerDetails = (id: string, openModal: boolean) => {
     if (!id) {
       showPopup({
         message: 'Id of container is empty',
@@ -118,7 +118,7 @@ class LpnDetail extends React.Component<Props, State> {
       } else {
         const { id } = this.props.route.params;
         data.product = { id };
-        this.setState({ containerDetails: data, visible: true });
+        this.setState({ containerDetails: data, visible: openModal });
       }
     };
     this.props.getContainer(id, actionCallback);
@@ -126,7 +126,7 @@ class LpnDetail extends React.Component<Props, State> {
 
   handleClick = () => {
     const { id } = this.props.route.params;
-    this.getContainerDetails(id);
+    this.getContainerDetails(id, true);
   };
 
   closeModal = () => {
