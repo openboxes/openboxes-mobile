@@ -31,6 +31,7 @@ function* getOrders(action: any) {
     yield action.callback(response.data);
     yield put(hideScreenLoading());
   } catch (error) {
+    yield put(hideScreenLoading());
     if (error.code != 401) {
       yield action.callback({
         error: true,
@@ -55,6 +56,7 @@ function* getStockMovement(action: any) {
     yield action.callback(response.data);
     yield put(hideScreenLoading());
   } catch (e) {
+    yield put(hideScreenLoading());
     yield action.callback({
       error: true,
       errorMessage: e.message

@@ -30,6 +30,7 @@ function* getSession() {
     yield put(hideScreenLoading());
   } catch (e) {
     console.log('function* auth', e.response);
+    yield put(hideScreenLoading());
   }
 }
 

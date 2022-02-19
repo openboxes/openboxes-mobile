@@ -22,7 +22,7 @@ function* stockTransfers(action: any) {
     yield put(hideScreenLoading());
   } catch (e) {
     yield put(hideScreenLoading());
-    Sentry.captureException('Error while getStockMovements API', e.response);
+    Sentry.captureException('Error while getStockMovements API', e.message);
   }
 }
 
@@ -38,7 +38,7 @@ function* getStockTransfers(action: any) {
     yield put(hideScreenLoading());
   } catch (e) {
     yield put(hideScreenLoading());
-    Sentry.captureException('Error while getStockMovements API', e.response);
+    Sentry.captureException('Error while getStockMovements API', e.message);
   }
 }
 
@@ -52,7 +52,7 @@ function* getStockTransfersSummary(action: any) {
     yield action.callback(response.data);
     yield put(hideScreenLoading());
   } catch (e) {
-    Sentry.captureException('Error while stockTransfers details', e.response);
+    Sentry.captureException('Error while stockTransfers details', e.message);
     yield put(hideScreenLoading());
     yield action.callback({
       error: true,
@@ -71,7 +71,7 @@ function* completeStockTransfer(action: any) {
     yield action.callback(response.data);
     yield put(hideScreenLoading());
   } catch (e) {
-    Sentry.captureException('Error while completing Transfer', e.response);
+    Sentry.captureException('Error while completing Transfer', e.message);
     yield put(hideScreenLoading());
     yield action.callback({
       error: true,

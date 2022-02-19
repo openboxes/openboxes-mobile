@@ -83,8 +83,8 @@ const ShipItemDetails = () => {
     const callback = (data: any) => {
       if (data?.error) {
         showPopup({
-          title: data.errorMessage ? 'Shipment details' : 'Error',
-          message: data.errorMessage ?? 'Failed to submit shipment details',
+          title: data.errorMessage ? 'Packing Error' : 'Error',
+          message: data.errorMessage ?? 'Failed to pack item',
           positiveButton: {
             text: 'Retry',
             callback: () => {

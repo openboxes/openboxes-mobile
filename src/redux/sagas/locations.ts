@@ -31,6 +31,7 @@ function* getLocations(action: any) {
     yield action.callback(response.data);
     yield put(hideScreenLoading());
   } catch (error) {
+    yield put(hideScreenLoading());
     if (error.code != 401) {
       yield action.callback({
         error: true,
@@ -78,6 +79,7 @@ function* searchLocationByLocationNumber(action: any) {
     yield action.callback(response.data);
     yield put(hideScreenLoading());
   } catch (error) {
+    yield put(hideScreenLoading());
     if (error.code != 401) {
       yield action.callback({
         error: true,
@@ -98,6 +100,7 @@ function* getInternalLocations(action: any) {
     yield action.callback(response);
     yield put(hideScreenLoading());
   } catch (e) {
+    yield put(hideScreenLoading());
     yield action.callback({
       error: true,
       errorMessage: e.message
@@ -120,6 +123,7 @@ function* getInternalLocationsDetails(action: any) {
     yield action.callback(response);
     yield put(hideScreenLoading());
   } catch (e) {
+    yield put(hideScreenLoading());
     yield action.callback({
       error: true,
       errorMessage: e.message
@@ -138,6 +142,7 @@ function* getInternalLocationDetails(action: any) {
     yield action.callback(response);
     yield put(hideScreenLoading());
   } catch (e) {
+    yield put(hideScreenLoading());
     yield action.callback({
       error: true,
       errorMessage: e.message
@@ -155,6 +160,7 @@ function* getBinLocations() {
     yield put(hideScreenLoading());
   } catch (e) {
     Sentry.captureException('Error while get Bin Locations', e.message);
+    yield put(hideScreenLoading());
   }
 }
 
@@ -172,6 +178,7 @@ function* fetchProductSummary(action: any) {
     yield action.callback(response.data);
     yield put(hideScreenLoading());
   } catch (e) {
+    yield put(hideScreenLoading());
     yield action.callback({
       error: true,
       errorMessage: e.message
