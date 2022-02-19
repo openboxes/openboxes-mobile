@@ -1,16 +1,17 @@
-import Person from "../picklist/Person";
-import ShipmentItems from "../inbound/ShipmentItems";
-import {ContainerType} from "./ContainerType";
-import {ContainerShipmentItem} from "./ContainerShipmentItem";
+import Person from '../picklist/Person';
+import { ContainerType } from './ContainerType';
+import { ContainerStatus } from './ContainerStatus';
+import { ContainerShipmentItem } from './ContainerShipmentItem';
 
 export interface Container{
-    "id": string,
-    "name": string,
+    id: string,
+    name: string,
     shipmentNumber: string,
-    "containerNumber": null,
-    "containerType":ContainerType,
-    "recipient": Person,
-    "sortOrder": number,
+    containerNumber: string,
+    containerType: ContainerType,
+    containerStatus: ContainerStatus,
+    recipient: Person,
+    sortOrder: number,
     shipmentItems: ContainerShipmentItem[]
 }
 

@@ -22,9 +22,9 @@ import Button from '../../components/Button';
 import showPopup from '../../components/Popup';
 import PrintModal from '../../components/PrintModal';
 import EmptyView from '../../components/EmptyView';
-
 import SelectDropdown from 'react-native-select-dropdown';
-const containerStatus = [
+
+const containerStatuses = [
   'OPEN',
   'PACKING',
   'PACKED',
@@ -33,6 +33,7 @@ const containerStatus = [
   'UNPACKING',
   'UNPACKED'
 ];
+
 const renderIcon = () => {
   return (
     <Image
@@ -60,7 +61,7 @@ class LpnDetail extends React.Component<Props, State> {
   updateContainerStatus = (id: string, status: string) => {
     if (!id) {
       showPopup({
-        message: 'id is empty',
+        message: 'Id of container is empty',
         positiveButton: { text: 'Ok' }
       });
       return;
@@ -69,36 +70,30 @@ class LpnDetail extends React.Component<Props, State> {
       if (data?.error) {
         showPopup({
           title: data.errorMessage
-            ? `Failed to load details with value = "${id}"`
+            ? `Failed to update status of container with id: ${id} into ${status}`
             : null,
           message:
-            data.errorMessage ?? `Failed to load details with value = "${id}"`,
+            data.errorMessage ?? `Failed to update status of container with id: ${id} into ${status}`,
           positiveButton: {
             text: 'Retry',
             callback: () => {
-              this.props.getContainerStatus(id, actionCallback);
+              this.props.updateContainerStatus(id, status, actionCallback)
             }
           },
           negativeButtonText: 'Cancel'
         });
       } else {
-        this.showShipmentReadyToPackScreen(data['shipment.id']);
+        this.getContainerDetails(id)
       }
     };
-    const statusData = {
-      containerStatus: status
-    };
-    this.props.updateContainerStatus(id, statusData, actionCallback);
-  };
 
-  showShipmentReadyToPackScreen = (id: string) => {
-    this.props.navigation.navigate('OutboundStockDetails', { shipmentId: id });
+    this.props.updateContainerStatus(id, status, actionCallback);
   };
 
   getContainerDetails = (id: string) => {
     if (!id) {
       showPopup({
-        message: 'id is empty',
+        message: 'Id of container is empty',
         positiveButton: { text: 'Ok' }
       });
       return;
@@ -108,10 +103,10 @@ class LpnDetail extends React.Component<Props, State> {
       if (data?.error) {
         showPopup({
           title: data.errorMessage
-            ? `Failed to load details with value = "${id}"`
+            ? `Failed to load details of container with id: "${id}"`
             : null,
           message:
-            data.errorMessage ?? `Failed to load details with value = "${id}"`,
+            data.errorMessage ?? `Failed to load details of container with id: "${id}"`,
           positiveButton: {
             text: 'Retry',
             callback: () => {
@@ -192,12 +187,12 @@ class LpnDetail extends React.Component<Props, State> {
 
           <Text style={styles.value}>{'Status'}</Text>
           <SelectDropdown
-            data={containerStatus}
+            data={containerStatuses}
             onSelect={(selectedItem, index) => {
               const { id } = this.props.route.params;
               this.updateContainerStatus(id, selectedItem);
             }}
-            defaultValueByIndex={0}
+            defaultValue={this.state.container?.containerStatus?.id}
             renderDropdownIcon={renderIcon}
             buttonStyle={styles.select}
             buttonTextAfterSelection={(selectedItem, index) => selectedItem}
@@ -206,7 +201,7 @@ class LpnDetail extends React.Component<Props, State> {
           <FlatList
             data={this.state.container?.shipmentItems}
             ListEmptyComponent={
-              <EmptyView title="LPN Details" description="There are no items" />
+              <EmptyView title="LPN Details" description="There are no items" isRefresh={false} />
             }
             renderItem={(
               shipmentItem: ListRenderItemInfo<ContainerShipmentItem>
