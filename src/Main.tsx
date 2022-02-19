@@ -28,7 +28,7 @@ import Scan from './screens/Scan';
 import PutawayList from './screens/PutawayList';
 import Settings from './screens/Settings';
 import PutawayItemDetail from './screens/PutawayItemDetail';
-import InboundOrder from './screens/InboundOrder';
+import InboundOrderList from './screens/InboundOrderList';
 import InboundDetails from './screens/InboundDetails';
 import CreateLpn from './screens/Lpn/Create';
 import LpnDetail from './screens/LpnDetail/Index';
@@ -188,7 +188,7 @@ class Main extends Component<Props, State> {
                 component={PutawayItemDetail}
               />
               <Stack.Screen name="PutawayDetails" component={PutawayDetails} />
-              <Stack.Screen name="InboundOrderList" component={InboundOrder} />
+              <Stack.Screen name="InboundOrderList" component={InboundOrderList} />
               <Stack.Screen name="InboundDetails" component={InboundDetails} />
               <Stack.Screen name="Product Summary" component={ProductSummary} />
               <Stack.Screen name="CreateLpn" component={CreateLpn} />
