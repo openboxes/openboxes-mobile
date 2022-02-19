@@ -13,6 +13,5 @@ export function getContainerDetail(id: string) {
 }
 
 export function updateContainerStatus(id: string, status: any) {
-    return apiClient.post(`/containers/${id}`,{ status });
+  return apiClient.post(`/containers/${id}/status`,{ status });
 }
-

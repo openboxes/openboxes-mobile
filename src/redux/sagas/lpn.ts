@@ -51,14 +51,12 @@ function* fetchContainer(action: any) {
 function* getContainerDetail(action: any) {
   try {
     const response = yield call(api.getContainerDetail, action.payload.id);
-    console.log(response);
     yield put({
       type: GET_CONTAINER_DETAIL_RESPONSE_SUCCESS,
       payload: response.data,
     });
     yield action.callback(response.data);
   } catch (e) {
-    console.log('function* getContainer', e.message);
     yield action.callback({
       error: true,
       errorMessage: e.message,
@@ -68,20 +66,17 @@ function* getContainerDetail(action: any) {
 
 function* updateContainerStatus(action: any) {
     try {
-        console.log("sagas getStatusDetails:" + action.payload.id)
         const response = yield call(
             api.updateContainerStatus,
             action.payload.id,
             action.payload.status
         );
-        console.log(response.data)
         yield put({
             type: GET_CONTAINER_STATUS_DETAIL_RESPONSE_SUCCESS,
             payload: response.data,
         });
         yield action.callback(response.data);
     } catch (e) {
-        console.log('function* getStatusDetails', e.message);
         yield action.callback({
             error: true,
             errorMessage: e.message,
