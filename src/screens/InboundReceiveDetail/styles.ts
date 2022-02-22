@@ -25,7 +25,8 @@ export default StyleSheet.create({
     marginTop:10,
   },
   from: {
-    flex: 1
+    flex: 1,
+    marginTop: 10,
   },
   bottom: {
     width: '100%',

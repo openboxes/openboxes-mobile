@@ -16,7 +16,7 @@ import {
   GET_PRODUCT_SUMMARY_FROM_LOCATION,
   GET_PRODUCT_SUMMARY_FROM_LOCATION_SUCCESS,
   GET_INTERNAL_LOCATION_DETAIL_SUCCESS,
-  GET_INTERNAL_LOCATION_DETAIL_REQUEST
+  GET_INTERNAL_LOCATION_DETAIL_REQUEST, GET_INTERNAL_LOCATION_SEARCH_REQUEST, GET_INTERNAL_LOCATION_SEARCH_SUCCESS
 } from '../actions/locations';
 import * as Sentry from '@sentry/react-native';
 
@@ -95,6 +95,25 @@ function* getInternalLocations(action: any) {
     const response = yield call(api.internalLocations, action.payload.location);
     yield put({
       type: GET_INTERNAL_LOCATIONS_SUCCESS,
+      payload: response.data
+    });
+    yield action.callback(response);
+    yield put(hideScreenLoading());
+  } catch (e) {
+    yield put(hideScreenLoading());
+    yield action.callback({
+      error: true,
+      errorMessage: e.message
+    });
+  }
+}
+
+function* searchInternalLocations(action: any) {
+  try {
+    yield put(showScreenLoading('Please wait...'));
+    const response = yield call(api.searchInternalLocations, action.payload.searchTerm, action.payload.additionalParams);
+    yield put({
+      type: GET_INTERNAL_LOCATION_SEARCH_SUCCESS,
       payload: response.data
     });
     yield action.callback(response);
@@ -191,6 +210,7 @@ export default function* watcher() {
   yield takeLatest(SET_CURRENT_LOCATION_REQUEST, setCurrentLocation);
   yield takeLatest(GET_LOCATION_FROM_NUMBER, searchLocationByLocationNumber);
   yield takeLatest(GET_INTERNAL_LOCATION_FROM_NUMBER, getInternalLocations);
+  yield takeLatest(GET_INTERNAL_LOCATION_SEARCH_REQUEST, searchInternalLocations);
   yield takeLatest(GET_BIN_LOCATIONS_REQUEST, getBinLocations);
   yield takeLatest(GET_PRODUCT_SUMMARY_FROM_LOCATION, fetchProductSummary);
   yield takeLatest(GET_INTERNAL_LOCATION_DETAIL, getInternalLocationsDetails);

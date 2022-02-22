@@ -9,9 +9,9 @@ import Button from '../../components/Button';
 import showPopup from '../../components/Popup';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { submitPartialReceiving } from '../../redux/actions/inboundorder';
-import { getInternalLocations } from '../../redux/actions/locations';
+import { searchInternalLocations } from '../../redux/actions/locations';
 import { RootState } from '../../redux/reducers';
-import AutoInputInternalLocation from '../../components/AutoInputInternalLocation';
+import AsyncModalSelect from '../../components/AsyncModalSelect';
 import InputSpinner from '../../components/InputSpinner';
 import Radio from '../../components/Radio';
 import CLEAR from '../../assets/images/icon_clear.png';
@@ -119,6 +119,7 @@ const InboundReceiveDetail = () => {
   const onChangeQuantity = (text: string) => {
     setState({ ...state, quantityToReceive: text });
   };
+
   const submitReceiving = (id: string, requestBody: any) => {
     const callback = (data: any) => {
       if (data?.error) {
@@ -165,6 +166,7 @@ const InboundReceiveDetail = () => {
       }
     }
   };
+
   const RenderData = ({ title, subText }: any): JSX.Element => {
     return (
       <View style={styles.columnItem}>
@@ -225,7 +227,11 @@ const InboundReceiveDetail = () => {
           positiveButton: {
             text: 'Retry',
             callback: () => {
-              dispatch(getInternalLocations(id, callback));
+              dispatch(searchInternalLocations('', {
+                'parentLocation.id': location.id,
+                max: '10',
+                offset: '0',
+              }, callback));
             }
           },
           negativeButtonText: 'Cancel'
@@ -245,24 +251,30 @@ const InboundReceiveDetail = () => {
         setState({ ...state });
       }
     };
-    dispatch(getInternalLocations(id, callback));
+    dispatch(searchInternalLocations('', {
+      'parentLocation.id': location.id,
+      max: 10,
+      offset: 0,
+    }, callback));
   };
+
   return (
     <ScrollView keyboardShouldPersistTaps="always" style={styles.container}>
       <RenderShipmentItem />
       <View style={styles.from}>
-        <Text style={styles.label}>{'Receiving Location'}</Text>
-        <AutoInputInternalLocation
-          label="AutoInputInternalLocation"
-          data={state.internalLocation} 
+        <AsyncModalSelect
+          placeholder="Receiving Location"
+          label="Receiving Location"
           initValue={state.receiveLocation.label || ''}
-          getMoreData={(d: any) => console.debug('get More data api call', d)} // for calling api for more results
-          selectedData={(selectedItem: any) => {
+          initialData={state.internalLocation}
+          onSelect={(selectedItem: any) => {
             if (selectedItem) {
               state.receiveLocation = selectedItem;
               setState({ ...state });
             }
           }}
+          searchAction={searchInternalLocations}
+          searchActionParams={{ 'parentLocation.id': location.id }}
         />
         <InputBox
           value={state.lotNumber}
@@ -310,7 +322,7 @@ const InboundReceiveDetail = () => {
         disabled={Number(state.quantityToReceive) === Number(shipmentItem.quantityRemaining)}
       />
       <View style={styles.bottom}>
-        <Button title="Receive" onPress={onReceive} />
+        <Button title="Receive" onPress={onReceive} disabled={false} />
       </View>
     </ScrollView>
   );
