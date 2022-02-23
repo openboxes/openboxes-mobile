@@ -69,10 +69,6 @@ const Login = () => {
     }
   };
 
-  const onAutoLoginPress = () => {
-    onLogin('admin', 'password');
-  };
-
   const getLoginDisallowedReason = (
     username: string,
     password: string
@@ -140,13 +136,6 @@ const Login = () => {
           onPress={() => {
             NavigationService.navigate('Settings');
           }}
-          style={{
-            marginTop: 8
-          }}
-        />
-        <Button
-          title="Auto Login"
-          onPress={onAutoLoginPress}
           style={{
             marginTop: 8
           }}
