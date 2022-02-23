@@ -1,4 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
+import _ from 'lodash';
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styles from './styles';
@@ -9,8 +10,8 @@ import { RootState } from '../../redux/reducers';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { updateStockTransfer } from '../../redux/actions/transfers';
 import showPopup from '../../components/Popup';
-import { getBinLocationsAction } from '../../redux/actions/locations';
-import AutoInputBinLocation from "../../components/AutoInputBinLocation";
+import AsyncModalSelect from '../../components/AsyncModalSelect';
+import { searchInternalLocations } from '../../redux/actions/locations';
 import InputSpinner from "../../components/InputSpinner";
 
 const Transfer = () => {
@@ -21,15 +22,48 @@ const Transfer = () => {
   const location = useSelector(
     (rootState: RootState) => rootState.mainReducer.currentLocation
   );
-  const binLocations = useSelector(
-    (rootState: RootState) => rootState.locationsReducer.binLocations
-  );
   const [binToLocationData, setBinToLocationData] = useState<any>({});
-  const [quantity, setQuantity] = useState(0)
-  useEffect(() => {
-    dispatch(getBinLocationsAction())
-  }, [])
+  const [quantity, setQuantity] = useState(0);
+  const [internalLocations, setInternalLocations] = useState<any>([]);
 
+  useEffect(() => {
+    getInternalLocation(location.id)
+  }, [item])
+
+  const getInternalLocation = (id: string = '') => {
+    const callback = (data: any) => {
+      if (data?.error) {
+        showPopup({
+          title: data.message ? 'internal location details' : '',
+          message:
+            data.errorMessage ?? `Failed to load internal location value ${id}`,
+          positiveButton: {
+            text: 'Retry',
+            callback: () => {
+              dispatch(searchInternalLocations('', {
+                'parentLocation.id': location.id,
+                max: '10',
+                offset: '0',
+              }, callback));
+            }
+          },
+          negativeButtonText: 'Cancel'
+        });
+      } else {
+        if (data && Object.keys(data).length !== 0) {
+          setInternalLocations(_.map(data.data, internalLocation => ({
+            name: internalLocation.name,
+            id: internalLocation.id
+          })));
+        }
+      }
+    };
+    dispatch(searchInternalLocations('', {
+      'parentLocation.id': location.id,
+      max: 10,
+      offset: 0,
+    }, callback));
+  };
 
   const onTransfer = () => {
     let errorTitle = '';
@@ -122,9 +156,18 @@ const Transfer = () => {
           />
           <View style={styles.inputBin}>
             <Text>Bin Location</Text>
-            <AutoInputBinLocation
-              data={binLocations}
-              selectedData={(selectedLocation: any) => setBinToLocationData(selectedLocation)}
+            <AsyncModalSelect
+              placeholder="Bin Location"
+              label="Bin Location"
+              initValue={binToLocationData?.label || ''}
+              initialData={internalLocations}
+              onSelect={(selectedItem: any) => {
+                if (selectedItem) {
+                  setBinToLocationData(selectedItem)
+                }
+              }}
+              searchAction={searchInternalLocations}
+              searchActionParams={{ 'parentLocation.id': location.id }}
             />
           </View>
           <View style={styles.inputSpinner}>

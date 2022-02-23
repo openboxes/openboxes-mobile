@@ -38,6 +38,7 @@ const InboundReceiveDetail = () => {
     quantityToReceive: Number(shipmentItem.quantityRemaining) || 0,
     error: null
   });
+
   useEffect(() => {
     getInternalLocation(location.id);
   }, [shipmentItem]);
