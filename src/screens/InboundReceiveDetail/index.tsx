@@ -117,8 +117,9 @@ const InboundReceiveDetail = () => {
     setState({ ...state, expirationDate: null });
   };
 
-  const onChangeQuantity = (text: string) => {
-    setState({ ...state, quantityToReceive: text });
+  const onChangeQuantity = (quantityToReceive: string) => {
+    setState({ ...state, quantityToReceive });
+    setCancelRemaining(cancelRemaining && Number(quantityToReceive) >= Number(shipmentItem.quantityRemaining) ? false : cancelRemaining);
   };
 
   const submitReceiving = (id: string, requestBody: any) => {
@@ -320,7 +321,7 @@ const InboundReceiveDetail = () => {
         title={"Cancel all remaining"}
         setChecked={setCancelRemaining}
         checked={cancelRemaining}
-        disabled={Number(state.quantityToReceive) === Number(shipmentItem.quantityRemaining)}
+        disabled={Number(state.quantityToReceive) >= Number(shipmentItem.quantityRemaining)}
       />
       <View style={styles.bottom}>
         <Button title="Receive" onPress={onReceive} disabled={false} />
