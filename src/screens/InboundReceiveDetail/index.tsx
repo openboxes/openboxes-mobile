@@ -32,8 +32,8 @@ const InboundReceiveDetail = () => {
       id: shipmentItem['binLocation.id'],
       label: shipmentItem['binLocation.name']
     },
-    lotNumber: '',
-    expirationDate: null,
+    lotNumber: shipmentItem.lotNumber,
+    expirationDate: shipmentItem.expirationDate,
     deliveryDate: shipmentData.expectedDeliveryDate,
     quantityToReceive: Number(shipmentItem.quantityRemaining) || 0,
     error: null
@@ -46,10 +46,17 @@ const InboundReceiveDetail = () => {
   const onReceive = () => {
     let errorTitle = '';
     let errorMessage = '';
+
     if (!Number(state.quantityToReceive)) {
       errorTitle = 'Quantity!';
       errorMessage = 'Please fill the Quantity to Receive';
     }
+
+    if (state.expirationDate && !state.lotNumber) {
+      errorTitle = 'Expiration date without Lot';
+      errorMessage = 'Please fill the Lot Number if you want to set the Expiration Date'
+    }
+
     if (errorTitle !== '') {
       showPopup({
         title: errorTitle,
@@ -117,8 +124,9 @@ const InboundReceiveDetail = () => {
     setState({ ...state, expirationDate: null });
   };
 
-  const onChangeQuantity = (text: string) => {
-    setState({ ...state, quantityToReceive: text });
+  const onChangeQuantity = (quantityToReceive: string) => {
+    setState({ ...state, quantityToReceive });
+    setCancelRemaining(cancelRemaining && Number(quantityToReceive) >= Number(shipmentItem.quantityRemaining) ? false : cancelRemaining);
   };
 
   const submitReceiving = (id: string, requestBody: any) => {
@@ -320,7 +328,7 @@ const InboundReceiveDetail = () => {
         title={"Cancel all remaining"}
         setChecked={setCancelRemaining}
         checked={cancelRemaining}
-        disabled={Number(state.quantityToReceive) === Number(shipmentItem.quantityRemaining)}
+        disabled={Number(state.quantityToReceive) >= Number(shipmentItem.quantityRemaining)}
       />
       <View style={styles.bottom}>
         <Button title="Receive" onPress={onReceive} disabled={false} />
