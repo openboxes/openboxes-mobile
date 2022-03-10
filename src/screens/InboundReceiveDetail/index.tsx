@@ -32,8 +32,8 @@ const InboundReceiveDetail = () => {
       id: shipmentItem['binLocation.id'],
       label: shipmentItem['binLocation.name']
     },
-    lotNumber: '',
-    expirationDate: null,
+    lotNumber: shipmentItem.lotNumber,
+    expirationDate: shipmentItem.expirationDate,
     deliveryDate: shipmentData.expectedDeliveryDate,
     quantityToReceive: Number(shipmentItem.quantityRemaining) || 0,
     error: null
@@ -46,10 +46,17 @@ const InboundReceiveDetail = () => {
   const onReceive = () => {
     let errorTitle = '';
     let errorMessage = '';
+
     if (!Number(state.quantityToReceive)) {
       errorTitle = 'Quantity!';
       errorMessage = 'Please fill the Quantity to Receive';
     }
+
+    if (state.expirationDate && !state.lotNumber) {
+      errorTitle = 'Expiration date without Lot';
+      errorMessage = 'Please fill the Lot Number if you want to set the Expiration Date'
+    }
+
     if (errorTitle !== '') {
       showPopup({
         title: errorTitle,
