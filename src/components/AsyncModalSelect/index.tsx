@@ -70,6 +70,7 @@ export default function ({ initialData, onSelect, initValue = '', searchAction, 
           setLabel(option.label);
           onSelect?.({ id: option.key, name: option.label });
         }}
+        onSearchFilterer={(searchText, unfilteredData) => unfilteredData}
         onChangeSearch={(searchData: string) => setSearchTerm(searchData)}
         searchText="Search for more options..."
       >
