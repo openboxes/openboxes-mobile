@@ -47,7 +47,8 @@ export default function ({ initialData, onSelect, initValue = '', searchAction, 
 
   const clearSelection = () => {
     setLabel('');
-    setData(initialData)
+    setData(initialData);
+    setSearchTerm('');
     onSelect?.({ id: '', name: '' });
   }
 
