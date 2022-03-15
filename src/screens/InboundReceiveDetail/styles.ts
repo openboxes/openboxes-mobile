@@ -119,7 +119,7 @@ export default StyleSheet.create({
   },
   lotStatusSelectTextStyle: {
     textAlign: 'left', 
-    fontSize: 14,
+    fontSize: 15,
     color:'#808080',
   }
 });
