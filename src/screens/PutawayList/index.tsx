@@ -1,4 +1,5 @@
 /* eslint-disable complexity */
+import _ from 'lodash';
 import { DispatchProps, Props, State } from './types';
 import React from 'react';
 import { getOrdersAction } from '../../redux/actions/orders';
@@ -9,81 +10,57 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
-import BarCodeSearchHeader from '../Products/BarCodeSearchHeader';
 import { connect } from 'react-redux';
 import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
-import { RootState } from '../../redux/reducers';
-import showPopup from '../../components/Popup';
 import styles from './styles';
-import PutAwayItem from '../../components/PutAwayItem';
 import PutAwayItems from '../../data/putaway/PutAwayItems';
 import { fetchPutAwayFromOrderAction } from '../../redux/actions/putaways';
 import PutAway from '../../data/putaway/PutAway';
 import EmptyView from '../../components/EmptyView';
+import { Card } from 'react-native-paper';
+import InputBox from '../../components/InputBox';
+
 class PutawayList extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
       error: null,
       putAwayList: null,
+      putAwayListFiltered: null,
       putAway: null,
       orderId: null,
       showList: false,
-      showDetail: false
+      showDetail: false,
+      lpnFilter: '',
     };
   }
+
   componentDidMount() {
     this.fetchPutAways(null);
   }
 
-  searchOrder = (query: string) => {
-    this.fetchPutAways(query);
-    const actionCallback = (data: any) => {
-      if (!data || data?.error) {
-        showPopup({
-          title: data.errorMessage ? 'Failed to fetch Order' : 'Error',
-          message: data.errorMessage ?? 'Failed to fetch Order with:' + query,
-          positiveButton: {
-            text: 'Retry',
-            callback: () => {
-              this.props.getOrdersAction(query, actionCallback);
-            }
-          },
-          negativeButtonText: 'Cancel'
-        });
-      } else {
-        if (data.length === 0) {
-          showPopup({
-            title: data.errorMessage ? 'Failed to fetch Order' : 'Error',
-            message: data.errorMessage ?? 'Failed to fetch Order with:' + query,
-            positiveButton: {
-              text: 'OK'
-            }
-          });
-          this.setState({
-            error: 'No orders found'
-          });
-        } else if (data.length === 1) {
-          this.fetchPutAway(data[0]['id']);
-        } else {
-          this.setState({
-            error: null
-          });
-        }
-      }
-      this.props.hideScreenLoading();
-    };
-    this.props.getOrdersAction(query, actionCallback);
-  };
+  componentDidUpdate() {
+    // @ts-ignore
+    if (this.props.route.params.refetchPutaways) {
+      this.fetchPutAways(null);
+    }
+  }
 
   fetchPutAways = (query: any) => {
-    const actionCallback = (data: any) => {
-      if (!data || data?.error) {
+    this.props.navigation.setParams({ refetchPutaways : false });
+    const actionCallback = (putAwayList: any) => {
+      if (!putAwayList || putAwayList?.error) {
         return Promise.resolve(null);
       } else {
         this.setState({
           showList: true,
-          putAwayList: data,
+          putAwayList: _.flatten(
+            _.map(putAwayList, putaway => _.map(putaway.putawayItems, item => ({
+              ...putaway,
+              putawayItem: {
+                ...item
+              },
+            })))),
           putAway: null
         });
       }
@@ -91,10 +68,6 @@ class PutawayList extends React.Component<Props, State> {
     };
 
     this.props.fetchPutAwayFromOrderAction(query, actionCallback);
-  };
-
-  renderItem = (item: ListRenderItemInfo<PutAwayItems>) => {
-    return <PutAwayItem item={item.item} />;
   };
 
   goToPutawayItemDetailScreen = (
@@ -106,67 +79,95 @@ class PutawayList extends React.Component<Props, State> {
       putAwayItem: putAwayItem
     });
   };
-  onPutAwayTapped = (putAway: PutAway) => {
-    this.props.navigation.navigate('PutawayDetails', {
-      putAway: putAway,
-      exit: () => {
-        this.props.navigation.navigate('PutawayList');
+
+  onChangeLpnFilter = (text: string) => {
+    this.setState({ lpnFilter: text }, () => {
+      if (text) {
+        const exactPutaway = _.find(
+          this.state.putAwayList,
+          putaway => putaway?.putawayItem?.['inventoryItem.lotNumber'] === text,
+          );
+
+        if (exactPutaway) {
+          this.setState(
+            { lpnFilter: '', putAwayListFiltered: [] },
+            () => this.goToPutawayItemDetailScreen(exactPutaway, exactPutaway.putawayItem),
+          );
+        } else {
+          const putAwayListFiltered = _.filter(
+            this.state.putAwayList,
+            putaway => putaway?.putawayItem?.['inventoryItem.lotNumber']?.includes(text),
+          );
+          this.setState({ putAwayListFiltered: putAwayListFiltered });
+        }
+      } else {
+        this.setState({ putAwayListFiltered: [] });
       }
     });
   };
 
   render() {
-    const { showList } = this.state;
+    const { showList, putAwayList, putAwayListFiltered, lpnFilter } = this.state;
+
     return (
       <View style={styles.screenContainer}>
-        <BarCodeSearchHeader
-          onBarCodeSearchQuerySubmitted={this.searchOrder}
-          placeHolder={'Search Orders by Name'}
-          searchBox={false}
-        />
         {showList ? (
           <View style={styles.contentContainer}>
+            {putAwayList?.length ? (
+              <InputBox
+                style={styles.lpnFilter}
+                value={lpnFilter}
+                disabled={false}
+                editable={false}
+                label={'Scan Lot Number'}
+                onChange={this.onChangeLpnFilter}
+              />) : null}
             <FlatList
-              data={this.state.putAwayList}
+              data={putAwayListFiltered?.length ? putAwayListFiltered : putAwayList}
               ListEmptyComponent={
                 <EmptyView
                   title="Putaway"
                   description="There are no items to putaway"
+                  isRefresh={false}
                 />
               }
-              renderItem={(item: ListRenderItemInfo<PutAway>) => (
+              renderItem={(listRenderItemInfo: ListRenderItemInfo<any>) => (
                 <TouchableOpacity
                   style={styles.listItemContainer}
-                  onPress={() => this.onPutAwayTapped(item.item)}
+                  onPress={() => this.goToPutawayItemDetailScreen(listRenderItemInfo.item, listRenderItemInfo.item?.putawayItem)}
                 >
-                  <View style={styles.row}>
-                    <View style={styles.col50}>
-                      <Text style={styles.label}>Status</Text>
-                      <Text style={styles.value}>
-                        {item.item?.putawayStatus}
-                      </Text>
-                    </View>
-                    <View style={styles.col50}>
-                      <Text style={styles.label}>PutAway Number</Text>
-                      <Text style={styles.value}>
-                        {item.item?.putawayNumber}
-                      </Text>
-                    </View>
-                  </View>
-                  <View style={styles.row}>
-                    <View style={styles.col50}>
-                      <Text style={styles.label}>Origin</Text>
-                      <Text style={styles.value}>
-                        {item.item?.['origin.name']}
-                      </Text>
-                    </View>
-                    <View style={styles.col50}>
-                      <Text style={styles.label}>Destination</Text>
-                      <Text style={styles.value}>
-                        {item.item?.['destination.name']}
-                      </Text>
-                    </View>
-                  </View>
+                  <Card>
+                    <Card.Content>
+                      <View style={styles.row}>
+                        <View style={styles.col50}>
+                          <Text style={styles.label}>Product Code</Text>
+                          <Text style={styles.value}>
+                            {listRenderItemInfo.item?.putawayItem?.['product.productCode']}
+                          </Text>
+                        </View>
+                        <View style={styles.col50}>
+                          <Text style={styles.label}>Lot Number</Text>
+                          <Text style={styles.value}>
+                            {listRenderItemInfo.item?.putawayItem?.['inventoryItem.lotNumber'] || 'Default'}
+                          </Text>
+                        </View>
+                      </View>
+                      <View style={styles.row}>
+                        <View style={styles.col50}>
+                          <Text style={styles.label}>Current Location</Text>
+                          <Text style={styles.value}>
+                            {listRenderItemInfo.item?.putawayItem?.['currentLocation.name']}
+                          </Text>
+                        </View>
+                        <View style={styles.col50}>
+                          <Text style={styles.label}>Putaway Location</Text>
+                          <Text style={styles.value}>
+                            {listRenderItemInfo.item?.putawayItem?.['putawayLocation.name']}
+                          </Text>
+                        </View>
+                      </View>
+                    </Card.Content>
+                  </Card>
                 </TouchableOpacity>
               )}
               keyExtractor={(item) => item.id}
@@ -179,14 +180,10 @@ class PutawayList extends React.Component<Props, State> {
   }
 }
 
-const mapStateToProps = (state: RootState) => ({
-  putAway: state.putawayReducer.putAway
-});
-
 const mapDispatchToProps: DispatchProps = {
   showScreenLoading,
   hideScreenLoading,
   getOrdersAction,
   fetchPutAwayFromOrderAction
 };
-export default connect(mapStateToProps, mapDispatchToProps)(PutawayList);
+export default connect(null, mapDispatchToProps)(PutawayList);
