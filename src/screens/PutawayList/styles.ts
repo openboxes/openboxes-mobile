@@ -18,12 +18,12 @@ export default StyleSheet.create({
     display: 'flex',
     flexDirection: 'column',
     flex: 1,
-    borderRadius: Theme.roundness,
-    borderColor: Theme.colors.backdrop,
-    borderWidth: 1,
     margin: 4,
-    padding: 4,
     justifyContent: 'center',
+  },
+  lpnFilter: {
+    marginHorizontal: 4,
+    backgroundColor: 'white',
   },
   name: {
     fontSize: 17,
@@ -139,7 +139,6 @@ export default StyleSheet.create({
   row: {
     flexDirection: 'row',
     borderColor: Theme.colors.onBackground,
-    // borderBottomWidth: 1,
     marginTop: 1,
     padding: 2,
     width: '100%',

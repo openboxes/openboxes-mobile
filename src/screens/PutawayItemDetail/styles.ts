@@ -111,8 +111,7 @@ export default StyleSheet.create({
   label: {
     fontSize: 12,
     color: Theme.colors.placeholder,
-    width: '30%',
-
+    width: '50%',
   },
   title: {
     fontSize: 16,
@@ -150,6 +149,7 @@ export default StyleSheet.create({
     width: '50%',
   },
   buttonContainer: {
-    marginTop: 8,
+    marginTop: 4,
+    marginBottom: 8,
   },
 });

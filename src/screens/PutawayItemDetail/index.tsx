@@ -1,38 +1,22 @@
-import React, {useEffect, useState} from 'react';
-import {Text, View, ScrollView} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, ScrollView } from 'react-native';
 import styles from './styles';
 import showPopup from '../../components/Popup';
-import {useNavigation, useRoute} from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import InputBox from '../../components/InputBox';
-import {RootState} from '../../redux/reducers';
-import {searchLocationByLocationNumber} from '../../redux/actions/locations';
-import {hideScreenLoading} from '../../redux/actions/main';
-import {useDispatch, useSelector} from 'react-redux';
-import {submitPutawayItem} from '../../redux/actions/putaways';
+import { useDispatch } from 'react-redux';
+import { submitPutawayItem } from '../../redux/actions/putaways';
 import Button from '../../components/Button';
-import useEventListener from '../../hooks/useEventListener';
-import {searchProductGloballyAction} from '../../redux/actions/products';
 
 const PutawayItemDetail = () => {
   const route = useRoute();
-  const barcodeData = useEventListener();
   const dispatch = useDispatch();
-  const navigation = useNavigation();
-  const location = useSelector(
-    (state: RootState) => state.mainReducer.currentLocation,
-  );
+  const navigation = useNavigation<any>();
   const [state, setState] = useState<any>({
     error: null,
     putAway: null,
     putAwayItem: null,
-    orderId: null,
-    binLocationSearchQuery: '',
-    quantityPicked: '0',
-    productCode: '',
-    binFromLocation: '',
-    binToLocation: '',
-    binToData: '',
-    quantity: '0',
+    scannedPutawayLocation: '',
   });
   const {putAway, putAwayItem}: any = route.params;
 
@@ -41,172 +25,8 @@ const PutawayItemDetail = () => {
       ...state,
       putAway: putAway,
       putAwayItem: putAwayItem,
-      productCode: putAwayItem?.['product.productCode'],
-      quantity: putAwayItem?.['quantity'].toString(),
-      binFromLocation: putAwayItem?.['currentLocation.name'],
-      binToLocation: putAwayItem?.['putawayLocation.name'],
     });
   }, []);
-  useEffect(() => {
-    if (barcodeData && Object.keys(barcodeData).length !== 0) {
-      onBarCodeScanned(barcodeData.data);
-    }
-  }, [barcodeData]);
-
-  const showErrorPopup = (
-    data: any,
-    query: any,
-    actionCallback: any,
-    searchBarcode: any,
-  ) => {
-    showPopup({
-      title: data.errorMessage
-        ? `Failed to load search results with value = "${query}"`
-        : null,
-      message:
-        data.errorMessage ??
-        `Failed to load search results with value = "${query}"`,
-      positiveButton: {
-        text: 'Retry',
-        callback: () => {
-          dispatch(searchBarcode(query, actionCallback));
-        },
-      },
-      negativeButtonText: 'Cancel',
-    });
-  };
-  const onBarCodeScanned = (query: string) => {
-    if (!query) {
-      showPopup({
-        message: 'Search query is empty',
-        positiveButton: {text: 'Ok'},
-      });
-      return;
-    }
-    if (query.includes('LOG-XXX')) {
-      const actionCallback = (data: any) => {
-        if (data?.error) {
-          showErrorPopup(
-            data,
-            query,
-            actionCallback,
-            searchProductGloballyAction,
-          );
-        } else {
-          if (data.length === 0) {
-            showPopup({
-              message: `No search results found for product name "${query}"`,
-              positiveButton: {text: 'Ok'},
-            });
-          } else {
-            if (data && Object.keys(data).length !== 0) {
-              if (
-                state.putAwayItem?.['product.productCode'] !==
-                data.data[0].productCode
-              ) {
-                showPopup({
-                  message: `You have scanned a wrong product barcode "${query}"`,
-                  positiveButton: {text: 'Ok'},
-                });
-              }
-              setState({...state});
-            }
-          }
-          dispatch(hideScreenLoading());
-        }
-      };
-      dispatch(searchProductGloballyAction(query, actionCallback));
-    } else {
-      const actionBinLocationCallback = (data: any) => {
-        if (data?.error) {
-          showErrorPopup(
-            data,
-            query,
-            actionBinLocationCallback,
-            searchLocationByLocationNumber,
-          );
-        } else {
-          if (data.length == 0) {
-            showPopup({
-              message: `No search results found for Location name "${query}"`,
-              positiveButton: {text: 'Ok'},
-            });
-          } else {
-            if (data && Object.keys(data).length !== 0) {
-              if (
-                state.binToLocation === '' ||
-                state.putAwayItem?.['putawayLocation.name'] === data.name
-              ) {
-                state.binToLocation = data.name;
-                state.binToData = data;
-              }
-              setState({...state});
-            } else {
-              showPopup({
-                message: `You have scanned a wrong bin location barcode "${query}"`,
-                positiveButton: {text: 'Ok'},
-              });
-            }
-          }
-          dispatch(hideScreenLoading());
-        }
-      };
-      dispatch(
-        searchLocationByLocationNumber(query, actionBinLocationCallback),
-      );
-    }
-  };
-
-  const onBinLocationBarCodeSearchQuerySubmitted = () => {
-    if (!state.binLocationSearchQuery) {
-      showPopup({
-        message: 'Search query is empty',
-        positiveButton: {
-          text: 'Ok',
-        },
-      });
-      return;
-    }
-
-    const actionCallback = (location: any) => {
-      if (!location || location.error) {
-        showPopup({
-          message:
-            'Bin Location not found with LocationNumber:' +
-            state.binLocationSearchQuery,
-          positiveButton: {
-            text: 'Ok',
-          },
-        });
-        return;
-      } else if (location) {
-        setState({
-          ...state,
-          binToLocation: location,
-          binLocationSearchQuery: '',
-        });
-      }
-    };
-    dispatch(
-      searchLocationByLocationNumber(
-        state.binLocationSearchQuery,
-        actionCallback,
-      ),
-    );
-  };
-
-  const quantityPickedChange = (query: string) => {
-    setState({
-      ...state,
-      quantityPicked: query,
-    });
-  };
-  const binLocationSearchQueryChange = (query: string) => {
-    setState({
-      ...state,
-      binLocationSearchQuery: query,
-    });
-  };
 
   const formSubmit = () => {
     let errorTitle = '';
@@ -239,11 +59,13 @@ const PutawayItemDetail = () => {
           'putawayFacility.id': state.putAwayItem?.['putawayFacility.id'],
           'putawayLocation.id': state.putAwayItem?.['putawayLocation.id'] || "",
           quantity: state.putAwayItem?.quantity,
+          scannedPutawayLocation: state.scannedPutawayLocation,
         },
       ],
       'orderedBy.id': '',
       sortBy: '',
     };
+
     const actionCallback = (data: any) => {
       if (data?.error) {
         showPopup({
@@ -265,12 +87,12 @@ const PutawayItemDetail = () => {
         });
       } else {
         showPopup({
-          title: ' submit',
-          message: 'successfully submit',
+          title: ' Success',
+          message: 'Putaway was successfully submited',
           positiveButton: {
             text: 'ok',
             callback: () => {
-              navigation.navigate('PutawayList');
+              navigation.navigate('PutawayList', { refetchPutaways: true });
             },
           },
         });
@@ -285,110 +107,79 @@ const PutawayItemDetail = () => {
     );
   };
 
-  const onChangeProduct = (text: string) => {
-    setState({...state, productCode: text});
+  const onChangeScannedPutawayLocation = (text: string) => {
+    setState({...state, scannedPutawayLocation: text});
   };
 
-  const onChangeFrom = (text: string) => {
-    setState({...state, binFromLocation: text});
-  };
-  const onChangeBin = (text: string) => {
-    setState({...state, binToLocation: text});
-  };
-  const onChangeQuantity = (text: string) => {
-    setState({...state, quantity: text});
-  };
   return (
     <>
-    <ScrollView>
-    <View style={styles.contentContainer}>
-      <View style={styles.rowItem}>
-        <View style={styles.columnItem}>
-          <Text style={styles.label}>{'Status'}</Text>
-          <Text style={styles.value}>{state.putAway?.putawayStatus}</Text>
+      <ScrollView>
+        <View style={styles.contentContainer}>
+          <View style={styles.from}>
+            <InputBox
+              label={'Putaway Identifier'}
+              value={state.putAway?.putawayNumber}
+              disabled={true}
+              editable={false}
+            />
+            <InputBox
+              label={'Product Code'}
+              value={state.putAwayItem?.['product.productCode']}
+              disabled={true}
+              editable={false}
+            />
+            <InputBox
+              label={'Product Name'}
+              value={state.putAwayItem?.['product.name']}
+              disabled={true}
+              editable={false}
+            />
+            <InputBox
+              label={'Lot Number'}
+              value={state.putAwayItem?.['inventoryItem.lotNumber'] || 'Default'}
+              disabled={true}
+              editable={false}
+            />
+            <InputBox
+              label={'Expiry Date'}
+              value={state.putAwayItem?.['inventoryItem.expiryDate'] || 'Never'}
+              disabled={true}
+              editable={false}
+            />
+            <InputBox
+              label={'Current Location'}
+              value={state.putAwayItem?.['currentLocation.name']}
+              disabled={true}
+              editable={false}
+            />
+            <InputBox
+              label={'Putaway Location'}
+              value={state.putAwayItem?.['putawayLocation.name']}
+              disabled={true}
+              editable={false}
+            />
+            <InputBox
+              label={'Quantity to Putaway'}
+              value={state.putAwayItem?.quantity.toString()}
+              editable={false}
+              disabled={true}
+            />
+            <InputBox
+              label={'Scan Putaway Location'}
+              value={state.scannedPutawayLocation}
+              onChange={onChangeScannedPutawayLocation}
+              editable={false}
+              disabled={false}
+            />
+          </View>
         </View>
-        <View style={styles.columnItem}>
-          <Text style={styles.label}>{'Putaway Number'}</Text>
-          <Text style={styles.value}>{state.putAway?.putawayNumber}</Text>
-        </View>
-      </View>
-      <View style={styles.rowItem}>
-        <View style={styles.columnItem}>
-          <Text style={styles.label}>{'Product Code'}</Text>
-          <Text style={styles.value}>
-            {state.putAwayItem?.['product.productCode']}
-          </Text>
-        </View>
-        <View style={styles.columnItem}>
-          <Text style={styles.label}>{'Product Name'}</Text>
-          <Text style={styles.value}>
-            {state.putAwayItem?.['product.name']}
-          </Text>
-        </View>
-      </View>
-      <View style={styles.rowItem}>
-        <View style={styles.columnItem}>
-          <Text style={styles.label}>{'Current Location'}</Text>
-          <Text style={styles.value}>{state.putAway?.putawayStatus}</Text>
-        </View>
-        <View style={styles.columnItem}>
-          <Text style={styles.label}>{'Putaway Location'}</Text>
-          <Text style={styles.value}>
-            {state.putAwayItem?.['putawayLocation.name']}
-          </Text>
-        </View>
-      </View>
-      <View style={styles.rowItem}>
-        <View style={styles.columnItem}>
-          <Text style={styles.label}>Preferred Location</Text>
-          <Text style={styles.value}>
-            {state.putAwayItem?.['preferredBin.name'] ?? 'None'}
-          </Text>
-        </View>
-        <View style={styles.columnItem}>
-          <Text style={styles.label}>Quantity</Text>
-          <Text style={styles.value}>{state.putAwayItem?.['quantity']}</Text>
-        </View>
-      </View>
-      <View style={styles.from}>
-        <InputBox
-          value={state.productCode}
-          disabled={true}
-          editable={false}
-          onChange={onChangeProduct}
-          label={'Product Code'}
-        />
-        <InputBox
-          value={state.binFromLocation}
-          label={'Current Location'}
-          disabled={true}
-          onChange={onChangeFrom}
-          editable={false}
-        />
-        <InputBox
-          value={state.binToLocation}
-          disabled={true}
-          editable={false}
-          onChange={onChangeBin}
-          label={'Putaway Location'}
-        />
-        <InputBox
-          label={'Quantity to transfer'}
-          value={state.quantity}
-          editable={false}
-          onChange={onChangeQuantity}
-          disabled={true}
-          keyboard={'number-pad'}
-        />
-      </View>
-    </View>
-    </ScrollView>
-    <Button
-          title="Putaway"
+        <Button
+          title="Confirm Putaway"
           style={styles.buttonContainer}
           onPress={formSubmit}
           disabled={false}
         />
+      </ScrollView>
     </>
   );
 };

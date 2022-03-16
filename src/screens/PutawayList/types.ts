@@ -1,14 +1,14 @@
 import PutAway from "../../data/putaway/PutAway";
-import {NavigationState} from "../PutAwayDetail/State";
-import {fetchPutAwayFromOrderAction} from "../../redux/actions/putaways";
 
 export interface State {
     error: string | null
     putAwayList: PutAway[] | null
+    putAwayListFiltered: PutAway[] | null
     putAway: PutAway | null
     orderId: string | null,
     showList: boolean
     showDetail: boolean
+    lpnFilter: string | null
 }
 
 
