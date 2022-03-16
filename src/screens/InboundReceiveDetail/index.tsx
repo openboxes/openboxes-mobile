@@ -330,7 +330,7 @@ const InboundReceiveDetail = () => {
         />
       </View>
       <Radio
-        title={"Cancel all remaining"}
+        title={"Cancel remaining quantity for this item"}
         setChecked={setCancelRemaining}
         checked={cancelRemaining}
         disabled={Number(state.quantityToReceive) >= Number(shipmentItem.quantityRemaining)}
