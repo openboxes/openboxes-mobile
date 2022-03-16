@@ -98,7 +98,7 @@ const InboundReceiveDetail = () => {
               quantityOnHand: '',
               comment: state.comments,
               mobile: true,
-              lotStatus: lotStatus
+              lotStatusCode: lotStatus
             }
           ]
         }
@@ -305,13 +305,11 @@ const InboundReceiveDetail = () => {
         />
         <SelectDropdown
             data={['Select lot status','APPROVED', 'RECALLED', 'ON_HOLD', 'QUARANTINED', 'EXPIRED', 'RESERVED', 'DAMAGED']}
-            onSelect={(selectedItem) => {
-              setLotStatus(selectedItem);
+            onSelect={(selectedItem, index) => {
+              setLotStatus(index === 0 ? '' : selectedItem);
             }}
             dropdownStyle={{justifyContent: 'flex-start'}}
-            //disabled={!editable}
             defaultValue={lotStatus}
-            
             buttonTextStyle={styles.lotStatusSelectTextStyle}
             renderDropdownIcon={renderIcon}
             dropdownIconPosition={'right'}
