@@ -47,9 +47,14 @@ const InboundReceiveDetail = () => {
     let errorTitle = '';
     let errorMessage = '';
 
-    if (!Number(state.quantityToReceive)) {
+    if (Number(state.quantityToReceive) < 0) {
       errorTitle = 'Quantity!';
       errorMessage = 'Please fill the Quantity to Receive';
+    }
+
+    if (Number(state.quantityToReceive) == 0 && !cancelRemaining) {
+      errorTitle = 'Quantity to receive is 0';
+      errorMessage = 'You can\'t receive 0 without cancelling remaining';
     }
 
     if (state.expirationDate && !state.lotNumber) {
