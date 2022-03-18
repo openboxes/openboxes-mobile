@@ -48,7 +48,7 @@ const InboundReceiveDetail = () => {
     quantityToReceive: Number(shipmentItem.quantityRemaining) || 0,
     error: null
   });
-  const [lotStatus, setLotStatus] = useState<string>('')
+  const [lotStatusCode, setLotStatusCode] = useState<string>('')
   useEffect(() => {
     getInternalLocation(location.id);
   }, [shipmentItem]);
@@ -98,7 +98,7 @@ const InboundReceiveDetail = () => {
               quantityOnHand: '',
               comment: state.comments,
               mobile: true,
-              lotStatusCode: lotStatus
+              lotStatusCode: lotStatusCode
             }
           ]
         }
@@ -304,12 +304,12 @@ const InboundReceiveDetail = () => {
           onChange={onChangeLotNumber}
         />
         <SelectDropdown
-            data={['Select lot status','APPROVED', 'RECALLED', 'ON_HOLD', 'QUARANTINED', 'EXPIRED', 'RESERVED', 'DAMAGED']}
+            data={['','APPROVED', 'RECALLED', 'ON_HOLD', 'QUARANTINED', 'EXPIRED', 'RESERVED', 'DAMAGED']}
             onSelect={(selectedItem, index) => {
-              setLotStatus(index === 0 ? '' : selectedItem);
+              setLotStatusCode(index === 0 ? '' : selectedItem);
             }}
             dropdownStyle={{justifyContent: 'flex-start'}}
-            defaultValue={lotStatus}
+            defaultValue={lotStatusCode}
             buttonTextStyle={styles.lotStatusSelectTextStyle}
             renderDropdownIcon={renderIcon}
             dropdownIconPosition={'right'}
