@@ -15,6 +15,16 @@ import AsyncModalSelect from '../../components/AsyncModalSelect';
 import InputSpinner from '../../components/InputSpinner';
 import Radio from '../../components/Radio';
 import CLEAR from '../../assets/images/icon_clear.png';
+import SelectDropdown from 'react-native-select-dropdown';
+
+const renderIcon = () => {
+  return (
+    <Image
+      style={styles.arrowDownIcon}
+      source={require('../../assets/images/arrow-down.png')}
+    />
+  );
+};
 
 const InboundReceiveDetail = () => {
   const dispatch = useDispatch();
@@ -38,7 +48,7 @@ const InboundReceiveDetail = () => {
     quantityToReceive: Number(shipmentItem.quantityRemaining) || 0,
     error: null
   });
-
+  const [lotStatusCode, setLotStatusCode] = useState<string>('')
   useEffect(() => {
     getInternalLocation(location.id);
   }, [shipmentItem]);
@@ -92,7 +102,8 @@ const InboundReceiveDetail = () => {
               cancelRemaining: cancelRemaining,
               quantityOnHand: '',
               comment: state.comments,
-              mobile: true
+              mobile: true,
+              lotStatusCode: lotStatusCode
             }
           ]
         }
@@ -297,6 +308,21 @@ const InboundReceiveDetail = () => {
           label={'Lot Number'}
           onChange={onChangeLotNumber}
         />
+        <SelectDropdown
+            data={['','APPROVED', 'RECALLED', 'ON_HOLD', 'QUARANTINED', 'EXPIRED', 'RESERVED', 'DAMAGED']}
+            onSelect={(selectedItem, index) => {
+              setLotStatusCode(index === 0 ? '' : selectedItem);
+            }}
+            dropdownStyle={{justifyContent: 'flex-start'}}
+            defaultValue={lotStatusCode}
+            buttonTextStyle={styles.lotStatusSelectTextStyle}
+            renderDropdownIcon={renderIcon}
+            dropdownIconPosition={'right'}
+            defaultValueByIndex={0}
+            buttonStyle={styles.lotStatusSelectStyle}
+            buttonTextAfterSelection={(selectedItem) => selectedItem}
+            rowTextForSelection={(item) => item}
+          />
         <View style={styles.datePickerContainer}>
           <DatePicker
             style={styles.datePicker}

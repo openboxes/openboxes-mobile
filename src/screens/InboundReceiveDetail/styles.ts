@@ -107,5 +107,19 @@ export default StyleSheet.create({
     justifyContent:'center',
     alignItems:"center",
     zIndex:100
+  },
+  lotStatusSelectStyle: {
+    width: "100%",
+    borderWidth: 1,
+    height: 42,
+    alignSelf: 'center',
+    borderColor:'#909090',
+    borderRadius:5,
+    marginTop:10,
+  },
+  lotStatusSelectTextStyle: {
+    textAlign: 'left', 
+    fontSize: 15,
+    color:'#808080',
   }
 });
