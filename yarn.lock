@@ -6060,6 +6060,11 @@ mockdate@^3.0.2:
   resolved "https://registry.yarnpkg.com/mockdate/-/mockdate-3.0.5.tgz#789be686deb3149e7df2b663d2bc4392bc3284fb"
   integrity sha512-iniQP4rj1FhBdBYS/+eQv7j1tadJ9lJtdzgOpvsOHng/GbcDh2Fhdeq+ZRldrPYdXvCyfFUmFeEwEGXZB5I/AQ==
 
+moment@^2.22.0:
+  version "2.29.1"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.1.tgz#b2be769fa31940be9eeea6469c075e35006fa3d3"
+  integrity sha512-kHmoybcPV8Sqy59DwNDY3Jefr64lK/by/da0ViFcuA4DH0vQg5Q6Ze5VimxkfQNSC+Mls/Kx53s7TjP1RhFEDQ==
+
 ms@2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.0.0.tgz#5608aeadfc00be6c2901df5f9861788de0d597c8"
@@ -6858,6 +6863,18 @@ react-native-datawedge-intents@^0.1.8:
   version "0.1.8"
   resolved "https://registry.yarnpkg.com/react-native-datawedge-intents/-/react-native-datawedge-intents-0.1.8.tgz#2021b8ad2b351bce84c84392dcfdf1731750ef0e"
   integrity sha512-HefmAOgsEhXsfZZOL2e2x7s46toI8oZ8ZlNJS/DrvZwbZB9VqaCC076IqOKxnalPyO6JlIIrZaw58xD1jFRvhg==
+
+react-native-datepicker@^1.7.2:
+  version "1.7.2"
+  resolved "https://registry.yarnpkg.com/react-native-datepicker/-/react-native-datepicker-1.7.2.tgz#58d0822591a0ac9b32aba082650222a0ee29669d"
+  integrity sha1-WNCCJZGgrJsyq6CCZQIioO4pZp0=
+  dependencies:
+    moment "^2.22.0"
+
+react-native-device-info@^8.7.0:
+  version "8.7.0"
+  resolved "https://registry.yarnpkg.com/react-native-device-info/-/react-native-device-info-8.7.0.tgz#0873d93950ac651b754f62965bb6f18059431c3c"
+  integrity sha512-Zr0JNHSEPy2RWObWwUp9npTEWSG5HyY+nR/mRkf6ZTU5zd8oskarnPcCxAgwYhJbvshHSZbZIDRxCVCskXSpEA==
 
 react-native-dotenv@^3.3.0:
   version "3.3.1"
