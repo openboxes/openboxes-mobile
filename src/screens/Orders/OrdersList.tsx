@@ -11,6 +11,8 @@ import React, { ReactElement } from 'react';
 import Theme from '../../utils/Theme';
 import { Order } from '../../data/order/Order';
 import EmptyView from '../../components/EmptyView';
+import { Card } from 'react-native-paper';
+import {LayoutStyle} from '../../assets/styles';
 export interface Props {
   orders: Order[] | null;
   onOrderTapped: (order: Order) => void;
@@ -34,8 +36,8 @@ export default function OrdersList(props: Props) {
 
 function renderOrder(order: Order, onOrderTapped: () => void): ReactElement {
   return (
-    <TouchableOpacity
-      style={styles.listItemContainer}
+    <Card
+      style={LayoutStyle.listItemContainer}
       onPress={() => onOrderTapped()}
     >
       <View style={styles.row}>
@@ -59,26 +61,13 @@ function renderOrder(order: Order, onOrderTapped: () => void): ReactElement {
         </View>
       </View>
       <View style={styles.row} />
-    </TouchableOpacity>
+    </Card>
   );
 }
 
 const styles = StyleSheet.create({
   list: {
     width: '100%'
-  },
-  listItemContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    flex: 1,
-    backgroundColor: '#E8E8E8',
-    borderColor: '#D3D3D3',
-    borderWidth: 1,
-    margin: 8,
-    padding: 10,
-    justifyContent: 'center',
-    borderRadius: 15,
-    elevation: 8,
   },
   listItemNameContainer: {
     display: 'flex',

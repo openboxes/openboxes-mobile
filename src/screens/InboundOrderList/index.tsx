@@ -12,6 +12,7 @@ import {useNavigation, useRoute} from "@react-navigation/native";
 import styles from "./styles";
 import {Card} from "react-native-paper";
 import EmptyView from "../../components/EmptyView";
+import { LayoutStyle } from '../../assets/styles';
 
 const InboundOrderList = () => {
   const dispatch = useDispatch();
@@ -83,12 +84,11 @@ const InboundOrderList = () => {
 
   const RenderListItem = ({ item, index }: any): JSX.Element => {
     return (
-      <TouchableOpacity
+      <Card
         onPress={() => navigateToInboundDetails(item)}
-        style={styles.itemView}
+        style={LayoutStyle.listItemContainer}
         key={index}
       >
-        <Card>
           <Card.Content>
             <View style={styles.rowItem}>
               <RenderOrderData
@@ -112,8 +112,7 @@ const InboundOrderList = () => {
               />
             </View>
           </Card.Content>
-        </Card>
-      </TouchableOpacity>
+      </Card>
     );
   };
 

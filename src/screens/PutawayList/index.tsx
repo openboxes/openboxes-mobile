@@ -19,6 +19,7 @@ import PutAway from '../../data/putaway/PutAway';
 import EmptyView from '../../components/EmptyView';
 import { Card } from 'react-native-paper';
 import InputBox from '../../components/InputBox';
+import { LayoutStyle } from '../../assets/styles';
 
 class PutawayList extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -132,43 +133,42 @@ class PutawayList extends React.Component<Props, State> {
                 />
               }
               renderItem={(listRenderItemInfo: ListRenderItemInfo<any>) => (
-                <TouchableOpacity
-                  style={styles.listItemContainer}
+                <Card
+                  style={LayoutStyle.listItemContainer}
                   onPress={() => this.goToPutawayItemDetailScreen(listRenderItemInfo.item, listRenderItemInfo.item?.putawayItem)}
-                >
-                  <Card>
-                    <Card.Content>
-                      <View style={styles.row}>
-                        <View style={styles.col50}>
-                          <Text style={styles.label}>Product Code</Text>
-                          <Text style={styles.value}>
-                            {listRenderItemInfo.item?.putawayItem?.['product.productCode']}
-                          </Text>
-                        </View>
-                        <View style={styles.col50}>
-                          <Text style={styles.label}>Lot Number</Text>
-                          <Text style={styles.value}>
-                            {listRenderItemInfo.item?.putawayItem?.['inventoryItem.lotNumber'] || 'Default'}
-                          </Text>
-                        </View>
+                > 
+                  <Card.Content>
+                    <View style={styles.row}>
+                      <View style={styles.col50}>
+                        <Text style={styles.label}>Product Code</Text>
+                        <Text style={styles.value}>
+                          {listRenderItemInfo.item?.putawayItem?.['product.productCode']}
+                        </Text>
                       </View>
-                      <View style={styles.row}>
-                        <View style={styles.col50}>
-                          <Text style={styles.label}>Current Location</Text>
-                          <Text style={styles.value}>
-                            {listRenderItemInfo.item?.putawayItem?.['currentLocation.name']}
-                          </Text>
-                        </View>
-                        <View style={styles.col50}>
-                          <Text style={styles.label}>Putaway Location</Text>
-                          <Text style={styles.value}>
-                            {listRenderItemInfo.item?.putawayItem?.['putawayLocation.name']}
-                          </Text>
-                        </View>
+                      <View style={styles.col50}>
+                        <Text style={styles.label}>Lot Number</Text>
+                        <Text style={styles.value}>
+                          {listRenderItemInfo.item?.putawayItem?.['inventoryItem.lotNumber'] || 'Default'}
+                        </Text>
                       </View>
-                    </Card.Content>
-                  </Card>
-                </TouchableOpacity>
+                    </View>
+                    <View style={styles.row}>
+                      <View style={styles.col50}>
+                        <Text style={styles.label}>Current Location</Text>
+                        <Text style={styles.value}>
+                          {listRenderItemInfo.item?.putawayItem?.['currentLocation.name']}
+                        </Text>
+                      </View>
+                      <View style={styles.col50}>
+                        <Text style={styles.label}>Putaway Location</Text>
+                        <Text style={styles.value}>
+                          {listRenderItemInfo.item?.putawayItem?.['putawayLocation.name']}
+                        </Text>
+                      </View>
+                    </View>
+                  </Card.Content>
+                 
+                </Card>
               )}
               keyExtractor={(item) => item.id}
               style={styles.list}
