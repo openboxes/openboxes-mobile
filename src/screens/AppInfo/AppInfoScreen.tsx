@@ -2,15 +2,14 @@ import React, { FC } from 'react';
 import { View, Text, Image } from 'react-native';
 import Styles from './Styles';
 import DeviceInfo from 'react-native-device-info';
-import Config from 'react-native-config';
+import { BUILD_NUMBER } from '@env';
 
 const AppInfoScreen: FC = () => {
   return (
     <View style={Styles.mainContainer}>
       <Text style={Styles.openboxTextStyle}>Openboxes</Text>
       <Text style={Styles.versionNumberText}>
-        Version number:{' '}
-        {Config?.BUILD_NUMBER ? Config?.BUILD_NUMBER : DeviceInfo.getVersion()}{' '}
+        Version number: {BUILD_NUMBER ? BUILD_NUMBER : DeviceInfo.getVersion()}{' '}
       </Text>
       <Image
         source={require('../../assets/images/logo.png')}
