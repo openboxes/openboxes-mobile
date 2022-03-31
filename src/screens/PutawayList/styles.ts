@@ -140,8 +140,8 @@ export default StyleSheet.create({
     flexDirection: 'row',
     borderColor: Theme.colors.onBackground,
     marginTop: 1,
-    padding: 2,
-    width: '100%',
+    //padding: 2,
+    //width: '100%',
   },
   col50: {
     display: 'flex',

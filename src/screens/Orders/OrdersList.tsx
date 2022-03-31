@@ -40,27 +40,29 @@ function renderOrder(order: Order, onOrderTapped: () => void): ReactElement {
       style={LayoutStyle.listItemContainer}
       onPress={() => onOrderTapped()}
     >
-      <View style={styles.row}>
-        <View style={styles.col50}>
-          <Text style={styles.label}>Identifier</Text>
-          <Text style={styles.value}>{order.identifier}</Text>
+      <Card.Content>
+        <View style={styles.row}>
+          <View style={styles.col50}>
+            <Text style={styles.label}>Identifier</Text>
+            <Text style={styles.value}>{order.identifier}</Text>
+          </View>
+          <View style={styles.col50}>
+            <Text style={styles.label}>Status Code</Text>
+            <Text style={styles.value}>{order.statusCode}</Text>
+          </View>
         </View>
-        <View style={styles.col50}>
-          <Text style={styles.label}>Status Code</Text>
-          <Text style={styles.value}>{order.statusCode}</Text>
+        <View style={styles.row}>
+          <View style={styles.col50}>
+            <Text style={styles.label}>Destination</Text>
+            <Text style={styles.value}>{order.destination?.name}</Text>
+          </View>
+          <View style={styles.col50}>
+            <Text style={styles.label}>Requested Delivery Date</Text>
+            <Text style={styles.value}>{order.requestedDeliveryDate}</Text>
+          </View>
         </View>
-      </View>
-      <View style={styles.row}>
-        <View style={styles.col50}>
-          <Text style={styles.label}>Destination</Text>
-          <Text style={styles.value}>{order.destination?.name}</Text>
-        </View>
-        <View style={styles.col50}>
-          <Text style={styles.label}>Requested Delivery Date</Text>
-          <Text style={styles.value}>{order.requestedDeliveryDate}</Text>
-        </View>
-      </View>
-      <View style={styles.row} />
+        <View style={styles.row} />
+      </Card.Content>
     </Card>
   );
 }
@@ -102,7 +104,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     borderColor: Theme.colors.background,
     marginTop: 1,
-    padding: 2,
+    //padding: 2,
     width: '100%'
   },
   col50: {
