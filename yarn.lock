@@ -6845,11 +6845,6 @@
     "jscodeshift" "^0.11.0"
     "nullthrows" "^1.1.1"
 
-"react-native-config@^1.4.5":
-  "integrity" "sha512-5oiAsoW88SOYDg/0cleJ2vJDqv98FJUbFQYEnH4sdMtEn3AAT3lb7BkTGW8HO/t3Vk9VOruwxUUnO4tzuxzCsw=="
-  "resolved" "https://registry.npmjs.org/react-native-config/-/react-native-config-1.4.5.tgz"
-  "version" "1.4.5"
-
 "react-native-datawedge-intents@^0.1.8":
   "integrity" "sha512-HefmAOgsEhXsfZZOL2e2x7s46toI8oZ8ZlNJS/DrvZwbZB9VqaCC076IqOKxnalPyO6JlIIrZaw58xD1jFRvhg=="
   "resolved" "https://registry.npmjs.org/react-native-datawedge-intents/-/react-native-datawedge-intents-0.1.8.tgz"

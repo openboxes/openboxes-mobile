@@ -9,7 +9,10 @@ const AppInfoScreen: FC = () => {
     <View style={Styles.mainContainer}>
       <Text style={Styles.openboxTextStyle}>Openboxes</Text>
       <Text style={Styles.versionNumberText}>
-        Version number: {BUILD_NUMBER ? BUILD_NUMBER : DeviceInfo.getVersion()}{' '}
+        Version Number: {DeviceInfo.getVersion()}
+      </Text>
+      <Text style={Styles.versionNumberText}>
+        Build Number: {BUILD_NUMBER || 'Development'}
       </Text>
       <Image
         source={require('../../assets/images/logo.png')}
