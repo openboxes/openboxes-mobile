@@ -4,8 +4,10 @@ import {createDrawerNavigator} from '@react-navigation/drawer';
 import ChooseCurrentLocation from './ChooseCurrentLocation';
 import {Image} from 'react-native';
 import {colors} from '../constants';
+import AppInfoScreen from './AppInfo/AppInfoScreen';
 
 const Drawer = createDrawerNavigator();
+
 
 class DrawerNavigator extends Component {
   render() {
@@ -35,6 +37,8 @@ class DrawerNavigator extends Component {
           name="Choose Current Location"
           component={ChooseCurrentLocation}
         />
+        <Drawer.Screen name="AppInfo" component={AppInfoScreen} />
+        
       </Drawer.Navigator>
     );
   }
