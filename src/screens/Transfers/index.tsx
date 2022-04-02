@@ -15,6 +15,8 @@ import styles from './styles';
 import EmptyView from '../../components/EmptyView';
 import { getStockTransfers } from '../../redux/actions/transfers';
 import showPopup from '../../components/Popup';
+import { Card } from 'react-native-paper';
+import { LayoutStyle } from '../../assets/styles';
 
 class Transfers extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -99,45 +101,47 @@ class Transfers extends React.Component<Props, State> {
                 />
               }
               renderItem={(item: ListRenderItemInfo<any>) => (
-                <TouchableOpacity
-                  style={styles.listItemContainer}
+                <Card
+                  style={LayoutStyle.listItemContainer}
                   onPress={() => this.onStockTransfersTapped(item.item)}
                 >
-                  <View style={styles.row}>
-                    <View style={styles.col50}>
-                      <Text style={styles.label}>Identify</Text>
-                      <Text style={styles.value}>{item.item?.orderNumber}</Text>
+                  <Card.Content>
+                    <View style={styles.row}>
+                      <View style={styles.col50}>
+                        <Text style={styles.label}>Identify</Text>
+                        <Text style={styles.value}>{item.item?.orderNumber}</Text>
+                      </View>
+                      <View style={styles.col50}>
+                        <Text style={styles.label}>Status</Text>
+                        <Text style={styles.value}>{item.item?.status.name}</Text>
+                      </View>
                     </View>
-                    <View style={styles.col50}>
-                      <Text style={styles.label}>Status</Text>
-                      <Text style={styles.value}>{item.item?.status.name}</Text>
-                    </View>
-                  </View>
 
-                  <View style={styles.row}>
-                    <View style={styles.col50}>
-                      <Text style={styles.label}>Origin</Text>
-                      <Text style={styles.value}>
-                        {item.item?.origin?.name}
-                      </Text>
+                    <View style={styles.row}>
+                      <View style={styles.col50}>
+                        <Text style={styles.label}>Origin</Text>
+                        <Text style={styles.value}>
+                          {item.item?.origin?.name}
+                        </Text>
+                      </View>
+                      <View style={styles.col50}>
+                        <Text style={styles.label}>Destination</Text>
+                        <Text style={styles.value}>
+                          {item.item?.destination?.name}
+                        </Text>
+                      </View>
                     </View>
-                    <View style={styles.col50}>
-                      <Text style={styles.label}>Destination</Text>
-                      <Text style={styles.value}>
-                        {item.item?.destination?.name}
-                      </Text>
-                    </View>
-                  </View>
 
-                  <View style={styles.row}>
-                    <View style={styles.col50}>
-                      <Text style={styles.label}>Number of Items</Text>
-                      <Text style={styles.value}>
-                        {item.item?.orderItems?.length}
-                      </Text>
+                    <View style={styles.row}>
+                      <View style={styles.col50}>
+                        <Text style={styles.label}>Number of Items</Text>
+                        <Text style={styles.value}>
+                          {item.item?.orderItems?.length}
+                        </Text>
+                      </View>
                     </View>
-                  </View>
-                </TouchableOpacity>
+                  </Card.Content>
+                </Card>
               )}
               keyExtractor={(item) => item.id}
               style={styles.list}

@@ -14,6 +14,8 @@ import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
 import { connect } from 'react-redux';
 import { getCandidates } from '../../redux/actions/putaways';
 import EmptyView from '../../components/EmptyView';
+import { Card } from 'react-native-paper';
+import { LayoutStyle } from '../../assets/styles';
 class PutawayCandidates extends Component<Props> {
   constructor(props: Props) {
     super(props);
@@ -59,8 +61,8 @@ class PutawayCandidates extends Component<Props> {
 
   renderItem = (item: any) => {
     return (
-      <TouchableOpacity
-        style={styles.itemBox}
+      <Card
+        style={LayoutStyle.listItemContainer}
         onPress={() => {
           if (item.id) {
             Alert.alert('Item is already in a pending putaway');
@@ -69,18 +71,20 @@ class PutawayCandidates extends Component<Props> {
           }
         }}
       >
-        <Text>{`Status - ${item.putawayStatus}`}</Text>
-        <Text>{`Product Code - ${item['product.productCode']}`}</Text>
-        <Text>{`Product Name - ${item['product.name']}`}</Text>
-        <Text>{`Bin Location - ${item['currentLocation.name']}`}</Text>
-        <Text>{`Lot Number - ${
-          item['inventoryItem.lotNumber'] ?? 'Default'
-        }`}</Text>
-        <Text>{`Expiry Date - ${
-          item['inventoryItem.expirationDate'] ?? 'Never'
-        }`}</Text>
-        <Text>{`Quantity - ${item.quantity}`}</Text>
-      </TouchableOpacity>
+        <Card.Content>
+          <Text>{`Status - ${item.putawayStatus}`}</Text>
+          <Text>{`Product Code - ${item['product.productCode']}`}</Text>
+          <Text>{`Product Name - ${item['product.name']}`}</Text>
+          <Text>{`Bin Location - ${item['currentLocation.name']}`}</Text>
+          <Text>{`Lot Number - ${
+            item['inventoryItem.lotNumber'] ?? 'Default'
+          }`}</Text>
+          <Text>{`Expiry Date - ${
+            item['inventoryItem.expirationDate'] ?? 'Never'
+          }`}</Text>
+          <Text>{`Quantity - ${item.quantity}`}</Text>
+        </Card.Content>
+      </Card>
     );
   };
 

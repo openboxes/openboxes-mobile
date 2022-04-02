@@ -29,6 +29,7 @@
     "react-native-autocomplete-input": "^5.0.2",
     "react-native-datawedge-intents": "^0.1.8",
     "react-native-datepicker": "^1.7.2",
+    "react-native-device-info": "8.7.0",
     "react-native-dotenv": "^3.3.0",
     "react-native-gesture-handler": "^1.10.3",
     "react-native-input-spinner": "^1.7.12",

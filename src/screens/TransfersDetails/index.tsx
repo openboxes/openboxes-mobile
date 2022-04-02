@@ -20,6 +20,7 @@ import {
 } from '../../redux/actions/transfers';
 import EmptyView from '../../components/EmptyView';
 import Button from '../../components/Button';
+import { LayoutStyle } from '../../assets/styles';
 
 const TransferDetails = () => {
   const route = useRoute();
@@ -90,8 +91,7 @@ const TransferDetails = () => {
 
   const renderTransferItem = (): JSX.Element => {
     return (
-      <View style={styles.itemView}>
-        <Card>
+        <Card style={LayoutStyle.listItemContainer}>
           <Card.Content>
             <View style={styles.rowItem}>
               <RenderData
@@ -130,14 +130,12 @@ const TransferDetails = () => {
             </View>
           </Card.Content>
         </Card>
-      </View>
     );
   };
 
   const renderListItem = (item: any, index: any) => {
     return (
-      <TouchableOpacity key={index} style={styles.itemView}>
-        <Card>
+      <Card key={index} style={LayoutStyle.listItemContainer}>
           <Card.Content>
             <View style={styles.rowItem}>
               <RenderData
@@ -171,8 +169,7 @@ const TransferDetails = () => {
               <RenderData title={'Status'} subText={item.status} />
             </View>
           </Card.Content>
-        </Card>
-      </TouchableOpacity>
+      </Card>
     );
   };
   return (
