@@ -48,6 +48,7 @@ import ViewAvailableItem from './screens/ViewAvailableItem';
 import PutawayDetails from './screens/PutawayDetails';
 import Placeholder from './screens/Placeholder';
 import { Provider } from 'react-native-paper';
+import AppInfoScreen from './screens/AppInfo/AppInfoScreen';
 
 const Stack = createStackNavigator();
 export interface OwnProps {
@@ -225,6 +226,7 @@ class Main extends Component<Props, State> {
                 options={{ title: 'Work in progress' }}
                 component={Placeholder}
               />
+               <Stack.Screen name="AppInfo" component={AppInfoScreen} />
             </Stack.Navigator>
           </NavigationContainer>
         </SafeAreaView>
