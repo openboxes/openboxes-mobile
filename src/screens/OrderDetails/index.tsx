@@ -5,6 +5,7 @@ import {
   ScrollView,
   Text,
   View,
+  BackHandler
 } from 'react-native';
 
 import styles from './styles';
@@ -14,6 +15,8 @@ import { getPickListAction } from '../../redux/actions/orders';
 import { State, DispatchProps, Props } from './types';
 import PickOrderItem from '../PickList';
 import showPopup from "../../components/Popup";
+import * as NavigationService from '../../NavigationService';
+import { ROUTES } from '../../utils';
 
 class OrderDetails extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -27,7 +30,15 @@ class OrderDetails extends React.Component<Props, State> {
   }
 
   componentDidMount() {
+    BackHandler.addEventListener('hardwareBackPress',() => {
+      NavigationService.navigate(ROUTES.dashboard);
+      return true
+    })
     this.getOrderDetails();
+  }
+
+  componentWillUnmount(){
+    BackHandler.removeEventListener('hardwareBackPress')
   }
 
   getOrderDetails() {

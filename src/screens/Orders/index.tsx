@@ -2,7 +2,7 @@
 import React from 'react';
 import styles from './styles';
 import { connect } from 'react-redux';
-import { Text, View } from 'react-native';
+import { Text, View, BackHandler } from 'react-native';
 import showPopup from '../../components/Popup';
 import { DispatchProps, Props, State } from './types';
 import OrdersList from './OrdersList';
@@ -10,6 +10,8 @@ import { Order } from '../../data/order/Order';
 import { getOrdersAction } from '../../redux/actions/orders';
 import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
 import BarCodeSearchHeader from '../Products/BarCodeSearchHeader';
+import * as NavigationService from '../../NavigationService';
+import { ROUTES } from '../../utils';
 
 class Index extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -22,6 +24,10 @@ class Index extends React.Component<Props, State> {
   }
 
   componentDidMount() {
+    BackHandler.addEventListener('hardwareBackPress',() => {
+      NavigationService.navigate(ROUTES.dashboard);
+      return true
+  })
     this.searchOrders(null);
   }
 
@@ -29,6 +35,11 @@ class Index extends React.Component<Props, State> {
     if (this.props.route.params.refetchOrders) {
       this.searchOrders(null);
     }
+  }
+
+
+  componentWillUnmount(){
+    BackHandler.removeEventListener('hardwareBackPress')
   }
 
   searchOrders = (query: string | null) => {

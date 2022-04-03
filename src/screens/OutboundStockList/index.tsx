@@ -5,7 +5,8 @@ import {
   FlatList,
   ListRenderItemInfo,
   Text,
-  TouchableOpacity
+  TouchableOpacity,
+  BackHandler
 } from 'react-native';
 import { connect } from 'react-redux';
 import { showScreenLoading, hideScreenLoading } from '../../redux/actions/main';
@@ -15,6 +16,9 @@ import { getShipmentsReadyToBePacked } from '../../redux/actions/packing';
 import { Shipment } from '../../data/container/Shipment';
 import showPopup from '../../components/Popup';
 import EmptyView from '../../components/EmptyView';
+import * as NavigationService from '../../NavigationService';
+import { ROUTES } from '../../utils';
+
 class OutboundStockList extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
@@ -25,7 +29,15 @@ class OutboundStockList extends React.Component<Props, State> {
   }
 
   componentDidMount() {
+    BackHandler.addEventListener('hardwareBackPress',() => {
+      NavigationService.navigate(ROUTES.dashboard);
+      return true
+  })
     this.fetchPacking();
+  }
+
+  componentWillUnmount(){
+    BackHandler.removeEventListener('hardwareBackPress')
   }
 
   fetchPacking = () => {
@@ -66,7 +78,7 @@ class OutboundStockList extends React.Component<Props, State> {
   };
 
   showShipmentReadyToPackScreen = (shipment: Shipment) => {
-    this.props.navigation.navigate('OutboundStockDetails', {
+    NavigationService.navigate('OutboundStockDetails', {
       shipmentId: shipment.id
     });
   };

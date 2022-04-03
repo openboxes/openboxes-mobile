@@ -1,6 +1,6 @@
 import { DispatchProps, Props, State } from './types';
 import React from 'react';
-import { Text, View } from 'react-native';
+import { Text, View, BackHandler } from 'react-native';
 import { connect } from 'react-redux';
 import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
 import { RootState } from '../../redux/reducers';
@@ -9,6 +9,8 @@ import { getShipmentReadyToBePacked } from '../../redux/actions/packing';
 import OutboundVMMapper from './OutboubVmMapper';
 import ContainerDetails from './ContainerDetails';
 import Button from '../../components/Button';
+import * as NavigationService from '../../NavigationService';
+import { ROUTES } from '../../utils';
 
 class OutboundStockDetails extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -21,13 +23,21 @@ class OutboundStockDetails extends React.Component<Props, State> {
   }
 
   componentDidMount() {
+    BackHandler.addEventListener('hardwareBackPress',() => {
+      NavigationService.navigate('OutboundStockList');
+      return true
+   })
     this.fetchShipment();
-  }
+  } 
 
   componentDidUpdate() {
     if (this.props.route.params.refetchShipment) {
       this.fetchShipment();
     }
+  }
+
+  componentWillUnmount(){
+    BackHandler.removeEventListener('hardwareBackPress', () => {return true})
   }
 
   fetchShipment = () => {
