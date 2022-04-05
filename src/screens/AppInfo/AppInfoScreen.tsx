@@ -3,7 +3,7 @@ import { View, Text, Image } from 'react-native';
 import Styles from './Styles';
 import DeviceInfo from 'react-native-device-info';
 import { BUILD_NUMBER } from '@env';
-
+                                                                          
 const AppInfoScreen: FC = () => {
   return (
     <View style={Styles.mainContainer}>
