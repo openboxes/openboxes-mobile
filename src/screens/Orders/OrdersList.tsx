@@ -3,7 +3,6 @@ import {
   ListRenderItemInfo,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
   FlatList
 } from 'react-native';

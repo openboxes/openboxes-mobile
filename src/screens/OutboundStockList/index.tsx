@@ -4,9 +4,7 @@ import {
   View,
   FlatList,
   ListRenderItemInfo,
-  Text,
-  TouchableOpacity
-} from 'react-native';
+  Text} from 'react-native';
 import { connect } from 'react-redux';
 import { showScreenLoading, hideScreenLoading } from '../../redux/actions/main';
 import { RootState } from '../../redux/reducers';

@@ -7,7 +7,6 @@ import {
   FlatList,
   ListRenderItemInfo,
   Text,
-  TouchableOpacity,
   View
 } from 'react-native';
 import { connect } from 'react-redux';

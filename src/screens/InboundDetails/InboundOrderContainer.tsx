@@ -1,5 +1,5 @@
 import React from "react";
-import {SectionList, View, Text, TouchableOpacity, FlatList} from "react-native";
+import {SectionList, View, Text} from "react-native";
 import {useNavigation} from "@react-navigation/native";
 import styles from "./styles";
 import {Card} from "react-native-paper";

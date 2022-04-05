@@ -3,7 +3,6 @@ import { DispatchProps, Props } from './types';
 import {
   FlatList,
   Text,
-  TouchableOpacity,
   SafeAreaView,
   RefreshControl,
   Alert
