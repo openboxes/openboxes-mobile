@@ -80,16 +80,6 @@ const OptionMenu = ({ route, navigation }: any) => {
               style={{
                 width: '70%',
               }}
-              title="App info / version"
-              onPress={() => {
-                navigation.navigate('Placeholder');
-                closeMenu();
-              }}
-            />
-            <Menu.Item
-              style={{
-                width: '70%',
-              }}
               onPress={() => {
                 navigation.navigate('Settings');
                 closeMenu();
