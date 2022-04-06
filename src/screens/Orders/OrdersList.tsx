@@ -11,6 +11,9 @@ import React, { ReactElement } from 'react';
 import Theme from '../../utils/Theme';
 import { Order } from '../../data/order/Order';
 import EmptyView from '../../components/EmptyView';
+import moment from 'moment';
+import { API_DATE_FORMAT, DATE_FORMATE } from '../../constants';
+
 export interface Props {
   orders: Order[] | null;
   onOrderTapped: (order: Order) => void;
@@ -55,7 +58,7 @@ function renderOrder(order: Order, onOrderTapped: () => void): ReactElement {
         </View>
         <View style={styles.col50}>
           <Text style={styles.label}>Requested Delivery Date</Text>
-          <Text style={styles.value}>{order.requestedDeliveryDate}</Text>
+          <Text style={styles.value}>{moment(order.requestedDeliveryDate, API_DATE_FORMAT).format(DATE_FORMATE)}</Text>
         </View>
       </View>
       <View style={styles.row} />

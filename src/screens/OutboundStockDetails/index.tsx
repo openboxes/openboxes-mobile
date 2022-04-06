@@ -9,6 +9,8 @@ import { getShipmentReadyToBePacked } from '../../redux/actions/packing';
 import OutboundVMMapper from './OutboubVmMapper';
 import ContainerDetails from './ContainerDetails';
 import Button from '../../components/Button';
+import { API_DATE_FORMAT, DATE_FORMATE } from '../../constants';
+import moment from 'moment';
 
 class OutboundStockDetails extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -82,13 +84,13 @@ class OutboundStockDetails extends React.Component<Props, State> {
             <View style={styles.col50}>
               <Text style={styles.label}>Expected Shipping Date</Text>
               <Text style={styles.value}>
-                {this.state.shipment?.expectedShippingDate}
+              {moment(this.state.shipment?.expectedShippingDate, API_DATE_FORMAT).format(DATE_FORMATE)}
               </Text>
             </View>
             <View style={styles.col50}>
               <Text style={styles.label}>Expected Delivery Date</Text>
               <Text style={styles.value}>
-                {this.state.shipment?.expectedDeliveryDate}
+              {moment(this.state.shipment?.expectedDeliveryDate, API_DATE_FORMAT).format(DATE_FORMATE)}
               </Text>
             </View>
           </View>

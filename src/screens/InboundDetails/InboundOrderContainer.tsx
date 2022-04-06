@@ -4,6 +4,8 @@ import {useNavigation} from "@react-navigation/native";
 import styles from "./styles";
 import {Card} from "react-native-paper";
 import InboundDetailProps from "./types";
+import { API_DATE_FORMAT, DATE_FORMATE } from "../../constants";
+import moment from "moment";
 
 const InboundOrderContainer = ({data,shipmentId, shipmentData}: InboundDetailProps) => {
     const navigation = useNavigation<any>();
@@ -39,8 +41,9 @@ const InboundOrderContainer = ({data,shipmentId, shipmentData}: InboundDetailPro
                         <RenderData title={"Number of Items"} subText={shipmentData?.shipmentItems.length}/>
                     </View>
                     <View style={styles.rowItem}>
-                        <RenderData title={"Expected Shipping Date"} subText={shipmentData?.expectedShippingDate}/>
-                        <RenderData title={"Expected Delivery Date"} subText={shipmentData?.expectedDeliveryDate}/>
+                        <RenderData title={"Expected Shipping Date"} subText={
+                            shipmentData?.expectedShippingDate  === '' ? '' : moment(shipmentData?.expectedShippingDate, API_DATE_FORMAT).format(DATE_FORMATE)}/>
+                        <RenderData title={"Expected Delivery Date"} subText={shipmentData?.expectedDeliveryDate === '' ? '' : moment(shipmentData?.expectedDeliveryDate, API_DATE_FORMAT).format(DATE_FORMATE)}/>
                     </View>
                 </Card.Content>
             </Card>

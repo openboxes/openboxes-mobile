@@ -14,6 +14,8 @@ import { getPickListAction } from '../../redux/actions/orders';
 import { State, DispatchProps, Props } from './types';
 import PickOrderItem from '../PickList';
 import showPopup from "../../components/Popup";
+import moment from 'moment';
+import { DATE_FORMATE } from '../../constants';
 
 class OrderDetails extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -105,7 +107,7 @@ class OrderDetails extends React.Component<Props, State> {
               </View>
               <View style={styles.col50}>
                 <Text style={styles.label}>Requested Delivery Date</Text>
-                <Text style={styles.value}>{vm.requestedDeliveryDate}</Text>
+                <Text style={styles.value}>{moment(vm.requestedDeliveryDate, 'MM/DD/YYYY').format(DATE_FORMATE)}</Text>
               </View>
             </View>
             <View style={styles.bottomList}>

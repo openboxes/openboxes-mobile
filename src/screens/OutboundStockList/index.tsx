@@ -15,6 +15,8 @@ import { getShipmentsReadyToBePacked } from '../../redux/actions/packing';
 import { Shipment } from '../../data/container/Shipment';
 import showPopup from '../../components/Popup';
 import EmptyView from '../../components/EmptyView';
+import { API_DATE_FORMAT, DATE_FORMATE } from '../../constants';
+import moment from 'moment';
 class OutboundStockList extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
@@ -120,13 +122,13 @@ class OutboundStockList extends React.Component<Props, State> {
                   <View style={styles.col50}>
                     <Text style={styles.label}>Expected Shipping Date</Text>
                     <Text style={styles.value}>
-                      {shipment.item.expectedShippingDate}
+                      {moment(shipment.item.expectedShippingDate, API_DATE_FORMAT).format(DATE_FORMATE)}
                     </Text>
                   </View>
                   <View style={styles.col50}>
                     <Text style={styles.label}>Expected Delivery Date</Text>
                     <Text style={styles.value}>
-                      {shipment.item.expectedDeliveryDate}
+                    {moment(shipment.item.expectedDeliveryDate, API_DATE_FORMAT).format(DATE_FORMATE)}
                     </Text>
                   </View>
                 </View>
