@@ -10,6 +10,8 @@ import {
 import React, { ReactElement } from 'react';
 import Theme from '../../utils/Theme';
 import EmptyView from '../../components/EmptyView';
+import { Card } from 'react-native-paper';
+import { LayoutStyle } from '../../assets/styles';
 export interface Props {
   products: Product[] | null;
   onProductTapped: (product: Product) => void;
@@ -38,23 +40,25 @@ function renderProduct(
   onProductTapped: () => void
 ): ReactElement {
   return (
-    <TouchableOpacity
-      style={styles.listItemContainer}
+    <Card
+      style={LayoutStyle.listItemContainer}
       onPress={() => onProductTapped()}
     >
-      <View style={styles.listItemNameContainer}>
-        <Text style={styles.listItemNameLabel}>Product Code</Text>
-        <Text style={styles.listItemName}>{product.productCode}</Text>
-      </View>
-      <View style={styles.listItemNameContainer}>
-        <Text style={styles.listItemNameLabel}>Name</Text>
-        <Text style={styles.listItemName}>{product.name}</Text>
-      </View>
-      <View style={styles.listItemCategoryContainer}>
-        <Text style={styles.listItemCategoryLabel}>Category</Text>
-        <Text style={styles.listItemCategory}>{product.category.name}</Text>
-      </View>
-    </TouchableOpacity>
+       <Card.Content>
+        <View style={styles.listItemNameContainer}>
+          <Text style={styles.listItemNameLabel}>Product Code</Text>
+          <Text style={styles.listItemName}>{product.productCode}</Text>
+        </View>
+        <View style={styles.listItemNameContainer}>
+          <Text style={styles.listItemNameLabel}>Name</Text>
+          <Text style={styles.listItemName}>{product.name}</Text>
+        </View>
+        <View style={styles.listItemCategoryContainer}>
+          <Text style={styles.listItemCategoryLabel}>Category</Text>
+          <Text style={styles.listItemCategory}>{product.category.name}</Text>
+        </View>
+      </Card.Content>
+    </Card>
   );
 }
 
