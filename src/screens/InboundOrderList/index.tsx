@@ -12,6 +12,7 @@ import {useNavigation, useRoute} from "@react-navigation/native";
 import styles from "./styles";
 import {Card} from "react-native-paper";
 import EmptyView from "../../components/EmptyView";
+import _ from 'lodash';
 
 const InboundOrderList = () => {
   const dispatch = useDispatch();
@@ -22,12 +23,17 @@ const InboundOrderList = () => {
       return rootState.mainReducer.currentLocation;
     }
   );
+
   const [state, setState] = useState<any>({
-    inboundOrders: []
+    inboundOrders: [],
+    filteredInboundOrders: [],
   });
+
+  const [showSearchBar, setShowSearchBar] = useState<boolean>(true);
 
   useEffect(() => {
     return navigation.addListener('focus', () => {
+      resetSearchBar();
       if (location?.id || route?.params?.refetchOrders) {
         getInboundOrderList(location?.id);
       } else {
@@ -38,6 +44,19 @@ const InboundOrderList = () => {
       }
     });
   }, [route]);
+
+  // Hacky way to get the search bar to the initial state
+  // TODO: Refactor BarCodeSearchHeader to reset on a navigation change + refactor component from class component to functional
+  useEffect(() => {
+    if (!showSearchBar) {
+      setState({ ...state, filteredInboundOrders: [] });
+      setShowSearchBar(true);
+    }
+  }, [showSearchBar])
+
+  const resetSearchBar = () => {
+    setShowSearchBar(false);
+  }
 
   const getInboundOrderList = (id: string = '') => {
     navigation.setParams({ refetchOrders : false });
@@ -117,16 +136,52 @@ const InboundOrderList = () => {
     );
   };
 
+  const filterInboundOrders = (searchTerm: string) => {
+    if (searchTerm) {
+      const exactInboundOrder = _.find(
+        state.inboundOrders,
+        (inboundOrder: any) => inboundOrder?.shipmentNumber?.toLowerCase() === searchTerm.toLowerCase(),
+      );
+
+      if (exactInboundOrder) {
+        setState({
+          ...state,
+          filteredInboundOrders: [],
+        });
+        navigateToInboundDetails(exactInboundOrder);
+      } else {
+        const filteredInboundOrders = _.filter(
+          state.inboundOrders,
+          (inboundOrder: any) => inboundOrder?.shipmentNumber?.toLowerCase()?.includes(searchTerm.toLowerCase()),
+        );
+        setState({
+          ...state,
+          filteredInboundOrders,
+        });
+      }
+
+      return;
+    }
+
+    setState({
+      ...state,
+      filteredInboundOrders: [],
+    });
+  }
+
   return (
     <View style={{ flex: 1, zIndex: -1 }}>
-      <BarCodeSearchHeader
-        onBarCodeSearchQuerySubmitted={getInboundOrderList}
-        searchBox={false}
-        autoSearch={false}
-      />
+      {showSearchBar && (
+        <BarCodeSearchHeader
+          placeholder="Search by order number"
+          onBarCodeSearchQuerySubmitted={filterInboundOrders}
+          searchBox={false}
+          autoSearch
+        />
+      )}
       {state.inboundOrders.length > 0 ? (
         <FlatList
-          data={state.inboundOrders}
+          data={state.filteredInboundOrders.length > 0 ? state.filteredInboundOrders : state.inboundOrders}
           keyExtractor={inboundOrder => inboundOrder.id}
           renderItem={RenderListItem}
         />
