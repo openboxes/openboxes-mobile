@@ -374,7 +374,8 @@ class Products extends React.Component<Props, State> {
           subtitle={vm.subtitle}
           onBarCodeSearchQuerySubmitted={this.onBarCodeSearchQuerySubmitted}
           searchBox={false}
-          autoSearch={true}
+          autoSearch
+          autoFocus
         />
         <View style={styles.content}>
           <ProductsList

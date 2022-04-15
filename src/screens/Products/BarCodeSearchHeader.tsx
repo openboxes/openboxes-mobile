@@ -1,12 +1,14 @@
-import React, {ReactElement} from 'react';
-import {Searchbar} from 'react-native-paper';
-import {StyleSheet} from 'react-native';
+import React from 'react';
+import { Searchbar } from 'react-native-paper';
+import { StyleSheet } from 'react-native';
+
 export interface Props {
   subtitle?: string | null;
   placeholder?: string;
   searchBox: boolean;
   onBarCodeSearchQuerySubmitted: (query: string) => void;
   autoSearch: boolean | false;
+  autoFocus?: boolean | false;
 }
 
 interface State {
@@ -32,7 +34,6 @@ export default class ProductsSearchCodeHeader extends React.Component<
     this.onSearchQueryChange = this.onSearchQueryChange.bind(this);
     this.onBarCodeSearchQuerySubmitted =
       this.onBarCodeSearchQuerySubmitted.bind(this);
-    // setStatusBarBackgroundColor(Theme.colors.primary, false);
   }
 
   onSearchQueryChange(query: string) {
@@ -57,7 +58,7 @@ export default class ProductsSearchCodeHeader extends React.Component<
         }
         value={this.state.searchQuery}
         style={styles.searchBar}
-        autoFocus={this.props.autoSearch}
+        autoFocus={this.props.autoFocus}
         onSubmitEditing={this.onBarCodeSearchQuerySubmitted}
         onChangeText={this.onSearchQueryChange}
       />
@@ -68,7 +69,6 @@ export default class ProductsSearchCodeHeader extends React.Component<
 const styles = StyleSheet.create({
   searchBar: {
     height: 56,
-    // marginTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
     elevation: 4,
     borderRadius: 0,
   },

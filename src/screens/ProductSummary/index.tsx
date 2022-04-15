@@ -113,7 +113,8 @@ const ProductSummary = () => {
       <BarCodeSearchHeader
         placeholder={'Search by product code or name'}
         searchBox={false}
-        autoSearch={true}
+        autoSearch
+        autoFocus
         onBarCodeSearchQuerySubmitted={(query) => searchProduct(query)}
       />
       <FlatList

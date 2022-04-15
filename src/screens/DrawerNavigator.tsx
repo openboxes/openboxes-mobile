@@ -37,7 +37,7 @@ class DrawerNavigator extends Component {
           name="Choose Current Location"
           component={ChooseCurrentLocation}
         />
-        <Drawer.Screen name="AppInfo" component={AppInfoScreen} />
+        
         
       </Drawer.Navigator>
     );
