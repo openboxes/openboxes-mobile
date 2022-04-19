@@ -63,7 +63,14 @@ function* login(action: any) {
         showPopup({ message: 'Server unavailable', positiveButton: 'ok' });
       }
     } else {
-      showPopup({ message: 'Server unavailable', positiveButton: 'ok' });
+      if (e?.code === 401) {
+        showPopup({
+          message: 'Unable to authenticate user with the credentials provided',
+          positiveButton: 'ok'
+        });
+      } else {
+        showPopup({ message: 'Server unavailable', positiveButton: 'ok' });
+      }
     }
   }
 }
