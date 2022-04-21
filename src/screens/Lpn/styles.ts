@@ -46,6 +46,8 @@ export default StyleSheet.create({
     width: '100%',
     alignItems: "center",
     justifyContent: "center",
+    marginBottom: 20,
+    marginTop: 8,
     height: ratio.height * 100,
   },
   button: {

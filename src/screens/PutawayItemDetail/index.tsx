@@ -112,75 +112,73 @@ const PutawayItemDetail = () => {
   };
 
   return (
-    <>
-      <ScrollView>
-        <View style={styles.contentContainer}>
-          <View style={styles.from}>
-            <InputBox
-              label={'Putaway Identifier'}
-              value={state.putAway?.putawayNumber}
-              disabled={true}
-              editable={false}
-            />
-            <InputBox
-              label={'Product Code'}
-              value={state.putAwayItem?.['product.productCode']}
-              disabled={true}
-              editable={false}
-            />
-            <InputBox
-              label={'Product Name'}
-              value={state.putAwayItem?.['product.name']}
-              disabled={true}
-              editable={false}
-            />
-            <InputBox
-              label={'Lot Number'}
-              value={state.putAwayItem?.['inventoryItem.lotNumber'] || 'Default'}
-              disabled={true}
-              editable={false}
-            />
-            <InputBox
-              label={'Expiry Date'}
-              value={state.putAwayItem?.['inventoryItem.expiryDate'] || 'Never'}
-              disabled={true}
-              editable={false}
-            />
-            <InputBox
-              label={'Current Location'}
-              value={state.putAwayItem?.['currentLocation.name']}
-              disabled={true}
-              editable={false}
-            />
-            <InputBox
-              label={'Putaway Location'}
-              value={state.putAwayItem?.['putawayLocation.name']}
-              disabled={true}
-              editable={false}
-            />
-            <InputBox
-              label={'Quantity to Putaway'}
-              value={state.putAwayItem?.quantity.toString()}
-              editable={false}
-              disabled={true}
-            />
-            <InputBox
-              label={'Scan Putaway Location'}
-              value={state.scannedPutawayLocation}
-              onChange={onChangeScannedPutawayLocation}
-              editable={false}
-              disabled={false}
-            />
-          </View>
+    <ScrollView>
+      <View style={styles.contentContainer}>
+        <View style={styles.from}>
+          <InputBox
+            label={'Putaway Identifier'}
+            value={state.putAway?.putawayNumber}
+            disabled={true}
+            editable={false}
+          />
+          <InputBox
+            label={'Product Code'}
+            value={state.putAwayItem?.['product.productCode']}
+            disabled={true}
+            editable={false}
+          />
+          <InputBox
+            label={'Product Name'}
+            value={state.putAwayItem?.['product.name']}
+            disabled={true}
+            editable={false}
+          />
+          <InputBox
+            label={'Lot Number'}
+            value={state.putAwayItem?.['inventoryItem.lotNumber'] || 'Default'}
+            disabled={true}
+            editable={false}
+          />
+          <InputBox
+            label={'Expiry Date'}
+            value={state.putAwayItem?.['inventoryItem.expiryDate'] || 'Never'}
+            disabled={true}
+            editable={false}
+          />
+          <InputBox
+            label={'Current Location'}
+            value={state.putAwayItem?.['currentLocation.name']}
+            disabled={true}
+            editable={false}
+          />
+          <InputBox
+            label={'Putaway Location'}
+            value={state.putAwayItem?.['putawayLocation.name']}
+            disabled={true}
+            editable={false}
+          />
+          <InputBox
+            label={'Quantity to Putaway'}
+            value={state.putAwayItem?.quantity.toString()}
+            editable={false}
+            disabled={true}
+          />
+          <InputBox
+            label={'Scan Putaway Location'}
+            value={state.scannedPutawayLocation}
+            onChange={onChangeScannedPutawayLocation}
+            editable={false}
+            disabled={false}
+          />
         </View>
-        <Button
-          title="Confirm Putaway"
-          style={styles.buttonContainer}
-          onPress={formSubmit}
-          disabled={false}
-        />
-      </ScrollView>
-    </>
+      </View>
+      <Button
+        title="Confirm Putaway"
+        style={styles.buttonContainer}
+        onPress={formSubmit}
+        disabled={false}
+      />
+    </ScrollView>
   );
 };
 

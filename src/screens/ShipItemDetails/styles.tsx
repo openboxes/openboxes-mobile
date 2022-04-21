@@ -58,7 +58,7 @@ export default StyleSheet.create({
     alignSelf: 'center',
     justifyContent: 'center',
     height: ratio.height * 100,
-    bottom: 10
+    marginBottom: 20,
   },
   textContainer: {
     flexDirection: 'column',

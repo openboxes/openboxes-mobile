@@ -4,6 +4,7 @@ import { Container } from '../../data/container/Container';
 import {
   FlatList,
   ListRenderItemInfo,
+  ScrollView,
   Text,
   Image,
   TouchableOpacity,
@@ -155,8 +156,8 @@ class LpnDetail extends React.Component<Props, State> {
 
   render() {
     return (
-      <View style={styles.contentContainer}>
-        <View style={styles.contentContainer}>
+      <ScrollView style={styles.contentContainer}>
+        <View>
           <View style={styles.row}>
             <View style={styles.col50}>
               <Text style={styles.label}>Name</Text>
@@ -260,7 +261,7 @@ class LpnDetail extends React.Component<Props, State> {
             this.state.containerDetails?.defaultBarcodeLabelUrl
           }
         />
-      </View>
+      </ScrollView>
     );
   }
 }
