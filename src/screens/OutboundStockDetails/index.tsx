@@ -1,6 +1,6 @@
 import { DispatchProps, Props, State } from './types';
 import React from 'react';
-import { Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import { connect } from 'react-redux';
 import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
 import { RootState } from '../../redux/reducers';
@@ -50,7 +50,7 @@ class OutboundStockDetails extends React.Component<Props, State> {
 
   render() {
     return (
-      <View style={styles.screenContainer}>
+      <ScrollView style={styles.screenContainer}>
         <View style={styles.contentContainer}>
           <View style={styles.row}>
             <View style={styles.col50}>
@@ -112,7 +112,7 @@ class OutboundStockDetails extends React.Component<Props, State> {
             disabled={false}
           />
         </View>
-      </View>
+      </ScrollView>
     );
   }
 }

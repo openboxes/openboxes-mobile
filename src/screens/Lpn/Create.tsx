@@ -3,7 +3,7 @@ import showPopup from '../../components/Popup';
 import { saveAndUpdateLpn } from '../../redux/actions/lpn';
 import { DispatchProps, Props } from './Types';
 import { connect } from 'react-redux';
-import { Text, ToastAndroid, View } from 'react-native';
+import { ScrollView, Text, ToastAndroid, View } from 'react-native';
 import { Order } from '../../data/order/Order';
 import styles from './styles';
 import InputBox from '../../components/InputBox';
@@ -137,44 +137,40 @@ class CreateLpn extends React.Component<Props, State> {
 
   render() {
     return (
-        <View style={styles.container}>
-          <View style={styles.from}>
-            <Text style={styles.label}>Shipment Number</Text>
-            <AutoInputInternalLocation
-                label="AutoInputInternalLocation"
-                data={this.state.stockMovementList}
-                initValue={this.state.stockMovements}
-                selectedData={(selectedItem: any, index: number) => {
-                  this.setState({
-                    stockMovement: selectedItem.name,
-                    stockMovementId: selectedItem?.id,
-                  });
-                }}
-            />
-            <InputBox
-                value={this.state.name}
-                editable={false}
-                label={'Name'}
-                onChange={this.onChangeName}
-            />
-            <InputBox
-                value={this.state.containerNumber}
-                editable={false}
-                label={'Container Number'}
-                onChange={this.onChangeContainerNumber}
-            />
-          </View>
-          <View style={styles.bottom}>
-            <Button
-                title="Submit"
-                // eslint-disable-next-line react-native/no-inline-styles
-                style={{
-                  marginTop: 8,
-                }}
-                onPress={this.saveLpn}
-            />
-          </View>
+      <ScrollView style={styles.container}>
+        <View style={styles.from}>
+          <Text style={styles.label}>Shipment Number</Text>
+          <AutoInputInternalLocation
+            label="AutoInputInternalLocation"
+            data={this.state.stockMovementList}
+            initValue={this.state.stockMovements}
+            selectedData={(selectedItem: any, index: number) => {
+              this.setState({
+                stockMovement: selectedItem.name,
+                stockMovementId: selectedItem?.id,
+              });
+            }}
+          />
+          <InputBox
+              value={this.state.name}
+              editable={false}
+              label={'Name'}
+              onChange={this.onChangeName}
+          />
+          <InputBox
+              value={this.state.containerNumber}
+              editable={false}
+              label={'Container Number'}
+              onChange={this.onChangeContainerNumber}
+          />
         </View>
+        <View style={styles.bottom}>
+          <Button
+            title="Submit"
+            onPress={this.saveLpn}
+          />
+        </View>
+      </ScrollView>
     );
   }
 }
