@@ -1,5 +1,8 @@
+import { ImageSourcePropType } from 'react-native';
+
 export interface OwnProps {
-    label: string,
+    label:  String | null,
+    placeholder?:  String | null,
     refs?: any
     edit: boolean | any
     value?: string | any
@@ -9,7 +12,8 @@ export interface OwnProps {
     data?: any
     containerStyle?: any
     onChange: (text: string) => void;
-    icon?: string
+    icon?: ImageSourcePropType;
+    onIconClick?: () => void;
     inputStyle?: any
     menuStyle?: any
     right?: () => void

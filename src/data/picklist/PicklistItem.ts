@@ -1,7 +1,6 @@
 import BinLocation from "./BinLocation";
 import Product from "../product/Product";
 import InventoryItem from "./InventoryItem";
-import {Item} from "./Item";
 
 export interface PicklistItem{
     id: string | ""
@@ -40,7 +39,11 @@ export interface PicklistItem{
     "datePicked": null,
     "quantityOnHand": number,
     "quantityAvailableToPromise": number,
-    "unitOfMeasure": string
+    "unitOfMeasure": string,
+
+    // for picking validation purposes
+    scannedLotNumber?: string | null,
+    scannedBinLocation?: string | null
 }
 export  interface GetPickListItemsApiResponse {
     data: PicklistItem[];

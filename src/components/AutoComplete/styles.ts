@@ -23,5 +23,16 @@ export default StyleSheet.create({
     },
     container: {
         flex: 1,
+    },
+    imageIcon :{
+        position:'absolute',
+        end:10,
+        width:30,
+        height:30,
+        bottom: -7,
+        padding:10,
+        justifyContent:'center',
+        alignItems:"center",
+        zIndex:100
     }
 });
