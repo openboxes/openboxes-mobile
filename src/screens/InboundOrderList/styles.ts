@@ -11,8 +11,8 @@ export default StyleSheet.create({
         flexDirection: 'row',
         borderColor: Theme.colors.background,
         marginTop: 1,
-        padding: 2,
-        marginStart: 4,
+        //padding: 2,
+        //marginStart: 4,
         width: '100%',
         alignItems:"center"
     },

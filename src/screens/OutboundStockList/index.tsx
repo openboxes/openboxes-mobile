@@ -4,9 +4,7 @@ import {
   View,
   FlatList,
   ListRenderItemInfo,
-  Text,
-  TouchableOpacity
-} from 'react-native';
+  Text} from 'react-native';
 import { connect } from 'react-redux';
 import { showScreenLoading, hideScreenLoading } from '../../redux/actions/main';
 import { RootState } from '../../redux/reducers';
@@ -15,6 +13,8 @@ import { getShipmentsReadyToBePacked } from '../../redux/actions/packing';
 import { Shipment } from '../../data/container/Shipment';
 import showPopup from '../../components/Popup';
 import EmptyView from '../../components/EmptyView';
+import { Card } from 'react-native-paper';
+import { LayoutStyle } from '../../assets/styles';
 class OutboundStockList extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
@@ -84,53 +84,55 @@ class OutboundStockList extends React.Component<Props, State> {
               />
             }
             renderItem={(shipment: ListRenderItemInfo<Shipment>) => (
-              <TouchableOpacity
-                style={styles.listItemContainer}
+              <Card
+                style={LayoutStyle.listItemContainer}
                 onPress={() =>
                   this.showShipmentReadyToPackScreen(shipment.item)
                 }
               >
-                <View style={styles.row}>
-                  <View style={styles.col50}>
-                    <Text style={styles.label}>Shipment Number</Text>
-                    <Text style={styles.value}>
-                      {shipment.item.shipmentNumber}
-                    </Text>
+                <Card.Content>
+                  <View style={styles.row}>
+                    <View style={styles.col50}>
+                      <Text style={styles.label}>Shipment Number</Text>
+                      <Text style={styles.value}>
+                        {shipment.item.shipmentNumber}
+                      </Text>
+                    </View>
+                    <View style={styles.col50}>
+                      <Text style={styles.label}>Status</Text>
+                      <Text style={styles.value}>{shipment.item.status}</Text>
+                    </View>
                   </View>
-                  <View style={styles.col50}>
-                    <Text style={styles.label}>Status</Text>
-                    <Text style={styles.value}>{shipment.item.status}</Text>
+                  <View style={styles.row}>
+                    <View style={styles.col50}>
+                      <Text style={styles.label}>Origin</Text>
+                      <Text style={styles.value}>
+                        {shipment.item.origin.name}
+                      </Text>
+                    </View>
+                    <View style={styles.col50}>
+                      <Text style={styles.label}>Destination</Text>
+                      <Text style={styles.value}>
+                        {shipment.item.destination.name}
+                      </Text>
+                    </View>
                   </View>
-                </View>
-                <View style={styles.row}>
-                  <View style={styles.col50}>
-                    <Text style={styles.label}>Origin</Text>
-                    <Text style={styles.value}>
-                      {shipment.item.origin.name}
-                    </Text>
+                  <View style={styles.row}>
+                    <View style={styles.col50}>
+                      <Text style={styles.label}>Expected Shipping Date</Text>
+                      <Text style={styles.value}>
+                        {shipment.item.expectedShippingDate}
+                      </Text>
+                    </View>
+                    <View style={styles.col50}>
+                      <Text style={styles.label}>Expected Delivery Date</Text>
+                      <Text style={styles.value}>
+                        {shipment.item.expectedDeliveryDate}
+                      </Text>
+                    </View>
                   </View>
-                  <View style={styles.col50}>
-                    <Text style={styles.label}>Destination</Text>
-                    <Text style={styles.value}>
-                      {shipment.item.destination.name}
-                    </Text>
-                  </View>
-                </View>
-                <View style={styles.row}>
-                  <View style={styles.col50}>
-                    <Text style={styles.label}>Expected Shipping Date</Text>
-                    <Text style={styles.value}>
-                      {shipment.item.expectedShippingDate}
-                    </Text>
-                  </View>
-                  <View style={styles.col50}>
-                    <Text style={styles.label}>Expected Delivery Date</Text>
-                    <Text style={styles.value}>
-                      {shipment.item.expectedDeliveryDate}
-                    </Text>
-                  </View>
-                </View>
-              </TouchableOpacity>
+                </Card.Content>
+              </Card>
             )}
             keyExtractor={(item) => item.id}
             style={styles.list}

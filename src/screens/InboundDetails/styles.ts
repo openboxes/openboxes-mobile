@@ -36,7 +36,9 @@ export default StyleSheet.create({
         fontWeight: 'bold',
         backgroundColor: 'white',
         margin: 10,
-        padding: 5,
+        padding: 10,
         fontSize: 16,
+        borderRadius: 10,
+        elevation: 8,
     }
 });

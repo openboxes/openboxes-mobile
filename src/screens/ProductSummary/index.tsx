@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 import React, { useEffect, useState } from 'react';
-import { FlatList, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import styles from './styles';
 import { Card } from 'react-native-paper';
@@ -11,6 +11,7 @@ import { RootState } from '../../redux/reducers';
 import BarCodeSearchHeader from '../Products/BarCodeSearchHeader';
 import _ from 'lodash';
 import EmptyView from '../../components/EmptyView';
+import { LayoutStyle } from '../../assets/styles';
 
 const ProductSummary = () => {
   const navigation = useNavigation<any>();
@@ -86,26 +87,24 @@ const ProductSummary = () => {
 
   const renderListItem = (item: any, index: any) => {
     return (
-      <TouchableOpacity
+      <Card
         key={index}
-        style={styles.itemView}
+        style={LayoutStyle.listItemContainer}
         onPress={() => navigateToDetails(item)}
       >
-        <Card>
-          <Card.Content>
-            <View style={styles.rowItem}>
-              <RenderData title={'Product Code'} subText={item.productCode} />
-              <RenderData
-                title={'Quantity OnHand'}
-                subText={item.quantityOnHand}
-              />
-            </View>
-            <View style={styles.rowItem}>
-              <RenderData title={'Product Name'} subText={item.productName} />
-            </View>
-          </Card.Content>
-        </Card>
-      </TouchableOpacity>
+        <Card.Content>
+          <View style={styles.rowItem}>
+            <RenderData title={'Product Code'} subText={item.productCode} />
+            <RenderData
+              title={'Quantity OnHand'}
+              subText={item.quantityOnHand}
+            />
+          </View>
+          <View style={styles.rowItem}>
+            <RenderData title={'Product Name'} subText={item.productName} />
+          </View>
+        </Card.Content>
+      </Card>
     );
   };
 

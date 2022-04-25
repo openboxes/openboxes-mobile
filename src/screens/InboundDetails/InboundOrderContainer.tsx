@@ -1,9 +1,10 @@
 import React from "react";
-import {SectionList, View, Text, TouchableOpacity, FlatList} from "react-native";
+import {SectionList, View, Text} from "react-native";
 import {useNavigation} from "@react-navigation/native";
 import styles from "./styles";
 import {Card} from "react-native-paper";
 import InboundDetailProps from "./types";
+import { LayoutStyle } from "../../assets/styles";
 
 const InboundOrderContainer = ({data,shipmentId, shipmentData}: InboundDetailProps) => {
     const navigation = useNavigation<any>();
@@ -22,9 +23,8 @@ const InboundOrderContainer = ({data,shipmentId, shipmentData}: InboundDetailPro
     }
 
     const renderShipmentItem = (): JSX.Element => {
-        return (<View
-            style={styles.itemView}>
-            <Card>
+        return (
+            <Card style={LayoutStyle.listItemContainer}>
                 <Card.Content>
                     <View style={styles.rowItem}>
                         <RenderData title={"Shipment Number"} subText={shipmentData?.shipmentNumber}/>
@@ -44,7 +44,7 @@ const InboundOrderContainer = ({data,shipmentId, shipmentData}: InboundDetailPro
                     </View>
                 </Card.Content>
             </Card>
-        </View>);
+       );
     }
 
     const getStatus = (value: number) => {
@@ -56,11 +56,10 @@ const InboundOrderContainer = ({data,shipmentId, shipmentData}: InboundDetailPro
     }
 
     const renderListItem = (item:any , index: any) => {
-        return (<TouchableOpacity
+        return (<Card
             key={index}
             onPress={() => navigateToInboundOrderDetails(item)}
-            style={styles.itemView}>
-            <Card>
+            style={LayoutStyle.listItemContainer}>
                 <Card.Content>
                     <View style={styles.rowItem}>
                         <RenderData title={"Product Code"} subText={item['product.productCode']}/>
@@ -74,9 +73,8 @@ const InboundOrderContainer = ({data,shipmentId, shipmentData}: InboundDetailPro
                         <RenderData title={"Quantity Remaining"} subText={item.quantityRemaining > 0 ? item.quantityRemaining : 0}/>
                         <RenderData title={"Status"} subText={getStatus(item.quantityRemaining)}/>
                     </View>
-                </Card.Content>
-            </Card>
-        </TouchableOpacity>)
+                </Card.Content>   
+        </Card>)
     }
 
     return (

@@ -3,7 +3,6 @@ import {
   ListRenderItemInfo,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
   FlatList
 } from 'react-native';
@@ -11,6 +10,8 @@ import React, { ReactElement } from 'react';
 import Theme from '../../utils/Theme';
 import { Order } from '../../data/order/Order';
 import EmptyView from '../../components/EmptyView';
+import { Card } from 'react-native-paper';
+import {LayoutStyle} from '../../assets/styles';
 export interface Props {
   orders: Order[] | null;
   onOrderTapped: (order: Order) => void;
@@ -34,50 +35,40 @@ export default function OrdersList(props: Props) {
 
 function renderOrder(order: Order, onOrderTapped: () => void): ReactElement {
   return (
-    <TouchableOpacity
-      style={styles.listItemContainer}
+    <Card
+      style={LayoutStyle.listItemContainer}
       onPress={() => onOrderTapped()}
     >
-      <View style={styles.row}>
-        <View style={styles.col50}>
-          <Text style={styles.label}>Identifier</Text>
-          <Text style={styles.value}>{order.identifier}</Text>
+      <Card.Content>
+        <View style={styles.row}>
+          <View style={styles.col50}>
+            <Text style={styles.label}>Identifier</Text>
+            <Text style={styles.value}>{order.identifier}</Text>
+          </View>
+          <View style={styles.col50}>
+            <Text style={styles.label}>Status Code</Text>
+            <Text style={styles.value}>{order.statusCode}</Text>
+          </View>
         </View>
-        <View style={styles.col50}>
-          <Text style={styles.label}>Status Code</Text>
-          <Text style={styles.value}>{order.statusCode}</Text>
+        <View style={styles.row}>
+          <View style={styles.col50}>
+            <Text style={styles.label}>Destination</Text>
+            <Text style={styles.value}>{order.destination?.name}</Text>
+          </View>
+          <View style={styles.col50}>
+            <Text style={styles.label}>Requested Delivery Date</Text>
+            <Text style={styles.value}>{order.requestedDeliveryDate}</Text>
+          </View>
         </View>
-      </View>
-      <View style={styles.row}>
-        <View style={styles.col50}>
-          <Text style={styles.label}>Destination</Text>
-          <Text style={styles.value}>{order.destination?.name}</Text>
-        </View>
-        <View style={styles.col50}>
-          <Text style={styles.label}>Requested Delivery Date</Text>
-          <Text style={styles.value}>{order.requestedDeliveryDate}</Text>
-        </View>
-      </View>
-      <View style={styles.row} />
-    </TouchableOpacity>
+        <View style={styles.row} />
+      </Card.Content>
+    </Card>
   );
 }
 
 const styles = StyleSheet.create({
   list: {
     width: '100%'
-  },
-  listItemContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    flex: 1,
-    borderRadius: Theme.roundness,
-    backgroundColor: Theme.colors.background,
-    borderColor: Theme.colors.backdrop,
-    borderWidth: 1,
-    margin: 4,
-    padding: 4,
-    justifyContent: 'center'
   },
   listItemNameContainer: {
     display: 'flex',
@@ -112,7 +103,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     borderColor: Theme.colors.background,
     marginTop: 1,
-    padding: 2,
+    //padding: 2,
     width: '100%'
   },
   col50: {
