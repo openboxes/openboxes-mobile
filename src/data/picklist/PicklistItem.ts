@@ -27,6 +27,7 @@ export interface PicklistItem{
     "inventoryItem.id": string,
     "binLocation.id": null,
     "binLocation.name": null,
+    "binLocation.locationNumber": null,
     "binLocation.zoneId": null,
     "binLocation.zoneName": null,
     "requisitionItemId": string,

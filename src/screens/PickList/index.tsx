@@ -30,7 +30,7 @@ const PickOrderItem = (props: any) => {
       let errorMessage = '';
 
       const scannedLotNumberValid = isPropertyValid(itemToSave, 'lotNumber', 'scannedLotNumber');
-      const scannedBinLocationValid = isPropertyValid(itemToSave, 'binLocation.name', 'scannedBinLocation');
+      const scannedBinLocationValid = isPropertyValid(itemToSave, 'binLocation.locationNumber', 'scannedBinLocation');
 
       if (!scannedLotNumberValid || !scannedBinLocationValid) {
         errorTitle = 'Lot number and bin location are invalid';
@@ -198,22 +198,21 @@ const PickOrderItem = (props: any) => {
                         }}
                       />
                       <InputBox
-                        // TODO: Change it to work against the binLocation.locationNumber instead of binLocation.name
                         value={item.scannedBinLocation}
-                        placeholder={item['binLocation.name']}
-                        label={item['binLocation.name'] || 'Bin Location'}
+                        placeholder={item['binLocation.locationNumber']}
+                        label={item['binLocation.locationNumber'] || 'Bin Location'}
                         disabled={false}
                         onEndEdit={(value: any) => setPicklistItemsHelper(value, index, 'scannedBinLocation')}
                         onChange={(value: any) => setPicklistItemsHelper(value, index, 'scannedBinLocation')}
                         editable
-                        icon={getIcon(item, 'binLocation.name', 'scannedBinLocation')}
+                        icon={getIcon(item, 'binLocation.locationNumber', 'scannedBinLocation')}
                         onIconClick={() => {
-                          if (item.scannedBinLocation && !isPropertyValid(item, 'binLocation.name', 'scannedBinLocation')) {
+                          if (item.scannedBinLocation && !isPropertyValid(item, 'binLocation.locationNumber', 'scannedBinLocation')) {
                             setPicklistItemsHelper('', index, 'scannedBinLocation')
                             return;
                           }
                           showPopup({
-                            message: `Scan bin location. Expected: ${item['binLocation.name'] || 'DEFAULT (empty)'}.\n\nTo validate bin location click on this field and scan bin location.`,
+                            message: `Scan bin location. Expected: ${item['binLocation.locationNumber'] || 'DEFAULT (empty)'}.\n\nTo validate bin location click on this field and scan bin location.`,
                             positiveButton: {
                               text: 'Ok',
                             },
