@@ -1,18 +1,18 @@
-/* eslint-disable react-native/no-inline-styles */
 import React, {useState} from 'react';
 import styles from './styles';
-import {Image, TouchableOpacity, View} from 'react-native';
+import {Image, View} from 'react-native';
 import SelectDropdown from 'react-native-select-dropdown'
 import {Props} from "./types";
 import AutoComplete from "../AutoComplete/AutoComplete";
 
-const Edit = require('../../assets/images/edit.png');
-const Done = require('../../assets/images/tick.png');
 
 export default function ({
   refs,
   value,
   label,
+  placeholder,
+  icon,
+  onIconClick,
   showSelect,
   disabled,
   onChange,
@@ -43,6 +43,9 @@ export default function ({
           menuStyle={{backgroundColor: 'white'}}
           refs={refs}
           label={label}
+          placeholder={placeholder}
+          icon={icon}
+          onIconClick={onIconClick}
           value={value}
           disabled={edit || false}
           onChange={onChange}
@@ -53,9 +56,6 @@ export default function ({
           }}
           inputStyle={style}
           edit={edit}
-          // left={}
-          // right={}
-          // menuStyle={}
         />
         {showSelect ? (
           <SelectDropdown
@@ -70,11 +70,6 @@ export default function ({
             buttonTextAfterSelection={(selectedItem) => selectedItem}
             rowTextForSelection={(item) => item}
           />
-        ) : null}
-        {editable ? (
-          <TouchableOpacity style={styles.editIcon} onPress={onEdit}>
-            <Image source={edit ? Edit : Done} />
-          </TouchableOpacity>
         ) : null}
       </View>
     </View>

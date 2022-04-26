@@ -1,8 +1,9 @@
-import {View} from 'react-native';
+import {Image, TouchableOpacity, View} from 'react-native';
 import {Menu, TextInput} from 'react-native-paper';
 import React, {useState} from 'react';
 import {Props} from './types';
 import styles from './styles';
+import CLEAR from "../../assets/images/icon_clear.png";
 
 const AutoComplete = ({
   value,
@@ -14,11 +15,13 @@ const AutoComplete = ({
   containerStyle,
   onChange: origOnChange,
   icon,
+  onIconClick,
   inputStyle = {},
   menuStyle = {},
   onEndEdit,
   right = () => {},
   left = () => {},
+  placeholder,
 }: Props) => {
   // const [inputValue, setInputValue] = useState(value);
   const [menuVisible, setMenuVisible] = useState(false);
@@ -55,7 +58,7 @@ const AutoComplete = ({
         value={value}
         mode={'outlined'}
         ref={refs}
-        placeholder={label}
+        placeholder={placeholder}
         disabled={edit || false}
         keyboardType={keyboard || 'default'}
         onEndEditing={e => {
@@ -64,6 +67,10 @@ const AutoComplete = ({
           }
         }}
       />
+      {icon ?
+        <TouchableOpacity onPress={onIconClick}>
+          <Image source={icon} style={styles.imageIcon} />
+        </TouchableOpacity> : null}
       {data && menuVisible && filteredData && (
         <View style={styles.autoCompleteView}>
           {filteredData &&
