@@ -25,12 +25,12 @@ export default StyleSheet.create({
         justifyContent: "center"
     },
     name: {
-        fontSize: 17,
+        fontSize: 12,
         color: Theme.colors.text,
         fontWeight: "bold"
     },
     boxHeading: {
-        fontSize: 15,
+        fontSize: 12,
         color: Theme.colors.text,
         fontWeight: "bold",
         marginTop: 8
@@ -140,14 +140,14 @@ export default StyleSheet.create({
         borderColor: Theme.colors.onBackground,
         // borderBottomWidth: 1,
         marginTop: 1,
-        padding: 2,
+        padding: 0,
         width: '100%'
     },
     col50: {
         display: "flex",
         flexDirection: "column",
         flex: 0,
-        marginStart: 4,
+        marginStart: 0,
         width: "50%"
 
     },
@@ -156,7 +156,7 @@ export default StyleSheet.create({
         color: Theme.colors.placeholder
     },
     value: {
-        fontSize: 16,
+        fontSize: 12,
         color: Theme.colors.text
     }
 })

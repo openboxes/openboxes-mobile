@@ -100,34 +100,48 @@ class OutboundStockList extends React.Component<Props, State> {
                     </View>
                     <View style={styles.col50}>
                       <Text style={styles.label}>Status</Text>
-                      <Text style={styles.value}>{shipment.item.status}</Text>
+                      <Text style={styles.value}>{shipment.item.requisitionStatus}</Text>
                     </View>
                   </View>
                   <View style={styles.row}>
-                    <View style={styles.col50}>
-                      <Text style={styles.label}>Origin</Text>
-                      <Text style={styles.value}>
-                        {shipment.item.origin.name}
-                      </Text>
-                    </View>
                     <View style={styles.col50}>
                       <Text style={styles.label}>Destination</Text>
                       <Text style={styles.value}>
                         {shipment.item.destination.name}
                       </Text>
                     </View>
-                  </View>
-                  <View style={styles.row}>
                     <View style={styles.col50}>
                       <Text style={styles.label}>Expected Shipping Date</Text>
                       <Text style={styles.value}>
                         {shipment.item.expectedShippingDate}
                       </Text>
                     </View>
+                  </View>
+                  <View style={styles.row}>
                     <View style={styles.col50}>
-                      <Text style={styles.label}>Expected Delivery Date</Text>
+                      <Text style={styles.label}>Packing Location</Text>
                       <Text style={styles.value}>
-                        {shipment.item.expectedDeliveryDate}
+                        {shipment.item.packingLocation}
+                      </Text>
+                    </View>
+                    <View style={styles.col50}>
+                      <Text style={styles.label}>Loading Location</Text>
+                      <Text style={styles.value}>
+                        {shipment.item.loadingLocation}
+                      </Text>
+                    </View>
+                  </View>
+                  <View style={styles.row}>
+                    <View style={styles.col50}>
+                      <Text style={styles.label}>Number of containers</Text>
+                      <Text style={styles.value}>
+                        {shipment.item.availableContainers.length}
+                      </Text>
+                    </View>
+                    <View style={styles.col50}>
+                      <Text style={styles.label}>Items packed</Text>
+                      <Text style={styles.value}>
+                        {shipment.item.packingStatus}
                       </Text>
                     </View>
                   </View>
