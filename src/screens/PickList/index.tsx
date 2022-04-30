@@ -123,12 +123,12 @@ const PickOrderItem = (props: any) => {
 
   return (
     <View style={styles.screenContainer}>
-      <View style={styles.swiperView}>
         <Carousel
           key={3}
           sliderWidth={device.windowWidth}
           sliderHeight={device.windowHeight}
-          itemWidth={device.windowWidth - 70}
+          activeSlideAlignment="start"
+          itemWidth={device.windowWidth-20}
           data={picklistItems}
           firstItem={props.selectedPinkItemIndex ? props.selectedPinkItemIndex : 0}
           scrollEnabled={true}
@@ -152,29 +152,8 @@ const PickOrderItem = (props: any) => {
                           </Text>
                         </View>
                       </View>
-
-                      <View style={styles.row}>
-                        <View style={styles.col50}>
-                          <Text style={styles.label}>Picked</Text>
-                          <Text style={styles.value}>
-                            {item?.quantityPicked} / {item?.quantityRequested}
-                          </Text>
-                        </View>
-                        <View style={styles.col50}>
-                          <Text style={styles.label}>Remaining</Text>
-                          <Text style={styles.value}>
-                            {item?.quantityRemaining}
-                          </Text>
-                        </View>
-                      </View>
                     </View>
                     <View style={styles.from}>
-                      <InputBox
-                        value={item.productCode}
-                        disabled={true}
-                        editable={false}
-                        label={'Product Code'}
-                      />
                       <InputBox
                         value={item.scannedLotNumber}
                         placeholder={item.lotNumber || 'Lot Number'}
@@ -197,6 +176,22 @@ const PickOrderItem = (props: any) => {
                           })
                         }}
                       />
+                    </View>
+                    <View style={styles.from}>
+                      <View style={styles.row}>
+                        <View style={styles.col50}>
+                          <Text style={styles.label}>Location Type</Text>
+                          <Text style={styles.value}>
+                            {item?.['binLocation.locationType']}
+                          </Text>
+                        </View>
+                        <View style={styles.col50}>
+                          <Text style={styles.label}>Zone</Text>
+                          <Text style={styles.value}>
+                            {item?.['binLocation.zoneName']??'None'}
+                          </Text>
+                        </View>
+                      </View>
                       <InputBox
                         value={item.scannedBinLocation}
                         placeholder={item['binLocation.locationNumber']}
@@ -219,6 +214,23 @@ const PickOrderItem = (props: any) => {
                           })
                         }}
                       />
+
+                      <View style={styles.row}>
+                        <View style={styles.col50}>
+                          <Text style={styles.label}>Picked</Text>
+                          <Text style={styles.value}>
+                            {item?.quantityPicked} / {item?.quantityToPick}
+                          </Text>
+                        </View>
+                        <View style={styles.col50}>
+                          <Text style={styles.label}>Remaining</Text>
+                          <Text style={styles.value}>
+                            {item?.quantityRemaining}
+                          </Text>
+                        </View>
+                      </View>
+
+
                       <View style={styles.inputSpinner}>
                         <InputSpinner
                           title={"Quantity to Pick"}
@@ -234,7 +246,6 @@ const PickOrderItem = (props: any) => {
             );
           }}
         />
-      </View>
     </View>
   );
 };

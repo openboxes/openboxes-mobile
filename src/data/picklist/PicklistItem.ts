@@ -28,6 +28,7 @@ export interface PicklistItem{
     "binLocation.id": null,
     "binLocation.name": null,
     "binLocation.locationNumber": null,
+    "binLocation.locationType": null,
     "binLocation.zoneId": null,
     "binLocation.zoneName": null,
     "requisitionItemId": string,

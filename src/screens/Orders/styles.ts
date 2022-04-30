@@ -16,8 +16,9 @@ export default StyleSheet.create({
     alignItems: 'center'
   },
   label: {
-    fontSize: 16,
+    fontSize: 12,
     color: Theme.colors.placeholder,
-    marginHorizontal: 10
+    marginHorizontal: 5,
+    marginVertical: 2
   }
 });
