@@ -8,7 +8,8 @@ export function getShipmentsReadyToBePacked(
     '/shipments?origin.id=' +
       locationId +
       '&shipmentStatusCode=' +
-      shipmentStatusCode,
+      shipmentStatusCode +
+      '&requisitionStatus=PICKED'
   );
 }
 
