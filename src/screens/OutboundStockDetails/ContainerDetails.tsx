@@ -53,13 +53,7 @@ const ContainerDetails = ({item}: any) => {
                 title={'Lot Number'}
                 subText={item.inventoryItem.lotNumber ?? 'Default'}
               />
-              <RenderData
-                title={'Expiration Date'}
-                subText={item.inventoryItem.expirationDate ?? 'N/A'}
-              />
-            </View>
-            <View style={styles.rowItem}>
-              <RenderData title={'Quantity'} subText={item.quantity} />
+              <RenderData title={'Quantity to Pack'} subText={item.quantity} />
             </View>
           </Card.Content>
         </Card>
@@ -82,7 +76,7 @@ const ContainerDetails = ({item}: any) => {
               });
             }}>
             <FontAwesome5
-              name="question-circle"
+              name="chevron-right"
               size={20}
               color={colors.headerColor}
             />

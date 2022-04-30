@@ -66,7 +66,7 @@ const ShipItemDetails = () => {
   const submitShipmentDetail = (id: string) => {
     if (Number(state.quantityPicked) > Number(item.quantityRemaining)) {
       showPopup({
-        message: 'Quantity Picked is higher than quantity on shipment item',
+        message: 'Quantity packed is higher than quantity on shipment item',
         positiveButton: {
           text: 'Ok',
         },
@@ -118,12 +118,12 @@ const ShipItemDetails = () => {
     <ScrollView style={styles.contentContainer}>
       <View style={styles.rowItem}>
         <View style={styles.columnItem}>
-          <Text style={styles.label}>{'Shipment Number'}</Text>
-          <Text style={styles.value}>{item.shipment.shipmentNumber}</Text>
-        </View>
-        <View style={styles.columnItem}>
           <Text style={styles.label}>{'Container'}</Text>
           <Text style={styles.value}>{item?.container?.name ?? 'Default'}</Text>
+        </View>
+        <View style={styles.columnItem}>
+          <Text style={styles.label}>{'Shipment Number'}</Text>
+          <Text style={styles.value}>{item.shipment.shipmentNumber}</Text>
         </View>
       </View>
       <View style={styles.rowItem}>
@@ -146,15 +146,7 @@ const ShipItemDetails = () => {
           </Text>
         </View>
         <View style={styles.columnItem}>
-          <Text style={styles.label}>{'Expiration Date'}</Text>
-          <Text style={styles.value}>
-            {item.inventoryItem.expirationDate ?? 'No Expiry'}
-          </Text>
-        </View>
-      </View>
-      <View style={styles.rowItem}>
-        <View style={styles.columnItem}>
-          <Text style={styles.label}>{'Quantity'}</Text>
+          <Text style={styles.label}>{'Quantity to pack'}</Text>
           <Text style={styles.value}>{item.quantityRemaining}</Text>
         </View>
       </View>

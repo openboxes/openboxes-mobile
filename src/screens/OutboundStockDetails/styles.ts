@@ -151,8 +151,8 @@ export default StyleSheet.create({
     width: '50%',
   },
   itemView: {
-    marginStart: 10,
-    marginEnd: 10,
+    marginStart: 5,
+    marginEnd: 5,
     marginTop: 5,
   },
   rowItem: {
@@ -175,7 +175,7 @@ export default StyleSheet.create({
     color: Theme.colors.placeholder,
   },
   value: {
-    fontSize: 16,
+    fontSize: 12,
     color: Theme.colors.text,
     width: '90%',
   },
