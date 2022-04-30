@@ -10,6 +10,7 @@ export interface Order {
   identifier?: string | null
   statusCode?: string | null
   requestedDeliveryDate?: Date | null
+  expectedShippingDate?: Date | null
   origin: Location | null
   destination: Location | null
   picklist: PicklistItem | null

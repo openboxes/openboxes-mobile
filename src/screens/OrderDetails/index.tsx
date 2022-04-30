@@ -103,8 +103,8 @@ class OrderDetails extends React.Component<Props, State> {
               </Text>
             </View>
             <View style={styles.col50}>
-              <Text style={styles.label}>Requested Delivery Date</Text>
-              <Text style={styles.value}>{vm.requestedDeliveryDate}</Text>
+              <Text style={styles.label}>Expected Shipping Date</Text>
+              <Text style={styles.value}>{vm.expectedShippingDate}</Text>
             </View>
           </View>
           <View style={styles.bottomList}>

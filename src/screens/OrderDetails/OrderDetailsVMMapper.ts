@@ -15,6 +15,7 @@ export function orderDetailsVMMapper(
     origin: props.order ? props.order.origin : null,
     destination: props.order ? props.order.destination : null,
     requestedDeliveryDate: props.order ? props.order.requestedDeliveryDate : null,
+    expectedShippingDate: props.order ? props.order.expectedShippingDate : null,
     datePicked: props.pickList ? props.pickList.datePicked ?? null : null,
     picker: props.pickList ? props.pickList.picker ?? null : null,
     requisition: props.pickList ? props.pickList.requisition ?? null : "",

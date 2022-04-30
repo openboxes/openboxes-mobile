@@ -56,8 +56,8 @@ function renderOrder(order: Order, onOrderTapped: () => void): ReactElement {
             <Text style={styles.value}>{order.destination?.name}</Text>
           </View>
           <View style={styles.col50}>
-            <Text style={styles.label}>Requested Delivery Date</Text>
-            <Text style={styles.value}>{order.requestedDeliveryDate}</Text>
+            <Text style={styles.label}>Expected Shipping Date</Text>
+            <Text style={styles.value}>{order.expectedShippingDate}</Text>
           </View>
         </View>
         <View style={styles.row} />
@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
     color: Theme.colors.placeholder
   },
   value: {
-    fontSize: 16,
+    fontSize: 14,
     color: Theme.colors.text
   }
 });

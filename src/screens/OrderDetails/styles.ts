@@ -155,7 +155,7 @@ export default StyleSheet.create({
     color: Theme.colors.placeholder,
   },
   value: {
-    fontSize: 16,
+    fontSize: 14,
     color: Theme.colors.text,
   },
   bottomList:{
