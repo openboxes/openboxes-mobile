@@ -6,10 +6,6 @@ export interface OwnProps {
   route: any;
 }
 
-export interface StateProps {
-  //no-op
-}
-
 export interface DispatchProps {
   showScreenLoading: (message?: string) => void;
   hideScreenLoading: () => void;
@@ -19,7 +15,7 @@ export interface DispatchProps {
   ) => void;
 }
 
-export type Props = OwnProps & StateProps & DispatchProps;
+export type Props = OwnProps & DispatchProps;
 
 export interface State {
   error: string | null;
