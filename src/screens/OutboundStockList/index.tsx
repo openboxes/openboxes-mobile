@@ -69,7 +69,7 @@ class OutboundStockList extends React.Component<Props, State> {
     );
   };
 
-  showShipmentReadyToPackScreen = (shipment: Shipment) => {
+  showShipmentReadyToPackScreen = (shipment: any) => {
     this.props.navigation.navigate('OutboundStockDetails', {
       shipmentId: shipment.id
     });
@@ -90,10 +90,7 @@ class OutboundStockList extends React.Component<Props, State> {
       );
 
       if (exactOutboundOrder) {
-        this.setState({
-          ...this.state,
-          filteredShipments: [],
-        });
+        this.resetFiltering();
         this.showShipmentReadyToPackScreen(exactOutboundOrder);
       } else {
         const filteredShipments = _.filter(
@@ -120,7 +117,7 @@ class OutboundStockList extends React.Component<Props, State> {
       ...this.state,
       filteredShipments: []
     });
-}
+  }
 
   render() {
     return (
@@ -130,8 +127,7 @@ class OutboundStockList extends React.Component<Props, State> {
           onSearchTermSubmit={this.filterShipments}
           resetSearch={this.resetFiltering}
           searchBox={false}
-          autoSearch={false}
-
+          autoSearch
         />
         <View style={styles.contentContainer}>
           <FlatList

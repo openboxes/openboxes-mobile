@@ -27,11 +27,8 @@ const InboundOrderList = () => {
     filteredInboundOrders: []
   });
 
-  const [showSearchBar, setShowSearchBar] = useState<boolean>(true);
-
   useEffect(() => {
     return navigation.addListener('focus', () => {
-      resetSearchBar();
       if (location?.id || route?.params?.refetchOrders) {
         getInboundOrderList(location?.id);
       } else {
@@ -42,19 +39,6 @@ const InboundOrderList = () => {
       }
     });
   }, [route]);
-
-  // Hacky way to get the search bar to the initial state
-  // TODO: Refactor BarcodeSearchHeader to reset on a navigation change + refactor component from class component to functional
-  useEffect(() => {
-    if (!showSearchBar) {
-      setState({ ...state, filteredInboundOrders: [] });
-      setShowSearchBar(true);
-    }
-  }, [showSearchBar]);
-
-  const resetSearchBar = () => {
-    setShowSearchBar(false);
-  };
 
   const getInboundOrderList = (id: string = '') => {
     navigation.setParams({ refetchOrders: false });
@@ -144,10 +128,7 @@ const InboundOrderList = () => {
       );
 
       if (exactInboundOrder) {
-        setState({
-          ...state,
-          filteredInboundOrders: []
-        });
+        resetFiltering();
         navigateToInboundDetails(exactInboundOrder);
       } else {
         const filteredInboundOrders = _.filter(
@@ -166,23 +147,25 @@ const InboundOrderList = () => {
       return;
     }
 
+    resetFiltering();
+  };
+
+  const resetFiltering = () => {
     setState({
       ...state,
       filteredInboundOrders: []
     });
-  };
+  }
 
   return (
     <View style={{ flex: 1, zIndex: -1 }}>
-      {showSearchBar && (
-        <BarcodeSearchHeader
-          placeholder="Search by order number"
-          onSearchTermSubmit={filterInboundOrders}
-          resetSearch={() => null}
-          searchBox={false}
-          autoSearch
-        />
-      )}
+      <BarcodeSearchHeader
+        placeholder="Search by order number"
+        onSearchTermSubmit={filterInboundOrders}
+        resetSearch={resetFiltering}
+        searchBox={false}
+        autoSearch
+      />
       {state.inboundOrders.length > 0 ? (
         <FlatList
           data={
