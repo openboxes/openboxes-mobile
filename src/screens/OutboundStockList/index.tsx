@@ -15,12 +15,16 @@ import showPopup from '../../components/Popup';
 import EmptyView from '../../components/EmptyView';
 import { Card } from 'react-native-paper';
 import { LayoutStyle } from '../../assets/styles';
+import BarCodeSearchHeader from '../Products/BarCodeSearchHeader';
+import _ from "lodash";
+
 class OutboundStockList extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
       error: null,
-      shipments: []
+      shipments: [],
+      filteredShipments: []
     };
   }
 
@@ -71,16 +75,69 @@ class OutboundStockList extends React.Component<Props, State> {
     });
   };
 
+  filterShipments = (searchTerm: string) => {
+    if (searchTerm) {
+      const exactOutboundOrder = _.find(
+        this.state.shipments,
+        (OutboundOrder: any) => {
+          const matchingShipmentNumber = OutboundOrder?.shipmentNumber?.toLowerCase() === searchTerm.toLowerCase();
+          const matchingContainer = _.find(
+            OutboundOrder?.availableContainers,
+            container => container.containerNumber === searchTerm,
+          );
+          return matchingShipmentNumber || matchingContainer;
+        }
+      );
+
+      if (exactOutboundOrder) {
+        this.setState({
+          ...this.state,
+          filteredShipments: [],
+        });
+        this.showShipmentReadyToPackScreen(exactOutboundOrder);
+      } else {
+        const filteredShipments = _.filter(
+          this.state.shipments,
+          (shipment: any) =>
+            shipment?.shipmentNumber
+              ?.toLowerCase()
+              ?.includes(searchTerm.toLowerCase())
+        );
+        this.setState({
+          ...this.state,
+          filteredShipments
+      });
+      }
+
+      return;
+    }
+
+    this.setState({
+      ...this.state,
+      filteredShipments: []
+    });
+  };
+
   render() {
     return (
       <View style={styles.screenContainer}>
+        <BarCodeSearchHeader
+          placeholder={'Order or Container Number'}
+          searchBox={false}
+          onBarCodeSearchQuerySubmitted={this.filterShipments}
+          autoSearch={false}
+        />
         <View style={styles.contentContainer}>
           <FlatList
-            data={this.state.shipments}
+            data={this.state.filteredShipments.length > 0
+              ? this.state.filteredShipments
+              : this.state.shipments
+            }
             ListEmptyComponent={
               <EmptyView
                 title="Packing"
                 description=" There are no items to pack"
+                isRefresh={false}
               />
             }
             renderItem={(shipment: ListRenderItemInfo<Shipment>) => (
