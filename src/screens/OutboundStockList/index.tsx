@@ -15,7 +15,7 @@ import showPopup from '../../components/Popup';
 import EmptyView from '../../components/EmptyView';
 import { Card } from 'react-native-paper';
 import { LayoutStyle } from '../../assets/styles';
-import BarCodeSearchHeader from '../Products/BarCodeSearchHeader';
+import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSearchHeader';
 import _ from "lodash";
 
 class OutboundStockList extends React.Component<Props, State> {
@@ -79,10 +79,10 @@ class OutboundStockList extends React.Component<Props, State> {
     if (searchTerm) {
       const exactOutboundOrder = _.find(
         this.state.shipments,
-        (OutboundOrder: any) => {
-          const matchingShipmentNumber = OutboundOrder?.shipmentNumber?.toLowerCase() === searchTerm.toLowerCase();
+        (shipment: Shipment) => {
+          const matchingShipmentNumber = shipment?.shipmentNumber?.toLowerCase() === searchTerm.toLowerCase();
           const matchingContainer = _.find(
-            OutboundOrder?.availableContainers,
+            shipment?.availableContainers,
             container => container.containerNumber === searchTerm,
           );
           return matchingShipmentNumber || matchingContainer;
@@ -98,7 +98,7 @@ class OutboundStockList extends React.Component<Props, State> {
       } else {
         const filteredShipments = _.filter(
           this.state.shipments,
-          (shipment: any) =>
+          (shipment: Shipment) =>
             shipment?.shipmentNumber
               ?.toLowerCase()
               ?.includes(searchTerm.toLowerCase())
@@ -106,26 +106,32 @@ class OutboundStockList extends React.Component<Props, State> {
         this.setState({
           ...this.state,
           filteredShipments
-      });
+        });
       }
 
       return;
     }
 
+    this.resetFiltering();
+  };
+
+  resetFiltering = () => {
     this.setState({
       ...this.state,
       filteredShipments: []
     });
-  };
+}
 
   render() {
     return (
       <View style={styles.screenContainer}>
-        <BarCodeSearchHeader
+        <BarcodeSearchHeader
           placeholder={'Order or Container Number'}
+          onSearchTermSubmit={this.filterShipments}
+          resetSearch={this.resetFiltering}
           searchBox={false}
-          onBarCodeSearchQuerySubmitted={this.filterShipments}
           autoSearch={false}
+
         />
         <View style={styles.contentContainer}>
           <FlatList

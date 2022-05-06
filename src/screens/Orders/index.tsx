@@ -9,7 +9,7 @@ import OrdersList from './OrdersList';
 import { Order } from '../../data/order/Order';
 import { getOrdersAction } from '../../redux/actions/orders';
 import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
-import BarCodeSearchHeader from '../Products/BarCodeSearchHeader';
+import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSearchHeader';
 
 class Index extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -81,10 +81,12 @@ class Index extends React.Component<Props, State> {
   render() {
     return (
       <View style={styles.screenContainer}>
-        <BarCodeSearchHeader
+        <BarcodeSearchHeader
           placeholder={'Search Orders by Name'}
+          onSearchTermSubmit={this.searchOrders}
+          resetSearch={() => null}
+          autoSearch={false}
           searchBox={false}
-          onBarCodeSearchQuerySubmitted={this.searchOrders}
         />
         <Text style={styles.label}>
           Returned {this.state.resultCount} results

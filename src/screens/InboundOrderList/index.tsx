@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchInboundOrderList } from '../../redux/actions/inboundorder';
 import showPopup from '../../components/Popup';
-import BarCodeSearchHeader from '../Products/BarCodeSearchHeader';
+import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSearchHeader';
 import { RootState } from '../../redux/reducers';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import styles from './styles';
@@ -44,7 +44,7 @@ const InboundOrderList = () => {
   }, [route]);
 
   // Hacky way to get the search bar to the initial state
-  // TODO: Refactor BarCodeSearchHeader to reset on a navigation change + refactor component from class component to functional
+  // TODO: Refactor BarcodeSearchHeader to reset on a navigation change + refactor component from class component to functional
   useEffect(() => {
     if (!showSearchBar) {
       setState({ ...state, filteredInboundOrders: [] });
@@ -175,9 +175,10 @@ const InboundOrderList = () => {
   return (
     <View style={{ flex: 1, zIndex: -1 }}>
       {showSearchBar && (
-        <BarCodeSearchHeader
+        <BarcodeSearchHeader
           placeholder="Search by order number"
-          onBarCodeSearchQuerySubmitted={filterInboundOrders}
+          onSearchTermSubmit={filterInboundOrders}
+          resetSearch={() => null}
           searchBox={false}
           autoSearch
         />

@@ -3,6 +3,7 @@ import { Order } from '../../data/order/Order';
 export interface OwnProps {
   exit: () => void;
   navigation: any;
+  route: any;
 }
 
 export interface StateProps {
@@ -23,4 +24,5 @@ export type Props = OwnProps & StateProps & DispatchProps;
 export interface State {
   error: string | null;
   allOrders: Order[] | null;
+  resultCount: Number;
 }
