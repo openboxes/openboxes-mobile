@@ -17,6 +17,8 @@ import { Card } from 'react-native-paper';
 import { LayoutStyle } from '../../assets/styles';
 import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSearchHeader';
 import _ from "lodash";
+import ShipmentItems from "../../data/inbound/ShipmentItems";
+import { Container } from "../../data/container/Container";
 
 class OutboundStockList extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -77,6 +79,7 @@ class OutboundStockList extends React.Component<Props, State> {
 
   filterShipments = (searchTerm: string) => {
     if (searchTerm) {
+      // Find exact match by shipment number or container number (if found, then redirect to the packing screen)
       const exactOutboundOrder = _.find(
         this.state.shipments,
         (shipment: Shipment) => {
@@ -93,12 +96,32 @@ class OutboundStockList extends React.Component<Props, State> {
         this.resetFiltering();
         this.showShipmentReadyToPackScreen(exactOutboundOrder);
       } else {
+        // If no exact match, then filter by <shipment number, container number, lot number on item> containing the search term
         const filteredShipments = _.filter(
           this.state.shipments,
-          (shipment: Shipment) =>
-            shipment?.shipmentNumber
+          (shipment: Shipment) => {
+            const matchingShipmentNumber = shipment?.shipmentNumber
               ?.toLowerCase()
-              ?.includes(searchTerm.toLowerCase())
+              ?.includes(searchTerm.toLowerCase());
+
+            const matchingContainer = _.find(
+              shipment?.availableContainers,
+              (container: Container) => container.containerNumber
+                ?.toLowerCase()
+                ?.includes(searchTerm.toLowerCase()));
+
+            const matchingLotNumberOrProduct =  _.find(
+              shipment?.shipmentItems,
+              (item: ShipmentItems) => {
+                const matchingLotNumber = item.lotNumber?.toLowerCase()?.includes(searchTerm.toLowerCase());
+                const matchingCode = item.inventoryItem?.product?.productCode?.toLowerCase()?.includes(searchTerm.toLowerCase());
+                const matchingName = item.inventoryItem?.product?.name?.toLowerCase()?.includes(searchTerm.toLowerCase())
+                return matchingLotNumber || matchingCode || matchingName;
+              });
+
+            // Return as bool
+            return !!(matchingShipmentNumber || matchingContainer || matchingLotNumberOrProduct);
+          }
         );
         this.setState({
           ...this.state,
