@@ -60,6 +60,16 @@ function renderOrder(order: Order, onOrderTapped: () => void): ReactElement {
             <Text style={styles.value}>{order.expectedShippingDate}</Text>
           </View>
         </View>
+        <View style={styles.row}>
+          <View style={styles.col50}>
+            <Text style={styles.label}>Packing Location</Text>
+            <Text style={styles.value}>{order?.packingLocation?.name ?? 'Unassigned'}</Text>
+          </View>
+          <View style={styles.col50}>
+            <Text style={styles.label}>Loading Location</Text>
+            <Text style={styles.value}>{order?.loadingLocation?.name ?? 'Unassigned'}</Text>
+          </View>
+        </View>
         <View style={styles.row} />
       </Card.Content>
     </Card>
