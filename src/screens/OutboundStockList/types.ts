@@ -1,11 +1,9 @@
-import PutAway from "../../data/putaway/PutAway";
-import {NavigationState} from "../PutAwayDetail/State";
-import {fetchPutAwayFromOrderAction} from "../../redux/actions/putaways";
-import {Shipment} from "../../data/container/Shipment";
+import { Shipment } from '../../data/container/Shipment';
 
 export interface State {
     error: string | null
     shipments: Shipment[]
+    filteredShipments: Shipment[]
 }
 
 

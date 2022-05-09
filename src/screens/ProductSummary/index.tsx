@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import showPopup from '../../components/Popup';
 import { getLocationProductSummary } from '../../redux/actions/locations';
 import { RootState } from '../../redux/reducers';
-import BarCodeSearchHeader from '../Products/BarCodeSearchHeader';
+import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSearchHeader';
 import _ from 'lodash';
 import EmptyView from '../../components/EmptyView';
 import { LayoutStyle } from '../../assets/styles';
@@ -110,12 +110,13 @@ const ProductSummary = () => {
 
   return (
     <View style={styles.mainContainer}>
-      <BarCodeSearchHeader
+      <BarcodeSearchHeader
         placeholder={'Search by product code or name'}
+        onSearchTermSubmit={(query) => searchProduct(query)}
+        resetSearch={() => null}
         searchBox={false}
         autoSearch
         autoFocus
-        onBarCodeSearchQuerySubmitted={(query) => searchProduct(query)}
       />
       <FlatList
         renderItem={({ item, index }) => renderListItem(item, index)}
@@ -124,6 +125,7 @@ const ProductSummary = () => {
           <EmptyView
             title="Inventory"
             description="There are no items in inventory"
+            isRefresh={false}
           />
         }
         keyExtractor={(item, index) => item + index}

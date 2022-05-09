@@ -10,10 +10,9 @@ import CentralMessage from './CentralMessage';
 import ProductCategoryPickerPopup from './ProductCategoryPickerPopup';
 import { ProductCategory } from '../../data/product/category/ProductCategory';
 import { DispatchProps, Props, State } from './types';
-// import {VM} from './VM';
 import vmMapper from './VMMapper';
 import ProductsSearchCodeHeader from './ProductsSearchCodeHeader';
-import BarCodeSearchHeader from './BarCodeSearchHeader';
+import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSearchHeader';
 import {
   getProductsAction,
   searchProductByCodeAction,
@@ -292,7 +291,7 @@ class Products extends React.Component<Props, State> {
     }
   };
 
-  onBarCodeSearchQuerySubmitted = (query: string) => {
+  onSearchTermSubmit = (query: string) => {
     // handleBarcodeScan(barcodeNo);
     console.log('this.state :', this.state.allProducts);
     if (!query) {
@@ -369,10 +368,11 @@ class Products extends React.Component<Props, State> {
           }
           onSearchBoxVisibilityChange={this.onSearchBoxVisibilityChange}
         />
-        <BarCodeSearchHeader
+        <BarcodeSearchHeader
           placeholder={'Search by product code or name'}
           subtitle={vm.subtitle}
-          onBarCodeSearchQuerySubmitted={this.onBarCodeSearchQuerySubmitted}
+          onSearchTermSubmit={this.onSearchTermSubmit}
+          resetSearch={() => null}
           searchBox={false}
           autoSearch
           autoFocus

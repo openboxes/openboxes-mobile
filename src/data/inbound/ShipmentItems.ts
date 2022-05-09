@@ -1,3 +1,5 @@
+import InventoryItem from '../picklist/InventoryItem';
+
 export default interface ShipmentItems {
     receiptItemId: string | null,
     shipmentItemId: string,
@@ -25,5 +27,6 @@ export default interface ShipmentItems {
     cancelRemaining: false,
     quantityOnHand: string | null,
     comment: string | null,
-    status: string
+    status: string,
+    inventoryItem: InventoryItem | null,
 }

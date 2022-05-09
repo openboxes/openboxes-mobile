@@ -17,6 +17,11 @@ export interface Shipment{
     containers: Container[],
     origin: Location,
     destination: Location,
+    packingLocation: Location,
+    loadingLocation: Location,
+    availableContainers: Container[],
+    requisitionStatus: string
+    packingStatus: string
 }
 
 export default interface ShipmentsReadyToPackedResponse{
