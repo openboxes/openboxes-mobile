@@ -20,12 +20,12 @@ const Scan = () => {
     console.log(data);
     if (data.type === 'Product') {
       navigateToProduct(data.data);
+    } else if (data.type === 'InventoryItem') {
+      navigateToProduct(data.data.product);
     } else if (data.type === 'Location') {
       navigateToLocationDetails(query);
     } else if (data.type === 'Container') {
       navigateToLPNDetails(data.data.id, data?.data?.shipmentNumber ?? '');
-    } else if (data.type === 'InventoryItem') {
-      navigateToAvailableItem(data.data);
     }
   };
 
@@ -48,12 +48,6 @@ const Scan = () => {
         id: id,
         shipmentNumber: stockMovement
       });
-    }
-  };
-  const navigateToAvailableItem = (availableItem: AvailableItem | undefined) => {
-    if (availableItem) {
-      // @ts-ignore
-      navigation.navigate('ViewAvailableItem', { availableItem });
     }
   };
 
