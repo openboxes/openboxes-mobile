@@ -2,7 +2,7 @@ import BinLocation from "./BinLocation";
 import Product from "../product/Product";
 import InventoryItem from "./InventoryItem";
 
-export interface PicklistItem{
+export interface PicklistItem {
     id: string | ""
     status: String,
     productCode: String,
@@ -46,6 +46,8 @@ export interface PicklistItem{
     // for picking validation purposes
     scannedLotNumber?: string | null,
     scannedBinLocation?: string | null
+    shortage?: boolean | null
+    shortageReasonCode?: String | null
 }
 export  interface GetPickListItemsApiResponse {
     data: PicklistItem[];

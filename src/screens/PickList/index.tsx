@@ -16,11 +16,21 @@ import { Card }  from 'react-native-paper';
 import SCAN from '../../assets/images/scan.jpg';
 import TICK from '../../assets/images/tick.png';
 import CLEAR from '../../assets/images/icon_clear.png';
+import Radio from '../../components/Radio';
+import DropDown from 'react-native-paper-dropdown';
+
+// TODO: Refactor (pull from api, when shortage reason codes will be available)
+const SHORTAGE_REASON_CODES = [
+  { value: 'INSUFFICIENT_QUANTITY_AVAILABLE', label: 'Insufficient quantity in location' },
+  { value: 'DIFFERENT_LOCATION', label: 'Wrong item in location' },
+  { value: 'DAMAGED', label: 'Damaged inventory in location' }
+];
 
 const PickOrderItem = (props: any) => {
   const dispatch = useDispatch();
 
   const [picklistItems, setPicklistItems] = useState<any>(props.pickList ? props.pickList.picklistItems : []);
+  const [showDropDown, setShowDropDown] = useState<boolean>(false);
 
   const formSubmit = (id: string) => {
     const itemToSave = _.find(picklistItems, item => item.id === id);
@@ -37,12 +47,17 @@ const PickOrderItem = (props: any) => {
         errorMessage = 'Scan proper lot number and bin location';
       }
 
-      if (!Number(itemToSave.quantityToPick)) {
+      if (!Number(itemToSave.quantityToPick) && !itemToSave.shortage) {
         errorTitle = 'Quantity To Pick!';
         errorMessage = 'Please pick some quantity.';
       } else if (Number(itemToSave.quantityToPick) > Number(itemToSave.quantityRemaining)) {
         errorTitle = 'Quantity To Pick!';
         errorMessage = 'Quantity to pick cannot exceed quantity remaining!';
+      }
+
+      if (itemToSave.shortage && !itemToSave.shortageReasonCode) {
+        errorTitle = 'Shortage Reason Code!';
+        errorMessage = 'You have to provide Reason Code for item shortage!';
       }
 
       if (errorTitle != '') {
@@ -57,6 +72,8 @@ const PickOrderItem = (props: any) => {
         'product.id': itemToSave['product.id'],
         productCode: itemToSave.productCode,
         quantityPicked: itemToSave.quantityToPick,
+        shortage: itemToSave.shortage,
+        shortageReasonCode: itemToSave.shortageReasonCode,
       };
 
       const actionCallback = (data: any) => {
@@ -90,11 +107,24 @@ const PickOrderItem = (props: any) => {
     }
   };
 
-  const setPicklistItemsHelper = (value: string | number, index: number, property: string) => {
+  const setPicklistItemsHelper = (value: string | number | boolean, index: number, property: string) => {
     setPicklistItems(
       produce((draft: any) => {
         const item = draft.find((item: any, draftIndex: number) => draftIndex === index);
         item[property] = value;
+      })
+    );
+  };
+
+  const setPicklistItemsQuantityHelper = (quantity: number, quantityRemaining: number, index: number) => {
+    setPicklistItems(
+      produce((draft: any) => {
+        const item = draft.find((item: any, draftIndex: number) => draftIndex === index);
+        item.quantityToPick = quantity;
+        if (quantity === quantityRemaining) {
+          item.shortage = false;
+          item.shortageReasonCode = '';
+        }
       })
     );
   };
@@ -153,7 +183,7 @@ const PickOrderItem = (props: any) => {
                         </View>
                       </View>
                     </View>
-                    <View style={styles.from}>
+                    <View>
                       <InputBox
                         value={item.scannedLotNumber}
                         placeholder={item.lotNumber || 'Lot Number'}
@@ -177,7 +207,7 @@ const PickOrderItem = (props: any) => {
                         }}
                       />
                     </View>
-                    <View style={styles.from}>
+                    <View>
                       <View style={styles.row}>
                         <View style={styles.col50}>
                           <Text style={styles.label}>Location Type</Text>
@@ -219,7 +249,7 @@ const PickOrderItem = (props: any) => {
                         <View style={styles.col50}>
                           <Text style={styles.label}>Picked</Text>
                           <Text style={styles.value}>
-                            {item?.quantityPicked} / {item?.quantityToPick}
+                            {item?.quantityPicked} / {item?.quantity} {/* quantity is the "quantity required" for the picklist item */}
                           </Text>
                         </View>
                         <View style={styles.col50}>
@@ -230,14 +260,32 @@ const PickOrderItem = (props: any) => {
                         </View>
                       </View>
 
-
                       <View style={styles.inputSpinner}>
                         <InputSpinner
                           title={"Quantity to Pick"}
-                          setValue={(value: any) => setPicklistItemsHelper(parseInt(value), index, 'quantityToPick')}
+                          setValue={(value: any) => setPicklistItemsQuantityHelper(parseInt(value), item?.quantityRemaining, index)}
                           value={item.quantityToPick}
                         />
                       </View>
+                      {item.quantityToPick < item.quantityRemaining && (
+                        <Radio
+                          title={"Shortage (not enough quantity to pick)"}
+                          setChecked={(value: any) => setPicklistItemsHelper(value, index, 'shortage')}
+                          checked={item.shortage}
+                        />
+                      )}
+                      {item.quantityToPick < item.quantityRemaining && item.shortage && (
+                        <DropDown
+                          label="Shortage Reason Code"
+                          mode="outlined"
+                          visible={showDropDown}
+                          showDropDown={() => setShowDropDown(true)}
+                          onDismiss={() => setShowDropDown(false)}
+                          value={item.shortageReasonCode}
+                          setValue={(value: any) => setPicklistItemsHelper(value, index, 'shortageReasonCode')}
+                          list={SHORTAGE_REASON_CODES}
+                        />
+                      )}
                       <Button title="Pick Item" onPress={() => formSubmit(item.id)} disabled={!item?.quantityRemaining} />
                     </View>
                   </View>
