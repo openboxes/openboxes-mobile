@@ -219,13 +219,19 @@ const PickOrderItem = (props: any) => {
                     </View>
                     <View>
                       <View style={styles.row}>
-                        <View style={styles.col50}>
-                          <Text style={styles.label}>Location Type</Text>
+                        <View style={styles.col33}>
+                          <Text style={styles.label}>Location</Text>
+                          <Text style={styles.value}>
+                            {item?.['binLocation.name']}
+                          </Text>
+                        </View>
+                        <View style={styles.col33}>
+                          <Text style={styles.label}>Type</Text>
                           <Text style={styles.value}>
                             {item?.['binLocation.locationType']}
                           </Text>
                         </View>
-                        <View style={styles.col50}>
+                        <View style={styles.col33}>
                           <Text style={styles.label}>Zone</Text>
                           <Text style={styles.value}>
                             {item?.['binLocation.zoneName']??'None'}
@@ -256,16 +262,28 @@ const PickOrderItem = (props: any) => {
                       />
 
                       <View style={styles.row}>
-                        <View style={styles.col50}>
+                        <View style={styles.col25}>
                           <Text style={styles.label}>Picked</Text>
                           <Text style={styles.value}>
                             {item?.quantityPicked} / {item?.quantity} {/* quantity is the "quantity required" for the picklist item */}
                           </Text>
                         </View>
-                        <View style={styles.col50}>
+                        <View style={styles.col25}>
                           <Text style={styles.label}>Remaining</Text>
                           <Text style={styles.value}>
                             {item?.quantityRemaining}
+                          </Text>
+                        </View>
+                        <View style={styles.col25}>
+                          <Text style={styles.label}>Shortage</Text>
+                          <Text style={styles.value}>
+                            {item?.quantityCanceled??0}
+                          </Text>
+                        </View>
+                        <View style={styles.col25}>
+                          <Text style={styles.label}>Reason</Text>
+                          <Text style={styles.value}>
+                            {item?.reasonCode??'None'}
                           </Text>
                         </View>
                       </View>
