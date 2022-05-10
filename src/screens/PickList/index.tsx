@@ -21,19 +21,9 @@ import DropDown from 'react-native-paper-dropdown';
 
 // TODO: Refactor (pull from api, when shortage reason codes will be available)
 const SHORTAGE_REASON_CODES = [
-  { value: 'CONSUMED', label: 'CONSUMED' },
-  { value: 'CORRECTION', label: 'CORRECTION' },
-  { value: 'DAMAGED', label: 'DAMAGED' },
-  { value: 'DATA_ENTRY_ERROR', label: 'DATA_ENTRY_ERROR' },
-  { value: 'EXPIRED', label: 'EXPIRED' },
-  { value: 'FOUND', label: 'FOUND' },
-  { value: 'MISSING', label: 'MISSING' },
-  { value: 'RECOUNTED', label: 'RECOUNTED' },
-  { value: 'REJECTED', label: 'REJECTED' },
-  { value: 'RETURNED', label: 'RETURNED' },
-  { value: 'SCRAPPED', label: 'SCRAPPED' },
-  { value: 'STOLEN', label: 'STOLEN' },
-  { value: 'OTHER', label: 'OTHER' }
+  { value: 'INSUFFICIENT_QUANTITY_AVAILABLE', label: 'Insufficient quantity in location' },
+  { value: 'DIFFERENT_LOCATION', label: 'Wrong item in location' },
+  { value: 'DAMAGED', label: 'Damaged inventory in location' }
 ];
 
 const PickOrderItem = (props: any) => {
