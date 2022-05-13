@@ -1,14 +1,20 @@
 /* eslint-disable complexity */
 import React, { useEffect } from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 import styles from './styles';
 import { useNavigation } from '@react-navigation/native';
 import Product from '../../data/product/Product';
 import onBarcodeScanned from '../../hooks/onBarcodeScanned';
 import EmptyView from '../../components/EmptyView';
+import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSearchHeader';
+import { searchBarcode } from '../../redux/actions/products';
+import showPopup from '../../components/Popup';
+import { useDispatch } from 'react-redux';
+
 const Scan = () => {
   const barcodeData = onBarcodeScanned();
   const navigation = useNavigation();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (barcodeData?.results && barcodeData?.query) {
@@ -51,20 +57,52 @@ const Scan = () => {
     }
   };
 
+  const onBarCodeScan = (query: string) => {
+    if (!query) {
+      return;
+    }
+
+    const actionCallback = (data: any) => {
+      if (data?.error) {
+        showPopup({
+          title: 'No results found',
+          message:
+            data.errorMessage ??
+            `Failed to load search results with value = "${query}"`,
+        });
+      } else {
+        if (data.length == 0) {
+          showPopup({
+            title: `Empty results`,
+            message: `No search results found for barcode "${query}"`,
+          });
+        } else {
+          if (data && Object.keys(data).length !== 0) {
+            onSuccess(data, query);
+          }
+        }
+      }
+    };
+
+    dispatch(searchBarcode(query, actionCallback));
+  };
+
   return (
     <View style={styles.screenContainer}>
+      <BarcodeSearchHeader
+        searchBox={false}
+        onSearchTermSubmit={onBarCodeScan}
+        placeholder="Scan through search bar"
+        autoSearch
+        autoFocus
+      />
       <View style={styles.countLabelAndIconContainer}>
-        {barcodeData ? (
-          <Text style={styles.countLabel}>
-            {JSON.stringify(barcodeData?.query)}
-          </Text>
-        ) : (
-          <EmptyView
-            uri={require('../../assets/images/logo.png')}
-            title="Scan"
-            description="Scan a barcode for a product code, internal location, or LPN to retrieve details "
-          />
-        )}
+        <EmptyView
+          uri={require('../../assets/images/logo.png')}
+          title="Scan"
+          description="Scan a barcode for a product code, internal location, or LPN to retrieve details "
+          isRefresh={false}
+        />
       </View>
     </View>
   );
