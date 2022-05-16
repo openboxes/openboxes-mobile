@@ -53,21 +53,21 @@ const ViewAvailableItem = () => {
           <View style={styles.rowItem}>
             <RenderData
               title={'Lot Number'}
-              subText={availableItems?.inventoryItem.lotNumber ?? 'Default'}
+              subText={availableItems?.inventoryItem?.lotNumber ?? 'Default'}
             />
             <RenderData
               title={'Expiration Date'}
-              subText={availableItems?.inventoryItem.expirationDate ?? 'Never'}
+              subText={availableItems?.inventoryItem?.expirationDate ?? 'Never'}
             />
           </View>
           <View style={styles.rowItem}>
             <RenderData
               title={'Quantity On Hand'}
-              subText={availableItems?.quantityOnHand}
+              subText={availableItems?.quantityOnHand ?? '0'}
             />
             <RenderData
               title={'Quantity Available'}
-              subText={availableItems.quantityAvailableToPromise}
+              subText={availableItems?.quantityAvailable ?? '0'}
             />
           </View>
           <View style={styles.rowItem}>

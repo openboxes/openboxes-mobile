@@ -23,7 +23,7 @@ const Scan = () => {
   }, [barcodeData]);
 
   const onSuccess = (data: any, query: any) => {
-    console.log(data);
+    console.log("global search result", data.type, data);
     if (data.type === 'Product') {
       navigateToProduct(data.data);
     } else if (data.type === 'InventoryItem') {
@@ -32,6 +32,8 @@ const Scan = () => {
       navigateToLocationDetails(query);
     } else if (data.type === 'Container') {
       navigateToLPNDetails(data.data.id, data?.data?.shipmentNumber ?? '');
+    } else if (data.type === 'AvailableItem') {
+      navigateToAvailableItem(data.data);
     }
   };
 
@@ -53,6 +55,16 @@ const Scan = () => {
       navigation.navigate('LpnDetail', {
         id: id,
         shipmentNumber: stockMovement
+      });
+    }
+  };
+  const navigateToAvailableItem = (availableItem: AvailableItem | undefined) => {
+    console.log("navigate to available item ", availableItem)
+    if (availableItem) {
+      // @ts-ignore
+      navigation.navigate('ViewAvailableItem', {
+        item: availableItem,
+        imageUrl: availableItem.inventoryItem?.product?.defaultImageUrl ?? 'https://reactnative.dev/img/tiny_logo.png'
       });
     }
   };
