@@ -3,7 +3,7 @@ export interface OwnProps {
   placeholder?: string;
   searchBox: boolean;
   onSearchTermSubmit: (query: string) => void;
-  resetSearch: () => void;
+  resetSearch?: () => void;
   autoSearch: boolean | false;
   autoFocus?: boolean | false;
 }

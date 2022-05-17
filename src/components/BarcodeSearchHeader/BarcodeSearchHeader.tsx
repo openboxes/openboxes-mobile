@@ -21,7 +21,9 @@ const BarcodeSearchHeader = (props: Props) => {
   useEffect(() => {
     return navigation.addListener('focus', () => {
       setSearchTerm('');
-      props.resetSearch();
+      if (props.resetSearch) {
+        props.resetSearch();
+      }
     });
   }, [navigation]);
 

@@ -55,6 +55,7 @@ const onBarcodeScanned = () => {
       negativeButtonText: 'Cancel'
     });
   };
+
   const onEmptyQuery = (query: any) => {
     if (!query) {
       showPopup({
@@ -64,6 +65,7 @@ const onBarcodeScanned = () => {
       return;
     }
   };
+
   const onEmptyData = (query: any) => {
     setState({
       ...state,
@@ -74,6 +76,7 @@ const onBarcodeScanned = () => {
       error: `No search results found for barcode "${query}"`
     });
   };
+
   const onSuccess = (data: any, query: any) => {
     console.log('Success');
     setState({
@@ -84,7 +87,9 @@ const onBarcodeScanned = () => {
       },
       error: null
     });
-  };
+    };
+
   return state.searchProductCode;
 };
+
 export default onBarcodeScanned;

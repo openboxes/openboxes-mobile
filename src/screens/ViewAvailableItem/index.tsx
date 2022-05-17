@@ -6,6 +6,7 @@ import styles from './styles';
 import {Card} from 'react-native-paper';
 import RenderData from '../../components/RenderData';
 import Button from '../../components/Button';
+import DefaultProductImage from '../../assets/images/default-product.png';
 
 const ViewAvailableItem = () => {
   const route = useRoute();
@@ -27,6 +28,9 @@ const ViewAvailableItem = () => {
       onSelect: onSelect,
     });
   };
+
+  const source = route?.params?.imageUrl ? { uri: route?.params?.imageUrl } : DefaultProductImage;
+
   const navigateToTransfer = () => {
     navigation.navigate('Transfer',{item: availableItems});
   };
@@ -37,7 +41,7 @@ const ViewAvailableItem = () => {
           <View style={{width: '100%', alignItems: 'center', flex: 0}}>
             <Image
               style={{width: 150, height: 150, resizeMode: 'contain'}}
-              source={{uri: route?.params?.imageUrl}}
+              source={source}
             />
           </View>
           <View style={styles.rowItem}>
@@ -53,31 +57,21 @@ const ViewAvailableItem = () => {
           <View style={styles.rowItem}>
             <RenderData
               title={'Lot Number'}
-              subText={availableItems?.inventoryItem.lotNumber ?? 'Default'}
+              subText={availableItems?.inventoryItem?.lotNumber ?? 'Default'}
             />
             <RenderData
               title={'Expiration Date'}
-              subText={availableItems?.inventoryItem.expirationDate ?? 'Never'}
+              subText={availableItems?.inventoryItem?.expirationDate ?? 'Never'}
             />
           </View>
           <View style={styles.rowItem}>
             <RenderData
-              title={'Quantity On Hand'}
-              subText={availableItems?.quantityOnHand}
+              title={'Location Name'}
+              subText={availableItems?.binLocation?.name ?? 'Default'}
             />
             <RenderData
-              title={'Quantity Available'}
-              subText={availableItems.quantityAvailableToPromise}
-            />
-          </View>
-          <View style={styles.rowItem}>
-            <RenderData
-              title={'Quantity Allocated'}
-              subText={availableItems?.quantityAllocated ?? '0'}
-            />
-            <RenderData
-              title={'Quantity On Order'}
-              subText={availableItems.quantityOnOrder ?? '0'}
+              title={'Location Type'}
+              subText={availableItems?.binLocation?.locationType?.name ?? 'Never'}
             />
           </View>
         </Card.Content>
