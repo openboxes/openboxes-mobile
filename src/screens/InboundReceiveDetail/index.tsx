@@ -225,7 +225,7 @@ const InboundReceiveDetail = () => {
           />
           <RenderData
             title={'Expiration Date'}
-            subText={shipmentItem.expirationDate ?? 'N/A'}
+            subText={shipmentItem.expirationDate ?? 'Never'}
           />
         </View>
         <View style={styles.rowItem}>

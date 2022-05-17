@@ -24,11 +24,11 @@ export default StyleSheet.create({
     width: '50%'
   },
   label: {
-    fontSize: 12,
+    fontSize: 11,
     color: Theme.colors.placeholder
   },
   value: {
-    fontSize: 16,
+    fontSize: 12,
     color: Theme.colors.text,
     width: '90%'
   },
@@ -37,6 +37,8 @@ export default StyleSheet.create({
     backgroundColor: 'white',
     margin: 10,
     padding: 5,
-    fontSize: 16
+    fontSize: 16,
+    borderRadius: 10,
+    elevation: 8,
   }
 });

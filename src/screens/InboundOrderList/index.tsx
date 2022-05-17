@@ -109,8 +109,8 @@ const InboundOrderList = () => {
           <View style={styles.rowItem}>
             <RenderOrderData title={'Description'} subText={item.name} />
             <RenderOrderData
-              title={'Number of Items'}
-              subText={item.shipmentItems.length}
+              title={'Items Received'}
+              subText={item.receivedCount + ' / ' + item.shipmentItems.length}
             />
           </View>
         </Card.Content>

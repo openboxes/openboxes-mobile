@@ -54,11 +54,11 @@ export default StyleSheet.create({
     width: '50%',
   },
   label: {
-    fontSize: 12,
+    fontSize: 11,
     color: Theme.colors.placeholder,
   },
   value: {
-    fontSize: 16,
+    fontSize: 12,
     color: Theme.colors.text,
     width: "90%"
   },

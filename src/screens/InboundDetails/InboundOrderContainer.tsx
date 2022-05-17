@@ -50,10 +50,13 @@ const InboundOrderContainer = ({
           </View>
           <View style={styles.rowItem}>
             <RenderData title={'Description'} subText={shipmentData?.name} />
-            <RenderData
-              title={'Number of Items'}
-              subText={shipmentData?.shipmentItems.length}
-            />
+            <View>
+                <Text style={styles.label}>Items Received</Text>
+                <Text style={styles.value}>
+                {shipmentData.receivedCount} / {shipmentData?.shipmentItems.length}
+                </Text>
+            </View>
+
           </View>
           <View style={styles.rowItem}>
             <RenderData
