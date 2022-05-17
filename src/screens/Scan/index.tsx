@@ -64,7 +64,7 @@ const Scan = () => {
       // @ts-ignore
       navigation.navigate('ViewAvailableItem', {
         item: availableItem,
-        imageUrl: availableItem.inventoryItem?.product?.defaultImageUrl ?? 'https://reactnative.dev/img/tiny_logo.png'
+        imageUrl: availableItem.inventoryItem?.product?.defaultImageUrl
       });
     }
   };

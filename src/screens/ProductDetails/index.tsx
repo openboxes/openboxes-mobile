@@ -92,9 +92,7 @@ class ProductDetails extends React.Component<Props, State> {
   navigateToDetails = (item: any) => {
     this.props.navigation.navigate('ViewAvailableItem', {
       item,
-      imageUrl:
-        this.state.productDetails?.defaultImageUrl ??
-        'https://reactnative.dev/img/tiny_logo.png'
+      imageUrl: this.state.productDetails?.defaultImageUrl
     });
   };
 
@@ -186,8 +184,7 @@ class ProductDetails extends React.Component<Props, State> {
                   </View>
                   <View style={styles.value}>
                     <Text style={styles.textAlign}>
-                      {vm.quantityOnHand}
-                      {vm.unitOfMeasure}
+                      {vm.quantityOnHand} {vm.unitOfMeasure}
                     </Text>
                   </View>
                 </View>
@@ -197,8 +194,7 @@ class ProductDetails extends React.Component<Props, State> {
                   </View>
                   <View style={styles.value}>
                     <Text style={styles.textAlign}>
-                      {vm.quantityAvailable}
-                      {vm.unitOfMeasure}
+                      {vm.quantityAvailable} {vm.unitOfMeasure}
                     </Text>
                   </View>
                 </View>
@@ -208,8 +204,7 @@ class ProductDetails extends React.Component<Props, State> {
                   </View>
                   <View style={styles.value}>
                     <Text style={styles.textAlign}>
-                      {vm.quantityAllocated}
-                      {vm.unitOfMeasure}
+                      {vm.quantityAllocated} {vm.unitOfMeasure}
                     </Text>
                   </View>
                 </View>
@@ -219,8 +214,7 @@ class ProductDetails extends React.Component<Props, State> {
                   </View>
                   <View style={styles.value}>
                     <Text style={styles.textAlign}>
-                      {vm.quantityOnOrder}
-                      {vm.unitOfMeasure}
+                      {vm.quantityOnOrder} {vm.unitOfMeasure}
                     </Text>
                   </View>
                 </View>

@@ -23,8 +23,8 @@ export function vmMapper(product: Product, state: State): VM {
       {code: '', value: '', name: ''},
     ],
     productType: product?.productType ?? {name: ''},
-    defaultImageUrl: product?.defaultImageUrl ?? 'https://reactnative.dev/img/tiny_logo.png',
-    image: product?.image ?? { id: '', name: '', uri: 'https://reactnative.dev/img/tiny_logo.png' },
+    defaultImageUrl: product?.defaultImageUrl,
+    image: product?.image,
     images: product?.images ?? [
       {
         id: '',
