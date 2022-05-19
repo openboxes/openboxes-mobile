@@ -31,7 +31,9 @@ class OutboundStockList extends React.Component<Props, State> {
   }
 
   componentDidMount() {
-    this.fetchPacking();
+    this.props.navigation.addListener('focus', () => {
+      this.fetchPacking();
+    });
   }
 
   fetchPacking = () => {
