@@ -87,7 +87,7 @@ class PutawayItem extends Component<Props, State> {
           'inventoryItem.id': item['inventoryItem.id'],
           'putawayFacility.id': currentLocation?.id,
           'currentLocation.id': item['currentLocation.id'],
-          'putawayLocation.id': this.state.selectedLocation?.id || "",
+          'putawayLocation.id': this.state.selectedLocation?.id || item['putawayLocation.id'] || "",
           quantity: this.state?.quantity
         }
       ],
@@ -172,7 +172,7 @@ class PutawayItem extends Component<Props, State> {
               <AsyncModalSelect
                 placeholder="Default"
                 label="Default"
-                initValue={selectedLocation?.label || ''}
+                initValue={selectedLocation?.label || item['putawayLocation.name'] || ''}
                 initialData={internalLocations}
                 onSelect={(selectedLocation: any) => this.setState({ selectedLocation })}
                 searchAction={searchInternalLocations}
