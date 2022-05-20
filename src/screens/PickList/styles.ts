@@ -180,5 +180,17 @@ export default StyleSheet.create({
   inputSpinner: {
     flex: 1,
     alignItems: 'center'
-  }
+  },
+  infoButton: {
+    marginRight: 2,
+    width: 12,
+    height: 12,
+  },
+  shortageLabel: {
+    marginTop: 10,
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row'
+  },
 });
