@@ -3,7 +3,6 @@ import { device } from '../../constants';
 
 export default StyleSheet.create({
   mainContainer: {
-    flexDirection: 'row',
     marginVertical: 5,
   },
   itemContainer: {
@@ -40,7 +39,6 @@ export default StyleSheet.create({
     borderColor: 'grey',
     padding: 10,
     height: 40,
-    width: device.windowWidth - 40,
     borderRadius: 4,
   },
   imageIcon :{
