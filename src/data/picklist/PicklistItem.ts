@@ -18,6 +18,7 @@ export interface PicklistItem {
     quantityRequested: number,
     quantityRemaining: number,
     quantityAvailable: number,
+    quantityCanceled: number,
 
     "version": number,
     "picklist.id": string,
@@ -37,7 +38,8 @@ export interface PicklistItem {
     "inventoryItemId": string,
     "quantity": number,
     "quantityToPick": number,
-    "picker.id": null,
+    "picker.id": string | null,
+    "picker.name": string | null,
     "datePicked": null,
     "quantityOnHand": number,
     "quantityAvailableToPromise": number,

@@ -112,6 +112,20 @@ export default StyleSheet.create({
     fontSize: 12,
     color: Theme.colors.text
   },
+  col25: {
+    display: 'flex',
+    flexDirection: 'column',
+    flex: 0,
+    marginStart: 4,
+    width: '25%'
+  },
+  col33: {
+    display: 'flex',
+    flexDirection: 'column',
+    flex: 0,
+    marginStart: 4,
+    width: '33%'
+  },
   col50: {
     display: 'flex',
     flexDirection: 'column',
@@ -120,12 +134,12 @@ export default StyleSheet.create({
     width: '50%'
   },
   label: {
-    fontSize: 12,
+    fontSize: 11,
     color: Theme.colors.placeholder,
     width: '60%'
   },
   value: {
-    fontSize: 14,
+    fontSize: 12,
     color: Theme.colors.text
   },
   info: {
@@ -166,5 +180,17 @@ export default StyleSheet.create({
   inputSpinner: {
     flex: 1,
     alignItems: 'center'
-  }
+  },
+  infoButton: {
+    marginRight: 2,
+    width: 12,
+    height: 12,
+  },
+  shortageLabel: {
+    marginTop: 10,
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row'
+  },
 });

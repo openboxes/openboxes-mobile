@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import produce from 'immer';
 import _ from 'lodash';
 import styles from './styles';
-import { ListRenderItemInfo, Text, View, ToastAndroid } from 'react-native';
+import {ListRenderItemInfo, Text, View, ToastAndroid, TouchableOpacity} from 'react-native';
 import { useDispatch } from 'react-redux';
 import showPopup from '../../components/Popup';
 import { submitPickListItem } from '../../redux/actions/orders';
 import Button from '../../components/Button';
 import InputBox from '../../components/InputBox';
 import Carousel from 'react-native-snap-carousel';
-import { device } from '../../constants';
+import { colors, device } from '../../constants';
 import { PicklistItem } from '../../data/picklist/PicklistItem';
 import InputSpinner from '../../components/InputSpinner';
 import { Card }  from 'react-native-paper';
@@ -18,6 +18,7 @@ import TICK from '../../assets/images/tick.png';
 import CLEAR from '../../assets/images/icon_clear.png';
 import Radio from '../../components/Radio';
 import DropDown from 'react-native-paper-dropdown';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 // TODO: Refactor (pull from api, when shortage reason codes will be available)
 const SHORTAGE_REASON_CODES = [
@@ -151,6 +152,14 @@ const PickOrderItem = (props: any) => {
     return CLEAR;
   }
 
+  const showShortageInfo = (item: PicklistItem) => {
+    showPopup({
+      title: 'Shortage Info:',
+      message: `Shortage Quantity: ${item?.quantityCanceled ?? 0}.\nShortage Reason: ${item?.reasonCode ?? 'None'}.\nPicking Person: ${item['picker.name'] ?? 'None'}`,
+      positiveButton: { text: 'Ok' },
+    });
+  }
+
   return (
     <View style={styles.screenContainer}>
         <Carousel
@@ -209,13 +218,19 @@ const PickOrderItem = (props: any) => {
                     </View>
                     <View>
                       <View style={styles.row}>
-                        <View style={styles.col50}>
-                          <Text style={styles.label}>Location Type</Text>
+                        <View style={styles.col33}>
+                          <Text style={styles.label}>Location</Text>
+                          <Text style={styles.value}>
+                            {item?.['binLocation.name']}
+                          </Text>
+                        </View>
+                        <View style={styles.col33}>
+                          <Text style={styles.label}>Type</Text>
                           <Text style={styles.value}>
                             {item?.['binLocation.locationType']}
                           </Text>
                         </View>
-                        <View style={styles.col50}>
+                        <View style={styles.col33}>
                           <Text style={styles.label}>Zone</Text>
                           <Text style={styles.value}>
                             {item?.['binLocation.zoneName']??'None'}
@@ -246,18 +261,33 @@ const PickOrderItem = (props: any) => {
                       />
 
                       <View style={styles.row}>
-                        <View style={styles.col50}>
+                        <View style={item?.reasonCode ? styles.col33 : styles.col50}>
                           <Text style={styles.label}>Picked</Text>
                           <Text style={styles.value}>
                             {item?.quantityPicked} / {item?.quantity} {/* quantity is the "quantity required" for the picklist item */}
                           </Text>
                         </View>
-                        <View style={styles.col50}>
+                        <View style={item?.reasonCode ? styles.col33 : styles.col50}>
                           <Text style={styles.label}>Remaining</Text>
                           <Text style={styles.value}>
                             {item?.quantityRemaining}
                           </Text>
                         </View>
+                        {item?.reasonCode && (
+                          <View style={styles.col33}>
+                            <TouchableOpacity
+                              onPress={() => showShortageInfo(item)}>
+                              <View style={styles.shortageLabel}>
+                                <FontAwesome5
+                                  name="exclamation-triangle"
+                                  size={10}
+                                  color={colors.headerColor}
+                                  style={styles.infoButton}
+                                />
+                                <Text style={styles.value}>SHORTAGE</Text>
+                              </View>
+                            </TouchableOpacity>
+                          </View>)}
                       </View>
 
                       <View style={styles.inputSpinner}>
