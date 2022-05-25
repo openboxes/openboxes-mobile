@@ -41,7 +41,7 @@ class PutawayItem extends Component<Props, State> {
             callback: () => {
               this.props.searchInternalLocations('', {
                 'parentLocation.id': this.props.currentLocation.id,
-                max: '10',
+                max: '25',
                 offset: '0',
               }, callback);
             }
@@ -60,7 +60,7 @@ class PutawayItem extends Component<Props, State> {
     };
     this.props.searchInternalLocations('', {
       'parentLocation.id': this.props.currentLocation.id,
-      max: 10,
+      max: 25,
       offset: 0,
     }, callback);
   };

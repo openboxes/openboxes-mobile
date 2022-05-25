@@ -42,7 +42,7 @@ const Transfer = () => {
             callback: () => {
               dispatch(searchInternalLocations('', {
                 'parentLocation.id': location.id,
-                max: '10',
+                max: '25',
                 offset: '0',
               }, callback));
             }
@@ -60,7 +60,7 @@ const Transfer = () => {
     };
     dispatch(searchInternalLocations('', {
       'parentLocation.id': location.id,
-      max: 10,
+      max: 25,
       offset: 0,
     }, callback));
   };
