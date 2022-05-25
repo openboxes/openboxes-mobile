@@ -74,7 +74,7 @@ class PutawayCandidates extends Component<Props> {
           <Text>{`Status - ${item.putawayStatus}`}</Text>
           <Text>{`Product Code - ${item['product.productCode']}`}</Text>
           <Text>{`Product Name - ${item['product.name']}`}</Text>
-          <Text>{`Bin Location - ${item['currentLocation.name']}`}</Text>
+          <Text>{`Current Location - ${item['currentLocation.name']}`}</Text>
           <Text>{`Lot Number - ${
             item['inventoryItem.lotNumber'] ?? 'Default'
           }`}</Text>
