@@ -1,15 +1,15 @@
 import React from 'react';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import styles from './styles';
 import Location from '../../data/location/Location';
-import _, {Dictionary} from 'lodash';
-import {ScrollView, View} from 'react-native';
-import {List} from 'react-native-paper';
+import _, { Dictionary } from 'lodash';
+import { ScrollView, View } from 'react-native';
+import { List } from 'react-native-paper';
 import showPopup from '../../components/Popup';
-import {hideScreenLoading, showScreenLoading} from '../../redux/actions/main';
+import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
 import {
   getLocationsAction,
-  setCurrentLocationAction,
+  setCurrentLocationAction
 } from '../../redux/actions/locations';
 
 const NO_ORGANIZATION_NAME = 'No organization';
@@ -26,7 +26,7 @@ interface DispatchProps {
   getLocationsAction: (callback: (locations: any) => void) => void;
   setCurrentLocationAction: (
     location: Location,
-    callback: (data: any) => void,
+    callback: (data: any) => void
   ) => void;
   showScreenLoading: (message?: string) => void;
   hideScreenLoading: () => void;
@@ -42,7 +42,7 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      orgNameAndLocationsDictionary: {},
+      orgNameAndLocationsDictionary: {}
     };
   }
 
@@ -56,15 +56,15 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
             text: 'Retry',
             callback: () => {
               this.props.getLocationsAction(actionCallback);
-            },
+            }
           },
-          negativeButtonText: 'Cancel',
+          negativeButtonText: 'Cancel'
         });
       } else {
         const orgNameAndLocationsDictionary =
           this.getSortedOrgNameAndLocationsDictionary(data);
         this.setState({
-          orgNameAndLocationsDictionary: orgNameAndLocationsDictionary,
+          orgNameAndLocationsDictionary: orgNameAndLocationsDictionary
         });
         this.props.hideScreenLoading();
       }
@@ -73,7 +73,7 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
   };
 
   getSortedOrgNameAndLocationsDictionary = (
-    locations: Location[],
+    locations: Location[]
   ): Dictionary<Location[]> => {
     let orgNameAndLocationsDictionary = _.groupBy(
       locations,
@@ -83,7 +83,7 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
         } else {
           return NO_ORGANIZATION_NAME;
         }
-      },
+      }
     );
     return _.keys(orgNameAndLocationsDictionary)
       .sort((leftOrgName: string, rightOrgName: string) => {
@@ -109,9 +109,9 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
       .reduce(
         (acc: {}, orgName: string) => ({
           ...acc,
-          [orgName]: orgNameAndLocationsDictionary[orgName],
+          [orgName]: orgNameAndLocationsDictionary[orgName]
         }),
-        {},
+        {}
       );
   };
 
@@ -130,11 +130,11 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
                   callback: () => {
                     this.props.setCurrentLocationAction(
                       location,
-                      actionCallback,
+                      actionCallback
                     );
-                  },
+                  }
                 },
-                negativeButtonText: 'Cancel',
+                negativeButtonText: 'Cancel'
               });
             } else {
               global.location = location;
@@ -143,9 +143,9 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
           };
 
           this.props.setCurrentLocationAction(location, actionCallback);
-        },
+        }
       },
-      negativeButtonText: 'No',
+      negativeButtonText: 'No'
     });
   };
 
@@ -162,13 +162,14 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
                   <List.Accordion
                     title={orgName}
                     id={`orgName_${orgName}`}
-                    left={props => (
+                    left={(props) => (
                       <List.Icon {...props} icon="office-building" />
                     )}
-                    key={`orgName_${orgName}`}>
+                    key={`orgName_${orgName}`}
+                  >
                     {_.map(
                       this.state.orgNameAndLocationsDictionary[orgName],
-                      location => {
+                      (location) => {
                         return (
                           <List.Item
                             title={location.name}
@@ -178,11 +179,11 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
                             }
                           />
                         );
-                      },
+                      }
                     )}
                   </List.Accordion>
                 );
-              },
+              }
             )}
           </List.AccordionGroup>
         </ScrollView>
@@ -195,7 +196,7 @@ const mapDispatchToProps: DispatchProps = {
   getLocationsAction,
   setCurrentLocationAction,
   showScreenLoading,
-  hideScreenLoading,
+  hideScreenLoading
 };
 
 export default connect(null, mapDispatchToProps)(ChooseCurrentLocation);

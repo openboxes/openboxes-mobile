@@ -98,7 +98,7 @@ class Main extends Component<Props, State> {
     return (
       this.props.fullScreenLoadingIndicator.visible !==
         nextProps.fullScreenLoadingIndicator.visible ||
-      this.props.loggedIn != nextProps.loggedIn ||
+      this.props.loggedIn !== nextProps.loggedIn ||
       this.props.currentLocation !== nextProps.currentLocation ||
       this.props.session !== nextProps.session
     );
@@ -189,7 +189,10 @@ class Main extends Component<Props, State> {
                 component={PutawayItemDetail}
               />
               <Stack.Screen name="PutawayDetails" component={PutawayDetails} />
-              <Stack.Screen name="InboundOrderList" component={InboundOrderList} />
+              <Stack.Screen
+                name="InboundOrderList"
+                component={InboundOrderList}
+              />
               <Stack.Screen name="InboundDetails" component={InboundDetails} />
               <Stack.Screen name="Product Summary" component={ProductSummary} />
               <Stack.Screen name="CreateLpn" component={CreateLpn} />
@@ -226,7 +229,7 @@ class Main extends Component<Props, State> {
                 options={{ title: 'Work in progress' }}
                 component={Placeholder}
               />
-               <Stack.Screen name="AppInfo" component={AppInfoScreen} />
+              <Stack.Screen name="AppInfo" component={AppInfoScreen} />
             </Stack.Navigator>
           </NavigationContainer>
         </SafeAreaView>

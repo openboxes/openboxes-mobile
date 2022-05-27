@@ -10,9 +10,9 @@ export function searchProductsByName(name: string) {
       {
         property: 'name',
         operator: 'like',
-        value: `${name}%`,
-      },
-    ],
+        value: `${name}%`
+      }
+    ]
   });
 }
 
@@ -22,14 +22,14 @@ export function searchProductByCode(productCode: string) {
       {
         property: 'productCode',
         operator: 'like',
-        value: `${productCode}%`,
-      },
-    ],
+        value: `${productCode}%`
+      }
+    ]
   });
 }
 
 export function searchProductGlobally(value: string) {
-  return apiClient.post('/products/search', {value: `${value}`});
+  return apiClient.post('/products/search', { value: `${value}` });
 }
 
 export function searchProductsByCategory(category: any) {
@@ -38,9 +38,9 @@ export function searchProductsByCategory(category: any) {
       {
         property: 'category.id',
         operator: 'eq',
-        value: category.id,
-      },
-    ],
+        value: category.id
+      }
+    ]
   });
 }
 
@@ -49,11 +49,14 @@ export function getProductById(id: any) {
 }
 
 export function printLabel(data: any) {
-  return apiClient.post(`/${data.type}/${data.productId}/labels/${data.barcodeId}`,{});
+  return apiClient.post(
+    `/${data.type}/${data.productId}/labels/${data.barcodeId}`,
+    {}
+  );
 }
 
 export function stockAdjustments(requestBody: any) {
-  return apiClient.post(`/stockAdjustments`,requestBody);
+  return apiClient.post('/stockAdjustments', requestBody);
 }
 
 export function searchBarcode(id: string) {

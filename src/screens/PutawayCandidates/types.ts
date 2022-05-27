@@ -1,20 +1,20 @@
 export interface OwnProps {
-  navigation: any
+  navigation: any;
 }
 
 export interface StateProps {
-  candidates: any
-  currentLocation: any
+  candidates: any;
+  currentLocation: any;
 }
 
 export interface DispatchProps {
   showScreenLoading: (message?: string) => void;
   hideScreenLoading: () => void;
-  getCandidates: (locationId: string, callback?: (data) => void) => void;
+  getCandidates: (locationId: string, callback?: (data: any) => void) => void;
 }
 
 export type Props = OwnProps & StateProps & DispatchProps;
 
 export interface State {
-  selectedItem: any
+  selectedItem: any;
 }

@@ -1,12 +1,12 @@
-import ShipmentItems from "../../data/inbound/ShipmentItems";
+import ShipmentItems from '../../data/inbound/ShipmentItems';
 
 export interface InboundVM {
-    header: string
-    shipmentId: string,
-    sectionData: SectionData[] | []
+  header: string;
+  shipmentId: string;
+  sectionData: SectionData[] | [];
 }
 
 export interface SectionData {
-    title: string,
-    data: ShipmentItems[],
+  title: string;
+  data: ShipmentItems[];
 }

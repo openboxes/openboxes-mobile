@@ -12,7 +12,7 @@ import { updateStockTransfer } from '../../redux/actions/transfers';
 import showPopup from '../../components/Popup';
 import AsyncModalSelect from '../../components/AsyncModalSelect';
 import { searchInternalLocations } from '../../redux/actions/locations';
-import InputSpinner from "../../components/InputSpinner";
+import InputSpinner from '../../components/InputSpinner';
 
 const Transfer = () => {
   const route = useRoute();
@@ -27,8 +27,8 @@ const Transfer = () => {
   const [internalLocations, setInternalLocations] = useState<any>([]);
 
   useEffect(() => {
-    getInternalLocation(location.id)
-  }, [item])
+    getInternalLocation(location.id);
+  }, [item]);
 
   const getInternalLocation = (id: string = '') => {
     const callback = (data: any) => {
@@ -40,29 +40,43 @@ const Transfer = () => {
           positiveButton: {
             text: 'Retry',
             callback: () => {
-              dispatch(searchInternalLocations('', {
-                'parentLocation.id': location.id,
-                max: '25',
-                offset: '0',
-              }, callback));
+              dispatch(
+                searchInternalLocations(
+                  '',
+                  {
+                    'parentLocation.id': location.id,
+                    max: '25',
+                    offset: '0'
+                  },
+                  callback
+                )
+              );
             }
           },
           negativeButtonText: 'Cancel'
         });
       } else {
         if (data && Object.keys(data).length !== 0) {
-          setInternalLocations(_.map(data.data, internalLocation => ({
-            name: internalLocation.name,
-            id: internalLocation.id
-          })));
+          setInternalLocations(
+            _.map(data.data, (internalLocation) => ({
+              name: internalLocation.name,
+              id: internalLocation.id
+            }))
+          );
         }
       }
     };
-    dispatch(searchInternalLocations('', {
-      'parentLocation.id': location.id,
-      max: 25,
-      offset: 0,
-    }, callback));
+    dispatch(
+      searchInternalLocations(
+        '',
+        {
+          'parentLocation.id': location.id,
+          max: 25,
+          offset: 0
+        },
+        callback
+      )
+    );
   };
 
   const onTransfer = () => {
@@ -114,7 +128,10 @@ const Transfer = () => {
       } else {
         const product = { id: item.inventoryItem.product.id };
         ToastAndroid.show('Transferred item successfully!', ToastAndroid.SHORT);
-        navigation.navigate('ProductDetails', { product, refetchProduct: true });
+        navigation.navigate('ProductDetails', {
+          product,
+          refetchProduct: true
+        });
       }
     };
     dispatch(updateStockTransfer(request, actionCallback));
@@ -161,13 +178,13 @@ const Transfer = () => {
               label="Bin Location"
               initValue={binToLocationData?.label || ''}
               initialData={internalLocations}
-              onSelect={(selectedItem: any) => {
-                if (selectedItem) {
-                  setBinToLocationData(selectedItem)
-                }
-              }}
               searchAction={searchInternalLocations}
               searchActionParams={{ 'parentLocation.id': location.id }}
+              onSelect={(selectedItem: any) => {
+                if (selectedItem) {
+                  setBinToLocationData(selectedItem);
+                }
+              }}
             />
           </View>
           <View style={styles.inputSpinner}>

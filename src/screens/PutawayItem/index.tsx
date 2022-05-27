@@ -13,8 +13,8 @@ import { createPutawayOderAction } from '../../redux/actions/putaways';
 import InputSpinner from '../../components/InputSpinner';
 import InputBox from '../../components/InputBox';
 import Button from '../../components/Button';
-import showPopup from "../../components/Popup";
-import AsyncModalSelect from "../../components/AsyncModalSelect";
+import showPopup from '../../components/Popup';
+import AsyncModalSelect from '../../components/AsyncModalSelect';
 
 class PutawayItem extends Component<Props, State> {
   constructor(props: Props) {
@@ -39,30 +39,39 @@ class PutawayItem extends Component<Props, State> {
           positiveButton: {
             text: 'Retry',
             callback: () => {
-              this.props.searchInternalLocations('', {
-                'parentLocation.id': this.props.currentLocation.id,
-                max: '25',
-                offset: '0',
-              }, callback);
+              this.props.searchInternalLocations(
+                '',
+                {
+                  'parentLocation.id': this.props.currentLocation.id,
+                  max: '25',
+                  offset: '0'
+                },
+                callback
+              );
             }
           },
           negativeButtonText: 'Cancel'
         });
       } else {
         if (data && Object.keys(data).length !== 0) {
-          this.setState({ internalLocations: _.map(data.data, internalLocation => ({
+          this.setState({
+            internalLocations: _.map(data.data, (internalLocation) => ({
               name: internalLocation.name,
               id: internalLocation.id
             }))
-          })
+          });
         }
       }
     };
-    this.props.searchInternalLocations('', {
-      'parentLocation.id': this.props.currentLocation.id,
-      max: 25,
-      offset: 0,
-    }, callback);
+    this.props.searchInternalLocations(
+      '',
+      {
+        'parentLocation.id': this.props.currentLocation.id,
+        max: 25,
+        offset: 0
+      },
+      callback
+    );
   };
 
   UNSAFE_componentWillMount() {
@@ -87,7 +96,8 @@ class PutawayItem extends Component<Props, State> {
           'inventoryItem.id': item['inventoryItem.id'],
           'putawayFacility.id': currentLocation?.id,
           'currentLocation.id': item['currentLocation.id'],
-          'putawayLocation.id': this.state.selectedLocation?.id || item['putawayLocation.id'] || "",
+          'putawayLocation.id':
+            this.state.selectedLocation?.id || item['putawayLocation.id'] || '',
           quantity: this.state?.quantity
         }
       ],
@@ -130,8 +140,8 @@ class PutawayItem extends Component<Props, State> {
 
     return (
       <ScrollView
-        style={{width: '100%', height: '100%'}}
-        keyboardShouldPersistTaps={true}
+        keyboardShouldPersistTaps
+        style={{ width: '100%', height: '100%' }}
       >
         <View style={styles.container}>
           <View style={styles.childContainer}>
@@ -162,7 +172,7 @@ class PutawayItem extends Component<Props, State> {
             <InputBox
               disabled
               label="Received Quantity"
-              value={item['quantity'].toString() ?? '0'}
+              value={item.quantity.toString() ?? '0'}
               editable={false}
             />
 
@@ -172,11 +182,17 @@ class PutawayItem extends Component<Props, State> {
               <AsyncModalSelect
                 placeholder="Default"
                 label="Default"
-                initValue={selectedLocation?.label || item['putawayLocation.name'] || ''}
+                initValue={
+                  selectedLocation?.label || item['putawayLocation.name'] || ''
+                }
                 initialData={internalLocations}
-                onSelect={(selectedLocation: any) => this.setState({ selectedLocation })}
                 searchAction={searchInternalLocations}
-                searchActionParams={{ 'parentLocation.id': this.props.currentLocation.id }}
+                searchActionParams={{
+                  'parentLocation.id': this.props.currentLocation.id
+                }}
+                onSelect={(selectedLocation: any) =>
+                  this.setState({ selectedLocation })
+                }
               />
             </View>
             <View style={styles.inputSpinner}>
@@ -201,7 +217,7 @@ class PutawayItem extends Component<Props, State> {
 
 const mapStateToProps = (state: RootState) => ({
   binLocations: state.locationsReducer.binLocations,
-  currentLocation: state.mainReducer.currentLocation,
+  currentLocation: state.mainReducer.currentLocation
 });
 
 const mapDispatchToProps: DispatchProps = {

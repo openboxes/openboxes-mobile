@@ -369,13 +369,13 @@ class Products extends React.Component<Props, State> {
           onSearchBoxVisibilityChange={this.onSearchBoxVisibilityChange}
         />
         <BarcodeSearchHeader
-          placeholder={'Search by product code or name'}
-          subtitle={vm.subtitle}
-          onSearchTermSubmit={this.onSearchTermSubmit}
-          resetSearch={() => null}
-          searchBox={false}
           autoSearch
           autoFocus
+          placeholder={'Search by product code or name'}
+          subtitle={vm.subtitle}
+          resetSearch={() => null}
+          searchBox={false}
+          onSearchTermSubmit={this.onSearchTermSubmit}
         />
         <View style={styles.content}>
           <ProductsList

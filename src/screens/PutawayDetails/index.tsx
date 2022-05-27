@@ -7,9 +7,8 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
-import React, { ReactElement } from 'react';
+import React from 'react';
 import Theme from '../../utils/Theme';
-import { Order } from '../../data/order/Order';
 import PutAway from '../../data/putaway/PutAway';
 import PutAwayItems from '../../data/putaway/PutAwayItems';
 import { connect } from 'react-redux';

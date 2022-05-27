@@ -25,7 +25,11 @@ class Dashboard extends React.Component<Props, State> {
         }}
       >
         <Card style={styles.card}>
-          <Image style={styles.cardImage} resizeMode='contain' source={item.icon} />
+          <Image
+            style={styles.cardImage}
+            resizeMode="contain"
+            source={item.icon}
+          />
           <Text style={styles.cardLabel}>{item.screenName}</Text>
         </Card>
       </TouchableOpacity>

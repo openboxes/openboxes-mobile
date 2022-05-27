@@ -41,22 +41,22 @@ function renderProduct(
 ): ReactElement {
   return (
     <TouchableOpacity onPress={() => onProductTapped()}>
-        <Card style={LayoutStyle.listItemContainer}>
-           <Card.Content>
-            <View style={styles.listItemNameContainer}>
-              <Text style={styles.listItemNameLabel}>Product Code</Text>
-              <Text style={styles.listItemName}>{product.productCode}</Text>
-            </View>
-            <View style={styles.listItemNameContainer}>
-              <Text style={styles.listItemNameLabel}>Name</Text>
-              <Text style={styles.listItemName}>{product.name}</Text>
-            </View>
-            <View style={styles.listItemCategoryContainer}>
-              <Text style={styles.listItemCategoryLabel}>Category</Text>
-              <Text style={styles.listItemCategory}>{product.category.name}</Text>
-            </View>
-          </Card.Content>
-        </Card>
+      <Card style={LayoutStyle.listItemContainer}>
+        <Card.Content>
+          <View style={styles.listItemNameContainer}>
+            <Text style={styles.listItemNameLabel}>Product Code</Text>
+            <Text style={styles.listItemName}>{product.productCode}</Text>
+          </View>
+          <View style={styles.listItemNameContainer}>
+            <Text style={styles.listItemNameLabel}>Name</Text>
+            <Text style={styles.listItemName}>{product.name}</Text>
+          </View>
+          <View style={styles.listItemCategoryContainer}>
+            <Text style={styles.listItemCategoryLabel}>Category</Text>
+            <Text style={styles.listItemCategory}>{product.category.name}</Text>
+          </View>
+        </Card.Content>
+      </Card>
     </TouchableOpacity>
   );
 }

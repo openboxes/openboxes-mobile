@@ -1,5 +1,5 @@
-import LocationGroup from "./LocationGroup";
-import LocationType from "./LocationType";
+import LocationGroup from './LocationGroup';
+import LocationType from './LocationType';
 
 /*
 FIXME: Is there a better name for this? Don't want this to collide with
@@ -8,15 +8,16 @@ FIXME: Is there a better name for this? Don't want this to collide with
   Also, I think the models related to Redux should have a suffix "State" so that
   they can be easily distinguished from the API models.
 */
-export default interface Location {
-  id: string
-  name: string
-  locationGroup: LocationGroup
-  organizationName?: string | null
-  hasBinLocationSupport: boolean
-  hasPackingSupport: boolean
-  hasPartialReceivingSupport: boolean
-  locationType: LocationType
-  locationNumber: string
-
+interface Location {
+  id: string;
+  name: string;
+  locationGroup: LocationGroup;
+  organizationName?: string | null;
+  hasBinLocationSupport: boolean;
+  hasPackingSupport: boolean;
+  hasPartialReceivingSupport: boolean;
+  locationType: LocationType;
+  locationNumber: string;
 }
+
+export default Location;

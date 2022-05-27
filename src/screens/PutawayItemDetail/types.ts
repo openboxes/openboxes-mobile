@@ -30,12 +30,12 @@ export interface DispatchProps {
   hideScreenLoading: () => void;
   searchLocationByLocationNumber: (
     locationNumber: string,
-    callback: (data: any) => void,
+    callback: (data: any) => void
   ) => void;
   submitPutawayItem: (
     id: string,
     requestBody: any,
-    callback: (data: any) => void,
+    callback: (data: any) => void
   ) => void;
 }
 

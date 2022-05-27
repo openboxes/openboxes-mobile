@@ -56,7 +56,7 @@ const ShipItemDetails = () => {
               id: dataItem.id
             }))
           });
-          setSelectedContainerItem({ id: item?.container?.id || null })
+          setSelectedContainerItem({ id: item?.container?.id || null });
         }
       }
     };
@@ -68,14 +68,14 @@ const ShipItemDetails = () => {
       showPopup({
         message: 'Quantity packed is higher than quantity on shipment item',
         positiveButton: {
-          text: 'Ok',
-        },
+          text: 'Ok'
+        }
       });
       return;
     }
 
     const request = {
-      "action": "PACK",
+      action: 'PACK',
       'container.id': selectedContainerItem?.id ?? '',
       quantityToPack: state.quantityPicked
     };
@@ -101,8 +101,8 @@ const ShipItemDetails = () => {
         );
         navigation.navigate('OutboundStockDetails', {
           shipmentId: item.shipment.id,
-          refetchShipment: true,
-        })
+          refetchShipment: true
+        });
       }
     };
     dispatch(submitShipmentDetails(id, request, callback));
@@ -157,7 +157,9 @@ const ShipItemDetails = () => {
           data={state.containerList ?? []}
           selectedContainerItem={selectedContainerItem}
           initValue={item.container?.name || ''}
-          selectedData={(selectedItem: any, index: number) => setSelectedContainerItem(selectedItem)}
+          selectedData={(selectedItem: any, index: number) =>
+            setSelectedContainerItem(selectedItem)
+          }
         />
       </View>
       <View style={styles.alignCenterContent}>

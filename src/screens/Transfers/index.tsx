@@ -1,12 +1,7 @@
 import { DispatchProps, Props, State } from './types';
 import React from 'react';
 import { getOrdersAction } from '../../redux/actions/orders';
-import {
-  FlatList,
-  ListRenderItemInfo,
-  Text,
-  View
-} from 'react-native';
+import { FlatList, ListRenderItemInfo, Text, View } from 'react-native';
 import { connect } from 'react-redux';
 import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
 import { RootState } from '../../redux/reducers';
@@ -108,11 +103,15 @@ class Transfers extends React.Component<Props, State> {
                     <View style={styles.row}>
                       <View style={styles.col50}>
                         <Text style={styles.label}>Identify</Text>
-                        <Text style={styles.value}>{item.item?.orderNumber}</Text>
+                        <Text style={styles.value}>
+                          {item.item?.orderNumber}
+                        </Text>
                       </View>
                       <View style={styles.col50}>
                         <Text style={styles.label}>Status</Text>
-                        <Text style={styles.value}>{item.item?.status.name}</Text>
+                        <Text style={styles.value}>
+                          {item.item?.status.name}
+                        </Text>
                       </View>
                     </View>
 

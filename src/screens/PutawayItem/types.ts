@@ -1,23 +1,27 @@
 export interface OwnProps {
-  navigation: any,
+  navigation: any;
   route: any;
 }
 
 export interface StateProps {
-  currentLocation: any
+  currentLocation: any;
 }
 
 export interface DispatchProps {
   showScreenLoading: (message?: string) => void;
   hideScreenLoading: () => void;
-  searchInternalLocations: (searchTerm: string, additionalParams: any, callback?: (data: any) => void) => void;
-  createPutawayOderAction: (data: any, callback?: (data: any) => void) => void
+  searchInternalLocations: (
+    searchTerm: string,
+    additionalParams: any,
+    callback?: (data: any) => void
+  ) => void;
+  createPutawayOderAction: (data: any, callback?: (data: any) => void) => void;
 }
 
 export type Props = OwnProps & StateProps & DispatchProps;
 
 export interface State {
-  selectedLocation: any,
-  internalLocations: any,
-  quantity: string
+  selectedLocation: any;
+  internalLocations: any;
+  quantity: string;
 }

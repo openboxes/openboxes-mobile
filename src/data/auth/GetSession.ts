@@ -1,10 +1,10 @@
-import {Session} from './Session';
+import { Session } from './Session';
 import apiClient from '../../utils/ApiClient';
-import {AppDispatch} from '../../redux/Store';
-import {setSessionAction} from '../../redux/Actions';
+import { AppDispatch } from '../../redux/Store';
+import { setSessionAction } from '../../redux/Actions';
 import {
   getHideProgressBarAction,
-  getShowProgressBarAction,
+  getShowProgressBarAction
 } from '../../redux/Dispatchers';
 
 const url = '/getAppContext';
@@ -22,7 +22,7 @@ export default function getSession() {
         dispatch(getHideProgressBarAction());
         dispatch({
           type: setSessionAction.type,
-          payload: response.data,
+          payload: response.data
         });
         return response.data;
       })

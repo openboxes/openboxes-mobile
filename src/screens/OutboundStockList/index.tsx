@@ -1,10 +1,6 @@
 import { DispatchProps, Props, State } from './types';
 import React from 'react';
-import {
-  View,
-  FlatList,
-  ListRenderItemInfo,
-  Text} from 'react-native';
+import { View, FlatList, ListRenderItemInfo, Text } from 'react-native';
 import { connect } from 'react-redux';
 import { showScreenLoading, hideScreenLoading } from '../../redux/actions/main';
 import { RootState } from '../../redux/reducers';
@@ -16,9 +12,9 @@ import EmptyView from '../../components/EmptyView';
 import { Card } from 'react-native-paper';
 import { LayoutStyle } from '../../assets/styles';
 import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSearchHeader';
-import _ from "lodash";
-import ShipmentItems from "../../data/inbound/ShipmentItems";
-import { Container } from "../../data/container/Container";
+import _ from 'lodash';
+import ShipmentItems from '../../data/inbound/ShipmentItems';
+import { Container } from '../../data/container/Container';
 
 class OutboundStockList extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -85,10 +81,12 @@ class OutboundStockList extends React.Component<Props, State> {
       const exactOutboundOrder = _.find(
         this.state.shipments,
         (shipment: Shipment) => {
-          const matchingShipmentNumber = shipment?.shipmentNumber?.toLowerCase() === searchTerm.toLowerCase();
+          const matchingShipmentNumber =
+            shipment?.shipmentNumber?.toLowerCase() ===
+            searchTerm.toLowerCase();
           const matchingContainer = _.find(
             shipment?.availableContainers,
-            container => container.containerNumber === searchTerm,
+            (container) => container.containerNumber === searchTerm
           );
           return matchingShipmentNumber || matchingContainer;
         }
@@ -108,21 +106,34 @@ class OutboundStockList extends React.Component<Props, State> {
 
             const matchingContainer = _.find(
               shipment?.availableContainers,
-              (container: Container) => container.containerNumber
-                ?.toLowerCase()
-                ?.includes(searchTerm.toLowerCase()));
+              (container: Container) =>
+                container.containerNumber
+                  ?.toLowerCase()
+                  ?.includes(searchTerm.toLowerCase())
+            );
 
-            const matchingLotNumberOrProduct =  _.find(
+            const matchingLotNumberOrProduct = _.find(
               shipment?.shipmentItems,
               (item: ShipmentItems) => {
-                const matchingLotNumber = item.lotNumber?.toLowerCase()?.includes(searchTerm.toLowerCase());
-                const matchingCode = item.inventoryItem?.product?.productCode?.toLowerCase()?.includes(searchTerm.toLowerCase());
-                const matchingName = item.inventoryItem?.product?.name?.toLowerCase()?.includes(searchTerm.toLowerCase())
+                const matchingLotNumber = item.lotNumber
+                  ?.toLowerCase()
+                  ?.includes(searchTerm.toLowerCase());
+                const matchingCode = item.inventoryItem?.product?.productCode
+                  ?.toLowerCase()
+                  ?.includes(searchTerm.toLowerCase());
+                const matchingName = item.inventoryItem?.product?.name
+                  ?.toLowerCase()
+                  ?.includes(searchTerm.toLowerCase());
                 return matchingLotNumber || matchingCode || matchingName;
-              });
+              }
+            );
 
             // Return as bool
-            return !!(matchingShipmentNumber || matchingContainer || matchingLotNumberOrProduct);
+            return !!(
+              matchingShipmentNumber ||
+              matchingContainer ||
+              matchingLotNumberOrProduct
+            );
           }
         );
         this.setState({
@@ -142,23 +153,24 @@ class OutboundStockList extends React.Component<Props, State> {
       ...this.state,
       filteredShipments: []
     });
-  }
+  };
 
   render() {
     return (
       <View style={styles.screenContainer}>
         <BarcodeSearchHeader
+          autoSearch
           placeholder={'Order or Container Number'}
-          onSearchTermSubmit={this.filterShipments}
           resetSearch={this.resetFiltering}
           searchBox={false}
-          autoSearch
+          onSearchTermSubmit={this.filterShipments}
         />
         <View style={styles.contentContainer}>
           <FlatList
-            data={this.state.filteredShipments.length > 0
-              ? this.state.filteredShipments
-              : this.state.shipments
+            data={
+              this.state.filteredShipments.length > 0
+                ? this.state.filteredShipments
+                : this.state.shipments
             }
             ListEmptyComponent={
               <EmptyView
@@ -184,7 +196,9 @@ class OutboundStockList extends React.Component<Props, State> {
                     </View>
                     <View style={styles.col50}>
                       <Text style={styles.label}>Status</Text>
-                      <Text style={styles.value}>{shipment.item.requisitionStatus}</Text>
+                      <Text style={styles.value}>
+                        {shipment.item.requisitionStatus}
+                      </Text>
                     </View>
                   </View>
                   <View style={styles.row}>

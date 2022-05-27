@@ -1,10 +1,10 @@
 // noinspection DuplicatedCode
 
-import React, {ReactElement} from 'react';
-import {Searchbar} from 'react-native-paper';
-import {StyleSheet} from 'react-native';
-import {Platform, StatusBar} from 'react-native';
-import Icon, {Name} from '../../components/Icon';
+import React, { ReactElement } from 'react';
+import { Searchbar } from 'react-native-paper';
+import { StyleSheet } from 'react-native';
+import { Platform, StatusBar } from 'react-native';
+import Icon, { Name } from '../../components/Icon';
 import Theme from '../../utils/Theme';
 
 export interface Props {
@@ -40,7 +40,7 @@ export default class ProductsSearchCodeHeader extends React.Component<
   constructor(props: Props) {
     super(props);
     this.state = {
-      searchQuery: '',
+      searchQuery: ''
     };
     this.onSearchButtonPress = this.onSearchButtonPress.bind(this);
     this.onSearchQueryChange = this.onSearchQueryChange.bind(this);
@@ -57,7 +57,7 @@ export default class ProductsSearchCodeHeader extends React.Component<
 
   onSearchQueryChange(query: string) {
     this.setState({
-      searchQuery: query,
+      searchQuery: query
     });
   }
 
@@ -66,7 +66,7 @@ export default class ProductsSearchCodeHeader extends React.Component<
       this.props.onSearchBoxVisibilityChange(false);
     } else {
       this.setState({
-        searchQuery: '',
+        searchQuery: ''
       });
     }
   }
@@ -75,9 +75,9 @@ export default class ProductsSearchCodeHeader extends React.Component<
     return (
       <Icon
         name={Name.Cross}
-        onPress={this.onClearIconPressed}
         size={24}
         color={Theme.colors.surface}
+        onPress={this.onClearIconPressed}
       />
     );
   }
@@ -89,6 +89,7 @@ export default class ProductsSearchCodeHeader extends React.Component<
   render() {
     return this.props.searchBoxProductCodeVisible ? (
       <Searchbar
+        autoFocus
         theme={{
           colors: {
             /*
@@ -96,19 +97,18 @@ export default class ProductsSearchCodeHeader extends React.Component<
                 necessary since the background color has been set to the normally primary purple color.
                 */
             primary: white,
-            placeholder: placeholderColor,
-          },
+            placeholder: placeholderColor
+          }
         }}
         placeholder="Search by product code"
-        onChangeText={this.onSearchQueryChange}
         value={this.state.searchQuery}
         style={styles.searchBar}
         clearIcon={this.getClearIcon}
-        autoFocus={true}
         inputStyle={{
-          color: white,
+          color: white
         }}
         iconColor={white}
+        onChangeText={this.onSearchQueryChange}
         onSubmitEditing={this.onSearchProductCodeQuerySubmitted}
       />
     ) : (
@@ -124,6 +124,6 @@ const styles = StyleSheet.create({
     elevation: 4,
     backgroundColor: backgroundColor,
     borderRadius: 0,
-    color: white,
-  },
+    color: white
+  }
 });

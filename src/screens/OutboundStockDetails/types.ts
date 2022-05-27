@@ -1,35 +1,34 @@
-import {Shipment} from "../../data/container/Shipment";
-import {OutboundVM} from "./OutboundVM";
+import { Shipment } from '../../data/container/Shipment';
+import { OutboundVM } from './OutboundVM';
 
 export interface State {
-    error: string | null
-    shipment: Shipment | null
-    shipmentData: OutboundVM| null
+  error: string | null;
+  shipment: Shipment | null;
+  shipmentData: OutboundVM | null;
 }
 
-
 export interface OwnProps {
-    exit: () => void
-    navigation: any;
-    route: any;
+  exit: () => void;
+  navigation: any;
+  route: any;
 }
 
 export interface StateProps {
-    outboundStockList: any,
-    currentLocation: any
+  outboundStockList: any;
+  currentLocation: any;
 }
 
 export interface DispatchProps {
-    showScreenLoading: (message?: string) => void;
-    hideScreenLoading: () => void;
-    getShipmentReadyToBePacked: (
-        id: string,
-        callback: (data: any) => void
-    ) => void;
+  showScreenLoading: (message?: string) => void;
+  hideScreenLoading: () => void;
+  getShipmentReadyToBePacked: (
+    id: string,
+    callback: (data: any) => void
+  ) => void;
 }
 
 export interface OutboundDetailOwnProps {
-    containers: any
+  containers: any;
 }
 
-export type Props = OwnProps & StateProps & DispatchProps
+export type Props = OwnProps & StateProps & DispatchProps;

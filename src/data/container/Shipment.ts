@@ -1,33 +1,34 @@
-import ShipmentItems from "../inbound/ShipmentItems";
-import {Container} from "./Container";
-import Location from "../location/Location";
+import ShipmentItems from '../inbound/ShipmentItems';
+import { Container } from './Container';
+import Location from '../location/Location';
 
-export interface Shipment{
-    id: string,
-    name: string
-    shipmentNumber: string,
-    status: string,
-    expectedShippingDate: string,
-    actualShippingDate: string,
-    expectedDeliveryDate: string,
-    actualDeliveryDate: string,
-    shippedCount: number,
-    receivedCount: number,
-    shipmentItems: ShipmentItems[],
-    containers: Container[],
-    origin: Location,
-    destination: Location,
-    packingLocation: Location,
-    loadingLocation: Location,
-    availableContainers: Container[],
-    requisitionStatus: string
-    packingStatus: string
+export interface Shipment {
+  id: string;
+  name: string;
+  shipmentNumber: string;
+  status: string;
+  expectedShippingDate: string;
+  actualShippingDate: string;
+  expectedDeliveryDate: string;
+  actualDeliveryDate: string;
+  shippedCount: number;
+  receivedCount: number;
+  shipmentItems: ShipmentItems[];
+  containers: Container[];
+  origin: Location;
+  destination: Location;
+  packingLocation: Location;
+  loadingLocation: Location;
+  availableContainers: Container[];
+  requisitionStatus: string;
+  packingStatus: string;
 }
 
-export default interface ShipmentsReadyToPackedResponse{
-    data: Shipment[]
+interface ShipmentsReadyToPackedResponse {
+  data: Shipment[];
 }
-export  interface ShipmentReadyToPackedResponse{
-    data: Shipment
+export interface ShipmentReadyToPackedResponse {
+  data: Shipment;
 }
 
+export default ShipmentsReadyToPackedResponse;

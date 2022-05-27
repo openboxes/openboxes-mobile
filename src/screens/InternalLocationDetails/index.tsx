@@ -70,7 +70,7 @@ const InternalLocationDetails = () => {
           negativeButtonText: 'Cancel'
         });
       } else {
-        if (data.length == 0) {
+        if (data.length === 0) {
           showPopup({
             message: `No search results found for Location name "${id}"`,
             positiveButton: { text: 'Ok' }

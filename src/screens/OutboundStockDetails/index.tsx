@@ -32,7 +32,7 @@ class OutboundStockDetails extends React.Component<Props, State> {
 
   fetchShipment = () => {
     const { shipmentId } = this.props.route.params;
-    this.props.navigation.setParams({ refetchShipment : false });
+    this.props.navigation.setParams({ refetchShipment: false });
     const actionCallback = (data: any) => {
       if (!data || data?.error) {
         return Promise.resolve(null);
@@ -61,7 +61,9 @@ class OutboundStockDetails extends React.Component<Props, State> {
             </View>
             <View style={styles.col50}>
               <Text style={styles.label}>Status</Text>
-              <Text style={styles.value}>{this.state.shipment?.requisitionStatus}</Text>
+              <Text style={styles.value}>
+                {this.state.shipment?.requisitionStatus}
+              </Text>
             </View>
           </View>
           <View style={styles.row}>
@@ -110,13 +112,13 @@ class OutboundStockDetails extends React.Component<Props, State> {
           <ContainerDetails item={this.state.shipmentData?.sectionData ?? []} />
           <Button
             title={'Create LPN'}
+            disabled={false}
             onPress={() => {
               this.props.navigation.navigate('CreateLpn', {
                 id: this?.state?.shipment?.id,
                 shipmentDetail: this?.state?.shipment
               });
             }}
-            disabled={false}
           />
         </View>
       </ScrollView>

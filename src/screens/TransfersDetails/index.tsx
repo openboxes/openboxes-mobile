@@ -90,84 +90,84 @@ const TransferDetails = () => {
 
   const renderTransferItem = (): JSX.Element => {
     return (
-        <Card style={LayoutStyle.listItemContainer}>
-          <Card.Content>
-            <View style={styles.rowItem}>
-              <RenderData
-                title={'Order Number'}
-                subText={transferDetail?.stockTransferNumber}
-              />
-              <RenderData title={'Status'} subText={transferDetail?.status} />
-            </View>
-            <View style={styles.rowItem}>
-              <RenderData
-                title={'Origin'}
-                subText={transferDetail?.['origin.name']}
-              />
-              <RenderData
-                title={'Destination'}
-                subText={transferDetail?.['destination.name']}
-              />
-            </View>
+      <Card style={LayoutStyle.listItemContainer}>
+        <Card.Content>
+          <View style={styles.rowItem}>
+            <RenderData
+              title={'Order Number'}
+              subText={transferDetail?.stockTransferNumber}
+            />
+            <RenderData title={'Status'} subText={transferDetail?.status} />
+          </View>
+          <View style={styles.rowItem}>
+            <RenderData
+              title={'Origin'}
+              subText={transferDetail?.['origin.name']}
+            />
+            <RenderData
+              title={'Destination'}
+              subText={transferDetail?.['destination.name']}
+            />
+          </View>
 
-            <View style={styles.rowItem}>
-              <RenderData
-                title={'Description'}
-                subText={transferDetail?.description}
-              />
-              <RenderData
-                title={'Number of Items'}
-                subText={transferDetail?.stockTransferItems?.length}
-              />
-            </View>
+          <View style={styles.rowItem}>
+            <RenderData
+              title={'Description'}
+              subText={transferDetail?.description}
+            />
+            <RenderData
+              title={'Number of Items'}
+              subText={transferDetail?.stockTransferItems?.length}
+            />
+          </View>
 
-            <View style={styles.rowItem}>
-              <RenderData
-                title={'Created Date'}
-                subText={transferDetail?.dateCreated}
-              />
-            </View>
-          </Card.Content>
-        </Card>
+          <View style={styles.rowItem}>
+            <RenderData
+              title={'Created Date'}
+              subText={transferDetail?.dateCreated}
+            />
+          </View>
+        </Card.Content>
+      </Card>
     );
   };
 
   const renderListItem = (item: any, index: any) => {
     return (
       <Card key={index} style={LayoutStyle.listItemContainer}>
-          <Card.Content>
-            <View style={styles.rowItem}>
-              <RenderData
-                title={'Product Code'}
-                subText={item?.['product.productCode']}
-              />
-              <RenderData
-                title={'Product Name'}
-                subText={item?.['product.name']}
-              />
-            </View>
-            <View style={styles.rowItem}>
-              <RenderData
-                title={'Origin Bin Location'}
-                subText={item?.['originBinLocation.name']}
-              />
-              <RenderData
-                title={'Destination Bin Location'}
-                subText={item?.['destinationBinLocation.name']}
-              />
-            </View>
-            <View style={styles.rowItem}>
-              <RenderData title={'Quantity'} subText={item.quantity} />
-              <RenderData
-                title={'Quantity OnHand'}
-                subText={item.quantityOnHand}
-              />
-            </View>
+        <Card.Content>
+          <View style={styles.rowItem}>
+            <RenderData
+              title={'Product Code'}
+              subText={item?.['product.productCode']}
+            />
+            <RenderData
+              title={'Product Name'}
+              subText={item?.['product.name']}
+            />
+          </View>
+          <View style={styles.rowItem}>
+            <RenderData
+              title={'Origin Bin Location'}
+              subText={item?.['originBinLocation.name']}
+            />
+            <RenderData
+              title={'Destination Bin Location'}
+              subText={item?.['destinationBinLocation.name']}
+            />
+          </View>
+          <View style={styles.rowItem}>
+            <RenderData title={'Quantity'} subText={item.quantity} />
+            <RenderData
+              title={'Quantity OnHand'}
+              subText={item.quantityOnHand}
+            />
+          </View>
 
-            <View style={styles.rowItem}>
-              <RenderData title={'Status'} subText={item.status} />
-            </View>
-          </Card.Content>
+          <View style={styles.rowItem}>
+            <RenderData title={'Status'} subText={item.status} />
+          </View>
+        </Card.Content>
       </Card>
     );
   };

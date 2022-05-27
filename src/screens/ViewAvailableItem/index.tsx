@@ -1,9 +1,9 @@
 /* eslint-disable react-native/no-inline-styles */
-import {useNavigation, useRoute} from '@react-navigation/native';
-import React, {useState} from 'react';
-import {Image, View} from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import React, { useState } from 'react';
+import { Image, View } from 'react-native';
 import styles from './styles';
-import {Card} from 'react-native-paper';
+import { Card } from 'react-native-paper';
 import RenderData from '../../components/RenderData';
 import Button from '../../components/Button';
 import DefaultProductImage from '../../assets/images/default-product.png';
@@ -17,30 +17,32 @@ const ViewAvailableItem = () => {
       ...availableItems,
       ...{
         quantityOnHand: data?.quantityAvailable,
-        quantityAvailableToPromise: data?.quantityAdjusted,
-      },
+        quantityAvailableToPromise: data?.quantityAdjusted
+      }
     });
   };
 
   const navigateToAdjustStock = () => {
     navigation.navigate('AdjustStock', {
       item: availableItems,
-      onSelect: onSelect,
+      onSelect: onSelect
     });
   };
 
-  const source = route?.params?.imageUrl ? { uri: route?.params?.imageUrl } : DefaultProductImage;
+  const source = route?.params?.imageUrl
+    ? { uri: route?.params?.imageUrl }
+    : DefaultProductImage;
 
   const navigateToTransfer = () => {
-    navigation.navigate('Transfer',{item: availableItems});
+    navigation.navigate('Transfer', { item: availableItems });
   };
   return (
     <View style={styles.container}>
       <Card style={styles.from}>
         <Card.Content>
-          <View style={{width: '100%', alignItems: 'center', flex: 0}}>
+          <View style={{ width: '100%', alignItems: 'center', flex: 0 }}>
             <Image
-              style={{width: 150, height: 150, resizeMode: 'contain'}}
+              style={{ width: 150, height: 150, resizeMode: 'contain' }}
               source={source}
             />
           </View>
@@ -71,7 +73,9 @@ const ViewAvailableItem = () => {
             />
             <RenderData
               title={'Location Type'}
-              subText={availableItems?.binLocation?.locationType?.name ?? 'Never'}
+              subText={
+                availableItems?.binLocation?.locationType?.name ?? 'Never'
+              }
             />
           </View>
         </Card.Content>

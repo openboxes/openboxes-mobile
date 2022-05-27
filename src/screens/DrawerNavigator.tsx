@@ -1,13 +1,11 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {Component} from 'react';
-import {createDrawerNavigator} from '@react-navigation/drawer';
+import React, { Component } from 'react';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 import ChooseCurrentLocation from './ChooseCurrentLocation';
-import {Image} from 'react-native';
-import {colors} from '../constants';
-import AppInfoScreen from './AppInfo/AppInfoScreen';
+import { Image } from 'react-native';
+import { colors } from '../constants';
 
 const Drawer = createDrawerNavigator();
-
 
 class DrawerNavigator extends Component {
   render() {
@@ -15,10 +13,10 @@ class DrawerNavigator extends Component {
       <Drawer.Navigator
         screenOptions={{
           headerStyle: {
-            backgroundColor: colors.headerColor,
+            backgroundColor: colors.headerColor
           },
           headerTitleStyle: {
-            color: 'white',
+            color: 'white'
           },
           headerTintColor: '#ffffff',
           headerRight: () => (
@@ -28,17 +26,16 @@ class DrawerNavigator extends Component {
                 resizeMode: 'stretch',
                 width: 40,
                 height: 30,
-                marginRight: 30,
+                marginRight: 30
               }}
             />
-          ),
-        }}>
+          )
+        }}
+      >
         <Drawer.Screen
           name="Choose Current Location"
           component={ChooseCurrentLocation}
         />
-        
-        
       </Drawer.Navigator>
     );
   }

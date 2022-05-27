@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 import Theme from '../../utils/Theme';
-import { ratio, device } from '../../constants';
+import { ratio } from '../../constants';
 
 export default StyleSheet.create({
   screenContainer: {
@@ -52,7 +52,7 @@ export default StyleSheet.create({
   row: {
     flexDirection: 'row',
     width: '100%',
-    marginTop: 10,
+    marginTop: 10
   },
   col30: {
     display: 'flex',
@@ -184,7 +184,7 @@ export default StyleSheet.create({
   infoButton: {
     marginRight: 2,
     width: 12,
-    height: 12,
+    height: 12
   },
   shortageLabel: {
     marginTop: 10,
@@ -192,5 +192,5 @@ export default StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row'
-  },
+  }
 });

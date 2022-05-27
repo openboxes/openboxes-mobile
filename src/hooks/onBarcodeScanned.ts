@@ -1,4 +1,3 @@
-/* eslint-disable complexity */
 import useEventListener from './useEventListener';
 import { useDispatch } from 'react-redux';
 import { useEffect, useState } from 'react';
@@ -87,7 +86,7 @@ const onBarcodeScanned = () => {
       },
       error: null
     });
-    };
+  };
 
   return state.searchProductCode;
 };

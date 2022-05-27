@@ -1,2 +1,2 @@
 import LayoutStyle from './LayoutStyle';
-export {LayoutStyle}
+export { LayoutStyle };

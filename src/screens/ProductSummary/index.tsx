@@ -21,7 +21,7 @@ const ProductSummary = () => {
   );
   const [state, setState] = useState<any>({
     productSummary: [],
-    productData: [],
+    productData: []
   });
 
   useEffect(() => {
@@ -50,7 +50,7 @@ const ProductSummary = () => {
             data,
             (item: { quantityOnHand: number }) => item.quantityOnHand > 0
           );
-          state.productData = state.productSummary
+          state.productData = state.productSummary;
         }
         setState({ ...state });
       }
@@ -62,11 +62,14 @@ const ProductSummary = () => {
     if (query) {
       state.productSummary = _.filter(
         state.productData,
-        (item: { productCode: string, productName: string }) => item.productCode.toLowerCase().includes(query.toLowerCase()) || item.productName.toLowerCase().includes(query.toLowerCase()));
+        (item: { productCode: string; productName: string }) =>
+          item.productCode.toLowerCase().includes(query.toLowerCase()) ||
+          item.productName.toLowerCase().includes(query.toLowerCase())
+      );
     } else {
       state.productSummary = state.productData;
     }
-    setState({...state});
+    setState({ ...state });
   };
 
   const RenderData = ({ title, subText }: any): JSX.Element => {
@@ -111,12 +114,12 @@ const ProductSummary = () => {
   return (
     <View style={styles.mainContainer}>
       <BarcodeSearchHeader
-        placeholder={'Search by product code or name'}
-        onSearchTermSubmit={(query) => searchProduct(query)}
-        resetSearch={() => null}
-        searchBox={false}
         autoSearch
         autoFocus
+        placeholder={'Search by product code or name'}
+        resetSearch={() => null}
+        searchBox={false}
+        onSearchTermSubmit={(query) => searchProduct(query)}
       />
       <FlatList
         renderItem={({ item, index }) => renderListItem(item, index)}

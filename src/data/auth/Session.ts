@@ -1,5 +1,5 @@
-import {User} from './User';
-import {Locale} from '../Locale';
+import { User } from './User';
+import { Locale } from '../Locale';
 import Location from '../location/Location';
 
 export interface Session {
@@ -18,6 +18,8 @@ export interface Session {
   supportedLocales: Locale[];
 }
 
-export default interface GetSessionApiResponse {
+interface GetSessionApiResponse {
   data: Session;
-};
+}
+
+export default GetSessionApiResponse;

@@ -87,9 +87,9 @@ const InboundOrderList = () => {
   const RenderListItem = ({ item, index }: any): JSX.Element => {
     return (
       <Card
-        onPress={() => navigateToInboundDetails(item)}
         style={LayoutStyle.listItemContainer}
         key={index}
+        onPress={() => navigateToInboundDetails(item)}
       >
         <Card.Content>
           <View style={styles.rowItem}>
@@ -155,16 +155,16 @@ const InboundOrderList = () => {
       ...state,
       filteredInboundOrders: []
     });
-  }
+  };
 
   return (
     <View style={{ flex: 1, zIndex: -1 }}>
       <BarcodeSearchHeader
+        autoSearch
         placeholder="Search by order number"
-        onSearchTermSubmit={filterInboundOrders}
         resetSearch={resetFiltering}
         searchBox={false}
-        autoSearch
+        onSearchTermSubmit={filterInboundOrders}
       />
       {state.inboundOrders.length > 0 ? (
         <FlatList

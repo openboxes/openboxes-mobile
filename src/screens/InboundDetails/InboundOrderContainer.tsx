@@ -51,12 +51,12 @@ const InboundOrderContainer = ({
           <View style={styles.rowItem}>
             <RenderData title={'Description'} subText={shipmentData?.name} />
             <View>
-                <Text style={styles.label}>Items Received</Text>
-                <Text style={styles.value}>
-                {shipmentData.receivedCount} / {shipmentData?.shipmentItems.length}
-                </Text>
+              <Text style={styles.label}>Items Received</Text>
+              <Text style={styles.value}>
+                {shipmentData.receivedCount} /{' '}
+                {shipmentData?.shipmentItems.length}
+              </Text>
             </View>
-
           </View>
           <View style={styles.rowItem}>
             <RenderData
@@ -78,15 +78,17 @@ const InboundOrderContainer = ({
       return 'Receiving';
     } else if (value <= 0) {
       return 'Received';
-    } else return 'Pending';
+    } else {
+      return 'Pending';
+    }
   };
 
   const renderListItem = (item: any, index: any) => {
     return (
       <Card
         key={index}
-        onPress={() => navigateToInboundOrderDetails(item)}
         style={LayoutStyle.listItemContainer}
+        onPress={() => navigateToInboundOrderDetails(item)}
       >
         <Card.Content>
           <View style={styles.rowItem}>

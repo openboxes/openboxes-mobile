@@ -1,4 +1,4 @@
 export interface ProductUnitOfMeasure {
-  code: String | null
-  name: String | null
+  code: String | null;
+  name: String | null;
 }

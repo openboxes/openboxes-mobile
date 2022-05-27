@@ -1,5 +1,5 @@
 /* eslint-disable no-shadow */
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styles from './styles';
 import { ScrollView, View, ToastAndroid } from 'react-native';
@@ -96,7 +96,9 @@ const AdjustStock = () => {
   );
 
   const [comments, setComments] = useState('');
-  const [quantityAdjusted, setQuantityAdjusted] = useState(item.quantityAvailableToPromise);
+  const [quantityAdjusted, setQuantityAdjusted] = useState(
+    item.quantityAvailableToPromise
+  );
   const [reasonCode, setReasonCode] = useState(null);
   const [showDropDown, setShowDropDown] = useState(false);
 
@@ -206,17 +208,17 @@ const AdjustStock = () => {
           mode="outlined"
           visible={showDropDown}
           showDropDown={() => setShowDropDown(true)}
-          onDismiss={() => setShowDropDown(false)}
           value={reasonCode}
           setValue={setReasonCode}
           list={reasonCodes}
+          onDismiss={() => setShowDropDown(false)}
         />
         <InputBox
           value={comments}
-          onChange={setComments}
           disabled={false}
           editable={false}
           label="Comments"
+          onChange={setComments}
         />
       </View>
       <View style={styles.bottom}>
