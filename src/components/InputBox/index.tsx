@@ -26,12 +26,7 @@ const InputBox = ({
   };
 
   const renderIcon = () => {
-    return (
-      <Image
-        style={styles.arrowDownIcon}
-        source={require('../../assets/images/arrow-down.png')}
-      />
-    );
+    return <Image style={styles.arrowDownIcon} source={require('../../assets/images/arrow-down.png')} />;
   };
 
   return (

@@ -7,14 +7,7 @@ import { RootState } from '../../redux/reducers';
 import { Props } from './types';
 
 function EmptyView(props: Props) {
-  const {
-    fullScreenLoadingIndicator,
-    title,
-    description,
-    uri,
-    onPress,
-    isRefresh
-  } = props;
+  const { fullScreenLoadingIndicator, title, description, uri, onPress, isRefresh } = props;
   return !fullScreenLoadingIndicator?.visible ? (
     <View style={styles.container}>
       <Image

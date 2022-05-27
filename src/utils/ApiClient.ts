@@ -15,10 +15,7 @@ class _ApiClient {
       baseURL: url,
       withCredentials: true
     });
-    this.client.interceptors.response.use(
-      this.handleApiSuccess,
-      this.handleApiFailure
-    );
+    this.client.interceptors.response.use(this.handleApiSuccess, this.handleApiFailure);
   };
 
   async get(endpoint: string, config = this.client.defaults) {

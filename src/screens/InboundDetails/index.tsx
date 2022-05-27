@@ -30,9 +30,7 @@ const InboundDetails = () => {
       if (data?.error) {
         showPopup({
           title: data.errorMessage ? 'Inbound order details' : null,
-          message:
-            data.errorMessage ??
-            `Failed to load inbound order details value ${id}`,
+          message: data.errorMessage ?? `Failed to load inbound order details value ${id}`,
           positiveButton: {
             text: 'Retry',
             callback: () => {
@@ -44,14 +42,10 @@ const InboundDetails = () => {
       } else {
         if (data && Object.keys(data).length !== 0) {
           if (data.containers) {
-            const shipmentItems = _.flatten(_.map(data.containers, container => container.shipmentItems));
-            const quantitiesRemaining = shipmentItems ? _.map(shipmentItems, item => item.quantityRemaining) : [];
+            const shipmentItems = _.flatten(_.map(data.containers, (container) => container.shipmentItems));
+            const quantitiesRemaining = shipmentItems ? _.map(shipmentItems, (item) => item.quantityRemaining) : [];
             const totalQuantityRemaining = quantitiesRemaining
-              ? _.reduce(
-                  quantitiesRemaining,
-                  (sum, qty) => sum + (qty > 0 ? qty : 0),
-                  0
-                )
+              ? _.reduce(quantitiesRemaining, (sum, qty) => sum + (qty > 0 ? qty : 0), 0)
               : 0;
 
             if (totalQuantityRemaining <= 0) {

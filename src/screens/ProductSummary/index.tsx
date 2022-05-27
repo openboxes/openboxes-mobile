@@ -16,9 +16,7 @@ import { LayoutStyle } from '../../assets/styles';
 const ProductSummary = () => {
   const navigation = useNavigation<any>();
   const dispatch = useDispatch();
-  const location = useSelector(
-    (state: RootState) => state.mainReducer.currentLocation
-  );
+  const location = useSelector((state: RootState) => state.mainReducer.currentLocation);
   const [state, setState] = useState<any>({
     productSummary: [],
     productData: []
@@ -34,8 +32,7 @@ const ProductSummary = () => {
       if (data?.error) {
         showPopup({
           title: data.errorMessage ? 'Product Summary details' : null,
-          message:
-            data.errorMessage ?? `Failed to load Product Summary details ${id}`,
+          message: data.errorMessage ?? `Failed to load Product Summary details ${id}`,
           positiveButton: {
             text: 'Retry',
             callback: () => {
@@ -46,10 +43,7 @@ const ProductSummary = () => {
         });
       } else {
         if (data && Object.keys(data).length !== 0) {
-          state.productSummary = _.filter(
-            data,
-            (item: { quantityOnHand: number }) => item.quantityOnHand > 0
-          );
+          state.productSummary = _.filter(data, (item: { quantityOnHand: number }) => item.quantityOnHand > 0);
           state.productData = state.productSummary;
         }
         setState({ ...state });
@@ -90,18 +84,11 @@ const ProductSummary = () => {
 
   const renderListItem = (item: any, index: any) => {
     return (
-      <Card
-        key={index}
-        style={LayoutStyle.listItemContainer}
-        onPress={() => navigateToDetails(item)}
-      >
+      <Card key={index} style={LayoutStyle.listItemContainer} onPress={() => navigateToDetails(item)}>
         <Card.Content>
           <View style={styles.rowItem}>
             <RenderData title={'Product Code'} subText={item.productCode} />
-            <RenderData
-              title={'Quantity OnHand'}
-              subText={item.quantityOnHand}
-            />
+            <RenderData title={'Quantity OnHand'} subText={item.quantityOnHand} />
           </View>
           <View style={styles.rowItem}>
             <RenderData title={'Product Name'} subText={item.productName} />
@@ -125,11 +112,7 @@ const ProductSummary = () => {
         renderItem={({ item, index }) => renderListItem(item, index)}
         data={state.productSummary}
         ListEmptyComponent={
-          <EmptyView
-            title="Inventory"
-            description="There are no items in inventory"
-            isRefresh={false}
-          />
+          <EmptyView title="Inventory" description="There are no items in inventory" isRefresh={false} />
         }
         keyExtractor={(item, index) => item + index}
       />

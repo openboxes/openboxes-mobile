@@ -55,58 +55,42 @@ class OutboundStockDetails extends React.Component<Props, State> {
           <View style={styles.row}>
             <View style={styles.col50}>
               <Text style={styles.label}>Shipment Number</Text>
-              <Text style={styles.value}>
-                {this.state.shipment?.shipmentNumber}
-              </Text>
+              <Text style={styles.value}>{this.state.shipment?.shipmentNumber}</Text>
             </View>
             <View style={styles.col50}>
               <Text style={styles.label}>Status</Text>
-              <Text style={styles.value}>
-                {this.state.shipment?.requisitionStatus}
-              </Text>
+              <Text style={styles.value}>{this.state.shipment?.requisitionStatus}</Text>
             </View>
           </View>
           <View style={styles.row}>
             <View style={styles.col50}>
               <Text style={styles.label}>Destination</Text>
-              <Text style={styles.value}>
-                {this.state.shipment?.destination.name}
-              </Text>
+              <Text style={styles.value}>{this.state.shipment?.destination.name}</Text>
             </View>
             <View style={styles.col50}>
               <Text style={styles.label}>Expected Shipping Date</Text>
-              <Text style={styles.value}>
-                {this.state.shipment?.expectedShippingDate}
-              </Text>
+              <Text style={styles.value}>{this.state.shipment?.expectedShippingDate}</Text>
             </View>
           </View>
           <View style={styles.row}>
             <View style={styles.col50}>
               <Text style={styles.label}>Packing Location</Text>
-              <Text style={styles.value}>
-                {this.state.shipment?.packingLocation}
-              </Text>
+              <Text style={styles.value}>{this.state.shipment?.packingLocation}</Text>
             </View>
             <View style={styles.col50}>
               <Text style={styles.label}>Loading Location</Text>
-              <Text style={styles.value}>
-                {this.state.shipment?.loadingLocation}
-              </Text>
+              <Text style={styles.value}>{this.state.shipment?.loadingLocation}</Text>
             </View>
           </View>
 
           <View style={styles.row}>
             <View style={styles.col50}>
               <Text style={styles.label}>Number of containers</Text>
-              <Text style={styles.value}>
-                {this.state.shipment?.availableContainers.length}
-              </Text>
+              <Text style={styles.value}>{this.state.shipment?.availableContainers.length}</Text>
             </View>
             <View style={styles.col50}>
               <Text style={styles.label}>Items packed</Text>
-              <Text style={styles.value}>
-                {this.state.shipment?.packingStatus}
-              </Text>
+              <Text style={styles.value}>{this.state.shipment?.packingStatus}</Text>
             </View>
           </View>
           <ContainerDetails item={this.state.shipmentData?.sectionData ?? []} />
@@ -135,7 +119,4 @@ const mapDispatchToProps: DispatchProps = {
   hideScreenLoading,
   getShipmentReadyToBePacked
 };
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(OutboundStockDetails);
+export default connect(mapStateToProps, mapDispatchToProps)(OutboundStockDetails);

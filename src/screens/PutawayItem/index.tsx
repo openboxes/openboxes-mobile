@@ -34,8 +34,7 @@ class PutawayItem extends Component<Props, State> {
       if (data?.error) {
         showPopup({
           title: data.message ? 'internal location details' : '',
-          message:
-            data.errorMessage ?? `Failed to load internal location value ${id}`,
+          message: data.errorMessage ?? `Failed to load internal location value ${id}`,
           positiveButton: {
             text: 'Retry',
             callback: () => {
@@ -96,8 +95,7 @@ class PutawayItem extends Component<Props, State> {
           'inventoryItem.id': item['inventoryItem.id'],
           'putawayFacility.id': currentLocation?.id,
           'currentLocation.id': item['currentLocation.id'],
-          'putawayLocation.id':
-            this.state.selectedLocation?.id || item['putawayLocation.id'] || '',
+          'putawayLocation.id': this.state.selectedLocation?.id || item['putawayLocation.id'] || '',
           quantity: this.state?.quantity
         }
       ],
@@ -139,24 +137,11 @@ class PutawayItem extends Component<Props, State> {
     const { quantity, internalLocations, selectedLocation } = this.state;
 
     return (
-      <ScrollView
-        keyboardShouldPersistTaps
-        style={{ width: '100%', height: '100%' }}
-      >
+      <ScrollView keyboardShouldPersistTaps style={{ width: '100%', height: '100%' }}>
         <View style={styles.container}>
           <View style={styles.childContainer}>
-            <InputBox
-              disabled
-              label="Product Code"
-              value={item['product.productCode']}
-              editable={false}
-            />
-            <InputBox
-              disabled
-              label="Product Name"
-              value={item['product.name']}
-              editable={false}
-            />
+            <InputBox disabled label="Product Code" value={item['product.productCode']} editable={false} />
+            <InputBox disabled label="Product Name" value={item['product.name']} editable={false} />
             <InputBox
               disabled
               label="Lot Number"
@@ -169,12 +154,7 @@ class PutawayItem extends Component<Props, State> {
               value={item['currentLocation.name'] ?? 'Default'}
               editable={false}
             />
-            <InputBox
-              disabled
-              label="Received Quantity"
-              value={item.quantity.toString() ?? '0'}
-              editable={false}
-            />
+            <InputBox disabled label="Received Quantity" value={item.quantity.toString() ?? '0'} editable={false} />
 
             <View style={styles.divider} />
             <View>
@@ -182,25 +162,17 @@ class PutawayItem extends Component<Props, State> {
               <AsyncModalSelect
                 placeholder="Default"
                 label="Default"
-                initValue={
-                  selectedLocation?.label || item['putawayLocation.name'] || ''
-                }
+                initValue={selectedLocation?.label || item['putawayLocation.name'] || ''}
                 initialData={internalLocations}
                 searchAction={searchInternalLocations}
                 searchActionParams={{
                   'parentLocation.id': this.props.currentLocation.id
                 }}
-                onSelect={(selectedLocation: any) =>
-                  this.setState({ selectedLocation })
-                }
+                onSelect={(selectedLocation: any) => this.setState({ selectedLocation })}
               />
             </View>
             <View style={styles.inputSpinner}>
-              <InputSpinner
-                title="Quantity to Pick"
-                value={quantity}
-                setValue={this.changeQuantity}
-              />
+              <InputSpinner title="Quantity to Pick" value={quantity} setValue={this.changeQuantity} />
             </View>
           </View>
           <Button

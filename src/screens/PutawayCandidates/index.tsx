@@ -1,12 +1,6 @@
 import React, { Component } from 'react';
 import { DispatchProps, Props } from './types';
-import {
-  FlatList,
-  Text,
-  SafeAreaView,
-  RefreshControl,
-  Alert
-} from 'react-native';
+import { FlatList, Text, SafeAreaView, RefreshControl, Alert } from 'react-native';
 import { RootState } from '../../redux/reducers';
 import styles from './styles';
 import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
@@ -37,13 +31,9 @@ class PutawayCandidates extends Component<Props> {
 
     if (!this.state.refreshing) {
       const { candidates } = this.props;
-      let updatedList = candidates.filter(
-        (candidate) => candidate.putawayStatus === 'READY'
-      );
+      let updatedList = candidates.filter((candidate) => candidate.putawayStatus === 'READY');
       updatedList = updatedList.sort((a: any, b: any) =>
-        a['currentLocation.name']
-          .toLowerCase()
-          .localeCompare(b['currentLocation.name'].toLowerCase())
+        a['currentLocation.name'].toLowerCase().localeCompare(b['currentLocation.name'].toLowerCase())
       );
       if (updatedList.length !== this.state.updatedList.length) {
         this.setState({ updatedList });
@@ -75,12 +65,8 @@ class PutawayCandidates extends Component<Props> {
           <Text>{`Product Code - ${item['product.productCode']}`}</Text>
           <Text>{`Product Name - ${item['product.name']}`}</Text>
           <Text>{`Current Location - ${item['currentLocation.name']}`}</Text>
-          <Text>{`Lot Number - ${
-            item['inventoryItem.lotNumber'] ?? 'Default'
-          }`}</Text>
-          <Text>{`Expiry Date - ${
-            item['inventoryItem.expirationDate'] ?? 'Never'
-          }`}</Text>
+          <Text>{`Lot Number - ${item['inventoryItem.lotNumber'] ?? 'Default'}`}</Text>
+          <Text>{`Expiry Date - ${item['inventoryItem.expirationDate'] ?? 'Never'}`}</Text>
           <Text>{`Quantity - ${item.quantity}`}</Text>
         </Card.Content>
       </Card>
@@ -93,21 +79,13 @@ class PutawayCandidates extends Component<Props> {
       <SafeAreaView style={styles.container}>
         {updatedList.length ? (
           <FlatList
-            refreshControl={
-              <RefreshControl
-                refreshing={this.state.refreshing}
-                onRefresh={this.getScreenData}
-              />
-            }
+            refreshControl={<RefreshControl refreshing={this.state.refreshing} onRefresh={this.getScreenData} />}
             data={updatedList}
             renderItem={({ item }) => this.renderItem(item)}
             keyExtractor={(item, index) => index}
           />
         ) : (
-          <EmptyView
-            title="Putaway Candidates"
-            description="There are no candidate items to Putaway"
-          />
+          <EmptyView title="Putaway Candidates" description="There are no candidate items to Putaway" />
         )}
       </SafeAreaView>
     );

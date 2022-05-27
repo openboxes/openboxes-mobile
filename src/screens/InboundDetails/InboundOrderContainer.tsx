@@ -6,11 +6,7 @@ import { Card } from 'react-native-paper';
 import InboundDetailProps from './types';
 import { LayoutStyle } from '../../assets/styles';
 
-const InboundOrderContainer = ({
-  data,
-  shipmentId,
-  shipmentData
-}: InboundDetailProps) => {
+const InboundOrderContainer = ({ data, shipmentId, shipmentData }: InboundDetailProps) => {
   const navigation = useNavigation<any>();
 
   const RenderData = ({ title, subText }: any): JSX.Element => {
@@ -35,38 +31,25 @@ const InboundOrderContainer = ({
       <Card style={LayoutStyle.listItemContainer}>
         <Card.Content>
           <View style={styles.rowItem}>
-            <RenderData
-              title={'Shipment Number'}
-              subText={shipmentData?.shipmentNumber}
-            />
+            <RenderData title={'Shipment Number'} subText={shipmentData?.shipmentNumber} />
             <RenderData title={'Status'} subText={shipmentData?.status} />
           </View>
           <View style={styles.rowItem}>
             <RenderData title={'Origin'} subText={shipmentData?.origin.name} />
-            <RenderData
-              title={'Destination'}
-              subText={shipmentData?.destination.name}
-            />
+            <RenderData title={'Destination'} subText={shipmentData?.destination.name} />
           </View>
           <View style={styles.rowItem}>
             <RenderData title={'Description'} subText={shipmentData?.name} />
             <View>
               <Text style={styles.label}>Items Received</Text>
               <Text style={styles.value}>
-                {shipmentData.receivedCount} /{' '}
-                {shipmentData?.shipmentItems.length}
+                {shipmentData.receivedCount} / {shipmentData?.shipmentItems.length}
               </Text>
             </View>
           </View>
           <View style={styles.rowItem}>
-            <RenderData
-              title={'Expected Shipping Date'}
-              subText={shipmentData?.expectedShippingDate}
-            />
-            <RenderData
-              title={'Expected Delivery Date'}
-              subText={shipmentData?.expectedDeliveryDate}
-            />
+            <RenderData title={'Expected Shipping Date'} subText={shipmentData?.expectedShippingDate} />
+            <RenderData title={'Expected Delivery Date'} subText={shipmentData?.expectedDeliveryDate} />
           </View>
         </Card.Content>
       </Card>
@@ -85,38 +68,22 @@ const InboundOrderContainer = ({
 
   const renderListItem = (item: any, index: any) => {
     return (
-      <Card
-        key={index}
-        style={LayoutStyle.listItemContainer}
-        onPress={() => navigateToInboundOrderDetails(item)}
-      >
+      <Card key={index} style={LayoutStyle.listItemContainer} onPress={() => navigateToInboundOrderDetails(item)}>
         <Card.Content>
           <View style={styles.rowItem}>
-            <RenderData
-              title={'Product Code'}
-              subText={item['product.productCode']}
-            />
+            <RenderData title={'Product Code'} subText={item['product.productCode']} />
             <RenderData title={'Product Name'} subText={item['product.name']} />
           </View>
           <View style={styles.rowItem}>
-            <RenderData
-              title={'Quantity Shipped'}
-              subText={item.quantityShipped}
-            />
-            <RenderData
-              title={'Quantity Received'}
-              subText={item.quantityReceived}
-            />
+            <RenderData title={'Quantity Shipped'} subText={item.quantityShipped} />
+            <RenderData title={'Quantity Received'} subText={item.quantityReceived} />
           </View>
           <View style={styles.rowItem}>
             <RenderData
               title={'Quantity Remaining'}
               subText={item.quantityRemaining > 0 ? item.quantityRemaining : 0}
             />
-            <RenderData
-              title={'Status'}
-              subText={getStatus(item.quantityRemaining)}
-            />
+            <RenderData title={'Status'} subText={getStatus(item.quantityRemaining)} />
           </View>
         </Card.Content>
       </Card>
@@ -127,9 +94,7 @@ const InboundOrderContainer = ({
     <SectionList
       ListHeaderComponent={renderShipmentItem}
       renderItem={({ item, index, section }) => renderListItem(item, index)}
-      renderSectionHeader={({ section: { title } }) => (
-        <Text style={styles.headerTitle}>{title}</Text>
-      )}
+      renderSectionHeader={({ section: { title } }) => <Text style={styles.headerTitle}>{title}</Text>}
       sections={data}
       keyExtractor={(item, index) => item + index}
     />

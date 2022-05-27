@@ -1,14 +1,6 @@
 /* eslint-disable complexity */
 import React, { ReactElement } from 'react';
-import {
-  FlatList,
-  ListRenderItemInfo,
-  Modal,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-  Text
-} from 'react-native';
+import { FlatList, ListRenderItemInfo, Modal, StyleSheet, TouchableOpacity, View, Text } from 'react-native';
 import { ProductCategory } from '../../data/product/category/ProductCategory';
 import { ActivityIndicator } from 'react-native-paper';
 import getProductCategories from '../../data/product/category/GetProductCategories';
@@ -26,10 +18,7 @@ interface State {
   message: string | null;
 }
 
-export default class ProductCategoryPickerPopup extends React.Component<
-  Props,
-  State
-> {
+export default class ProductCategoryPickerPopup extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
@@ -50,7 +39,7 @@ export default class ProductCategoryPickerPopup extends React.Component<
             loading: true
           });
           const categories = await getProductCategories();
-          if (categories.length == 0) {
+          if (categories.length === 0) {
             this.setState({
               message: 'No categories found'
             });
@@ -83,10 +72,7 @@ export default class ProductCategoryPickerPopup extends React.Component<
 
   renderCategoryItem(item: ListRenderItemInfo<ProductCategory>): ReactElement {
     return (
-      <TouchableOpacity
-        style={styles.listItemContainer}
-        onPress={() => this.props.onCategoryChosen(item.item)}
-      >
+      <TouchableOpacity style={styles.listItemContainer} onPress={() => this.props.onCategoryChosen(item.item)}>
         <Text style={styles.listItem}>{item.item.name}</Text>
         <View
           style={{
@@ -121,16 +107,9 @@ export default class ProductCategoryPickerPopup extends React.Component<
                       <ActivityIndicator />
                     </View>
                   )}
-                  {this.state.message && (
-                    <Text style={styles.loadingFailedError}>
-                      {this.state.message}
-                    </Text>
-                  )}
+                  {this.state.message && <Text style={styles.loadingFailedError}>{this.state.message}</Text>}
                 </View>
-                <TouchableOpacity
-                  style={styles.cancelButtonContainer}
-                  onPress={this.props.onCancelPressed}
-                >
+                <TouchableOpacity style={styles.cancelButtonContainer} onPress={this.props.onCancelPressed}>
                   <Text style={styles.button}>Cancel</Text>
                 </TouchableOpacity>
               </View>

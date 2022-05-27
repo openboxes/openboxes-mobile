@@ -42,11 +42,7 @@ class OutboundStockList extends React.Component<Props, State> {
           positiveButton: {
             text: 'Retry',
             callback: () => {
-              this.props.getShipmentsReadyToBePacked(
-                currentLocation.id,
-                'PENDING',
-                actionCallback
-              );
+              this.props.getShipmentsReadyToBePacked(currentLocation.id, 'PENDING', actionCallback);
             }
           },
           negativeButtonText: 'Cancel'
@@ -62,11 +58,7 @@ class OutboundStockList extends React.Component<Props, State> {
     };
     const { currentLocation } = this.props;
     this.props.showScreenLoading('Loading..');
-    this.props.getShipmentsReadyToBePacked(
-      currentLocation.id,
-      'PENDING',
-      actionCallback
-    );
+    this.props.getShipmentsReadyToBePacked(currentLocation.id, 'PENDING', actionCallback);
   };
 
   showShipmentReadyToPackScreen = (shipment: any) => {
@@ -78,64 +70,39 @@ class OutboundStockList extends React.Component<Props, State> {
   filterShipments = (searchTerm: string) => {
     if (searchTerm) {
       // Find exact match by shipment number or container number (if found, then redirect to the packing screen)
-      const exactOutboundOrder = _.find(
-        this.state.shipments,
-        (shipment: Shipment) => {
-          const matchingShipmentNumber =
-            shipment?.shipmentNumber?.toLowerCase() ===
-            searchTerm.toLowerCase();
-          const matchingContainer = _.find(
-            shipment?.availableContainers,
-            (container) => container.containerNumber === searchTerm
-          );
-          return matchingShipmentNumber || matchingContainer;
-        }
-      );
+      const exactOutboundOrder = _.find(this.state.shipments, (shipment: Shipment) => {
+        const matchingShipmentNumber = shipment?.shipmentNumber?.toLowerCase() === searchTerm.toLowerCase();
+        const matchingContainer = _.find(
+          shipment?.availableContainers,
+          (container) => container.containerNumber === searchTerm
+        );
+        return matchingShipmentNumber || matchingContainer;
+      });
 
       if (exactOutboundOrder) {
         this.resetFiltering();
         this.showShipmentReadyToPackScreen(exactOutboundOrder);
       } else {
         // If no exact match, then filter by <shipment number, container number, lot number on item> containing the search term
-        const filteredShipments = _.filter(
-          this.state.shipments,
-          (shipment: Shipment) => {
-            const matchingShipmentNumber = shipment?.shipmentNumber
+        const filteredShipments = _.filter(this.state.shipments, (shipment: Shipment) => {
+          const matchingShipmentNumber = shipment?.shipmentNumber?.toLowerCase()?.includes(searchTerm.toLowerCase());
+
+          const matchingContainer = _.find(shipment?.availableContainers, (container: Container) =>
+            container.containerNumber?.toLowerCase()?.includes(searchTerm.toLowerCase())
+          );
+
+          const matchingLotNumberOrProduct = _.find(shipment?.shipmentItems, (item: ShipmentItems) => {
+            const matchingLotNumber = item.lotNumber?.toLowerCase()?.includes(searchTerm.toLowerCase());
+            const matchingCode = item.inventoryItem?.product?.productCode
               ?.toLowerCase()
               ?.includes(searchTerm.toLowerCase());
+            const matchingName = item.inventoryItem?.product?.name?.toLowerCase()?.includes(searchTerm.toLowerCase());
+            return matchingLotNumber || matchingCode || matchingName;
+          });
 
-            const matchingContainer = _.find(
-              shipment?.availableContainers,
-              (container: Container) =>
-                container.containerNumber
-                  ?.toLowerCase()
-                  ?.includes(searchTerm.toLowerCase())
-            );
-
-            const matchingLotNumberOrProduct = _.find(
-              shipment?.shipmentItems,
-              (item: ShipmentItems) => {
-                const matchingLotNumber = item.lotNumber
-                  ?.toLowerCase()
-                  ?.includes(searchTerm.toLowerCase());
-                const matchingCode = item.inventoryItem?.product?.productCode
-                  ?.toLowerCase()
-                  ?.includes(searchTerm.toLowerCase());
-                const matchingName = item.inventoryItem?.product?.name
-                  ?.toLowerCase()
-                  ?.includes(searchTerm.toLowerCase());
-                return matchingLotNumber || matchingCode || matchingName;
-              }
-            );
-
-            // Return as bool
-            return !!(
-              matchingShipmentNumber ||
-              matchingContainer ||
-              matchingLotNumberOrProduct
-            );
-          }
-        );
+          // Return as bool
+          return !!(matchingShipmentNumber || matchingContainer || matchingLotNumberOrProduct);
+        });
         this.setState({
           ...this.state,
           filteredShipments
@@ -167,80 +134,54 @@ class OutboundStockList extends React.Component<Props, State> {
         />
         <View style={styles.contentContainer}>
           <FlatList
-            data={
-              this.state.filteredShipments.length > 0
-                ? this.state.filteredShipments
-                : this.state.shipments
-            }
+            data={this.state.filteredShipments.length > 0 ? this.state.filteredShipments : this.state.shipments}
             ListEmptyComponent={
-              <EmptyView
-                title="Packing"
-                description=" There are no items to pack"
-                isRefresh={false}
-              />
+              <EmptyView title="Packing" description=" There are no items to pack" isRefresh={false} />
             }
             renderItem={(shipment: ListRenderItemInfo<Shipment>) => (
               <Card
                 style={LayoutStyle.listItemContainer}
-                onPress={() =>
-                  this.showShipmentReadyToPackScreen(shipment.item)
-                }
+                onPress={() => this.showShipmentReadyToPackScreen(shipment.item)}
               >
                 <Card.Content>
                   <View style={styles.row}>
                     <View style={styles.col50}>
                       <Text style={styles.label}>Shipment Number</Text>
-                      <Text style={styles.value}>
-                        {shipment.item.shipmentNumber}
-                      </Text>
+                      <Text style={styles.value}>{shipment.item.shipmentNumber}</Text>
                     </View>
                     <View style={styles.col50}>
                       <Text style={styles.label}>Status</Text>
-                      <Text style={styles.value}>
-                        {shipment.item.requisitionStatus}
-                      </Text>
+                      <Text style={styles.value}>{shipment.item.requisitionStatus}</Text>
                     </View>
                   </View>
                   <View style={styles.row}>
                     <View style={styles.col50}>
                       <Text style={styles.label}>Destination</Text>
-                      <Text style={styles.value}>
-                        {shipment.item.destination.name}
-                      </Text>
+                      <Text style={styles.value}>{shipment.item.destination.name}</Text>
                     </View>
                     <View style={styles.col50}>
                       <Text style={styles.label}>Expected Shipping Date</Text>
-                      <Text style={styles.value}>
-                        {shipment.item.expectedShippingDate}
-                      </Text>
+                      <Text style={styles.value}>{shipment.item.expectedShippingDate}</Text>
                     </View>
                   </View>
                   <View style={styles.row}>
                     <View style={styles.col50}>
                       <Text style={styles.label}>Packing Location</Text>
-                      <Text style={styles.value}>
-                        {shipment.item.packingLocation}
-                      </Text>
+                      <Text style={styles.value}>{shipment.item.packingLocation}</Text>
                     </View>
                     <View style={styles.col50}>
                       <Text style={styles.label}>Loading Location</Text>
-                      <Text style={styles.value}>
-                        {shipment.item.loadingLocation}
-                      </Text>
+                      <Text style={styles.value}>{shipment.item.loadingLocation}</Text>
                     </View>
                   </View>
                   <View style={styles.row}>
                     <View style={styles.col50}>
                       <Text style={styles.label}>Number of containers</Text>
-                      <Text style={styles.value}>
-                        {shipment.item.availableContainers.length}
-                      </Text>
+                      <Text style={styles.value}>{shipment.item.availableContainers.length}</Text>
                     </View>
                     <View style={styles.col50}>
                       <Text style={styles.label}>Items packed</Text>
-                      <Text style={styles.value}>
-                        {shipment.item.packingStatus}
-                      </Text>
+                      <Text style={styles.value}>{shipment.item.packingStatus}</Text>
                     </View>
                   </View>
                 </Card.Content>

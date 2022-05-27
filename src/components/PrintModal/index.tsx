@@ -37,17 +37,10 @@ function PrintModal(props: Props) {
     setLabel(text);
   };
   return (
-    <Modal
-      animationType="slide"
-      transparent={props.printModalVisible}
-      visible={props.visible}
-    >
+    <Modal animationType="slide" transparent={props.printModalVisible} visible={props.visible}>
       <View style={styles.centeredView}>
         <View style={styles.modalView}>
-          <Image
-            style={styles.image}
-            source={{ uri: props?.defaultBarcodeLabelUrl?.url }}
-          />
+          <Image style={styles.image} source={{ uri: props?.defaultBarcodeLabelUrl?.url }} />
           <InputBox
             value={label}
             disabled={false}

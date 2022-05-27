@@ -32,28 +32,15 @@ const ContainerDetails = ({ item }: any) => {
 
   const renderListItem = (item: any, index: any) => {
     return (
-      <TouchableOpacity
-        key={index}
-        style={styles.itemView}
-        onPress={() => navigateToOutboundOrderDetails(item)}
-      >
+      <TouchableOpacity key={index} style={styles.itemView} onPress={() => navigateToOutboundOrderDetails(item)}>
         <Card>
           <Card.Content>
             <View style={styles.rowItem}>
-              <RenderData
-                title={'Product Code'}
-                subText={item.inventoryItem.product?.productCode}
-              />
-              <RenderData
-                title={'Product Name'}
-                subText={item.inventoryItem.product?.name}
-              />
+              <RenderData title={'Product Code'} subText={item.inventoryItem.product?.productCode} />
+              <RenderData title={'Product Name'} subText={item.inventoryItem.product?.name} />
             </View>
             <View style={styles.rowItem}>
-              <RenderData
-                title={'Lot Number'}
-                subText={item.inventoryItem.lotNumber ?? 'Default'}
-              />
+              <RenderData title={'Lot Number'} subText={item.inventoryItem.lotNumber ?? 'Default'} />
               <RenderData title={'Quantity to Pack'} subText={item.quantity} />
             </View>
           </Card.Content>
@@ -77,11 +64,7 @@ const ContainerDetails = ({ item }: any) => {
               });
             }}
           >
-            <FontAwesome5
-              name="chevron-right"
-              size={20}
-              color={colors.headerColor}
-            />
+            <FontAwesome5 name="chevron-right" size={20} color={colors.headerColor} />
           </TouchableOpacity>
         </View>
       )}

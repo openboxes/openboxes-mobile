@@ -1,15 +1,8 @@
 import apiClient from '../utils/ApiClient';
 
-export function getShipmentsReadyToBePacked(
-  locationId: string,
-  shipmentStatusCode: string
-) {
+export function getShipmentsReadyToBePacked(locationId: string, shipmentStatusCode: string) {
   return apiClient.get(
-    '/shipments?origin.id=' +
-      locationId +
-      '&shipmentStatusCode=' +
-      shipmentStatusCode +
-      '&requisitionStatus=PICKED'
+    '/shipments?origin.id=' + locationId + '&shipmentStatusCode=' + shipmentStatusCode + '&requisitionStatus=PICKED'
   );
 }
 

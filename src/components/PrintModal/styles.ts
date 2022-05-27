@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { colors, device, ratio } from '../../constants';
+import { device, ratio } from '../../constants';
 
 export default StyleSheet.create({
   centeredView: {

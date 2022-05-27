@@ -68,10 +68,7 @@ class PutawayList extends React.Component<Props, State> {
     this.props.fetchPutAwayFromOrderAction(query, actionCallback);
   };
 
-  goToPutawayItemDetailScreen = (
-    putAway: PutAway,
-    putAwayItem: PutAwayItems
-  ) => {
+  goToPutawayItemDetailScreen = (putAway: PutAway, putAwayItem: PutAwayItems) => {
     this.props.navigation.navigate('PutawayItemDetail', {
       putAway: putAway,
       putAwayItem: putAwayItem
@@ -83,22 +80,16 @@ class PutawayList extends React.Component<Props, State> {
       if (text) {
         const exactPutaway = _.find(
           this.state.putAwayList,
-          (putaway) =>
-            putaway?.putawayItem?.['inventoryItem.lotNumber'] === text
+          (putaway) => putaway?.putawayItem?.['inventoryItem.lotNumber'] === text
         );
 
         if (exactPutaway) {
           this.setState({ lpnFilter: '', putAwayListFiltered: [] }, () =>
-            this.goToPutawayItemDetailScreen(
-              exactPutaway,
-              exactPutaway.putawayItem
-            )
+            this.goToPutawayItemDetailScreen(exactPutaway, exactPutaway.putawayItem)
           );
         } else {
-          const putAwayListFiltered = _.filter(
-            this.state.putAwayList,
-            (putaway) =>
-              putaway?.putawayItem?.['inventoryItem.lotNumber']?.includes(text)
+          const putAwayListFiltered = _.filter(this.state.putAwayList, (putaway) =>
+            putaway?.putawayItem?.['inventoryItem.lotNumber']?.includes(text)
           );
           this.setState({ putAwayListFiltered: putAwayListFiltered });
         }
@@ -109,8 +100,7 @@ class PutawayList extends React.Component<Props, State> {
   };
 
   render() {
-    const { showList, putAwayList, putAwayListFiltered, lpnFilter } =
-      this.state;
+    const { showList, putAwayList, putAwayListFiltered, lpnFilter } = this.state;
 
     return (
       <View style={styles.screenContainer}>
@@ -127,24 +117,15 @@ class PutawayList extends React.Component<Props, State> {
               />
             ) : null}
             <FlatList
-              data={
-                putAwayListFiltered?.length ? putAwayListFiltered : putAwayList
-              }
+              data={putAwayListFiltered?.length ? putAwayListFiltered : putAwayList}
               ListEmptyComponent={
-                <EmptyView
-                  title="Putaway"
-                  description="There are no items to putaway"
-                  isRefresh={false}
-                />
+                <EmptyView title="Putaway" description="There are no items to putaway" isRefresh={false} />
               }
               renderItem={(listRenderItemInfo: ListRenderItemInfo<any>) => (
                 <Card
                   style={LayoutStyle.listItemContainer}
                   onPress={() =>
-                    this.goToPutawayItemDetailScreen(
-                      listRenderItemInfo.item,
-                      listRenderItemInfo.item?.putawayItem
-                    )
+                    this.goToPutawayItemDetailScreen(listRenderItemInfo.item, listRenderItemInfo.item?.putawayItem)
                   }
                 >
                   <Card.Content>
@@ -152,19 +133,13 @@ class PutawayList extends React.Component<Props, State> {
                       <View style={styles.col50}>
                         <Text style={styles.label}>Product Code</Text>
                         <Text style={styles.value}>
-                          {
-                            listRenderItemInfo.item?.putawayItem?.[
-                              'product.productCode'
-                            ]
-                          }
+                          {listRenderItemInfo.item?.putawayItem?.['product.productCode']}
                         </Text>
                       </View>
                       <View style={styles.col50}>
                         <Text style={styles.label}>Lot Number</Text>
                         <Text style={styles.value}>
-                          {listRenderItemInfo.item?.putawayItem?.[
-                            'inventoryItem.lotNumber'
-                          ] || 'Default'}
+                          {listRenderItemInfo.item?.putawayItem?.['inventoryItem.lotNumber'] || 'Default'}
                         </Text>
                       </View>
                     </View>
@@ -172,21 +147,13 @@ class PutawayList extends React.Component<Props, State> {
                       <View style={styles.col50}>
                         <Text style={styles.label}>Current Location</Text>
                         <Text style={styles.value}>
-                          {
-                            listRenderItemInfo.item?.putawayItem?.[
-                              'currentLocation.name'
-                            ]
-                          }
+                          {listRenderItemInfo.item?.putawayItem?.['currentLocation.name']}
                         </Text>
                       </View>
                       <View style={styles.col50}>
                         <Text style={styles.label}>Putaway Location</Text>
                         <Text style={styles.value}>
-                          {
-                            listRenderItemInfo.item?.putawayItem?.[
-                              'putawayLocation.name'
-                            ]
-                          }
+                          {listRenderItemInfo.item?.putawayItem?.['putawayLocation.name']}
                         </Text>
                       </View>
                     </View>

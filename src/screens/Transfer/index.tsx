@@ -19,9 +19,7 @@ const Transfer = () => {
   const navigation = useNavigation<any>();
   const { item }: any = route.params;
   const dispatch = useDispatch();
-  const location = useSelector(
-    (rootState: RootState) => rootState.mainReducer.currentLocation
-  );
+  const location = useSelector((rootState: RootState) => rootState.mainReducer.currentLocation);
   const [binToLocationData, setBinToLocationData] = useState<any>({});
   const [quantity, setQuantity] = useState(0);
   const [internalLocations, setInternalLocations] = useState<any>([]);
@@ -35,8 +33,7 @@ const Transfer = () => {
       if (data?.error) {
         showPopup({
           title: data.message ? 'internal location details' : '',
-          message:
-            data.errorMessage ?? `Failed to load internal location value ${id}`,
+          message: data.errorMessage ?? `Failed to load internal location value ${id}`,
           positiveButton: {
             text: 'Retry',
             callback: () => {
@@ -141,12 +138,7 @@ const Transfer = () => {
     <ScrollView>
       <View style={styles.container}>
         <View style={styles.from}>
-          <InputBox
-            disabled
-            editable={false}
-            label={'Product Code'}
-            value={item?.product?.productCode}
-          />
+          <InputBox disabled editable={false} label={'Product Code'} value={item?.product?.productCode} />
           <InputBox
             disabled
             editable={false}
@@ -159,12 +151,7 @@ const Transfer = () => {
             label={'Expiration Date'}
             value={item?.inventoryItem?.expirationDate ?? 'Never'}
           />
-          <InputBox
-            disabled
-            value={item?.binLocation?.name ?? 'Default'}
-            label={'From'}
-            editable={false}
-          />
+          <InputBox disabled value={item?.binLocation?.name ?? 'Default'} label={'From'} editable={false} />
           <InputBox
             disabled
             label={'Quantity Available to Transfer'}
@@ -188,11 +175,7 @@ const Transfer = () => {
             />
           </View>
           <View style={styles.inputSpinner}>
-            <InputSpinner
-              title="Quantity to Transfer"
-              value={quantity}
-              setValue={setQuantity}
-            />
+            <InputSpinner title="Quantity to Transfer" value={quantity} setValue={setQuantity} />
           </View>
         </View>
         <View style={styles.bottom}>

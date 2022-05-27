@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { RefreshControl, ScrollView, Text } from 'react-native';
+import { RefreshControl, ScrollView } from 'react-native';
 import { Props, State, DispatchProps } from './types';
 import styles from './styles';
 import { RootState } from '../../redux/reducers';
@@ -17,12 +17,7 @@ class Refresh extends Component<Props, State> {
     return (
       <ScrollView
         contentContainerStyle={styles.container}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={this.handleRefresh}
-          />
-        }
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={this.handleRefresh} />}
       >
         {this.props.children}
       </ScrollView>

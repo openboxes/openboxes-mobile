@@ -5,12 +5,7 @@ import { Props } from './types';
 import ModalSelector from 'react-native-modal-selector-searchable';
 import CLEAR from '../../assets/images/icon_clear.png';
 
-const AutoInputInternalLocation = ({
-  data,
-  selectedData,
-  initValue = '',
-  placeholder = ''
-}: Props) => {
+const AutoInputInternalLocation = ({ data, selectedData, initValue = '', placeholder = '' }: Props) => {
   const [query, setQuery] = useState(initValue);
 
   const clearSelection = () => {
@@ -33,10 +28,7 @@ const AutoInputInternalLocation = ({
         optionTextStyle={styles.option}
         scrollViewAccessibilityLabel={'Scrollable options'}
         cancelButtonAccessibilityLabel={'Cancel Button'}
-        onChange={(option: {
-          label: React.SetStateAction<string>;
-          key: any;
-        }) => {
+        onChange={(option: { label: React.SetStateAction<string>; key: any }) => {
           setQuery(option.label);
           selectedData?.({
             id: option.key,
@@ -44,12 +36,7 @@ const AutoInputInternalLocation = ({
           });
         }}
       >
-        <TextInput
-          style={styles.textInput}
-          editable={false}
-          placeholder={placeholder ?? ''}
-          value={query}
-        />
+        <TextInput style={styles.textInput} editable={false} placeholder={placeholder ?? ''} value={query} />
       </ModalSelector>
       {query ? (
         <TouchableOpacity onPress={clearSelection}>

@@ -1,12 +1,5 @@
 import Product from '../../data/product/Product';
-import {
-  FlatList,
-  ListRenderItemInfo,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View
-} from 'react-native';
+import { FlatList, ListRenderItemInfo, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React, { ReactElement } from 'react';
 import Theme from '../../utils/Theme';
 import EmptyView from '../../components/EmptyView';
@@ -28,17 +21,11 @@ export default function ProductsList(props: Props) {
       style={styles.list}
     />
   ) : (
-    <EmptyView
-      title="Product List"
-      description="There are no products on the list"
-    />
+    <EmptyView title="Product List" description="There are no products on the list" />
   );
 }
 
-function renderProduct(
-  product: Product,
-  onProductTapped: () => void
-): ReactElement {
+function renderProduct(product: Product, onProductTapped: () => void): ReactElement {
   return (
     <TouchableOpacity onPress={() => onProductTapped()}>
       <Card style={LayoutStyle.listItemContainer}>

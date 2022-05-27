@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { RadioButton } from 'react-native-paper';
 
@@ -17,10 +17,7 @@ const Radio = ({ title, checked, setChecked, disabled }: any) => {
         />
       </View>
       <View style={styles.title}>
-        <Text
-          style={styles.titleText(disabled)}
-          onPress={() => (!disabled ? setChecked(!checked) : null)}
-        >
+        <Text style={styles.titleText(disabled)} onPress={() => (!disabled ? setChecked(!checked) : null)}>
           {title}
         </Text>
       </View>

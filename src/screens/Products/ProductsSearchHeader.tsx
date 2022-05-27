@@ -35,10 +35,7 @@ When the user taps on the search button, the header transforms into a search box
 does not follow the color template of their header component. So changes have been made to the theme and styling of the
 SearchBar component to ensure that the color scheme of the normal header and the Searchbar remains the same.
 */
-export default class ProductsSearchHeader extends React.Component<
-  Props,
-  State
-> {
+export default class ProductsSearchHeader extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
@@ -63,7 +60,7 @@ export default class ProductsSearchHeader extends React.Component<
   }
 
   onClearIconPressed() {
-    if (this.state.searchQuery.length == 0) {
+    if (this.state.searchQuery.length === 0) {
       this.props.onSearchBoxVisibilityChange(false);
     } else {
       this.setState({
@@ -73,14 +70,7 @@ export default class ProductsSearchHeader extends React.Component<
   }
 
   getClearIcon(): ReactElement {
-    return (
-      <Icon
-        name={Name.Cross}
-        size={24}
-        color={Theme.colors.surface}
-        onPress={this.onClearIconPressed}
-      />
-    );
+    return <Icon name={Name.Cross} size={24} color={Theme.colors.surface} onPress={this.onClearIconPressed} />;
   }
 
   onSearchQuerySubmitted() {

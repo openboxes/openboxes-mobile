@@ -38,8 +38,7 @@ class OrderDetails extends React.Component<Props, State> {
           error: 'No Picklist found'
         });
       } else {
-        const initialPicklistItemIndex =
-          this.getInitiallyDisplayedPickItemIndex(data?.picklistItems);
+        const initialPicklistItemIndex = this.getInitiallyDisplayedPickItemIndex(data?.picklistItems);
 
         if (initialPicklistItemIndex === -1) {
           showPopup({
@@ -85,10 +84,7 @@ class OrderDetails extends React.Component<Props, State> {
   }
 
   getInitiallyDisplayedPickItemIndex(picklistItems: any) {
-    return _.findIndex(
-      picklistItems,
-      (item: any) => Number(item.quantityRemaining) > 0
-    );
+    return _.findIndex(picklistItems, (item: any) => Number(item.quantityRemaining) > 0);
   }
 
   render() {

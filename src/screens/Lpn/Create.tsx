@@ -8,10 +8,7 @@ import { Order } from '../../data/order/Order';
 import styles from './styles';
 import InputBox from '../../components/InputBox';
 import Button from '../../components/Button';
-import {
-  getShipmentOrigin,
-  getShipmentPacking
-} from '../../redux/actions/packing';
+import { getShipmentOrigin, getShipmentPacking } from '../../redux/actions/packing';
 import { RootState } from '../../redux/reducers';
 import AutoInputInternalLocation from '../../components/AutoInputInternalLocation';
 
@@ -149,12 +146,7 @@ class CreateLpn extends React.Component<Props, State> {
               });
             }}
           />
-          <InputBox
-            value={this.state.name}
-            editable={false}
-            label={'Name'}
-            onChange={this.onChangeName}
-          />
+          <InputBox value={this.state.name} editable={false} label={'Name'} onChange={this.onChangeName} />
           <InputBox
             value={this.state.containerNumber}
             editable={false}

@@ -30,9 +30,7 @@ class Transfers extends React.Component<Props, State> {
       if (data?.error) {
         showPopup({
           title: data.errorMessage ? 'Inbound order details' : null,
-          message:
-            data.errorMessage ??
-            `Failed to load inbound order details value ${id}`,
+          message: data.errorMessage ?? `Failed to load inbound order details value ${id}`,
           positiveButton: {
             text: 'Retry',
             callback: () => {
@@ -53,8 +51,7 @@ class Transfers extends React.Component<Props, State> {
             error: null,
             transfersList: data.filter(
               (transferData) =>
-                currentLocation?.id === transferData?.origin?.id &&
-                transferData.status.name === 'APPROVED'
+                currentLocation?.id === transferData?.origin?.id && transferData.status.name === 'APPROVED'
             )
           });
         }
@@ -67,9 +64,7 @@ class Transfers extends React.Component<Props, State> {
     const { transfersList } = this.state;
     this.setState({
       error: null,
-      transfersList: transfersList.filter(
-        (transferData) => data?.id !== transferData?.id
-      )
+      transfersList: transfersList.filter((transferData) => data?.id !== transferData?.id)
     });
   };
 
@@ -88,54 +83,36 @@ class Transfers extends React.Component<Props, State> {
           <View style={styles.contentContainer}>
             <FlatList
               data={transfersList}
-              ListEmptyComponent={
-                <EmptyView
-                  title="Transfers"
-                  description="There are no items for Transfer"
-                />
-              }
+              ListEmptyComponent={<EmptyView title="Transfers" description="There are no items for Transfer" />}
               renderItem={(item: ListRenderItemInfo<any>) => (
-                <Card
-                  style={LayoutStyle.listItemContainer}
-                  onPress={() => this.onStockTransfersTapped(item.item)}
-                >
+                <Card style={LayoutStyle.listItemContainer} onPress={() => this.onStockTransfersTapped(item.item)}>
                   <Card.Content>
                     <View style={styles.row}>
                       <View style={styles.col50}>
                         <Text style={styles.label}>Identify</Text>
-                        <Text style={styles.value}>
-                          {item.item?.orderNumber}
-                        </Text>
+                        <Text style={styles.value}>{item.item?.orderNumber}</Text>
                       </View>
                       <View style={styles.col50}>
                         <Text style={styles.label}>Status</Text>
-                        <Text style={styles.value}>
-                          {item.item?.status.name}
-                        </Text>
+                        <Text style={styles.value}>{item.item?.status.name}</Text>
                       </View>
                     </View>
 
                     <View style={styles.row}>
                       <View style={styles.col50}>
                         <Text style={styles.label}>Origin</Text>
-                        <Text style={styles.value}>
-                          {item.item?.origin?.name}
-                        </Text>
+                        <Text style={styles.value}>{item.item?.origin?.name}</Text>
                       </View>
                       <View style={styles.col50}>
                         <Text style={styles.label}>Destination</Text>
-                        <Text style={styles.value}>
-                          {item.item?.destination?.name}
-                        </Text>
+                        <Text style={styles.value}>{item.item?.destination?.name}</Text>
                       </View>
                     </View>
 
                     <View style={styles.row}>
                       <View style={styles.col50}>
                         <Text style={styles.label}>Number of Items</Text>
-                        <Text style={styles.value}>
-                          {item.item?.orderItems?.length}
-                        </Text>
+                        <Text style={styles.value}>{item.item?.orderItems?.length}</Text>
                       </View>
                     </View>
                   </Card.Content>

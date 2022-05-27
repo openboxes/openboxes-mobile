@@ -29,9 +29,7 @@ const ViewAvailableItem = () => {
     });
   };
 
-  const source = route?.params?.imageUrl
-    ? { uri: route?.params?.imageUrl }
-    : DefaultProductImage;
+  const source = route?.params?.imageUrl ? { uri: route?.params?.imageUrl } : DefaultProductImage;
 
   const navigateToTransfer = () => {
     navigation.navigate('Transfer', { item: availableItems });
@@ -41,42 +39,19 @@ const ViewAvailableItem = () => {
       <Card style={styles.from}>
         <Card.Content>
           <View style={{ width: '100%', alignItems: 'center', flex: 0 }}>
-            <Image
-              style={{ width: 150, height: 150, resizeMode: 'contain' }}
-              source={source}
-            />
+            <Image style={{ width: 150, height: 150, resizeMode: 'contain' }} source={source} />
           </View>
           <View style={styles.rowItem}>
-            <RenderData
-              title={'Product Code'}
-              subText={availableItems?.product.productCode}
-            />
-            <RenderData
-              title={'Product Name'}
-              subText={availableItems?.product.name}
-            />
+            <RenderData title={'Product Code'} subText={availableItems?.product.productCode} />
+            <RenderData title={'Product Name'} subText={availableItems?.product.name} />
           </View>
           <View style={styles.rowItem}>
-            <RenderData
-              title={'Lot Number'}
-              subText={availableItems?.inventoryItem?.lotNumber ?? 'Default'}
-            />
-            <RenderData
-              title={'Expiration Date'}
-              subText={availableItems?.inventoryItem?.expirationDate ?? 'Never'}
-            />
+            <RenderData title={'Lot Number'} subText={availableItems?.inventoryItem?.lotNumber ?? 'Default'} />
+            <RenderData title={'Expiration Date'} subText={availableItems?.inventoryItem?.expirationDate ?? 'Never'} />
           </View>
           <View style={styles.rowItem}>
-            <RenderData
-              title={'Location Name'}
-              subText={availableItems?.binLocation?.name ?? 'Default'}
-            />
-            <RenderData
-              title={'Location Type'}
-              subText={
-                availableItems?.binLocation?.locationType?.name ?? 'Never'
-              }
-            />
+            <RenderData title={'Location Name'} subText={availableItems?.binLocation?.name ?? 'Default'} />
+            <RenderData title={'Location Type'} subText={availableItems?.binLocation?.locationType?.name ?? 'Never'} />
           </View>
         </Card.Content>
       </Card>

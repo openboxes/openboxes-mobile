@@ -8,10 +8,7 @@ import Button from '../../components/Button';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
 import showPopup from '../../components/Popup';
-import {
-  getShipmentPacking,
-  submitShipmentDetails
-} from '../../redux/actions/packing';
+import { getShipmentPacking, submitShipmentDetails } from '../../redux/actions/packing';
 import AutoInputInternalLocation from '../../components/AutoInputInternalLocation';
 import InputSpinner from '../../components/InputSpinner';
 
@@ -36,8 +33,7 @@ const ShipItemDetails = () => {
       if (data?.error) {
         showPopup({
           title: data.errorMessage ? 'Shipment details' : 'Error',
-          message:
-            data.errorMessage ?? `Failed to load Shipment details value ${id}`,
+          message: data.errorMessage ?? `Failed to load Shipment details value ${id}`,
           positiveButton: {
             text: 'Retry',
             callback: () => {
@@ -129,9 +125,7 @@ const ShipItemDetails = () => {
       <View style={styles.rowItem}>
         <View style={styles.columnItem}>
           <Text style={styles.label}>{'Product Code'}</Text>
-          <Text style={styles.value}>
-            {item.inventoryItem.product.productCode}
-          </Text>
+          <Text style={styles.value}>{item.inventoryItem.product.productCode}</Text>
         </View>
         <View style={styles.columnItem}>
           <Text style={styles.label}>{'Product Name'}</Text>
@@ -141,9 +135,7 @@ const ShipItemDetails = () => {
       <View style={styles.rowItem}>
         <View style={styles.columnItem}>
           <Text style={styles.label}>{'LOT Number'}</Text>
-          <Text style={styles.value}>
-            {item.inventoryItem.lotNumber ?? 'Default'}
-          </Text>
+          <Text style={styles.value}>{item.inventoryItem.lotNumber ?? 'Default'}</Text>
         </View>
         <View style={styles.columnItem}>
           <Text style={styles.label}>{'Quantity to pack'}</Text>
@@ -157,17 +149,11 @@ const ShipItemDetails = () => {
           data={state.containerList ?? []}
           selectedContainerItem={selectedContainerItem}
           initValue={item.container?.name || ''}
-          selectedData={(selectedItem: any, index: number) =>
-            setSelectedContainerItem(selectedItem)
-          }
+          selectedData={(selectedItem: any, index: number) => setSelectedContainerItem(selectedItem)}
         />
       </View>
       <View style={styles.alignCenterContent}>
-        <InputSpinner
-          title={'Quantity to Pick'}
-          value={state.quantityPicked}
-          setValue={quantityPickedChange}
-        />
+        <InputSpinner title={'Quantity to Pick'} value={state.quantityPicked} setValue={quantityPickedChange} />
       </View>
       <View style={styles.bottom}>
         <Button

@@ -58,9 +58,7 @@ const Scan = () => {
       });
     }
   };
-  const navigateToAvailableItem = (
-    availableItem: AvailableItem | undefined
-  ) => {
+  const navigateToAvailableItem = (availableItem: AvailableItem | undefined) => {
     console.log('navigate to available item ', availableItem);
     if (availableItem) {
       // @ts-ignore
@@ -80,12 +78,10 @@ const Scan = () => {
       if (data?.error) {
         showPopup({
           title: 'No results found',
-          message:
-            data.errorMessage ??
-            `Failed to load search results with value = "${query}"`
+          message: data.errorMessage ?? `Failed to load search results with value = "${query}"`
         });
       } else {
-        if (data.length == 0) {
+        if (data.length === 0) {
           showPopup({
             title: 'Empty results',
             message: `No search results found for barcode "${query}"`

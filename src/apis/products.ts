@@ -49,10 +49,7 @@ export function getProductById(id: any) {
 }
 
 export function printLabel(data: any) {
-  return apiClient.post(
-    `/${data.type}/${data.productId}/labels/${data.barcodeId}`,
-    {}
-  );
+  return apiClient.post(`/${data.type}/${data.productId}/labels/${data.barcodeId}`, {});
 }
 
 export function stockAdjustments(requestBody: any) {
