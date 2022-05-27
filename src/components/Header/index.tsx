@@ -1,5 +1,5 @@
 import React from 'react';
-import {Appbar} from 'react-native-paper';
+import { Appbar } from 'react-native-paper';
 import * as NavigationService from '../../NavigationService';
 
 export interface Props {
@@ -10,7 +10,7 @@ export interface Props {
   // rightIcon?: IconProps;
 }
 
-export default function Header(props: Props) {
+const Header = (props: Props) => {
   return (
     <Appbar.Header>
       {props.backButtonVisible && (
@@ -23,4 +23,6 @@ export default function Header(props: Props) {
       {/*)}*/}
     </Appbar.Header>
   );
-}
+};
+
+export default Header;

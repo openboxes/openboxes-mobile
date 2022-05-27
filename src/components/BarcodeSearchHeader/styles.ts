@@ -4,6 +4,6 @@ export default StyleSheet.create({
   searchBar: {
     height: 56,
     elevation: 4,
-    borderRadius: 0,
-  },
+    borderRadius: 0
+  }
 });

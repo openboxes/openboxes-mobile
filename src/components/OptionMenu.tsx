@@ -1,5 +1,3 @@
-/* eslint-disable react-native/no-inline-styles */
-/* eslint-disable complexity */
 import * as React from 'react';
 import { Image, TouchableOpacity, View } from 'react-native';
 import { Menu, Provider } from 'react-native-paper';
@@ -42,11 +40,14 @@ const OptionMenu = ({ route, navigation }: any) => {
             }}
             visible={visible}
             anchor={
-              <TouchableOpacity onPress={openMenu} style={{
-                flex: 1,
-                justifyContent: 'center',
-                alignItems: 'center'
-              }}>
+              <TouchableOpacity
+                style={{
+                  flex: 1,
+                  justifyContent: 'center',
+                  alignItems: 'center'
+                }}
+                onPress={openMenu}
+              >
                 <Image
                   source={require('../assets/images/option.jpg')}
                   style={{
@@ -78,40 +79,40 @@ const OptionMenu = ({ route, navigation }: any) => {
             />
             <Menu.Item
               style={{
-                width: '70%',
+                width: '70%'
               }}
+              title="Settings"
               onPress={() => {
                 navigation.navigate('Settings');
                 closeMenu();
               }}
-              title="Settings"
             />
             <Menu.Item
               style={{
-                width: '70%',
+                width: '70%'
               }}
+              title="Change location"
               onPress={() => {
                 navigation.navigate('Drawer');
                 closeMenu();
               }}
-              title="Change location"
             />
             <Menu.Item
               style={{
-                width: '70%',
+                width: '70%'
               }}
+              title="App info / version"
               onPress={() => {
                 navigation.navigate('AppInfo');
                 closeMenu();
               }}
-              title="App info / version"
             />
             <Menu.Item
               style={{
-                width: '70%',
+                width: '70%'
               }}
-              onPress={handleLogout}
               title="Logout"
+              onPress={handleLogout}
             />
           </Menu>
         ) : null}

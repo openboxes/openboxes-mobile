@@ -8,16 +8,16 @@ const InputSpinner = ({ title, value, max, setValue }: any) => {
     <>
       <View style={styles.container}>
         <Spinner
-          max={max}
-          min={0}
-          skin={'square'}
-          color={colors.headerColor}
-          selectTextOnFocus={true}
-          showBorder={true}
+          selectTextOnFocus
+          showBorder
           step={1}
+          color={colors.headerColor}
+          max={max}
+          skin={'square'}
+          min={0}
           longStep={10}
           speed={1}
-          width={device.windowWidth/1.16}
+          width={device.windowWidth / 1.16}
           value={value}
           onChange={(num: any) => {
             setValue(num);
@@ -30,7 +30,7 @@ const InputSpinner = ({ title, value, max, setValue }: any) => {
 export default InputSpinner;
 const styles = StyleSheet.create({
   container: {
-    marginTop: 20,
+    marginTop: 20
   },
   textView: {
     marginTop: 10,

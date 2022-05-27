@@ -1,10 +1,10 @@
-import {StyleSheet} from 'react-native';
-import {device} from '../../constants';
+import { StyleSheet } from 'react-native';
+import { device } from '../../constants';
 
 export default StyleSheet.create({
   mainContainer: {
     flexDirection: 'row',
-    marginVertical: 5,
+    marginVertical: 5
   },
   autoCompleteContainer: {
     borderWidth: 2,
@@ -13,21 +13,21 @@ export default StyleSheet.create({
     backgroundColor: 'white',
     borderColor: 'grey',
     justifyContent: 'center',
-    paddingHorizontal: 10,
+    paddingHorizontal: 10
   },
   autoCompleteInputContainer: {
-    borderWidth: 1,
+    borderWidth: 1
   },
   clearButton: {
     width: 25,
     height: 25,
-    margin: 5,
+    margin: 5
   },
   container: {
-    backgroundColor: 'white',
+    backgroundColor: 'white'
   },
   option: {
-    color: 'black',
+    color: 'black'
   },
   textInput: {
     borderWidth: 1,
@@ -35,17 +35,17 @@ export default StyleSheet.create({
     padding: 10,
     height: 40,
     width: device.windowWidth - 40,
-    borderRadius: 4,
+    borderRadius: 4
   },
-  imageIcon :{
-    position:'absolute',
-    end:10,
-    width:30,
-    height:30,
-    bottom:5,
-    padding:10,
-    justifyContent:'center',
-    alignItems:"center",
-    zIndex:100
+  imageIcon: {
+    position: 'absolute',
+    end: 10,
+    width: 30,
+    height: 30,
+    bottom: 5,
+    padding: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 100
   }
 });
