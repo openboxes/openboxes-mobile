@@ -1,12 +1,5 @@
 import Product from '../../data/product/Product';
-import {
-  FlatList,
-  ListRenderItemInfo,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View
-} from 'react-native';
+import { FlatList, ListRenderItemInfo, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import React, { ReactElement } from 'react';
 import Theme from '../../utils/Theme';
 import EmptyView from '../../components/EmptyView';
@@ -28,35 +21,29 @@ export default function ProductsList(props: Props) {
       style={styles.list}
     />
   ) : (
-    <EmptyView
-      title="Product List"
-      description="There are no products on the list"
-    />
+    <EmptyView title="Product List" description="There are no products on the list" />
   );
 }
 
-function renderProduct(
-  product: Product,
-  onProductTapped: () => void
-): ReactElement {
+function renderProduct(product: Product, onProductTapped: () => void): ReactElement {
   return (
     <TouchableOpacity onPress={() => onProductTapped()}>
-        <Card style={LayoutStyle.listItemContainer}>
-           <Card.Content>
-            <View style={styles.listItemNameContainer}>
-              <Text style={styles.listItemNameLabel}>Product Code</Text>
-              <Text style={styles.listItemName}>{product.productCode}</Text>
-            </View>
-            <View style={styles.listItemNameContainer}>
-              <Text style={styles.listItemNameLabel}>Name</Text>
-              <Text style={styles.listItemName}>{product.name}</Text>
-            </View>
-            <View style={styles.listItemCategoryContainer}>
-              <Text style={styles.listItemCategoryLabel}>Category</Text>
-              <Text style={styles.listItemCategory}>{product.category.name}</Text>
-            </View>
-          </Card.Content>
-        </Card>
+      <Card style={LayoutStyle.listItemContainer}>
+        <Card.Content>
+          <View style={styles.listItemNameContainer}>
+            <Text style={styles.listItemNameLabel}>Product Code</Text>
+            <Text style={styles.listItemName}>{product.productCode}</Text>
+          </View>
+          <View style={styles.listItemNameContainer}>
+            <Text style={styles.listItemNameLabel}>Name</Text>
+            <Text style={styles.listItemName}>{product.name}</Text>
+          </View>
+          <View style={styles.listItemCategoryContainer}>
+            <Text style={styles.listItemCategoryLabel}>Category</Text>
+            <Text style={styles.listItemCategory}>{product.category.name}</Text>
+          </View>
+        </Card.Content>
+      </Card>
     </TouchableOpacity>
   );
 }

@@ -1,6 +1,6 @@
 export interface OwnProps {
-  exit: () => void
-  orderId: string
+  exit: () => void;
+  orderId: string;
 }
 
 export interface StateProps {
@@ -12,4 +12,4 @@ export interface DispatchProps {
   //hideProgressBar: () => void
 }
 
-export type Props = OwnProps & StateProps & DispatchProps
+export type Props = OwnProps & StateProps & DispatchProps;

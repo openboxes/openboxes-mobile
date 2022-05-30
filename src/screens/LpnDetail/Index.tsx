@@ -1,21 +1,9 @@
 import React from 'react';
 import { DispatchProps, Props } from './Types';
 import { Container } from '../../data/container/Container';
-import {
-  FlatList,
-  ListRenderItemInfo,
-  ScrollView,
-  Text,
-  Image,
-  TouchableOpacity,
-  View
-} from 'react-native';
+import { FlatList, ListRenderItemInfo, ScrollView, Text, Image, TouchableOpacity, View } from 'react-native';
 import { ContainerShipmentItem } from '../../data/container/ContainerShipmentItem';
-import {
-  fetchContainer,
-  getContainer,
-  updateContainerStatus
-} from '../../redux/actions/lpn';
+import { fetchContainer, getContainer, updateContainerStatus } from '../../redux/actions/lpn';
 import { getShipmentPacking } from '../../redux/actions/packing';
 import { connect } from 'react-redux';
 import styles from './styles';
@@ -25,23 +13,10 @@ import PrintModal from '../../components/PrintModal';
 import EmptyView from '../../components/EmptyView';
 import SelectDropdown from 'react-native-select-dropdown';
 
-const containerStatuses = [
-  'OPEN',
-  'PACKING',
-  'PACKED',
-  'LOADED',
-  'UNLOADED',
-  'UNPACKING',
-  'UNPACKED'
-];
+const containerStatuses = ['OPEN', 'PACKING', 'PACKED', 'LOADED', 'UNLOADED', 'UNPACKING', 'UNPACKED'];
 
 const renderIcon = () => {
-  return (
-    <Image
-      style={styles.arrowDownIcon}
-      source={require('../../assets/images/arrow-down.png')}
-    />
-  );
+  return <Image style={styles.arrowDownIcon} source={require('../../assets/images/arrow-down.png')} />;
 };
 
 export interface State {
@@ -70,21 +45,18 @@ class LpnDetail extends React.Component<Props, State> {
     const actionCallback = (data: any) => {
       if (data?.error) {
         showPopup({
-          title: data.errorMessage
-            ? `Failed to update status of container with id: ${id} into ${status}`
-            : null,
-          message:
-            data.errorMessage ?? `Failed to update status of container with id: ${id} into ${status}`,
+          title: data.errorMessage ? `Failed to update status of container with id: ${id} into ${status}` : null,
+          message: data.errorMessage ?? `Failed to update status of container with id: ${id} into ${status}`,
           positiveButton: {
             text: 'Retry',
             callback: () => {
-              this.props.updateContainerStatus(id, status, actionCallback)
+              this.props.updateContainerStatus(id, status, actionCallback);
             }
           },
           negativeButtonText: 'Cancel'
         });
       } else {
-        this.getContainerDetails(id, false)
+        this.getContainerDetails(id, false);
       }
     };
 
@@ -103,11 +75,8 @@ class LpnDetail extends React.Component<Props, State> {
     const actionCallback = (data: any) => {
       if (data?.error) {
         showPopup({
-          title: data.errorMessage
-            ? `Failed to load details of container with id: "${id}"`
-            : null,
-          message:
-            data.errorMessage ?? `Failed to load details of container with id: "${id}"`,
+          title: data.errorMessage ? `Failed to load details of container with id: "${id}"` : null,
+          message: data.errorMessage ?? `Failed to load details of container with id: "${id}"`,
           positiveButton: {
             text: 'Retry',
             callback: () => {
@@ -165,23 +134,17 @@ class LpnDetail extends React.Component<Props, State> {
             </View>
             <View style={styles.col50}>
               <Text style={styles.label}>Container Number</Text>
-              <Text style={styles.value}>
-                {this.state.container?.containerNumber}
-              </Text>
+              <Text style={styles.value}>{this.state.container?.containerNumber}</Text>
             </View>
           </View>
           <View style={styles.row}>
             <View style={styles.col50}>
               <Text style={styles.label}>Container Type</Text>
-              <Text style={styles.value}>
-                {this.state.container?.containerType?.name}
-              </Text>
+              <Text style={styles.value}>{this.state.container?.containerType?.name}</Text>
             </View>
             <View style={styles.col50}>
               <Text style={styles.label}>Number of Items</Text>
-              <Text style={styles.value}>
-                {this.state.container?.shipmentItems?.length}
-              </Text>
+              <Text style={styles.value}>{this.state.container?.shipmentItems?.length}</Text>
             </View>
           </View>
           <View style={styles.row} />
@@ -189,54 +152,39 @@ class LpnDetail extends React.Component<Props, State> {
           <Text style={styles.value}>{'Status'}</Text>
           <SelectDropdown
             data={containerStatuses}
-            onSelect={(selectedItem, index) => {
-              const { id } = this.props.route.params;
-              this.updateContainerStatus(id, selectedItem);
-            }}
             defaultValue={this.state.container?.containerStatus?.id}
             renderDropdownIcon={renderIcon}
             buttonStyle={styles.select}
             buttonTextAfterSelection={(selectedItem, index) => selectedItem}
             rowTextForSelection={(item, index) => item}
+            onSelect={(selectedItem, index) => {
+              const { id } = this.props.route.params;
+              this.updateContainerStatus(id, selectedItem);
+            }}
           />
           <FlatList
             data={this.state.container?.shipmentItems}
-            ListEmptyComponent={
-              <EmptyView title="LPN Details" description="There are no items" isRefresh={false} />
-            }
-            renderItem={(
-              shipmentItem: ListRenderItemInfo<ContainerShipmentItem>
-            ) => (
-              <TouchableOpacity
-                style={styles.listItemContainer}
-                onPress={() => this.onTapped(shipmentItem)}
-              >
+            ListEmptyComponent={<EmptyView title="LPN Details" description="There are no items" isRefresh={false} />}
+            renderItem={(shipmentItem: ListRenderItemInfo<ContainerShipmentItem>) => (
+              <TouchableOpacity style={styles.listItemContainer} onPress={() => this.onTapped(shipmentItem)}>
                 <View style={styles.row}>
                   <View style={styles.col50}>
                     <Text style={styles.label}>Product Code</Text>
-                    <Text style={styles.value}>
-                      {shipmentItem.item?.inventoryItem?.product?.productCode}
-                    </Text>
+                    <Text style={styles.value}>{shipmentItem.item?.inventoryItem?.product?.productCode}</Text>
                   </View>
                   <View style={styles.col50}>
                     <Text style={styles.label}>Product</Text>
-                    <Text style={styles.value}>
-                      {shipmentItem.item?.inventoryItem?.product?.name}
-                    </Text>
+                    <Text style={styles.value}>{shipmentItem.item?.inventoryItem?.product?.name}</Text>
                   </View>
                 </View>
                 <View style={styles.row}>
                   <View style={styles.col50}>
                     <Text style={styles.label}>Shipment Number</Text>
-                    <Text style={styles.value}>
-                      {shipmentItem.item.shipment.shipmentNumber}
-                    </Text>
+                    <Text style={styles.value}>{shipmentItem.item.shipment.shipmentNumber}</Text>
                   </View>
                   <View style={styles.col50}>
                     <Text style={styles.label}>Quantity</Text>
-                    <Text style={styles.value}>
-                      {shipmentItem.item.quantity}
-                    </Text>
+                    <Text style={styles.value}>{shipmentItem.item.quantity}</Text>
                   </View>
                 </View>
               </TouchableOpacity>
@@ -245,11 +193,7 @@ class LpnDetail extends React.Component<Props, State> {
             style={styles.list}
           />
           <View style={styles.bottom}>
-            <Button
-              title={'Print Barcode Label'}
-              onPress={this.handleClick}
-              disabled={false}
-            />
+            <Button title={'Print Barcode Label'} disabled={false} onPress={this.handleClick} />
           </View>
         </View>
         <PrintModal
@@ -257,9 +201,7 @@ class LpnDetail extends React.Component<Props, State> {
           closeModal={this.closeModal}
           type={'containers'}
           product={this.state.containerDetails?.product}
-          defaultBarcodeLabelUrl={
-            this.state.containerDetails?.defaultBarcodeLabelUrl
-          }
+          defaultBarcodeLabelUrl={this.state.containerDetails?.defaultBarcodeLabelUrl}
         />
       </ScrollView>
     );

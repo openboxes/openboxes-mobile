@@ -1,11 +1,11 @@
-import {View} from 'react-native';
-import {TouchableOpacity, Text} from 'react-native';
+import { View } from 'react-native';
+import { TouchableOpacity, Text } from 'react-native';
 import React from 'react';
-import {Props} from './types';
+import { Props } from './types';
 import styles from './styles';
 
 export default function PutAwayItem(props: Props) {
-  const {item, onItemTapped} = props;
+  const { item, onItemTapped } = props;
   return (
     <TouchableOpacity style={styles.listItemContainer} onPress={onItemTapped}>
       <View style={styles.row}>

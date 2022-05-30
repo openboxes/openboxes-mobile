@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styles from './styles';
-import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import DatePicker from 'react-native-datepicker';
 import InputBox from '../../components/InputBox';
 import Button from '../../components/Button';
@@ -18,12 +18,7 @@ import CLEAR from '../../assets/images/icon_clear.png';
 import SelectDropdown from 'react-native-select-dropdown';
 
 const renderIcon = () => {
-  return (
-    <Image
-      style={styles.arrowDownIcon}
-      source={require('../../assets/images/arrow-down.png')}
-    />
-  );
+  return <Image style={styles.arrowDownIcon} source={require('../../assets/images/arrow-down.png')} />;
 };
 
 const InboundReceiveDetail = () => {
@@ -32,9 +27,7 @@ const InboundReceiveDetail = () => {
   const { shipmentItem, shipmentData, shipmentId }: any = route.params;
   const [cancelRemaining, setCancelRemaining] = useState(false);
   const navigation = useNavigation();
-  const location = useSelector(
-    (state: RootState) => state.mainReducer.currentLocation
-  );
+  const location = useSelector((state: RootState) => state.mainReducer.currentLocation);
   const [state, setState] = useState<any>({
     comments: '',
     internalLocation: [],
@@ -48,7 +41,7 @@ const InboundReceiveDetail = () => {
     quantityToReceive: Number(shipmentItem.quantityRemaining) || 0,
     error: null
   });
-  const [lotStatusCode, setLotStatusCode] = useState<string>('')
+  const [lotStatusCode, setLotStatusCode] = useState<string>('');
   useEffect(() => {
     getInternalLocation(location.id);
   }, [shipmentItem]);
@@ -62,14 +55,14 @@ const InboundReceiveDetail = () => {
       errorMessage = 'Please fill the Quantity to Receive';
     }
 
-    if (Number(state.quantityToReceive) == 0 && !cancelRemaining) {
+    if (Number(state.quantityToReceive) === 0 && !cancelRemaining) {
       errorTitle = 'Quantity to receive is 0';
       errorMessage = 'You can\'t receive 0 without cancelling remaining';
     }
 
     if (state.expirationDate && !state.lotNumber) {
       errorTitle = 'Expiration date without Lot';
-      errorMessage = 'Please fill the Lot Number if you want to set the Expiration Date'
+      errorMessage = 'Please fill the Lot Number if you want to set the Expiration Date';
     }
 
     if (errorTitle !== '') {
@@ -110,16 +103,14 @@ const InboundReceiveDetail = () => {
       ]
     };
 
-    if (
-      Number(state.quantityToReceive) > Number(shipmentItem.quantityRemaining)
-    ) {
+    if (Number(state.quantityToReceive) > Number(shipmentItem.quantityRemaining)) {
       showPopup({
         title: 'Quantity to receive is greater than quantity remaining',
         message: 'Are you sure you want to receive more?',
         negativeButtonText: 'No',
         positiveButton: {
           text: 'Yes',
-          callback: () => submitReceiving(shipmentId, request),
+          callback: () => submitReceiving(shipmentId, request)
         }
       });
       return Promise.resolve(null);
@@ -142,7 +133,9 @@ const InboundReceiveDetail = () => {
 
   const onChangeQuantity = (quantityToReceive: string) => {
     setState({ ...state, quantityToReceive });
-    setCancelRemaining(cancelRemaining && Number(quantityToReceive) >= Number(shipmentItem.quantityRemaining) ? false : cancelRemaining);
+    setCancelRemaining(
+      cancelRemaining && Number(quantityToReceive) >= Number(shipmentItem.quantityRemaining) ? false : cancelRemaining
+    );
   };
 
   const submitReceiving = (id: string, requestBody: any) => {
@@ -150,9 +143,7 @@ const InboundReceiveDetail = () => {
       if (data?.error) {
         showPopup({
           title: data.message ? 'Inbound order details' : null,
-          message:
-            data.errorMessage ??
-            `Failed to load Inbound order details value ${id}`,
+          message: data.errorMessage ?? `Failed to load Inbound order details value ${id}`,
           positiveButton: {
             text: 'Retry',
             callback: () => {
@@ -205,38 +196,20 @@ const InboundReceiveDetail = () => {
     return (
       <View style={styles.itemView}>
         <View style={styles.rowItem}>
-          <RenderData
-            title={'Shipment Number'}
-            subText={shipmentData?.shipmentNumber}
-          />
+          <RenderData title={'Shipment Number'} subText={shipmentData?.shipmentNumber} />
           <RenderData title={'Description'} subText={shipmentData?.name} />
         </View>
         <View style={styles.rowItem}>
-          <RenderData
-            title={'Product Code'}
-            subText={shipmentItem['product.productCode']}
-          />
+          <RenderData title={'Product Code'} subText={shipmentItem['product.productCode']} />
           <RenderData title={'Name'} subText={shipmentItem['product.name']} />
         </View>
         <View style={styles.rowItem}>
-          <RenderData
-            title={'Lot / Serial Number'}
-            subText={shipmentItem.lotNumber ?? 'Default'}
-          />
-          <RenderData
-            title={'Expiration Date'}
-            subText={shipmentItem.expirationDate ?? 'Never'}
-          />
+          <RenderData title={'Lot / Serial Number'} subText={shipmentItem.lotNumber ?? 'Default'} />
+          <RenderData title={'Expiration Date'} subText={shipmentItem.expirationDate ?? 'Never'} />
         </View>
         <View style={styles.rowItem}>
-          <RenderData
-            title={'Quantity Shipped'}
-            subText={shipmentItem.quantityShipped}
-          />
-          <RenderData
-            title={'Quantity Received'}
-            subText={shipmentItem.quantityReceived}
-          />
+          <RenderData title={'Quantity Shipped'} subText={shipmentItem.quantityShipped} />
+          <RenderData title={'Quantity Received'} subText={shipmentItem.quantityReceived} />
         </View>
       </View>
     );
@@ -247,16 +220,21 @@ const InboundReceiveDetail = () => {
       if (data?.error) {
         showPopup({
           title: data.message ? 'internal location details' : '',
-          message:
-            data.errorMessage ?? `Failed to load internal location value ${id}`,
+          message: data.errorMessage ?? `Failed to load internal location value ${id}`,
           positiveButton: {
             text: 'Retry',
             callback: () => {
-              dispatch(searchInternalLocations('', {
-                'parentLocation.id': location.id,
-                max: '25',
-                offset: '0',
-              }, callback));
+              dispatch(
+                searchInternalLocations(
+                  '',
+                  {
+                    'parentLocation.id': location.id,
+                    max: '25',
+                    offset: '0'
+                  },
+                  callback
+                )
+              );
             }
           },
           negativeButtonText: 'Cancel'
@@ -276,11 +254,17 @@ const InboundReceiveDetail = () => {
         setState({ ...state });
       }
     };
-    dispatch(searchInternalLocations('', {
-      'parentLocation.id': location.id,
-      max: 25,
-      offset: 0,
-    }, callback));
+    dispatch(
+      searchInternalLocations(
+        '',
+        {
+          'parentLocation.id': location.id,
+          max: 25,
+          offset: 0
+        },
+        callback
+      )
+    );
   };
 
   return (
@@ -292,14 +276,14 @@ const InboundReceiveDetail = () => {
           label="Receiving Location"
           initValue={state.receiveLocation.label || ''}
           initialData={state.internalLocation}
+          searchAction={searchInternalLocations}
+          searchActionParams={{ 'parentLocation.id': location.id }}
           onSelect={(selectedItem: any) => {
             if (selectedItem) {
               state.receiveLocation = selectedItem;
               setState({ ...state });
             }
           }}
-          searchAction={searchInternalLocations}
-          searchActionParams={{ 'parentLocation.id': location.id }}
         />
         <InputBox
           value={state.lotNumber}
@@ -309,20 +293,20 @@ const InboundReceiveDetail = () => {
           onChange={onChangeLotNumber}
         />
         <SelectDropdown
-            data={['','APPROVED', 'RECALLED', 'ON_HOLD', 'QUARANTINED', 'EXPIRED', 'RESERVED', 'DAMAGED']}
-            onSelect={(selectedItem, index) => {
-              setLotStatusCode(index === 0 ? '' : selectedItem);
-            }}
-            dropdownStyle={{justifyContent: 'flex-start'}}
-            defaultValue={lotStatusCode}
-            buttonTextStyle={styles.lotStatusSelectTextStyle}
-            renderDropdownIcon={renderIcon}
-            dropdownIconPosition={'right'}
-            defaultValueByIndex={0}
-            buttonStyle={styles.lotStatusSelectStyle}
-            buttonTextAfterSelection={(selectedItem) => selectedItem}
-            rowTextForSelection={(item) => item}
-          />
+          renderDropdownIcon={renderIcon}
+          data={['', 'APPROVED', 'RECALLED', 'ON_HOLD', 'QUARANTINED', 'EXPIRED', 'RESERVED', 'DAMAGED']}
+          dropdownStyle={{ justifyContent: 'flex-start' }}
+          defaultValue={lotStatusCode}
+          buttonTextStyle={styles.lotStatusSelectTextStyle}
+          buttonTextAfterSelection={(selectedItem) => selectedItem}
+          dropdownIconPosition={'right'}
+          defaultValueByIndex={0}
+          buttonStyle={styles.lotStatusSelectStyle}
+          rowTextForSelection={(item) => item}
+          onSelect={(selectedItem, index) => {
+            setLotStatusCode(index === 0 ? '' : selectedItem);
+          }}
+        />
         <View style={styles.datePickerContainer}>
           <DatePicker
             style={styles.datePicker}
@@ -333,19 +317,18 @@ const InboundReceiveDetail = () => {
             confirmBtnText="Confirm"
             cancelBtnText="Cancel"
             customStyles={styles.datePickerCustomStyle}
-            onDateChange={(date: any) => {setState({ ...state, expirationDate: date })}}
+            onDateChange={(date: any) => {
+              setState({ ...state, expirationDate: date });
+            }}
           />
-          {state.expirationDate ?
+          {state.expirationDate ? (
             <TouchableOpacity onPress={clearSelection}>
               <Image source={CLEAR} style={styles.imageIcon} />
-            </TouchableOpacity> : null}
+            </TouchableOpacity>
+          ) : null}
         </View>
         <View style={styles.inputSpinner}>
-          <InputSpinner
-            title={'Quantity to Receive'}
-            value={state.quantityToReceive}
-            setValue={onChangeQuantity}
-          />
+          <InputSpinner title={'Quantity to Receive'} value={state.quantityToReceive} setValue={onChangeQuantity} />
         </View>
         <InputBox
           value={state.comments}
@@ -356,13 +339,13 @@ const InboundReceiveDetail = () => {
         />
       </View>
       <Radio
-        title={"Cancel remaining quantity for this item"}
+        title={'Cancel remaining quantity for this item'}
         setChecked={setCancelRemaining}
         checked={cancelRemaining}
         disabled={Number(state.quantityToReceive) >= Number(shipmentItem.quantityRemaining)}
       />
       <View style={styles.bottom}>
-        <Button title="Receive" onPress={onReceive} disabled={false} />
+        <Button title="Receive" disabled={false} onPress={onReceive} />
       </View>
     </ScrollView>
   );

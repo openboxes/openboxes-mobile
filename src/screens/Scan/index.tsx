@@ -23,7 +23,7 @@ const Scan = () => {
   }, [barcodeData]);
 
   const onSuccess = (data: any, query: any) => {
-    console.log("global search result", data.type, data);
+    console.log('global search result', data.type, data);
     if (data.type === 'Product') {
       navigateToProduct(data.data);
     } else if (data.type === 'InventoryItem') {
@@ -59,7 +59,7 @@ const Scan = () => {
     }
   };
   const navigateToAvailableItem = (availableItem: AvailableItem | undefined) => {
-    console.log("navigate to available item ", availableItem)
+    console.log('navigate to available item ', availableItem);
     if (availableItem) {
       // @ts-ignore
       navigation.navigate('ViewAvailableItem', {
@@ -78,15 +78,13 @@ const Scan = () => {
       if (data?.error) {
         showPopup({
           title: 'No results found',
-          message:
-            data.errorMessage ??
-            `Failed to load search results with value = "${query}"`,
+          message: data.errorMessage ?? `Failed to load search results with value = "${query}"`
         });
       } else {
-        if (data.length == 0) {
+        if (data.length === 0) {
           showPopup({
-            title: `Empty results`,
-            message: `No search results found for barcode "${query}"`,
+            title: 'Empty results',
+            message: `No search results found for barcode "${query}"`
           });
         } else {
           if (data && Object.keys(data).length !== 0) {
@@ -102,11 +100,11 @@ const Scan = () => {
   return (
     <View style={styles.screenContainer}>
       <BarcodeSearchHeader
-        searchBox={false}
-        onSearchTermSubmit={onBarCodeScan}
-        placeholder="Scan through search bar"
         autoSearch
         autoFocus
+        searchBox={false}
+        placeholder="Scan through search bar"
+        onSearchTermSubmit={onBarCodeScan}
       />
       <View style={styles.countLabelAndIconContainer}>
         <EmptyView

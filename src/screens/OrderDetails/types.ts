@@ -1,7 +1,6 @@
 import PickList from '../../data/picklist/PickList';
-import {Item} from '../../data/picklist/Item';
-import {Order} from '../../data/order/Order';
-import {PicklistItem} from "../../data/picklist/PicklistItem";
+import { Order } from '../../data/order/Order';
+import { PicklistItem } from '../../data/picklist/PicklistItem';
 
 export interface State {
   pickList: PickList | null;

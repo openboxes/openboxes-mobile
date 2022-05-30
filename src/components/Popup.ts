@@ -1,4 +1,4 @@
-import {Alert, AlertButton} from 'react-native';
+import { Alert, AlertButton } from 'react-native';
 
 export interface PopupParams {
   message: string;
@@ -12,7 +12,7 @@ export default function showPopup(params: PopupParams) {
   if (params.negativeButtonText) {
     buttons.push({
       text: params.negativeButtonText,
-      onPress: () => {},
+      onPress: () => {}
     });
   }
   buttons.push({
@@ -21,9 +21,9 @@ export default function showPopup(params: PopupParams) {
       if (params.positiveButton?.callback) {
         params.positiveButton.callback();
       }
-    },
+    }
   });
   Alert.alert(params.title ?? '', params.message, buttons, {
-    cancelable: false,
+    cancelable: false
   });
 }

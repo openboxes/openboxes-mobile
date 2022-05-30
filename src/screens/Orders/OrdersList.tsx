@@ -11,7 +11,7 @@ import Theme from '../../utils/Theme';
 import { Order } from '../../data/order/Order';
 import EmptyView from '../../components/EmptyView';
 import { Card } from 'react-native-paper';
-import {LayoutStyle} from '../../assets/styles';
+import { LayoutStyle } from '../../assets/styles';
 export interface Props {
   orders: Order[] | null;
   onOrderTapped: (order: Order) => void;

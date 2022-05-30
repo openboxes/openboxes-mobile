@@ -5,7 +5,7 @@ export function saveAndUpdateLpn(requestBody: any) {
 }
 
 export function fetchContainer(id: string) {
-    return apiClient.get('/generic/container/' + id);
+  return apiClient.get('/generic/container/' + id);
 }
 
 export function getContainerDetail(id: string) {
@@ -13,5 +13,5 @@ export function getContainerDetail(id: string) {
 }
 
 export function updateContainerStatus(id: string, status: any) {
-  return apiClient.post(`/containers/${id}/status`,{ status });
+  return apiClient.post(`/containers/${id}/status`, { status });
 }

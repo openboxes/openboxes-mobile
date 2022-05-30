@@ -32,7 +32,7 @@ class Index extends React.Component<Props, State> {
   }
 
   searchOrders = (query: string | null) => {
-    this.props.navigation.setParams({ refetchOrders : false });
+    this.props.navigation.setParams({ refetchOrders: false });
     const actionCallback = (data: any) => {
       if (data?.error) {
         showPopup({
@@ -83,10 +83,10 @@ class Index extends React.Component<Props, State> {
       <View style={styles.screenContainer}>
         <BarcodeSearchHeader
           placeholder={'Search Orders by Name'}
-          onSearchTermSubmit={this.searchOrders}
           resetSearch={() => null}
           autoSearch={false}
           searchBox={false}
+          onSearchTermSubmit={this.searchOrders}
         />
         <Text style={styles.label}>
           Returned {this.state.resultCount} results

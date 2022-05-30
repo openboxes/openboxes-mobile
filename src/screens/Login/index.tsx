@@ -69,10 +69,7 @@ const Login = () => {
     }
   };
 
-  const getLoginDisallowedReason = (
-    username: string,
-    password: string
-  ): string | null => {
+  const getLoginDisallowedReason = (username: string, password: string): string | null => {
     if (!username) {
       return 'Username not provided';
     }
@@ -102,42 +99,32 @@ const Login = () => {
   return (
     <View style={styles.screenContainer}>
       <View style={styles.inputContainer}>
-        <TextInput
-          mode="outlined"
-          label={'Username'}
-          placeholder="Username"
-          onChangeText={onUsernameChange}
-        />
+        <TextInput mode="outlined" label={'Username'} placeholder="Username" onChangeText={onUsernameChange} />
         <TextInput
           mode="outlined"
           placeholder="Password"
           label={'Password'}
           secureTextEntry={state.isSeePassword}
-          right={
-            <TextInput.Icon
-              name={state.isSeePassword ? EYE_SHOW : EYE_HIDE}
-              onPress={onPasswordClick}
-            />
-          }
-          onChangeText={onPasswordChange}
+          right={<TextInput.Icon name={state.isSeePassword ? EYE_SHOW : EYE_HIDE} onPress={onPasswordClick} />}
           style={{
             marginTop: 8
           }}
+          onChangeText={onPasswordChange}
         />
         <Button
           title="Login"
-          onPress={onLoginPress}
           style={{
             marginTop: 8
           }}
+          onPress={onLoginPress}
         />
         <Button
           title="Settings"
-          onPress={() => {
-            NavigationService.navigate('Settings');
-          }}
           style={{
             marginTop: 8
+          }}
+          onPress={() => {
+            NavigationService.navigate('Settings');
           }}
         />
       </View>

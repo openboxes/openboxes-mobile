@@ -1,6 +1,6 @@
-import {FAB} from 'react-native-paper';
+import { FAB } from 'react-native-paper';
 import React from 'react';
-import Icon, {Name} from '../../components/Icon';
+import Icon, { Name } from '../../components/Icon';
 import Theme from '../../utils/Theme';
 
 export interface Props {
@@ -21,7 +21,7 @@ export default class FloatingActionButtonMenu extends React.Component<
   constructor(props: Props) {
     super(props);
     this.state = {
-      open: false,
+      open: false
     };
     this.flipOpenState = this.flipOpenState.bind(this);
   }
@@ -29,7 +29,7 @@ export default class FloatingActionButtonMenu extends React.Component<
   flipOpenState() {
     const isOpen = this.state.open;
     this.setState({
-      open: !isOpen,
+      open: !isOpen
     });
   }
 
@@ -52,29 +52,29 @@ export default class FloatingActionButtonMenu extends React.Component<
       <FAB.Group
         visible={this.props.visible}
         open={this.state.open}
-        icon={() => <Icon name={Name.Search} size={22}/>}
+        icon={() => <Icon name={Name.Search} size={22} />}
         actions={[
           {
-            icon: () => <Icon name={Name.Boxes} size={22}/>,
+            icon: () => <Icon name={Name.Boxes} size={22} />,
             label: 'Search by product name',
-            onPress: () => this.onSearchByProductNamePress(),
+            onPress: () => this.onSearchByProductNamePress()
           },
           {
-            icon: () => <Icon name={Name.Boxes} size={22}/>,
+            icon: () => <Icon name={Name.Boxes} size={22} />,
             label: 'Search by product code',
-            onPress: () => this.onSearchByProductCodePress(),
+            onPress: () => this.onSearchByProductCodePress()
           },
           {
-            icon: () => <Icon name={Name.Category} size={22}/>,
+            icon: () => <Icon name={Name.Category} size={22} />,
             label: 'Search by category',
-            onPress: () => this.onSearchByCategoryPress(),
-          },
+            onPress: () => this.onSearchByCategoryPress()
+          }
         ]}
+        fabStyle={{
+          backgroundColor: Theme.colors.primary
+        }}
         onPress={this.flipOpenState}
         onStateChange={() => {}}
-        fabStyle={{
-          backgroundColor: Theme.colors.primary,
-        }}
       />
     );
   }

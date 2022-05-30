@@ -1,12 +1,11 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import styles from './styles';
-import {Image, View} from 'react-native';
-import SelectDropdown from 'react-native-select-dropdown'
-import {Props} from "./types";
-import AutoComplete from "../AutoComplete/AutoComplete";
+import { Image, View } from 'react-native';
+import SelectDropdown from 'react-native-select-dropdown';
+import { Props } from './types';
+import AutoComplete from '../AutoComplete/AutoComplete';
 
-
-export default function ({
+const InputBox = ({
   refs,
   value,
   label,
@@ -19,20 +18,15 @@ export default function ({
   editable = true,
   onEndEdit,
   style,
-  data,
-}: Props) {
+  data
+}: Props) => {
   const [edit, setEdit] = useState(disabled);
   const onEdit = () => {
     setEdit(!edit);
   };
 
   const renderIcon = () => {
-    return (
-      <Image
-        style={styles.arrowDownIcon}
-        source={require('../../assets/images/arrow-down.png')}
-      />
-    );
+    return <Image style={styles.arrowDownIcon} source={require('../../assets/images/arrow-down.png')} />;
   };
 
   return (
@@ -40,38 +34,40 @@ export default function ({
       <View style={styles.row}>
         <AutoComplete
           data={data}
-          menuStyle={{backgroundColor: 'white'}}
+          edit={edit}
           refs={refs}
           label={label}
           placeholder={placeholder}
           icon={icon}
-          onIconClick={onIconClick}
+          menuStyle={{ backgroundColor: 'white' }}
           value={value}
           disabled={edit || false}
-          onChange={onChange}
-          onEndEdit={e => {
+          inputStyle={style}
+          onEndEdit={(e) => {
             if (onEndEdit) {
               onEndEdit(e);
             }
           }}
-          inputStyle={style}
-          edit={edit}
+          onChange={onChange}
+          onIconClick={onIconClick}
         />
         {showSelect ? (
           <SelectDropdown
             data={['EA', 'BX/10', 'CS/100', 'PL/100']}
-            onSelect={(selectedItem, index) => {
-              console.log(selectedItem, index);
-            }}
             disabled={!editable}
             defaultValueByIndex={0}
             renderDropdownIcon={renderIcon}
             buttonStyle={styles.select}
             buttonTextAfterSelection={(selectedItem) => selectedItem}
             rowTextForSelection={(item) => item}
+            onSelect={(selectedItem, index) => {
+              console.log(selectedItem, index);
+            }}
           />
         ) : null}
       </View>
     </View>
   );
-}
+};
+
+export default InputBox;

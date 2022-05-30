@@ -1,5 +1,5 @@
 import React from 'react';
-import {CommonActions, NavigationContainerRef} from '@react-navigation/native';
+import { CommonActions, NavigationContainerRef } from '@react-navigation/native';
 
 type RootStackParamList = {
   Login: undefined;
@@ -8,8 +8,7 @@ type RootStackParamList = {
   ProductDetails: undefined;
 };
 
-export const navigationRef =
-  React.createRef<NavigationContainerRef<RootStackParamList>>();
+export const navigationRef = React.createRef<NavigationContainerRef<RootStackParamList>>();
 
 export function navigate(name: string, params?: any) {
   navigationRef.current?.navigate(name, params);
@@ -19,8 +18,8 @@ export function reset(routeName: string) {
   navigationRef.current?.dispatch(
     CommonActions.reset({
       index: 0,
-      routes: [{name: routeName}],
-    }),
+      routes: [{ name: routeName }]
+    })
   );
 }
 export function goBack() {

@@ -1,5 +1,5 @@
 import Product from '../../data/product/Product';
-import {ProductCategory} from '../../data/product/category/ProductCategory';
+import { ProductCategory } from '../../data/product/category/ProductCategory';
 
 export interface OwnProps {
   exit: () => void;
@@ -10,25 +10,25 @@ export interface StateProps {
   products: any;
 }
 
-export interface  DispatchProps {
+export interface DispatchProps {
   showScreenLoading: (message?: string) => void;
   hideScreenLoading: () => void;
   getProductsAction: (callback: (products: any) => void) => void;
   searchProductsByNameAction: (
     name: string,
-    callback: (searchedProducts: any) => void,
+    callback: (searchedProducts: any) => void
   ) => void;
   searchProductByCodeAction: (
     productCode: string,
-    callback: (data: any) => void,
+    callback: (data: any) => void
   ) => void;
   searchProductGloballyAction: (
     value: string,
-    callback: (data: any) => void,
+    callback: (data: any) => void
   ) => void;
   searchProductSByCategoryAction: (
     category: any,
-    callback: (data: any) => void,
+    callback: (data: any) => void
   ) => void;
 }
 

@@ -1,16 +1,10 @@
-import React from "react";
-import {Text} from "react-native";
+import React from 'react';
+import { Text } from 'react-native';
 
 export interface Props {
-  message: string | null
+  message: string | null;
 }
 
 export default function CentralMessage(props: Props) {
-  return (
-    props.message
-      ?
-      <Text>{props.message}</Text>
-      :
-      null
-  )
+  return props.message ? <Text>{props.message}</Text> : null;
 }

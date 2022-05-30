@@ -1,11 +1,7 @@
 import _ from 'lodash';
 import React from 'react';
 import { connect } from 'react-redux';
-import {
-  ScrollView,
-  Text,
-  View,
-} from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 
 import styles from './styles';
 import { showScreenLoading, hideScreenLoading } from '../../redux/actions/main';
@@ -13,7 +9,7 @@ import { orderDetailsVMMapper } from './OrderDetailsVMMapper';
 import { getPickListAction } from '../../redux/actions/orders';
 import { State, DispatchProps, Props } from './types';
 import PickOrderItem from '../PickList';
-import showPopup from "../../components/Popup";
+import showPopup from '../../components/Popup';
 
 class OrderDetails extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -22,7 +18,7 @@ class OrderDetails extends React.Component<Props, State> {
     this.state = {
       pickList: null,
       error: null,
-      initialPicklistItemIndex: 0,
+      initialPicklistItemIndex: 0
     };
   }
 
@@ -35,11 +31,11 @@ class OrderDetails extends React.Component<Props, State> {
     const { order } = this.props.route.params;
 
     const actionCallback = (data: any) => {
-      if (data?.length == 0) {
+      if (data?.length === 0) {
         this.props.hideScreenLoading();
         this.setState({
           pickList: data,
-          error: 'No Picklist found',
+          error: 'No Picklist found'
         });
       } else {
         const initialPicklistItemIndex = this.getInitiallyDisplayedPickItemIndex(data?.picklistItems);
@@ -50,24 +46,37 @@ class OrderDetails extends React.Component<Props, State> {
             message: 'Do you want to go back?',
             positiveButton: {
               text: 'Ok',
-              callback: () => this.props.navigation.navigate('Orders', { refetchOrders: true }),
+              callback: () =>
+                this.props.navigation.navigate('Orders', {
+                  refetchOrders: true
+                })
             },
-            negativeButtonText: 'Cancel',
+            negativeButtonText: 'Cancel'
           });
         }
 
-        this.setState({
-          pickList: null,
-          error: null,
-          initialPicklistItemIndex: 0
-        }, () => this.setState({
-          pickList: {
-            ...data,
-            picklistItems: _.map(data.picklistItems, (item: any) => ({ ...item, quantityToPick: item.quantityRemaining }))
+        this.setState(
+          {
+            pickList: null,
+            error: null,
+            initialPicklistItemIndex: 0
           },
-          error: null,
-          initialPicklistItemIndex
-        }, () => this.props.hideScreenLoading()));
+          () =>
+            this.setState(
+              {
+                pickList: {
+                  ...data,
+                  picklistItems: _.map(data.picklistItems, (item: any) => ({
+                    ...item,
+                    quantityToPick: item.quantityRemaining
+                  }))
+                },
+                error: null,
+                initialPicklistItemIndex
+              },
+              () => this.props.hideScreenLoading()
+            )
+        );
       }
     };
 
@@ -108,14 +117,14 @@ class OrderDetails extends React.Component<Props, State> {
             </View>
           </View>
           <View style={styles.bottomList}>
-            {pickList?.picklistItems && pickList?.picklistItems?.length > 0 &&
+            {pickList?.picklistItems && pickList?.picklistItems?.length > 0 && (
               <PickOrderItem
                 pickList={pickList}
                 pickListItem={pickList?.picklistItems[initialPicklistItemIndex]}
                 selectedPinkItemIndex={initialPicklistItemIndex}
                 successfulPickCallback={() => this.getOrderDetails()}
               />
-            }
+            )}
           </View>
         </View>
       </ScrollView>

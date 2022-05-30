@@ -8,10 +8,7 @@ import Button from '../../components/Button';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
 import showPopup from '../../components/Popup';
-import {
-  getShipmentPacking,
-  submitShipmentDetails
-} from '../../redux/actions/packing';
+import { getShipmentPacking, submitShipmentDetails } from '../../redux/actions/packing';
 import AutoInputInternalLocation from '../../components/AutoInputInternalLocation';
 import InputSpinner from '../../components/InputSpinner';
 
@@ -36,8 +33,7 @@ const ShipItemDetails = () => {
       if (data?.error) {
         showPopup({
           title: data.errorMessage ? 'Shipment details' : 'Error',
-          message:
-            data.errorMessage ?? `Failed to load Shipment details value ${id}`,
+          message: data.errorMessage ?? `Failed to load Shipment details value ${id}`,
           positiveButton: {
             text: 'Retry',
             callback: () => {
@@ -56,7 +52,7 @@ const ShipItemDetails = () => {
               id: dataItem.id
             }))
           });
-          setSelectedContainerItem({ id: item?.container?.id || null })
+          setSelectedContainerItem({ id: item?.container?.id || null });
         }
       }
     };
@@ -68,14 +64,14 @@ const ShipItemDetails = () => {
       showPopup({
         message: 'Quantity packed is higher than quantity on shipment item',
         positiveButton: {
-          text: 'Ok',
-        },
+          text: 'Ok'
+        }
       });
       return;
     }
 
     const request = {
-      "action": "PACK",
+      action: 'PACK',
       'container.id': selectedContainerItem?.id ?? '',
       quantityToPack: state.quantityPicked
     };
@@ -101,8 +97,8 @@ const ShipItemDetails = () => {
         );
         navigation.navigate('OutboundStockDetails', {
           shipmentId: item.shipment.id,
-          refetchShipment: true,
-        })
+          refetchShipment: true
+        });
       }
     };
     dispatch(submitShipmentDetails(id, request, callback));
@@ -129,9 +125,7 @@ const ShipItemDetails = () => {
       <View style={styles.rowItem}>
         <View style={styles.columnItem}>
           <Text style={styles.label}>{'Product Code'}</Text>
-          <Text style={styles.value}>
-            {item.inventoryItem.product.productCode}
-          </Text>
+          <Text style={styles.value}>{item.inventoryItem.product.productCode}</Text>
         </View>
         <View style={styles.columnItem}>
           <Text style={styles.label}>{'Product Name'}</Text>
@@ -141,9 +135,7 @@ const ShipItemDetails = () => {
       <View style={styles.rowItem}>
         <View style={styles.columnItem}>
           <Text style={styles.label}>{'LOT Number'}</Text>
-          <Text style={styles.value}>
-            {item.inventoryItem.lotNumber ?? 'Default'}
-          </Text>
+          <Text style={styles.value}>{item.inventoryItem.lotNumber ?? 'Default'}</Text>
         </View>
         <View style={styles.columnItem}>
           <Text style={styles.label}>{'Quantity to pack'}</Text>
@@ -161,11 +153,7 @@ const ShipItemDetails = () => {
         />
       </View>
       <View style={styles.alignCenterContent}>
-        <InputSpinner
-          title={'Quantity to Pick'}
-          value={state.quantityPicked}
-          setValue={quantityPickedChange}
-        />
+        <InputSpinner title={'Quantity to Pick'} value={state.quantityPicked} setValue={quantityPickedChange} />
       </View>
       <View style={styles.bottom}>
         <Button

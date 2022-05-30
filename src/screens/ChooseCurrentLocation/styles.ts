@@ -1,10 +1,10 @@
-import {StyleSheet} from 'react-native';
+import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
   container: {
     display: 'flex',
     flexDirection: 'column',
-    flex: 1,
+    flex: 1
   },
-  scrollView: {},
+  scrollView: {}
 });

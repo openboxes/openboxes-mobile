@@ -1,8 +1,7 @@
 import apiClient from '../utils/ApiClient';
 import _ from 'lodash';
 
-const url =
-  '/locations?locationTypeCode=DEPOT&activityCodes=MANAGE_INVENTORY&applyUserFilter=true';
+const url = '/locations?locationTypeCode=DEPOT&activityCodes=MANAGE_INVENTORY&applyUserFilter=true';
 
 export function getLocations() {
   return apiClient.get(url);
@@ -16,7 +15,7 @@ export function searchLocationByLocationNumber(locationNumber: string) {
   return apiClient.get(`/locations/${locationNumber}`);
 }
 export function getBinLocations() {
-  return apiClient.get(`/internalLocations`);
+  return apiClient.get('/internalLocations');
 }
 
 export function internalLocations(id: string) {
@@ -24,11 +23,16 @@ export function internalLocations(id: string) {
 }
 
 export function searchInternalLocations(searchTerm: string, additionalParams: any) {
-  const params = `${additionalParams ? _.join(_.map(additionalParams, (value, key) => `&${key}=${value}`), '') : ''}`
+  const params = additionalParams
+    ? _.join(
+        _.map(additionalParams, (value, key) => `&${key}=${value}`),
+        ''
+      )
+    : '';
   return apiClient.get(`/internalLocations/search?searchTerm=${searchTerm}${params}`);
 }
 
-export function internalLocationsDetails(id: string,location:string) {
+export function internalLocationsDetails(id: string, location: string) {
   return apiClient.get(`/internalLocations/${id}/details?location.id=${location}`);
 }
 

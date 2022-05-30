@@ -2,58 +2,58 @@ const dashboardData = [
   {
     screenName: 'Picking',
     icon: require('../../assets/images/picking.png'),
-    navigationScreenName: 'Orders',
+    navigationScreenName: 'Orders'
   },
   {
     screenName: 'Packing',
     icon: require('../../assets/images/packing.png'),
-    navigationScreenName: 'OutboundStockList',
+    navigationScreenName: 'OutboundStockList'
   },
   {
     screenName: 'Loading',
     icon: require('../../assets/images/loading.png'),
-    navigationScreenName: 'OutboundStockList',
+    navigationScreenName: 'OutboundStockList'
   },
   {
     screenName: 'Receiving',
     icon: require('../../assets/images/receiving.png'),
-    navigationScreenName: 'InboundOrderList',
+    navigationScreenName: 'InboundOrderList'
   },
   {
     screenName: 'Putaway Candidates',
     icon: require('../../assets/images/putaway.png'),
-    navigationScreenName: 'PutawayCandidates',
+    navigationScreenName: 'PutawayCandidates'
   },
   {
     screenName: 'Pending Putaways',
     icon: require('../../assets/images/putaway.png'),
-    navigationScreenName: 'PutawayList',
+    navigationScreenName: 'PutawayList'
   },
   {
     screenName: 'Products',
     icon: require('../../assets/images/product.png'),
-    navigationScreenName: 'Products',
+    navigationScreenName: 'Products'
   },
   {
     screenName: 'Inventory',
     icon: require('../../assets/images/inventory.png'),
-    navigationScreenName: 'Product Summary',
+    navigationScreenName: 'Product Summary'
   },
   {
     screenName: 'Create LPN',
     icon: require('../../assets/images/lookup.png'),
-    navigationScreenName: 'CreateLpn',
+    navigationScreenName: 'CreateLpn'
   },
   {
     screenName: 'Pending Transfers',
     icon: require('../../assets/images/transfer.png'),
-    navigationScreenName: 'Transfers',
+    navigationScreenName: 'Transfers'
   },
   {
     screenName: 'Scan',
     icon: require('../../assets/images/scan.jpg'),
-    navigationScreenName: 'Scan',
-  },
+    navigationScreenName: 'Scan'
+  }
 ];
 
 export default dashboardData;

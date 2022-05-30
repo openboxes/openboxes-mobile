@@ -3,12 +3,7 @@ import _ from 'lodash';
 import { DispatchProps, Props, State } from './types';
 import React from 'react';
 import { getOrdersAction } from '../../redux/actions/orders';
-import {
-  FlatList,
-  ListRenderItemInfo,
-  Text,
-  View
-} from 'react-native';
+import { FlatList, ListRenderItemInfo, Text, View } from 'react-native';
 import { connect } from 'react-redux';
 import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
 import styles from './styles';
@@ -31,7 +26,7 @@ class PutawayList extends React.Component<Props, State> {
       orderId: null,
       showList: false,
       showDetail: false,
-      lpnFilter: '',
+      lpnFilter: ''
     };
   }
 
@@ -47,7 +42,7 @@ class PutawayList extends React.Component<Props, State> {
   }
 
   fetchPutAways = (query: any) => {
-    this.props.navigation.setParams({ refetchPutaways : false });
+    this.props.navigation.setParams({ refetchPutaways: false });
     const actionCallback = (putAwayList: any) => {
       if (!putAwayList || putAwayList?.error) {
         return Promise.resolve(null);
@@ -55,12 +50,15 @@ class PutawayList extends React.Component<Props, State> {
         this.setState({
           showList: true,
           putAwayList: _.flatten(
-            _.map(putAwayList, putaway => _.map(putaway.putawayItems, item => ({
-              ...putaway,
-              putawayItem: {
-                ...item
-              },
-            })))),
+            _.map(putAwayList, (putaway) =>
+              _.map(putaway.putawayItems, (item) => ({
+                ...putaway,
+                putawayItem: {
+                  ...item
+                }
+              }))
+            )
+          ),
           putAway: null
         });
       }
@@ -70,10 +68,7 @@ class PutawayList extends React.Component<Props, State> {
     this.props.fetchPutAwayFromOrderAction(query, actionCallback);
   };
 
-  goToPutawayItemDetailScreen = (
-    putAway: PutAway,
-    putAwayItem: PutAwayItems
-  ) => {
+  goToPutawayItemDetailScreen = (putAway: PutAway, putAwayItem: PutAwayItems) => {
     this.props.navigation.navigate('PutawayItemDetail', {
       putAway: putAway,
       putAwayItem: putAwayItem
@@ -85,18 +80,16 @@ class PutawayList extends React.Component<Props, State> {
       if (text) {
         const exactPutaway = _.find(
           this.state.putAwayList,
-          putaway => putaway?.putawayItem?.['inventoryItem.lotNumber'] === text,
-          );
+          (putaway) => putaway?.putawayItem?.['inventoryItem.lotNumber'] === text
+        );
 
         if (exactPutaway) {
-          this.setState(
-            { lpnFilter: '', putAwayListFiltered: [] },
-            () => this.goToPutawayItemDetailScreen(exactPutaway, exactPutaway.putawayItem),
+          this.setState({ lpnFilter: '', putAwayListFiltered: [] }, () =>
+            this.goToPutawayItemDetailScreen(exactPutaway, exactPutaway.putawayItem)
           );
         } else {
-          const putAwayListFiltered = _.filter(
-            this.state.putAwayList,
-            putaway => putaway?.putawayItem?.['inventoryItem.lotNumber']?.includes(text),
+          const putAwayListFiltered = _.filter(this.state.putAwayList, (putaway) =>
+            putaway?.putawayItem?.['inventoryItem.lotNumber']?.includes(text)
           );
           this.setState({ putAwayListFiltered: putAwayListFiltered });
         }
@@ -121,21 +114,20 @@ class PutawayList extends React.Component<Props, State> {
                 editable={false}
                 label={'Scan Lot Number'}
                 onChange={this.onChangeLpnFilter}
-              />) : null}
+              />
+            ) : null}
             <FlatList
               data={putAwayListFiltered?.length ? putAwayListFiltered : putAwayList}
               ListEmptyComponent={
-                <EmptyView
-                  title="Putaway"
-                  description="There are no items to putaway"
-                  isRefresh={false}
-                />
+                <EmptyView title="Putaway" description="There are no items to putaway" isRefresh={false} />
               }
               renderItem={(listRenderItemInfo: ListRenderItemInfo<any>) => (
                 <Card
                   style={LayoutStyle.listItemContainer}
-                  onPress={() => this.goToPutawayItemDetailScreen(listRenderItemInfo.item, listRenderItemInfo.item?.putawayItem)}
-                > 
+                  onPress={() =>
+                    this.goToPutawayItemDetailScreen(listRenderItemInfo.item, listRenderItemInfo.item?.putawayItem)
+                  }
+                >
                   <Card.Content>
                     <View style={styles.row}>
                       <View style={styles.col50}>
@@ -166,7 +158,6 @@ class PutawayList extends React.Component<Props, State> {
                       </View>
                     </View>
                   </Card.Content>
-                 
                 </Card>
               )}
               keyExtractor={(item) => item.id}

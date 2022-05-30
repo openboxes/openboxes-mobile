@@ -1,6 +1,6 @@
-import {StyleSheet} from 'react-native';
-import {colors, ratio} from "../../constants";
-import Theme from "../../utils/Theme";
+import { StyleSheet } from 'react-native';
+import { colors, ratio } from '../../constants';
+import Theme from '../../utils/Theme';
 
 export default StyleSheet.create({
   container: {
@@ -8,66 +8,66 @@ export default StyleSheet.create({
     flexDirection: 'column',
     flex: 1,
     paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingHorizontal: 20
   },
-  select:{
-    width: "100%",
+  select: {
+    width: '100%',
     borderWidth: 2,
     height: 40,
     alignSelf: 'center',
-    borderColor:'grey',
-    backgroundColor:'white',
-    borderRadius:5,
-    marginTop:10,
+    borderColor: 'grey',
+    backgroundColor: 'white',
+    borderRadius: 5,
+    marginTop: 10
   },
-  arrowDownIcon:{
+  arrowDownIcon: {
     height: 15,
-    width:15,
+    width: 15
   },
-  from:{
+  from: {
     flex: 1
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'center',
     height: 40,
-    alignSelf:"center",
-    alignItems: 'center' ,
-    marginTop:20,
+    alignSelf: 'center',
+    alignItems: 'center',
+    marginTop: 20
   },
   input: {
     flex: 1,
-    marginTop:5,
+    marginTop: 5,
     height: 40,
     marginRight: 10,
-    borderColor:'grey',
+    borderColor: 'grey'
   },
-  bottom:{
+  bottom: {
     width: '100%',
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: 20,
     marginTop: 8,
-    height: ratio.height * 100,
+    height: ratio.height * 100
   },
   button: {
     width: '80%',
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor:colors.headerColor,
-    borderRadius:5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.headerColor,
+    borderRadius: 5,
     padding: 15,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 2
     },
     shadowOpacity: 1,
     shadowRadius: 5,
-    elevation: 10,
+    elevation: 10
   },
   label: {
     fontSize: 12,
-    color: Theme.colors.placeholder,
-  },
+    color: Theme.colors.placeholder
+  }
 });

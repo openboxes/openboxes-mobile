@@ -46,9 +46,7 @@ const InboundOrderList = () => {
       if (data?.error) {
         showPopup({
           title: data.errorMessage ? 'Inbound order details' : null,
-          message:
-            data.errorMessage ??
-            `Failed to load inbound order details value ${id}`,
+          message: data.errorMessage ?? `Failed to load inbound order details value ${id}`,
           positiveButton: {
             text: 'Retry',
             callback: () => {
@@ -60,9 +58,7 @@ const InboundOrderList = () => {
       } else {
         if (data && Object.keys(data).length !== 0) {
           state.inboundOrders = data.filter((item: any) => {
-            return (
-              item.status === 'SHIPPED' || item.status === 'PARTIALLY_RECEIVED'
-            );
+            return item.status === 'SHIPPED' || item.status === 'PARTIALLY_RECEIVED';
           });
         }
         setState({ ...state });
@@ -86,25 +82,15 @@ const InboundOrderList = () => {
 
   const RenderListItem = ({ item, index }: any): JSX.Element => {
     return (
-      <Card
-        onPress={() => navigateToInboundDetails(item)}
-        style={LayoutStyle.listItemContainer}
-        key={index}
-      >
+      <Card style={LayoutStyle.listItemContainer} key={index} onPress={() => navigateToInboundDetails(item)}>
         <Card.Content>
           <View style={styles.rowItem}>
-            <RenderOrderData
-              title={'Identifier'}
-              subText={item.shipmentNumber}
-            />
+            <RenderOrderData title={'Identifier'} subText={item.shipmentNumber} />
             <RenderOrderData title={'Status'} subText={item.status} />
           </View>
           <View style={styles.rowItem}>
             <RenderOrderData title={'Origin'} subText={item.origin.name} />
-            <RenderOrderData
-              title={'Destination'}
-              subText={item.destination.name}
-            />
+            <RenderOrderData title={'Destination'} subText={item.destination.name} />
           </View>
           <View style={styles.rowItem}>
             <RenderOrderData title={'Description'} subText={item.name} />
@@ -122,21 +108,15 @@ const InboundOrderList = () => {
     if (searchTerm) {
       const exactInboundOrder = _.find(
         state.inboundOrders,
-        (inboundOrder: any) =>
-          inboundOrder?.shipmentNumber?.toLowerCase() ===
-          searchTerm.toLowerCase()
+        (inboundOrder: any) => inboundOrder?.shipmentNumber?.toLowerCase() === searchTerm.toLowerCase()
       );
 
       if (exactInboundOrder) {
         resetFiltering();
         navigateToInboundDetails(exactInboundOrder);
       } else {
-        const filteredInboundOrders = _.filter(
-          state.inboundOrders,
-          (inboundOrder: any) =>
-            inboundOrder?.shipmentNumber
-              ?.toLowerCase()
-              ?.includes(searchTerm.toLowerCase())
+        const filteredInboundOrders = _.filter(state.inboundOrders, (inboundOrder: any) =>
+          inboundOrder?.shipmentNumber?.toLowerCase()?.includes(searchTerm.toLowerCase())
         );
         setState({
           ...state,
@@ -155,33 +135,25 @@ const InboundOrderList = () => {
       ...state,
       filteredInboundOrders: []
     });
-  }
+  };
 
   return (
     <View style={{ flex: 1, zIndex: -1 }}>
       <BarcodeSearchHeader
+        autoSearch
         placeholder="Search by order number"
-        onSearchTermSubmit={filterInboundOrders}
         resetSearch={resetFiltering}
         searchBox={false}
-        autoSearch
+        onSearchTermSubmit={filterInboundOrders}
       />
       {state.inboundOrders.length > 0 ? (
         <FlatList
-          data={
-            state.filteredInboundOrders.length > 0
-              ? state.filteredInboundOrders
-              : state.inboundOrders
-          }
+          data={state.filteredInboundOrders.length > 0 ? state.filteredInboundOrders : state.inboundOrders}
           keyExtractor={(inboundOrder) => inboundOrder.id}
           renderItem={RenderListItem}
         />
       ) : (
-        <EmptyView
-          title="Receiving"
-          description="There are no items to receive"
-          isRefresh={false}
-        />
+        <EmptyView title="Receiving" description="There are no items to receive" isRefresh={false} />
       )}
     </View>
   );

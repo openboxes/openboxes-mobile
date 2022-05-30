@@ -1,4 +1,4 @@
-import {StyleSheet} from 'react-native';
+import { StyleSheet } from 'react-native';
 import Theme from '../../utils/Theme';
 
 export default StyleSheet.create({
@@ -9,7 +9,7 @@ export default StyleSheet.create({
   itemView: {
     marginStart: 10,
     marginEnd: 10,
-    marginTop: 5,
+    marginTop: 5
   },
   rowItem: {
     flexDirection: 'row',
@@ -18,22 +18,22 @@ export default StyleSheet.create({
     padding: 2,
     marginStart: 4,
     width: '100%',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   columnItem: {
     display: 'flex',
     flexDirection: 'column',
     flex: 0,
-    width: '50%',
+    width: '50%'
   },
   label: {
     fontSize: 12,
-    color: Theme.colors.placeholder,
+    color: Theme.colors.placeholder
   },
   value: {
     fontSize: 16,
     color: Theme.colors.text,
-    width: '90%',
+    width: '90%'
   },
   bottom: {
     alignSelf: 'center',

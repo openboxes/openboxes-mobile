@@ -10,7 +10,7 @@ export default StyleSheet.create({
   label: {
     fontSize: 12,
     color: Theme.colors.placeholder,
-    alignSelf:'flex-start'
+    alignSelf: 'flex-start'
   },
   value: {
     fontSize: 16,
@@ -52,13 +52,13 @@ export default StyleSheet.create({
     marginTop: 10
   },
   containerField: {
-    padding:10
+    padding: 10
   },
   bottom: {
     alignSelf: 'center',
     justifyContent: 'center',
     height: ratio.height * 100,
-    marginBottom: 20,
+    marginBottom: 20
   },
   textContainer: {
     flexDirection: 'column',

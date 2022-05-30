@@ -1,5 +1,4 @@
 import { StyleSheet } from 'react-native';
-import { colors, ratio } from '../../constants';
 import Theme from '../../utils/Theme';
 
 export default StyleSheet.create({
@@ -39,6 +38,6 @@ export default StyleSheet.create({
     padding: 5,
     fontSize: 16,
     borderRadius: 10,
-    elevation: 8,
+    elevation: 8
   }
 });

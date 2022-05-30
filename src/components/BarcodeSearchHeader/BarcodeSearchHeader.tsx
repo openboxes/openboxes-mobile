@@ -1,7 +1,7 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { Searchbar } from 'react-native-paper';
-import styles  from './styles';
+import styles from './styles';
 import { Props } from './types';
 
 const BarcodeSearchHeader = (props: Props) => {
@@ -12,10 +12,9 @@ const BarcodeSearchHeader = (props: Props) => {
   // If autoSearch is true, then trigger onSearchTermSubmit on a searchTerm change
   useEffect(() => {
     if (props.autoSearch) {
-      onSearchTermSubmit()
+      onSearchTermSubmit();
     }
   }, [searchTerm]);
-
 
   // Resets the search bar's search term on the navigation change
   useEffect(() => {
@@ -29,7 +28,7 @@ const BarcodeSearchHeader = (props: Props) => {
 
   const onSearchTermSubmit = () => {
     props.onSearchTermSubmit(searchTerm);
-  }
+  };
 
   return (
     <Searchbar
@@ -42,6 +41,6 @@ const BarcodeSearchHeader = (props: Props) => {
       onChangeText={setSearchTerm}
     />
   );
-}
+};
 
 export default BarcodeSearchHeader;

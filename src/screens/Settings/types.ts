@@ -1,17 +1,11 @@
-
 export interface OwnProps {
-    navigation: any;
+  navigation: any;
 }
 
-export interface StateProps {
-}
+export interface StateProps {}
 
-export interface  DispatchProps {
-
-}
+export interface DispatchProps {}
 
 export type Props = OwnProps & StateProps & DispatchProps;
 
-export interface State {
-
-}
+export interface State {}
