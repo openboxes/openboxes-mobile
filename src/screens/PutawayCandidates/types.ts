@@ -1,5 +1,6 @@
 export interface OwnProps {
   navigation: any;
+  route: any;
 }
 
 export interface StateProps {
@@ -16,5 +17,7 @@ export interface DispatchProps {
 export type Props = OwnProps & StateProps & DispatchProps;
 
 export interface State {
-  selectedItem: any;
+  putawayCandidates: any;
+  refreshing: boolean;
+  filteredPutawayCandidates: any;
 }
