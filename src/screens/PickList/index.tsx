@@ -5,7 +5,7 @@ import styles from './styles';
 import {ListRenderItemInfo, Text, View, ToastAndroid, TouchableOpacity} from 'react-native';
 import { useDispatch } from 'react-redux';
 import showPopup from '../../components/Popup';
-import { submitPickListItem } from '../../redux/actions/orders';
+import { submitPickListItem, revertPickListItem } from '../../redux/actions/orders';
 import Button from '../../components/Button';
 import InputBox from '../../components/InputBox';
 import Carousel from 'react-native-snap-carousel';
@@ -32,6 +32,31 @@ const PickOrderItem = (props: any) => {
 
   const [picklistItems, setPicklistItems] = useState<any>(props.pickList ? props.pickList.picklistItems : []);
   const [showDropDown, setShowDropDown] = useState<boolean>(false);
+
+  const revertPickItem = (id: string) => {
+    try {
+      const actionCallback = (data: any) => {
+        if (data && data.error) {
+          showPopup({
+            title: data.errorMessage ? 'Failed to revert pick item' : null,
+            message: data.errorMessage || 'Failed to revert pick item',
+          });
+        } else {
+          ToastAndroid.show('Reverted picked item successfully!', ToastAndroid.SHORT);
+          props.successfulPickCallback();
+        }
+      };
+
+      dispatch(revertPickListItem(id, actionCallback));
+    } catch (e) {
+      showPopup({
+        title: e.message ? 'Failed revert item' : null,
+        message: e.message  || 'Failed revert item',
+        negativeButtonText: 'Cancel',
+      });
+      return Promise.resolve(null);
+    }
+  }
 
   const formSubmit = (id: string) => {
     const itemToSave = _.find(picklistItems, item => item.id === id);
@@ -97,11 +122,9 @@ const PickOrderItem = (props: any) => {
         )
       );
     } catch (e) {
-      const title = e.message ? 'Failed submit item' : null;
-      const message = e.message  || 'Failed submit item';
       showPopup({
-        title: title,
-        message: message,
+        title: e.message ? 'Failed submit item' : null,
+        message: e.message  || 'Failed submit item',
         negativeButtonText: 'Cancel',
       });
       return Promise.resolve(null);
@@ -317,6 +340,11 @@ const PickOrderItem = (props: any) => {
                         />
                       )}
                       <Button title="Pick Item" onPress={() => formSubmit(item.id)} disabled={!item?.quantityRemaining} />
+                      <Button
+                          title="Revert"
+                          onPress={() => revertPickItem(item.id)}
+                          disabled={item?.quantityRemaining !== 0}
+                      />
                     </View>
                   </View>
                 </Card.Content>

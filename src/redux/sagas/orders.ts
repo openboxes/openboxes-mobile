@@ -6,24 +6,19 @@ import {
   GET_PICKLIST_ITEM_REQUEST,
   SUBMIT_PICKLIST_ITEM_PICKUP_REQUEST,
   GET_STOCK_MOVEMENT_LIST,
-  SUBMIT_PICKLIST_ITEM_PICKUP_SUCCESS
+  SUBMIT_PICKLIST_ITEM_PICKUP_SUCCESS,
+  REVERT_PICKLIST_ITEM_PICKUP_REQUEST
 } from '../actions/orders';
 import { hideScreenLoading, showScreenLoading } from '../actions/main';
 import * as api from '../../apis';
 import GetOrdersApiResponse from '../../data/order/Order';
 import { GET_LOCATIONS_REQUEST_SUCCESS } from '../actions/locations';
-import {
-  GetPickListItemApiResponse,
-  GetPickListItemsApiResponse
-} from '../../data/picklist/PicklistItem';
+import { GetPickListItemApiResponse, GetPickListItemsApiResponse } from '../../data/picklist/PicklistItem';
 
 function* getOrders(action: any) {
   try {
     yield put(showScreenLoading('Loading...'));
-    const response: GetOrdersApiResponse = yield call(
-      api.getOrders,
-      action.payload
-    );
+    const response: GetOrdersApiResponse = yield call(api.getOrders, action.payload);
     yield put({
       type: GET_ORDERS_REQUEST_SUCCESS,
       payload: response.data
@@ -32,7 +27,7 @@ function* getOrders(action: any) {
     yield put(hideScreenLoading());
   } catch (error) {
     yield put(hideScreenLoading());
-    if (error.code != 401) {
+    if (error.code !== 401) {
       yield action.callback({
         error: true,
         errorMessage: error.message
@@ -66,17 +61,14 @@ function* getStockMovement(action: any) {
 
 function* getPickList(action: any) {
   try {
-    const response: GetPickListItemsApiResponse = yield call(
-      api.getPickList,
-      action.payload.id
-    );
+    const response: GetPickListItemsApiResponse = yield call(api.getPickList, action.payload.id);
     yield put({
       type: GET_LOCATIONS_REQUEST_SUCCESS,
       payload: response.data
     });
     yield action.callback(response.data);
   } catch (error) {
-    if (error.code != 401) {
+    if (error.code !== 401) {
       yield action.callback({
         error: true,
         errorMessage: error.message
@@ -87,20 +79,17 @@ function* getPickList(action: any) {
 
 function* getPickListItem(action: any) {
   try {
-    const response: GetPickListItemApiResponse = yield call(
-      api.getPickListItem,
-      action.payload.id
-    );
+    const response: GetPickListItemApiResponse = yield call(api.getPickListItem, action.payload.id);
     yield put({
       type: GET_LOCATIONS_REQUEST_SUCCESS,
       payload: response.data
     });
     yield action.callback(response.data);
   } catch (error) {
-    if (error.code != 401) {
+    if (error.code !== 401) {
       yield action.callback({
         error: true,
-        errorMessage: error.message,
+        errorMessage: error.message
       });
     }
   }
@@ -119,7 +108,26 @@ function* submitPickListItem(action: any) {
     });
     yield action.callback(response);
   } catch (error) {
-    if (error.code != 401) {
+    if (error.code !== 401) {
+      yield action.callback({
+        error: true,
+        errorMessage: error.message
+      });
+    }
+  }
+}
+
+function* revertPickListItem(action: any) {
+  try {
+    const requestBody = { revert: true };
+    const response: GetPickListItemApiResponse = yield call(api.submitPickListItem, action.payload.id, requestBody);
+    yield put({
+      type: REVERT_PICKLIST_ITEM_PICKUP_REQUEST,
+      payload: response
+    });
+    yield action.callback(response);
+  } catch (error) {
+    if (error.code !== 401) {
       yield action.callback({
         error: true,
         errorMessage: error.message
@@ -134,4 +142,5 @@ export default function* watcher() {
   yield takeLatest(GET_PICKLIST_ITEM_REQUEST, getPickListItem);
   yield takeLatest(SUBMIT_PICKLIST_ITEM_PICKUP_REQUEST, submitPickListItem);
   yield takeLatest(GET_STOCK_MOVEMENT_LIST, getStockMovement);
+  yield takeLatest(REVERT_PICKLIST_ITEM_PICKUP_REQUEST, revertPickListItem);
 }

@@ -8,49 +8,40 @@ export const GET_PICKLIST_ITEM_REQUEST = 'GET_PICKLIST_ITEM_REQUEST';
 export const SUBMIT_PICKLIST_ITEM_PICKUP_REQUEST = 'SUBMIT_PICKLIST_ITEM_PICKUP_REQUEST';
 export const SUBMIT_PICKLIST_ITEM_PICKUP_SUCCESS = 'SUBMIT_PICKLIST_ITEM_PICKUP_SUCCESS';
 
+export const REVERT_PICKLIST_ITEM_PICKUP_REQUEST = 'REVERT_PICKLIST_ITEM_PICKUP_REQUEST';
+
 export const GET_PICKLIST_REQUEST_SUCCESS = 'GET_PICKLIST_REQUEST_SUCCESS';
-export const GET_PICKLIST_REQUEST_SUCCESS_FAIL =
-  'GET_PICKLIST_REQUEST_SUCCESS_FAIL';
+export const GET_PICKLIST_REQUEST_SUCCESS_FAIL = 'GET_PICKLIST_REQUEST_SUCCESS_FAIL';
 
 export function getOrdersAction(value: string | null, callback: (products: any) => void) {
   return {
     type: GET_ORDERS_REQUEST,
     payload: value,
-    callback,
+    callback
   };
 }
 
-export function getPickListAction(
-  id: string,
-  callback: (products: any) => void,
-) {
+export function getPickListAction(id: string, callback: (products: any) => void) {
   return {
     type: GET_PICKLIST_REQUEST,
     payload: { id },
-    callback,
+    callback
   };
 }
 
-export function getPickListItemAction(
-    id: string,
-    callback: (products: any) => void,
-) {
+export function getPickListItemAction(id: string, callback: (products: any) => void) {
   return {
     type: GET_PICKLIST_ITEM_REQUEST,
     payload: { id },
-    callback,
+    callback
   };
 }
 
-export function submitPickListItem(
-    id: string,
-    requestBody: any,
-    callback: (data: any) => void,
-) {
+export function submitPickListItem(id: string, requestBody: any, callback: (data: any) => void) {
   return {
     type: SUBMIT_PICKLIST_ITEM_PICKUP_REQUEST,
     payload: { id, requestBody },
-    callback,
+    callback
   };
 }
 
@@ -58,6 +49,14 @@ export function getStockMovements(direction: string | null, status: string | nul
   return {
     type: GET_STOCK_MOVEMENT_LIST,
     payload: { direction, status },
-    callback,
+    callback
+  };
+}
+
+export function revertPickListItem(id: string, callback: (data: any) => void) {
+  return {
+    type: REVERT_PICKLIST_ITEM_PICKUP_REQUEST,
+    payload: { id },
+    callback
   };
 }

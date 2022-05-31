@@ -31,19 +31,9 @@ export interface DispatchProps {
   showScreenLoading: (message?: string) => void;
   hideScreenLoading: () => void;
   getPickListItemAction: (id: any, callback: (data: any) => void) => void;
-  submitPickListItem: (
-    id: string,
-    requestBody: any,
-    callback: (data: any) => void
-  ) => void;
-  searchProductByCodeAction: (
-    productCode: string,
-    callback: (data: any) => void
-  ) => void;
-  searchLocationByLocationNumber: (
-    locationNumber: string,
-    callback: (data: any) => void
-  ) => void;
+  submitPickListItem: (id: string, requestBody: any, callback: (data: any) => void) => void;
+  searchProductByCodeAction: (productCode: string, callback: (data: any) => void) => void;
+  searchLocationByLocationNumber: (locationNumber: string, callback: (data: any) => void) => void;
 }
 
 export type Props = PickListProps & StateProps & OwnProps & DispatchProps;
