@@ -340,11 +340,12 @@ const PickOrderItem = (props: any) => {
                         />
                       )}
                       <Button title="Pick Item" onPress={() => formSubmit(item.id)} disabled={!item?.quantityRemaining} />
+                      {item?.quantityToPick !== item?.quantityRemaining &&
                       <Button
                           title="Revert"
                           onPress={() => revertPickItem(item.id)}
                           disabled={item?.quantityRemaining !== 0}
-                      />
+                      />}
                     </View>
                   </View>
                 </Card.Content>
