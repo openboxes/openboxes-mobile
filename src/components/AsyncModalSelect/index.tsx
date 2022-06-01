@@ -38,16 +38,14 @@ const AsyncModalSelect = ({
         message: data.errorMessage ?? 'Failed to search for additional options',
         positiveButton: { text: 'Ok' }
       });
-    } else {
-      if (data?.data.length !== 0) {
-        setData(
-          _.map(data.data, (item: any) => ({
-            name: item.name,
-            id: item.id
-          }))
-        );
-      }
+      return;
     }
+    setData(
+      _.map(data?.data, (item: any) => ({
+        name: item.name,
+        id: item.id
+      }))
+    );
   };
 
   const clearSelection = () => {
@@ -72,22 +70,14 @@ const AsyncModalSelect = ({
         }))}
         cancelButtonAccessibilityLabel={'Cancel Button'}
         searchText="Search for more options..."
-        onChange={(option: {
-          label: React.SetStateAction<string>;
-          key: any;
-        }) => {
+        onChange={(option: { label: React.SetStateAction<string>; key: any }) => {
           setLabel(option.label);
           onSelect?.({ id: option.key, name: option.label });
         }}
         onSearchFilterer={(searchText, unfilteredData) => unfilteredData}
         onChangeSearch={(searchData: string) => setSearchTerm(searchData)}
       >
-        <TextInput
-          style={styles.textInput}
-          editable={false}
-          placeholder={placeholder || ''}
-          value={label}
-        />
+        <TextInput style={styles.textInput} editable={false} placeholder={placeholder || ''} value={label} />
       </ModalSelector>
       {label ? (
         <TouchableOpacity onPress={clearSelection}>
