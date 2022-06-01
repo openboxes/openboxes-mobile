@@ -155,7 +155,7 @@ const PickOrderItem = (props: any) => {
   const showShortageInfo = (item: PicklistItem) => {
     showPopup({
       title: 'Shortage Info:',
-      message: `Shortage Quantity: ${item?.quantityCanceled ?? 0}.\nShortage Reason: ${item?.reasonCode ?? 'None'}.\nPicking Person: ${item['picker.name'] ?? 'None'}`,
+      message: `Shortage Quantity: ${item?.quantityCanceled ?? 0}\nShortage Reason: ${item?.reasonCode ?? 'None'}\nPicking Person: ${item['picker.name'] ?? 'None'}`,
       positiveButton: { text: 'Ok' },
     });
   }
@@ -180,14 +180,20 @@ const PickOrderItem = (props: any) => {
                   <View style={styles.inputContainer}>
                     <View style={styles.listItemContainer}>
                       <View style={styles.row}>
-                        <View style={styles.col50}>
+                        <View style={styles.col33}>
                           <Text style={styles.label}>Product Code</Text>
                           <Text style={styles.value}>{item?.productCode}</Text>
                         </View>
-                        <View style={styles.col50}>
+                        <View style={styles.col33}>
                           <Text style={styles.label}>Product Name</Text>
                           <Text style={styles.value}>
                             {item?.['product.name']}
+                          </Text>
+                        </View>
+                        <View style={styles.col33}>
+                          <Text style={styles.label}>Lot Number</Text>
+                          <Text style={styles.value}>
+                            {item?.lotNumber??'Default'}
                           </Text>
                         </View>
                       </View>
@@ -221,13 +227,13 @@ const PickOrderItem = (props: any) => {
                         <View style={styles.col33}>
                           <Text style={styles.label}>Location</Text>
                           <Text style={styles.value}>
-                            {item?.['binLocation.name']}
+                            {item?.['binLocation.name']??'Default'}
                           </Text>
                         </View>
                         <View style={styles.col33}>
                           <Text style={styles.label}>Type</Text>
                           <Text style={styles.value}>
-                            {item?.['binLocation.locationType']}
+                            {item?.['binLocation.locationType']??'None'}
                           </Text>
                         </View>
                         <View style={styles.col33}>
@@ -239,7 +245,7 @@ const PickOrderItem = (props: any) => {
                       </View>
                       <InputBox
                         value={item.scannedBinLocation}
-                        placeholder={item['binLocation.locationNumber']}
+                        placeholder={item['binLocation.locationNumber'] || 'Default'}
                         label={item['binLocation.locationNumber'] || 'Bin Location'}
                         disabled={false}
                         onEndEdit={(value: any) => setPicklistItemsHelper(value, index, 'scannedBinLocation')}
