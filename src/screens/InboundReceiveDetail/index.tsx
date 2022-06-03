@@ -16,6 +16,7 @@ import InputSpinner from '../../components/InputSpinner';
 import Radio from '../../components/Radio';
 import CLEAR from '../../assets/images/icon_clear.png';
 import SelectDropdown from 'react-native-select-dropdown';
+import LabledData from '../../components/LabeledData';
 
 const renderIcon = () => {
   return <Image style={styles.arrowDownIcon} source={require('../../assets/images/arrow-down.png')} />;
@@ -183,33 +184,24 @@ const InboundReceiveDetail = () => {
     }
   };
 
-  const RenderData = ({ title, subText }: any): JSX.Element => {
-    return (
-      <View style={styles.columnItem}>
-        <Text style={styles.label}>{title}</Text>
-        <Text style={styles.value}>{subText}</Text>
-      </View>
-    );
-  };
-
   const RenderShipmentItem = (): JSX.Element => {
     return (
       <View style={styles.itemView}>
         <View style={styles.rowItem}>
-          <RenderData title={'Shipment Number'} subText={shipmentData?.shipmentNumber} />
-          <RenderData title={'Description'} subText={shipmentData?.name} />
+          <LabledData label="Shipment Number" data={shipmentData?.shipmentNumber} />
+          <LabledData label="Description" data={shipmentData?.name} />
         </View>
         <View style={styles.rowItem}>
-          <RenderData title={'Product Code'} subText={shipmentItem['product.productCode']} />
-          <RenderData title={'Name'} subText={shipmentItem['product.name']} />
+          <LabledData label="Product Code" data={shipmentItem['product.productCode']} />
+          <LabledData label="Name" data={shipmentItem['product.name']} />
         </View>
         <View style={styles.rowItem}>
-          <RenderData title={'Lot / Serial Number'} subText={shipmentItem.lotNumber ?? 'Default'} />
-          <RenderData title={'Expiration Date'} subText={shipmentItem.expirationDate ?? 'Never'} />
+          <LabledData label="Lot / Serial Number" data={shipmentItem.lotNumber ?? 'Default'} />
+          <LabledData label="Expiration Date" data={shipmentItem.expirationDate ?? 'Never'} />
         </View>
         <View style={styles.rowItem}>
-          <RenderData title={'Quantity Shipped'} subText={shipmentItem.quantityShipped} />
-          <RenderData title={'Quantity Received'} subText={shipmentItem.quantityReceived} />
+          <LabledData label="Quantity Shipped" data={shipmentItem.quantityShipped} />
+          <LabledData label="Quantity Received" data={shipmentItem.quantityReceived} />
         </View>
       </View>
     );
