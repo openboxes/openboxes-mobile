@@ -102,11 +102,15 @@ class PutawayItem extends Component<Props, State> {
       'orderedBy.id': '',
       sortBy: null
     };
-    createPutawayOderAction(data, ({ message, error }) => {
+
+    createPutawayOderAction(data, ({ message, error, response }) => {
       ToastAndroid.show(message, ToastAndroid.SHORT);
       if (!error) {
-        this.props.navigation.navigate('PutawayCandidates', {
-          forceRefresh: true
+        const putAway = response?.data;
+        const putAwayItem = _.get(response, 'data.putawayItems[0]', {});
+        this.props.navigation.navigate('PutawayItemDetail', {
+          putAway,
+          putAwayItem
         });
       }
     });

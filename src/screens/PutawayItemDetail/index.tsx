@@ -7,6 +7,7 @@ import InputBox from '../../components/InputBox';
 import { useDispatch } from 'react-redux';
 import { submitPutawayItem } from '../../redux/actions/putaways';
 import Button from '../../components/Button';
+import LabledData from "../../components/LabeledData";
 
 const PutawayItemDetail = () => {
   const route = useRoute();
@@ -92,7 +93,7 @@ const PutawayItemDetail = () => {
           positiveButton: {
             text: 'ok',
             callback: () => {
-              navigation.navigate('PutawayList', { refetchPutaways: true });
+              navigation.navigate('Dashboard');
             },
           },
         });
@@ -114,55 +115,25 @@ const PutawayItemDetail = () => {
   return (
     <ScrollView>
       <View style={styles.contentContainer}>
+        <View style={styles.rowItem}>
+          <LabledData label="Putaway Identifier" data={state.putAway?.putawayNumber} />
+          <LabledData label="Quantity to Putaway" data={state.putAwayItem?.quantity.toString()} />
+        </View>
+        <View style={styles.rowItem}>
+          <LabledData label="Product Code" data={state.putAwayItem?.['product.productCode']} />
+          <LabledData label="Product Name" data={state.putAwayItem?.['product.name']} />
+        </View>
+        <View style={styles.rowItem}>
+          <LabledData label="Lot Number" data={state.putAwayItem?.['inventoryItem.lotNumber']} defaultValue='Default' />
+          <LabledData label="Expiry Date" data={state.putAwayItem?.['inventoryItem.expiryDate']} defaultValue='Never' />
+        </View>
+        <View style={styles.rowItem}>
+          <LabledData label="Current Location" data={state.putAwayItem?.['currentLocation.name']} defaultValue="Default"/>
+          <LabledData label="Putaway Location" data={state.putAwayItem?.['putawayLocation.name']} defaultValue="Default"/>
+        </View>
+      </View>
+      <View style={styles.contentContainer}>
         <View style={styles.from}>
-          <InputBox
-            label={'Putaway Identifier'}
-            value={state.putAway?.putawayNumber}
-            disabled={true}
-            editable={false}
-          />
-          <InputBox
-            label={'Product Code'}
-            value={state.putAwayItem?.['product.productCode']}
-            disabled={true}
-            editable={false}
-          />
-          <InputBox
-            label={'Product Name'}
-            value={state.putAwayItem?.['product.name']}
-            disabled={true}
-            editable={false}
-          />
-          <InputBox
-            label={'Lot Number'}
-            value={state.putAwayItem?.['inventoryItem.lotNumber'] || 'Default'}
-            disabled={true}
-            editable={false}
-          />
-          <InputBox
-            label={'Expiry Date'}
-            value={state.putAwayItem?.['inventoryItem.expiryDate'] || 'Never'}
-            disabled={true}
-            editable={false}
-          />
-          <InputBox
-            label={'Current Location'}
-            value={state.putAwayItem?.['currentLocation.name']}
-            disabled={true}
-            editable={false}
-          />
-          <InputBox
-            label={'Putaway Location'}
-            value={state.putAwayItem?.['putawayLocation.name']}
-            disabled={true}
-            editable={false}
-          />
-          <InputBox
-            label={'Quantity to Putaway'}
-            value={state.putAwayItem?.quantity.toString()}
-            editable={false}
-            disabled={true}
-          />
           <InputBox
             label={'Scan Putaway Location'}
             value={state.scannedPutawayLocation}
