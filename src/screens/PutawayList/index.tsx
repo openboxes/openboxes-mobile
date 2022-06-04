@@ -147,13 +147,13 @@ class PutawayList extends React.Component<Props, State> {
                       <View style={styles.col50}>
                         <Text style={styles.label}>Current Location</Text>
                         <Text style={styles.value}>
-                          {listRenderItemInfo.item?.putawayItem?.['currentLocation.name']}
+                          {listRenderItemInfo.item?.putawayItem?.['currentLocation.name']??'Default'}
                         </Text>
                       </View>
                       <View style={styles.col50}>
                         <Text style={styles.label}>Putaway Location</Text>
                         <Text style={styles.value}>
-                          {listRenderItemInfo.item?.putawayItem?.['putawayLocation.name']}
+                          {listRenderItemInfo.item?.putawayItem?.['putawayLocation.name']??'Default'}
                         </Text>
                       </View>
                     </View>

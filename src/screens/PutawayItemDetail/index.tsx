@@ -93,7 +93,7 @@ const PutawayItemDetail = () => {
           positiveButton: {
             text: 'ok',
             callback: () => {
-              navigation.navigate('PutawayList', { refetchPutaways: true });
+              navigation.navigate('Dashboard');
             },
           },
         });
@@ -120,7 +120,7 @@ const PutawayItemDetail = () => {
           <LabledData label="Quantity to Putaway" data={state.putAwayItem?.quantity.toString()} />
         </View>
         <View style={styles.rowItem}>
-          <LabledData label="Product Code" data={state.putAway?.putawayNumber} />
+          <LabledData label="Product Code" data={state.putAwayItem?.['product.productCode']} />
           <LabledData label="Product Name" data={state.putAwayItem?.['product.name']} />
         </View>
         <View style={styles.rowItem}>
@@ -128,8 +128,8 @@ const PutawayItemDetail = () => {
           <LabledData label="Expiry Date" data={state.putAwayItem?.['inventoryItem.expiryDate']} defaultValue='Never' />
         </View>
         <View style={styles.rowItem}>
-          <LabledData label="Current Location" data={state.putAwayItem?.['currentLocation.name']} />
-          <LabledData label="Putaway Location" data={state.putAwayItem?.['putawayLocation.name']} />
+          <LabledData label="Current Location" data={state.putAwayItem?.['currentLocation.name']} defaultValue="Default"/>
+          <LabledData label="Putaway Location" data={state.putAwayItem?.['putawayLocation.name']} defaultValue="Default"/>
         </View>
       </View>
       <View style={styles.contentContainer}>
