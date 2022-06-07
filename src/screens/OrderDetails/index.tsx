@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import React from 'react';
 import { connect } from 'react-redux';
-import { ScrollView, Text, View } from 'react-native';
+import { Alert, ScrollView, Text, View } from 'react-native';
 
 import styles from './styles';
 import { showScreenLoading, hideScreenLoading } from '../../redux/actions/main';
@@ -9,7 +9,6 @@ import { orderDetailsVMMapper } from './OrderDetailsVMMapper';
 import { getPickListAction } from '../../redux/actions/orders';
 import { State, DispatchProps, Props } from './types';
 import PickOrderItem from '../PickList';
-import showPopup from '../../components/Popup';
 
 class OrderDetails extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -41,18 +40,32 @@ class OrderDetails extends React.Component<Props, State> {
         const initialPicklistItemIndex = this.getInitiallyDisplayedPickItemIndex(data?.picklistItems);
 
         if (initialPicklistItemIndex === -1) {
-          showPopup({
-            title: 'All items are picked',
-            message: 'Do you want to go back?',
-            positiveButton: {
-              text: 'Ok',
-              callback: () =>
+          Alert.alert(
+            'All items are picked', // title
+            'What do you want to do now?', // message
+            [{ // button list
+              text: 'Go back',
+              onPress: () =>
                 this.props.navigation.navigate('Orders', {
                   refetchOrders: true
                 })
             },
-            negativeButtonText: 'Cancel'
-          });
+            {
+              text: 'Move to Packing',
+              onPress: () =>
+                this.props.navigation.navigate('PackingLocationPage', {
+                  orderId: order?.id,
+                  packingLocation: order?.packingLocation
+                })
+            },
+              {
+                text: 'View',
+                onPress: () => null
+              }],
+            {
+              cancelable: false
+            },
+          );
         }
 
         this.setState(

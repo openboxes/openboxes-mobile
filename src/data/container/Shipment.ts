@@ -17,8 +17,8 @@ export interface Shipment {
   containers: Container[];
   origin: Location;
   destination: Location;
-  packingLocation: Location;
-  loadingLocation: Location;
+  packingLocation: Location | null;
+  loadingLocation: Location | null;
   availableContainers: Container[];
   requisitionStatus: string;
   packingStatus: string;

@@ -18,8 +18,13 @@ export function getPickList(id: string) {
 export function getPickListItem(id: string) {
   return apiClient.get(`/picklistItems/${id}`);
 }
+
 export function submitPickListItem(id: string, requestBody: any) {
   return apiClient.post(`/picklistItems/${id}`, requestBody);
+}
+
+export function submitPackingLocation(id: string, requestBody: any) {
+  return apiClient.post(`/stockMovements/${id}/packingLocation`, requestBody);
 }
 
 export function getStockMovement(direction: string | null, status: string | null) {
