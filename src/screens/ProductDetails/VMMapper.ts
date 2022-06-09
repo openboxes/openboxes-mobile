@@ -1,17 +1,17 @@
-import {Props, State} from './types';
-import {DetailsItemVM, VM} from './VM';
-import {ProductCategory} from '../../data/product/category/ProductCategory';
-import Product from "../../data/product/Product";
+import { Props, State } from './types';
+import { DetailsItemVM, VM } from './VM';
+import { ProductCategory } from '../../data/product/category/ProductCategory';
+import Product from '../../data/product/Product';
 
 export function vmMapper(product: Product, state: State): VM {
   return {
     header: 'Product Details',
-    name: product?.name??"",
-    productCode: product.productCode??"",
+    name: product?.name ?? '',
+    productCode: product.productCode ?? '',
     description: product.description ?? 'No description provided',
     pricePerUnit: product.pricePerUnit ?? 0.0,
     details: getDetails(product),
-    category: product?.category??  { id: '', name: '', parentCategory: null },
+    category: product?.category ?? { id: '', name: '', parentCategory: null },
     status: product?.status ?? 'Not Available',
     quantityAllocated: product.quantityAllocated ?? 0,
     quantityAvailable: product.quantityAvailable ?? 0,
@@ -19,18 +19,18 @@ export function vmMapper(product: Product, state: State): VM {
     quantityOnOrder: product.quantityOnOrder ?? 0,
     unitOfMeasure: product.unitOfMeasure ?? 'EA',
     attributes: product.attributes ?? [
-      {code: '', value: '', name: ''},
-      {code: '', value: '', name: ''},
+      { code: '', value: '', name: '' },
+      { code: '', value: '', name: '' }
     ],
-    productType: product?.productType ?? {name: ''},
-    defaultImageUrl: product?.defaultImageUrl ?? 'https://reactnative.dev/img/tiny_logo.png',
-    image: product?.image ?? { id: '', name: '', uri: 'https://reactnative.dev/img/tiny_logo.png' },
+    productType: product?.productType ?? { name: '' },
+    defaultImageUrl: product?.defaultImageUrl,
+    image: product?.image,
     images: product?.images ?? [
       {
         id: '',
         name: '',
-        url: '',
-      },
+        url: ''
+      }
     ],
     availableItems: product.availableItems
   };
@@ -47,7 +47,7 @@ function getDetailsCodeItem(product: Product): DetailsItemVM {
   return {
     key: 'productCode',
     name: 'Product Code',
-    value: product.productCode,
+    value: product.productCode
   };
 }
 
@@ -55,7 +55,7 @@ function getDetailsCategoryItem(product: Product): DetailsItemVM {
   return {
     key: 'category',
     name: 'Category',
-    value: getCategoryText(product.category),
+    value: getCategoryText(product.category)
   };
 }
 

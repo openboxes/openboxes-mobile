@@ -1,25 +1,15 @@
 /* eslint-disable no-undef */
 import React, { useEffect, useState } from 'react';
-import {
-  FlatList,
-  Text,
-  TouchableOpacity,
-  View,
-  ScrollView,
-  ListRenderItemInfo,
-  ToastAndroid
-} from 'react-native';
+import { FlatList, Text, View, ScrollView, ListRenderItemInfo, ToastAndroid } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import styles from './styles';
 import { Card } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 import showPopup from '../../components/Popup';
-import {
-  getStockTransfersSummary,
-  completeStockTransfer
-} from '../../redux/actions/transfers';
+import { getStockTransfersSummary, completeStockTransfer } from '../../redux/actions/transfers';
 import EmptyView from '../../components/EmptyView';
 import Button from '../../components/Button';
+import { LayoutStyle } from '../../assets/styles';
 
 const TransferDetails = () => {
   const route = useRoute();
@@ -90,89 +80,52 @@ const TransferDetails = () => {
 
   const renderTransferItem = (): JSX.Element => {
     return (
-      <View style={styles.itemView}>
-        <Card>
-          <Card.Content>
-            <View style={styles.rowItem}>
-              <RenderData
-                title={'Order Number'}
-                subText={transferDetail?.stockTransferNumber}
-              />
-              <RenderData title={'Status'} subText={transferDetail?.status} />
-            </View>
-            <View style={styles.rowItem}>
-              <RenderData
-                title={'Origin'}
-                subText={transferDetail?.['origin.name']}
-              />
-              <RenderData
-                title={'Destination'}
-                subText={transferDetail?.['destination.name']}
-              />
-            </View>
+      <Card style={LayoutStyle.listItemContainer}>
+        <Card.Content>
+          <View style={styles.rowItem}>
+            <RenderData title={'Order Number'} subText={transferDetail?.stockTransferNumber} />
+            <RenderData title={'Status'} subText={transferDetail?.status} />
+          </View>
+          <View style={styles.rowItem}>
+            <RenderData title={'Origin'} subText={transferDetail?.['origin.name']} />
+            <RenderData title={'Destination'} subText={transferDetail?.['destination.name']} />
+          </View>
 
-            <View style={styles.rowItem}>
-              <RenderData
-                title={'Description'}
-                subText={transferDetail?.description}
-              />
-              <RenderData
-                title={'Number of Items'}
-                subText={transferDetail?.stockTransferItems?.length}
-              />
-            </View>
+          <View style={styles.rowItem}>
+            <RenderData title={'Description'} subText={transferDetail?.description} />
+            <RenderData title={'Number of Items'} subText={transferDetail?.stockTransferItems?.length} />
+          </View>
 
-            <View style={styles.rowItem}>
-              <RenderData
-                title={'Created Date'}
-                subText={transferDetail?.dateCreated}
-              />
-            </View>
-          </Card.Content>
-        </Card>
-      </View>
+          <View style={styles.rowItem}>
+            <RenderData title={'Created Date'} subText={transferDetail?.dateCreated} />
+          </View>
+        </Card.Content>
+      </Card>
     );
   };
 
   const renderListItem = (item: any, index: any) => {
     return (
-      <TouchableOpacity key={index} style={styles.itemView}>
-        <Card>
-          <Card.Content>
-            <View style={styles.rowItem}>
-              <RenderData
-                title={'Product Code'}
-                subText={item?.['product.productCode']}
-              />
-              <RenderData
-                title={'Product Name'}
-                subText={item?.['product.name']}
-              />
-            </View>
-            <View style={styles.rowItem}>
-              <RenderData
-                title={'Origin Bin Location'}
-                subText={item?.['originBinLocation.name']}
-              />
-              <RenderData
-                title={'Destination Bin Location'}
-                subText={item?.['destinationBinLocation.name']}
-              />
-            </View>
-            <View style={styles.rowItem}>
-              <RenderData title={'Quantity'} subText={item.quantity} />
-              <RenderData
-                title={'Quantity OnHand'}
-                subText={item.quantityOnHand}
-              />
-            </View>
+      <Card key={index} style={LayoutStyle.listItemContainer}>
+        <Card.Content>
+          <View style={styles.rowItem}>
+            <RenderData title={'Product Code'} subText={item?.['product.productCode']} />
+            <RenderData title={'Product Name'} subText={item?.['product.name']} />
+          </View>
+          <View style={styles.rowItem}>
+            <RenderData title={'Origin Bin Location'} subText={item?.['originBinLocation.name']} />
+            <RenderData title={'Destination Bin Location'} subText={item?.['destinationBinLocation.name']} />
+          </View>
+          <View style={styles.rowItem}>
+            <RenderData title={'Quantity'} subText={item.quantity} />
+            <RenderData title={'Quantity OnHand'} subText={item.quantityOnHand} />
+          </View>
 
-            <View style={styles.rowItem}>
-              <RenderData title={'Status'} subText={item.status} />
-            </View>
-          </Card.Content>
-        </Card>
-      </TouchableOpacity>
+          <View style={styles.rowItem}>
+            <RenderData title={'Status'} subText={item.status} />
+          </View>
+        </Card.Content>
+      </Card>
     );
   };
   return (
@@ -185,24 +138,14 @@ const TransferDetails = () => {
             data={transferDetail?.stockTransferItems}
             horizontal={false}
             numColumns={1}
-            ListEmptyComponent={
-              <EmptyView
-                title="Transfers"
-                description="There are no items for Transfer"
-              />
-            }
-            renderItem={(item: ListRenderItemInfo<any>) =>
-              renderListItem(item?.item, item.index)
-            }
+            ListEmptyComponent={<EmptyView title="Transfers" description="There are no items for Transfer" />}
+            renderItem={(item: ListRenderItemInfo<any>) => renderListItem(item?.item, item.index)}
           />
         ) : null}
       </ScrollView>
 
       <View style={styles.bottom}>
-        <Button
-          title="Complete Transfer"
-          onPress={() => completeTransfers(transferDetail)}
-        />
+        <Button title="Complete Transfer" onPress={() => completeTransfers(transferDetail)} />
       </View>
     </View>
   );

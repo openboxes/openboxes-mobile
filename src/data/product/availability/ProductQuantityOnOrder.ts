@@ -1,6 +1,6 @@
-import {ProductUnitOfMeasure} from "./ProductUnitOfMeasure";
+import { ProductUnitOfMeasure } from './ProductUnitOfMeasure';
 
 export interface ProductQuantityOnOrder {
-  value: number | 0
-  unitOfMeasure: ProductUnitOfMeasure
+  value: number | 0;
+  unitOfMeasure: ProductUnitOfMeasure;
 }

@@ -1,3 +1,5 @@
-export default interface Requisition{
-  id: String
+interface Requisition {
+  id: String;
 }
+
+export default Requisition;

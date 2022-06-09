@@ -1,3 +1,3 @@
-export interface ProductType{
-  name: String | null
+export interface ProductType {
+  name: String | null;
 }

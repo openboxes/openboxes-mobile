@@ -1,18 +1,17 @@
-import {Item} from '../../data/picklist/Item';
-import {Order} from '../../data/order/Order';
-import Product from "../../data/product/Product";
-import BinLocation from "../../data/picklist/BinLocation";
-import {PicklistItem} from "../../data/picklist/PicklistItem";
+import { Order } from '../../data/order/Order';
+import Product from '../../data/product/Product';
+import BinLocation from '../../data/picklist/BinLocation';
+import { PicklistItem } from '../../data/picklist/PicklistItem';
 
 export interface State {
   pickListItem: PicklistItem | null;
   error: string | null;
   order: Order | null;
-  productSearchQuery: string | ""
-  binLocationSearchQuery: string | ""
-  quantityPicked: string | "0"
-  product: Product | null
-  binLocation: BinLocation | null
+  productSearchQuery: string | '';
+  binLocationSearchQuery: string | '';
+  quantityPicked: string | '0';
+  product: Product | null;
+  binLocation: BinLocation | null;
 }
 
 export interface PickListProps {
@@ -32,14 +31,18 @@ export interface DispatchProps {
   showScreenLoading: (message?: string) => void;
   hideScreenLoading: () => void;
   getPickListItemAction: (id: any, callback: (data: any) => void) => void;
-  submitPickListItem: (id: string, requestBody: any, callback: (data: any) => void) => void;
+  submitPickListItem: (
+    id: string,
+    requestBody: any,
+    callback: (data: any) => void
+  ) => void;
   searchProductByCodeAction: (
-      productCode: string,
-      callback: (data: any) => void,
+    productCode: string,
+    callback: (data: any) => void
   ) => void;
   searchLocationByLocationNumber: (
-      locationNumber: string,
-      callback: (data: any) => void,
+    locationNumber: string,
+    callback: (data: any) => void
   ) => void;
 }
 

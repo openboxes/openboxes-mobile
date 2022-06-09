@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 import Theme from '../../utils/Theme';
-import { ratio, device } from '../../constants';
+import { ratio } from '../../constants';
 
 export default StyleSheet.create({
   screenContainer: {
@@ -12,23 +12,19 @@ export default StyleSheet.create({
   inputContainer: {
     display: 'flex',
     flexDirection: 'column',
-    paddingHorizontal: 10
-  },
-  from: {
-    flex: 1,
-    marginBottom: 40
+    paddingHorizontal: 0
   },
   contentContainer: {
     display: 'flex',
     flex: 1,
     flexDirection: 'column',
-    padding: 8
+    padding: 0
   },
   listItemContainer: {
     display: 'flex',
     flexDirection: 'column',
-    margin: 4,
-    padding: 4,
+    margin: 0,
+    padding: 0,
     justifyContent: 'center'
   },
   name: {
@@ -55,7 +51,8 @@ export default StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
-    width: '100%'
+    width: '100%',
+    marginTop: 10
   },
   col30: {
     display: 'flex',
@@ -112,8 +109,22 @@ export default StyleSheet.create({
     color: Theme.colors.placeholder
   },
   listItemCategory: {
-    fontSize: 16,
+    fontSize: 12,
     color: Theme.colors.text
+  },
+  col25: {
+    display: 'flex',
+    flexDirection: 'column',
+    flex: 0,
+    marginStart: 4,
+    width: '25%'
+  },
+  col33: {
+    display: 'flex',
+    flexDirection: 'column',
+    flex: 0,
+    marginStart: 4,
+    width: '33%'
   },
   col50: {
     display: 'flex',
@@ -123,12 +134,12 @@ export default StyleSheet.create({
     width: '50%'
   },
   label: {
-    fontSize: 12,
+    fontSize: 11,
     color: Theme.colors.placeholder,
     width: '60%'
   },
   value: {
-    fontSize: 16,
+    fontSize: 12,
     color: Theme.colors.text
   },
   info: {
@@ -169,5 +180,17 @@ export default StyleSheet.create({
   inputSpinner: {
     flex: 1,
     alignItems: 'center'
+  },
+  infoButton: {
+    marginRight: 2,
+    width: 12,
+    height: 12
+  },
+  shortageLabel: {
+    marginTop: 10,
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row'
   }
 });

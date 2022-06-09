@@ -1,5 +1,5 @@
 /* eslint-disable no-shadow */
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styles from './styles';
 import { ScrollView, View, ToastAndroid } from 'react-native';
@@ -91,9 +91,7 @@ const AdjustStock = () => {
   const route = useRoute();
   const { item }: any = route.params;
   const navigation = useNavigation();
-  const location = useSelector(
-    (state: RootState) => state.mainReducer.currentLocation
-  );
+  const location = useSelector((state: RootState) => state.mainReducer.currentLocation);
 
   const [comments, setComments] = useState('');
   const [quantityAdjusted, setQuantityAdjusted] = useState(item.quantityAvailableToPromise);
@@ -145,10 +143,7 @@ const AdjustStock = () => {
         });
       } else {
         if (data && Object.keys(data).length !== 0) {
-          ToastAndroid.show(
-            'Stock adjustment saved successfully',
-            ToastAndroid.SHORT
-          );
+          ToastAndroid.show('Stock adjustment saved successfully', ToastAndroid.SHORT);
           navigation.goBack();
           route?.params?.onSelect(data?.data[0]);
         }
@@ -161,31 +156,16 @@ const AdjustStock = () => {
     return (
       <View style={styles.itemView}>
         <View style={styles.rowItem}>
-          <RenderData
-            title="Product Code"
-            subText={item?.product.productCode}
-          />
+          <RenderData title="Product Code" subText={item?.product.productCode} />
           <RenderData title="Product Name" subText={item?.product.name} />
         </View>
         <View style={styles.rowItem}>
-          <RenderData
-            title="Lot Number"
-            subText={item?.inventoryItem.lotNumber ?? 'Default'}
-          />
-          <RenderData
-            title="Expiration Date"
-            subText={item?.inventoryItem.expirationDate ?? 'Never'}
-          />
+          <RenderData title="Lot Number" subText={item?.inventoryItem.lotNumber ?? 'Default'} />
+          <RenderData title="Expiration Date" subText={item?.inventoryItem.expirationDate ?? 'Never'} />
         </View>
         <View style={styles.rowItem}>
-          <RenderData
-            title="Bin Location"
-            subText={item?.binLocation?.name ?? 'Default'}
-          />
-          <RenderData
-            title="Quantity Available"
-            subText={item.quantityAvailableToPromise}
-          />
+          <RenderData title="Bin Location" subText={item?.binLocation?.name ?? 'Default'} />
+          <RenderData title="Quantity Available" subText={item.quantityAvailableToPromise} />
         </View>
       </View>
     );
@@ -195,36 +175,22 @@ const AdjustStock = () => {
     <ScrollView style={styles.container}>
       <RenderItem />
       <View style={styles.from}>
-        <InputSpinner
-          title={'Quantity Adjusted'}
-          value={quantityAdjusted}
-          setValue={setQuantityAdjusted}
-        />
+        <InputSpinner title={'Quantity Adjusted'} value={quantityAdjusted} setValue={setQuantityAdjusted} />
         <View style={styles.dropDownDivider} />
         <DropDown
           label="Reason Code"
           mode="outlined"
           visible={showDropDown}
           showDropDown={() => setShowDropDown(true)}
-          onDismiss={() => setShowDropDown(false)}
           value={reasonCode}
           setValue={setReasonCode}
           list={reasonCodes}
+          onDismiss={() => setShowDropDown(false)}
         />
-        <InputBox
-          value={comments}
-          onChange={setComments}
-          disabled={false}
-          editable={false}
-          label="Comments"
-        />
+        <InputBox value={comments} disabled={false} editable={false} label="Comments" onChange={setComments} />
       </View>
       <View style={styles.bottom}>
-        <Button
-          disabled={!comments || !reasonCode}
-          title="Adjust Stock"
-          onPress={onSave}
-        />
+        <Button disabled={!comments || !reasonCode} title="Adjust Stock" onPress={onSave} />
       </View>
     </ScrollView>
   );

@@ -1,5 +1,5 @@
-import {DefaultTheme} from 'react-native-paper';
+import { DefaultTheme } from 'react-native-paper';
 
 export default {
-  ...DefaultTheme,
+  ...DefaultTheme
 };

@@ -1,7 +1,7 @@
-import {StyleSheet} from "react-native";
+import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
-    container: {
-        flexGrow: 1
-    },
+  container: {
+    flexGrow: 1
+  }
 });

@@ -1,6 +1,8 @@
-import {LocationTypeCode} from "./LocationTypeCode";
+import { LocationTypeCode } from './LocationTypeCode';
 
-export default interface LocationType {
-  description?: string
-  locationTypeCode: LocationTypeCode
+interface LocationType {
+  description?: string;
+  locationTypeCode: LocationTypeCode;
 }
+
+export default LocationType;

@@ -1,6 +1,6 @@
-import {StyleSheet} from 'react-native';
-import {colors, ratio} from "../../constants";
-import Theme from "../../utils/Theme";
+import { StyleSheet } from 'react-native';
+import { colors, ratio } from '../../constants';
+import Theme from '../../utils/Theme';
 
 export default StyleSheet.create({
   container: {
@@ -8,35 +8,35 @@ export default StyleSheet.create({
     flexDirection: 'column',
     flex: 1,
     paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingHorizontal: 20
   },
-  arrowDownIcon:{
+  arrowDownIcon: {
     height: 15,
-    width:15,
+    width: 15
   },
-  select:{
-    width: "100%",
+  select: {
+    width: '100%',
     borderWidth: 2,
     height: 40,
     alignSelf: 'center',
-    borderColor:'grey',
-    backgroundColor:'white',
-    borderRadius:5,
-    marginTop:10,
+    borderColor: 'grey',
+    backgroundColor: 'white',
+    borderRadius: 5,
+    marginTop: 10
   },
   from: {
     flex: 1,
-    marginTop: 10,
+    marginTop: 10
   },
   bottom: {
     width: '100%',
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     height: ratio.height * 100,
-    marginBottom: 10,
+    marginBottom: 10
   },
   itemView: {
-    marginTop: 5,
+    marginTop: 5
   },
   rowItem: {
     flexDirection: 'row',
@@ -45,35 +45,35 @@ export default StyleSheet.create({
     padding: 2,
     marginStart: 4,
     width: '100%',
-    alignItems: "center"
+    alignItems: 'center'
   },
   columnItem: {
     display: 'flex',
     flexDirection: 'column',
     flex: 0,
-    width: '50%',
+    width: '50%'
   },
   label: {
-    fontSize: 12,
-    color: Theme.colors.placeholder,
+    fontSize: 11,
+    color: Theme.colors.placeholder
   },
   value: {
-    fontSize: 16,
+    fontSize: 12,
     color: Theme.colors.text,
-    width: "90%"
+    width: '90%'
   },
   inputSpinner: {
     flex: 1,
     alignItems: 'center'
   },
   datePickerContainer: {
-    marginVertical: 5,
+    marginVertical: 5
   },
   datePicker: {
     width: '100%',
     flex: 1,
     marginTop: 10,
-    height: 40,
+    height: 40
   },
   datePickerCustomStyle: {
     dateIcon: {
@@ -82,44 +82,44 @@ export default StyleSheet.create({
     placeholderText: {
       marginLeft: 10,
       fontSize: 16,
-      color: Theme.colors.placeholder,
+      color: Theme.colors.placeholder
     },
     dateText: {
       marginLeft: 10,
-      fontSize: 16,
+      fontSize: 16
     },
     dateInput: {
       alignItems: 'flex-start',
       justifyContent: 'center',
       textAlign: 'left',
-      borderColor:'grey',
+      borderColor: 'grey',
       borderWidth: 1,
-      borderRadius:5,
+      borderRadius: 5
     }
   },
-  imageIcon :{
-    position:'absolute',
-    end:10,
-    width:30,
-    height:30,
-    bottom:5,
-    padding:10,
-    justifyContent:'center',
-    alignItems:"center",
-    zIndex:100
+  imageIcon: {
+    position: 'absolute',
+    end: 10,
+    width: 30,
+    height: 30,
+    bottom: 5,
+    padding: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 100
   },
   lotStatusSelectStyle: {
-    width: "100%",
+    width: '100%',
     borderWidth: 1,
     height: 42,
     alignSelf: 'center',
-    borderColor:'#909090',
-    borderRadius:5,
-    marginTop:10,
+    borderColor: '#909090',
+    borderRadius: 5,
+    marginTop: 10
   },
   lotStatusSelectTextStyle: {
-    textAlign: 'left', 
+    textAlign: 'left',
     fontSize: 15,
-    color:'#808080',
+    color: '#808080'
   }
 });

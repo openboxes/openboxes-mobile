@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 import React, { useEffect, useState } from 'react';
-import { FlatList, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import styles from './styles';
 import { Card } from 'react-native-paper';
@@ -8,19 +8,18 @@ import { useDispatch, useSelector } from 'react-redux';
 import showPopup from '../../components/Popup';
 import { getLocationProductSummary } from '../../redux/actions/locations';
 import { RootState } from '../../redux/reducers';
-import BarCodeSearchHeader from '../Products/BarCodeSearchHeader';
+import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSearchHeader';
 import _ from 'lodash';
 import EmptyView from '../../components/EmptyView';
+import { LayoutStyle } from '../../assets/styles';
 
 const ProductSummary = () => {
   const navigation = useNavigation<any>();
   const dispatch = useDispatch();
-  const location = useSelector(
-    (state: RootState) => state.mainReducer.currentLocation
-  );
+  const location = useSelector((state: RootState) => state.mainReducer.currentLocation);
   const [state, setState] = useState<any>({
     productSummary: [],
-    productData: [],
+    productData: []
   });
 
   useEffect(() => {
@@ -33,8 +32,7 @@ const ProductSummary = () => {
       if (data?.error) {
         showPopup({
           title: data.errorMessage ? 'Product Summary details' : null,
-          message:
-            data.errorMessage ?? `Failed to load Product Summary details ${id}`,
+          message: data.errorMessage ?? `Failed to load Product Summary details ${id}`,
           positiveButton: {
             text: 'Retry',
             callback: () => {
@@ -45,11 +43,8 @@ const ProductSummary = () => {
         });
       } else {
         if (data && Object.keys(data).length !== 0) {
-          state.productSummary = _.filter(
-            data,
-            (item: { quantityOnHand: number }) => item.quantityOnHand > 0
-          );
-          state.productData = state.productSummary
+          state.productSummary = _.filter(data, (item: { quantityOnHand: number }) => item.quantityOnHand > 0);
+          state.productData = state.productSummary;
         }
         setState({ ...state });
       }
@@ -61,11 +56,14 @@ const ProductSummary = () => {
     if (query) {
       state.productSummary = _.filter(
         state.productData,
-        (item: { productCode: string, productName: string }) => item.productCode.toLowerCase().includes(query.toLowerCase()) || item.productName.toLowerCase().includes(query.toLowerCase()));
+        (item: { productCode: string; productName: string }) =>
+          item.productCode.toLowerCase().includes(query.toLowerCase()) ||
+          item.productName.toLowerCase().includes(query.toLowerCase())
+      );
     } else {
       state.productSummary = state.productData;
     }
-    setState({...state});
+    setState({ ...state });
   };
 
   const RenderData = ({ title, subText }: any): JSX.Element => {
@@ -86,46 +84,35 @@ const ProductSummary = () => {
 
   const renderListItem = (item: any, index: any) => {
     return (
-      <TouchableOpacity
-        key={index}
-        style={styles.itemView}
-        onPress={() => navigateToDetails(item)}
-      >
-        <Card>
-          <Card.Content>
-            <View style={styles.rowItem}>
-              <RenderData title={'Product Code'} subText={item.productCode} />
-              <RenderData
-                title={'Quantity OnHand'}
-                subText={item.quantityOnHand}
-              />
-            </View>
-            <View style={styles.rowItem}>
-              <RenderData title={'Product Name'} subText={item.productName} />
-            </View>
-          </Card.Content>
-        </Card>
-      </TouchableOpacity>
+      <Card key={index} style={LayoutStyle.listItemContainer} onPress={() => navigateToDetails(item)}>
+        <Card.Content>
+          <View style={styles.rowItem}>
+            <RenderData title={'Product Code'} subText={item.productCode} />
+            <RenderData title={'Quantity OnHand'} subText={item.quantityOnHand} />
+          </View>
+          <View style={styles.rowItem}>
+            <RenderData title={'Product Name'} subText={item.productName} />
+          </View>
+        </Card.Content>
+      </Card>
     );
   };
 
   return (
     <View style={styles.mainContainer}>
-      <BarCodeSearchHeader
-        placeholder={'Search by product code or name'}
-        searchBox={false}
+      <BarcodeSearchHeader
         autoSearch
         autoFocus
-        onBarCodeSearchQuerySubmitted={(query) => searchProduct(query)}
+        placeholder={'Search by product code or name'}
+        resetSearch={() => null}
+        searchBox={false}
+        onSearchTermSubmit={(query) => searchProduct(query)}
       />
       <FlatList
         renderItem={({ item, index }) => renderListItem(item, index)}
         data={state.productSummary}
         ListEmptyComponent={
-          <EmptyView
-            title="Inventory"
-            description="There are no items in inventory"
-          />
+          <EmptyView title="Inventory" description="There are no items in inventory" isRefresh={false} />
         }
         keyExtractor={(item, index) => item + index}
       />

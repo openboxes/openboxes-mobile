@@ -23,6 +23,7 @@
     "@types/redux-logger": "^3.0.9",
     "@types/redux-saga": "^0.10.5",
     "axios": "^0.22.0",
+    "immer": "^9.0.12",
     "lodash": "4.17.21",
     "react": "17.0.2",
     "react-native": "0.66.0",

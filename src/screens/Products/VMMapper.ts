@@ -1,5 +1,5 @@
-import {State} from './types';
-import {VM} from './VM';
+import { State } from './types';
+import { VM } from './VM';
 
 export default function vmMapper(state: State): VM {
   let subtitle = 'All products';
@@ -7,7 +7,7 @@ export default function vmMapper(state: State): VM {
     subtitle = `Products in category \"${state.searchByCategory.category.name}\"`;
   }
   let list = null;
-  if (state.error == null) {
+  if (state.error === null) {
     if (
       state.searchByCategory &&
       state.searchByCategory.results &&
@@ -37,7 +37,7 @@ export default function vmMapper(state: State): VM {
     floatingActionButtonVisible = false;
   }
   let centralErrorMessage = state.error;
-  if (!centralErrorMessage && (!list || list.length == 0)) {
+  if (!centralErrorMessage && (!list || list.length === 0)) {
     centralErrorMessage = 'No products found';
   }
   return {
@@ -48,6 +48,6 @@ export default function vmMapper(state: State): VM {
     list: list,
     floatingActionButtonVisible: floatingActionButtonVisible,
     centralErrorMessage: centralErrorMessage,
-    barcodeNo: state.barcodeNo,
+    barcodeNo: state.barcodeNo
   };
 }

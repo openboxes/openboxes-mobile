@@ -8,10 +8,7 @@ import { Order } from '../../data/order/Order';
 import styles from './styles';
 import InputBox from '../../components/InputBox';
 import Button from '../../components/Button';
-import {
-  getShipmentOrigin,
-  getShipmentPacking
-} from '../../redux/actions/packing';
+import { getShipmentOrigin, getShipmentPacking } from '../../redux/actions/packing';
 import { RootState } from '../../redux/reducers';
 import AutoInputInternalLocation from '../../components/AutoInputInternalLocation';
 
@@ -55,8 +52,6 @@ class CreateLpn extends React.Component<Props, State> {
             text: 'Ok'
           }
         });
-      } else {
-        let stockMovementList: string[] = [];
       }
     };
     this.props.getShipmentPacking('OUTBOUND', actionCallback);
@@ -76,10 +71,10 @@ class CreateLpn extends React.Component<Props, State> {
       } else {
         let stockMovementList: string[] = [];
         data.map((item: any) => {
-         const shipmentData={
+          const shipmentData = {
             name: item.shipmentNumber,
-              id: item.id
-          }
+            id: item.id
+          };
           stockMovementList.push(shipmentData);
         });
         this.setState({
@@ -147,28 +142,20 @@ class CreateLpn extends React.Component<Props, State> {
             selectedData={(selectedItem: any, index: number) => {
               this.setState({
                 stockMovement: selectedItem.name,
-                stockMovementId: selectedItem?.id,
+                stockMovementId: selectedItem?.id
               });
             }}
           />
+          <InputBox value={this.state.name} editable={false} label={'Name'} onChange={this.onChangeName} />
           <InputBox
-              value={this.state.name}
-              editable={false}
-              label={'Name'}
-              onChange={this.onChangeName}
-          />
-          <InputBox
-              value={this.state.containerNumber}
-              editable={false}
-              label={'Container Number'}
-              onChange={this.onChangeContainerNumber}
+            value={this.state.containerNumber}
+            editable={false}
+            label={'Container Number'}
+            onChange={this.onChangeContainerNumber}
           />
         </View>
         <View style={styles.bottom}>
-          <Button
-            title="Submit"
-            onPress={this.saveLpn}
-          />
+          <Button title="Submit" onPress={this.saveLpn} />
         </View>
       </ScrollView>
     );
@@ -176,7 +163,7 @@ class CreateLpn extends React.Component<Props, State> {
 }
 
 const mapStateToProps = (state: RootState) => ({
-  selectedLocation: state.mainReducer.currentLocation,
+  selectedLocation: state.mainReducer.currentLocation
 });
 const mapDispatchToProps: DispatchProps = {
   getShipmentPacking,

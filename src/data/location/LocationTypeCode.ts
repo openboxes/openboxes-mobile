@@ -15,5 +15,5 @@ export enum LocationTypeCode {
   CONSUMER = 'CONSUMER',
   DISTRIBUTOR = 'DISTRIBUTOR',
   DISPOSAL = 'DISPOSAL',
-  VIRTUAL = 'VIRTUAL',
+  VIRTUAL = 'VIRTUAL'
 }

@@ -1,19 +1,23 @@
 import React from 'react';
 import Spinner from 'react-native-input-spinner';
 import { StyleSheet, Text, View } from 'react-native';
-import { colors } from '../constants';
+import { colors, device } from '../constants';
 
 const InputSpinner = ({ title, value, max, setValue }: any) => {
   return (
     <>
-      <View style={styles.textView}>
-        <Text>{title}</Text>
-      </View>
       <View style={styles.container}>
         <Spinner
-          max={max}
-          min={0}
+          selectTextOnFocus
+          showBorder
+          step={1}
           color={colors.headerColor}
+          max={max}
+          skin={'square'}
+          min={0}
+          longStep={10}
+          speed={1}
+          width={device.windowWidth / 1.16}
           value={value}
           onChange={(num: any) => {
             setValue(num);
@@ -26,9 +30,7 @@ const InputSpinner = ({ title, value, max, setValue }: any) => {
 export default InputSpinner;
 const styles = StyleSheet.create({
   container: {
-    width: '40%',
-    marginTop: 5,
-    marginStart: '3%'
+    marginTop: 20
   },
   textView: {
     marginTop: 10,

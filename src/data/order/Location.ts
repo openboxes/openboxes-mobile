@@ -1,5 +1,7 @@
-export default interface Location {
-  id: string
-  name: string
-    locationNumber: string
+interface Location {
+  id: string;
+  name: string;
+  locationNumber: string;
 }
+
+export default Location;

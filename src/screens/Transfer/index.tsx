@@ -12,57 +12,68 @@ import { updateStockTransfer } from '../../redux/actions/transfers';
 import showPopup from '../../components/Popup';
 import AsyncModalSelect from '../../components/AsyncModalSelect';
 import { searchInternalLocations } from '../../redux/actions/locations';
-import InputSpinner from "../../components/InputSpinner";
+import InputSpinner from '../../components/InputSpinner';
 
 const Transfer = () => {
   const route = useRoute();
   const navigation = useNavigation<any>();
   const { item }: any = route.params;
   const dispatch = useDispatch();
-  const location = useSelector(
-    (rootState: RootState) => rootState.mainReducer.currentLocation
-  );
+  const location = useSelector((rootState: RootState) => rootState.mainReducer.currentLocation);
   const [binToLocationData, setBinToLocationData] = useState<any>({});
   const [quantity, setQuantity] = useState(0);
   const [internalLocations, setInternalLocations] = useState<any>([]);
 
   useEffect(() => {
-    getInternalLocation(location.id)
-  }, [item])
+    getInternalLocation(location.id);
+  }, [item]);
 
   const getInternalLocation = (id: string = '') => {
     const callback = (data: any) => {
       if (data?.error) {
         showPopup({
           title: data.message ? 'internal location details' : '',
-          message:
-            data.errorMessage ?? `Failed to load internal location value ${id}`,
+          message: data.errorMessage ?? `Failed to load internal location value ${id}`,
           positiveButton: {
             text: 'Retry',
             callback: () => {
-              dispatch(searchInternalLocations('', {
-                'parentLocation.id': location.id,
-                max: '10',
-                offset: '0',
-              }, callback));
+              dispatch(
+                searchInternalLocations(
+                  '',
+                  {
+                    'parentLocation.id': location.id,
+                    max: '25',
+                    offset: '0'
+                  },
+                  callback
+                )
+              );
             }
           },
           negativeButtonText: 'Cancel'
         });
       } else {
         if (data && Object.keys(data).length !== 0) {
-          setInternalLocations(_.map(data.data, internalLocation => ({
-            name: internalLocation.name,
-            id: internalLocation.id
-          })));
+          setInternalLocations(
+            _.map(data.data, (internalLocation) => ({
+              name: internalLocation.name,
+              id: internalLocation.id
+            }))
+          );
         }
       }
     };
-    dispatch(searchInternalLocations('', {
-      'parentLocation.id': location.id,
-      max: 10,
-      offset: 0,
-    }, callback));
+    dispatch(
+      searchInternalLocations(
+        '',
+        {
+          'parentLocation.id': location.id,
+          max: 25,
+          offset: 0
+        },
+        callback
+      )
+    );
   };
 
   const onTransfer = () => {
@@ -114,7 +125,10 @@ const Transfer = () => {
       } else {
         const product = { id: item.inventoryItem.product.id };
         ToastAndroid.show('Transferred item successfully!', ToastAndroid.SHORT);
-        navigation.navigate('ProductDetails', { product, refetchProduct: true });
+        navigation.navigate('ProductDetails', {
+          product,
+          refetchProduct: true
+        });
       }
     };
     dispatch(updateStockTransfer(request, actionCallback));
@@ -124,12 +138,7 @@ const Transfer = () => {
     <ScrollView>
       <View style={styles.container}>
         <View style={styles.from}>
-          <InputBox
-            disabled
-            editable={false}
-            label={'Product Code'}
-            value={item?.product?.productCode}
-          />
+          <InputBox disabled editable={false} label={'Product Code'} value={item?.product?.productCode} />
           <InputBox
             disabled
             editable={false}
@@ -142,12 +151,7 @@ const Transfer = () => {
             label={'Expiration Date'}
             value={item?.inventoryItem?.expirationDate ?? 'Never'}
           />
-          <InputBox
-            disabled
-            value={item?.binLocation?.name ?? 'Default'}
-            label={'From'}
-            editable={false}
-          />
+          <InputBox disabled value={item?.binLocation?.name ?? 'Default'} label={'From'} editable={false} />
           <InputBox
             disabled
             label={'Quantity Available to Transfer'}
@@ -161,21 +165,17 @@ const Transfer = () => {
               label="Bin Location"
               initValue={binToLocationData?.label || ''}
               initialData={internalLocations}
-              onSelect={(selectedItem: any) => {
-                if (selectedItem) {
-                  setBinToLocationData(selectedItem)
-                }
-              }}
               searchAction={searchInternalLocations}
               searchActionParams={{ 'parentLocation.id': location.id }}
+              onSelect={(selectedItem: any) => {
+                if (selectedItem) {
+                  setBinToLocationData(selectedItem);
+                }
+              }}
             />
           </View>
           <View style={styles.inputSpinner}>
-            <InputSpinner
-              title="Quantity to Transfer"
-              value={quantity}
-              setValue={setQuantity}
-            />
+            <InputSpinner title="Quantity to Transfer" value={quantity} setValue={setQuantity} />
           </View>
         </View>
         <View style={styles.bottom}>

@@ -1,4 +1,4 @@
-import {StyleSheet} from 'react-native';
+import { StyleSheet } from 'react-native';
 import Theme from '../../utils/Theme';
 
 export default StyleSheet.create({
@@ -6,13 +6,13 @@ export default StyleSheet.create({
     display: 'flex',
     flexDirection: 'column',
     flex: 1,
-    zIndex: -1,
+    zIndex: -1
   },
   contentContainer: {
     display: 'flex',
     flex: 1,
     flexDirection: 'column',
-    padding: 8,
+    padding: 8
   },
   listItemContainer: {
     display: 'flex',
@@ -23,32 +23,32 @@ export default StyleSheet.create({
     borderWidth: 1,
     margin: 4,
     padding: 4,
-    justifyContent: 'center',
+    justifyContent: 'center'
   },
   list: {
-    width: '100%',
+    width: '100%'
   },
   row: {
     flexDirection: 'row',
     borderColor: Theme.colors.onBackground,
     marginTop: 1,
     padding: 2,
-    width: '100%',
+    width: '100%'
   },
   col50: {
     display: 'flex',
     flexDirection: 'column',
     flex: 0,
     marginStart: 4,
-    width: '50%',
+    width: '50%'
   },
   label: {
     fontSize: 12,
-    color: Theme.colors.placeholder,
+    color: Theme.colors.placeholder
   },
   value: {
     fontSize: 14,
     marginTop: 5,
-    color: Theme.colors.text,
-  },
+    color: Theme.colors.text
+  }
 });

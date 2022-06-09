@@ -1,8 +1,7 @@
-import {ProductAvailability} from '../../data/product/availability/ProductAvailability';
-import {ProductCategory} from '../../data/product/category/ProductCategory';
-import {Attributes} from '../../data/product/Attributes';
-import {ProductType} from '../../data/product/ProductType';
-import {ProductImage} from '../../data/product/ProductImage';
+import { ProductCategory } from '../../data/product/category/ProductCategory';
+import { Attributes } from '../../data/product/Attributes';
+import { ProductType } from '../../data/product/ProductType';
+import { ProductImage } from '../../data/product/ProductImage';
 
 export interface VM {
   header: string;
@@ -15,14 +14,14 @@ export interface VM {
   attributes: Attributes[];
   productType: ProductType;
   images: ProductImage[];
-  status:string,
-  quantityAllocated:number,
-  quantityAvailable:number,
-  quantityOnHand:number,
-  quantityOnOrder:number,
-  unitOfMeasure:string,
-  image?:any
-  availableItems:[]
+  status: string;
+  quantityAllocated: number;
+  quantityAvailable: number;
+  quantityOnHand: number;
+  quantityOnOrder: number;
+  unitOfMeasure: string;
+  image?: any;
+  availableItems: [];
 }
 
 export interface DetailsItemVM {

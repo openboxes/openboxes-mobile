@@ -7,10 +7,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import useEventListener from '../../hooks/useEventListener';
 import showPopup from '../../components/Popup';
 import { hideScreenLoading } from '../../redux/actions/main';
-import {
-  getInternalLocationDetail,
-  getInternalLocationDetails
-} from '../../redux/actions/locations';
+import { getInternalLocationDetail, getInternalLocationDetails } from '../../redux/actions/locations';
 import { Card } from 'react-native-paper';
 import { RootState } from '../../redux/reducers';
 import Button from '../../components/Button';
@@ -20,9 +17,7 @@ const InternalLocationDetails = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const route = useRoute();
-  const location = useSelector(
-    (state: RootState) => state.mainReducer.currentLocation
-  );
+  const location = useSelector((state: RootState) => state.mainReducer.currentLocation);
   const [state, setState] = useState<any>({
     error: null,
     searchProductCode: null,
@@ -34,7 +29,7 @@ const InternalLocationDetails = () => {
   useEffect(() => {
     const { id }: any = route.params;
     onInternalLocation(id);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onInternalLocation = (id: string) => {
@@ -49,28 +44,18 @@ const InternalLocationDetails = () => {
     const actionLocationCallback = (data: any) => {
       if (data?.error) {
         showPopup({
-          title: data.errorMessage
-            ? `Failed to load search results with value = "${id}"`
-            : null,
-          message:
-            data.errorMessage ??
-            `Failed to load search results with value = "${id}"`,
+          title: data.errorMessage ? `Failed to load search results with value = "${id}"` : null,
+          message: data.errorMessage ?? `Failed to load search results with value = "${id}"`,
           positiveButton: {
             text: 'Retry',
             callback: () => {
-              dispatch(
-                getInternalLocationDetails(
-                  id,
-                  location.id,
-                  actionLocationCallback
-                )
-              );
+              dispatch(getInternalLocationDetails(id, location.id, actionLocationCallback));
             }
           },
           negativeButtonText: 'Cancel'
         });
       } else {
-        if (data.length == 0) {
+        if (data.length === 0) {
           showPopup({
             message: `No search results found for Location name "${id}"`,
             positiveButton: { text: 'Ok' }
@@ -84,9 +69,7 @@ const InternalLocationDetails = () => {
         dispatch(hideScreenLoading());
       }
     };
-    dispatch(
-      getInternalLocationDetails(id, location.id, actionLocationCallback)
-    );
+    dispatch(getInternalLocationDetails(id, location.id, actionLocationCallback));
   };
 
   const RenderItem = ({ title, subTitle }: any) => {
@@ -131,11 +114,8 @@ const InternalLocationDetails = () => {
     const actionCallback = (data: any) => {
       if (data?.error) {
         showPopup({
-          title: data.errorMessage
-            ? `Failed to load details with value = "${id}"`
-            : null,
-          message:
-            data.errorMessage ?? `Failed to load details with value = "${id}"`,
+          title: data.errorMessage ? `Failed to load details with value = "${id}"` : null,
+          message: data.errorMessage ?? `Failed to load details with value = "${id}"`,
           positiveButton: {
             text: 'Retry',
             callback: () => {
@@ -160,42 +140,20 @@ const InternalLocationDetails = () => {
   };
 
   const renderListItem = (item: any, index: any) => (
-    <TouchableOpacity
-      key={index}
-      style={styles.itemView}
-      onPress={() => navigateToDetails(item)}
-    >
+    <TouchableOpacity key={index} style={styles.itemView} onPress={() => navigateToDetails(item)}>
       <Card>
         <Card.Content>
           <View style={styles.rowItem}>
-            <RenderItem
-              title={'Product Code'}
-              subTitle={item['product.productCode']}
-            />
-            <RenderItem
-              title={'Product Name'}
-              subTitle={item['product.name']}
-            />
+            <RenderItem title={'Product Code'} subTitle={item['product.productCode']} />
+            <RenderItem title={'Product Name'} subTitle={item['product.name']} />
           </View>
           <View style={styles.rowItem}>
-            <RenderItem
-              title={'Lot Number'}
-              subTitle={item['inventoryItem.lotNumber'] ?? 'Default'}
-            />
-            <RenderItem
-              title={'Lot Number'}
-              subTitle={item['inventoryItem.expirationDate'] ?? 'Never'}
-            />
+            <RenderItem title={'Lot Number'} subTitle={item['inventoryItem.lotNumber'] ?? 'Default'} />
+            <RenderItem title={'Lot Number'} subTitle={item['inventoryItem.expirationDate'] ?? 'Never'} />
           </View>
           <View style={styles.rowItem}>
-            <RenderItem
-              title={'Bin Location'}
-              subTitle={item['binLocation.name'] ?? 'Default'}
-            />
-            <RenderItem
-              title={'Quantity On Hand'}
-              subTitle={item.quantityOnHand ?? 0}
-            />
+            <RenderItem title={'Bin Location'} subTitle={item['binLocation.name'] ?? 'Default'} />
+            <RenderItem title={'Quantity On Hand'} subTitle={item.quantityOnHand ?? 0} />
           </View>
         </Card.Content>
       </Card>
@@ -207,28 +165,14 @@ const InternalLocationDetails = () => {
         <View>
           <Text style={styles.boxHeading}>Details</Text>
           <View style={styles.rowItem}>
-            <RenderItem
-              title={'Bin Location Name'}
-              subTitle={state.locationData?.name ?? ''}
-            />
-            <RenderItem
-              title={'Location Type'}
-              subTitle={state.locationData?.locationType.name ?? ''}
-            />
+            <RenderItem title={'Bin Location Name'} subTitle={state.locationData?.name ?? ''} />
+            <RenderItem title={'Location Type'} subTitle={state.locationData?.locationType.name ?? ''} />
           </View>
           <View style={styles.rowItem}>
-            <RenderItem
-              title={'Facility Name'}
-              subTitle={state.locationData?.parentLocation?.name ?? ''}
-            />
-            <RenderItem
-              title={'Zone Name'}
-              subTitle={state.locationData?.zoneName ?? 'N/A'}
-            />
+            <RenderItem title={'Facility Name'} subTitle={state.locationData?.parentLocation?.name ?? ''} />
+            <RenderItem title={'Zone Name'} subTitle={state.locationData?.zoneName ?? 'N/A'} />
           </View>
-          <Text style={styles.boxHeading}>
-            Available Items ({state.locationData.availableItems.length ?? '0'})
-          </Text>
+          <Text style={styles.boxHeading}>Available Items ({state.locationData.availableItems.length ?? '0'})</Text>
           {state.locationData?.availableItems?.map((item: any, index: any) => {
             return renderListItem(item, index);
           })}

@@ -1,7 +1,6 @@
-
-export interface ProductImage{
-  id: string
-  name: string
-  contentType: string
-  url: string
+export interface ProductImage {
+  id: string;
+  name: string;
+  contentType: string;
+  url: string;
 }

@@ -1,194 +1,70 @@
-import React, {useEffect, useReducer} from 'react';
+import React, { useState } from 'react';
+import produce from 'immer';
 import _ from 'lodash';
 import styles from './styles';
-import { ListRenderItemInfo, Text, View, ToastAndroid } from 'react-native';
-import { hideScreenLoading } from '../../redux/actions/main';
+import {ListRenderItemInfo, Text, View, ToastAndroid, TouchableOpacity} from 'react-native';
 import { useDispatch } from 'react-redux';
 import showPopup from '../../components/Popup';
 import { submitPickListItem } from '../../redux/actions/orders';
-import {
-  searchProductByCodeAction,
-  searchProductGloballyAction,
-} from '../../redux/actions/products';
-import { searchLocationByLocationNumber } from '../../redux/actions/locations';
-import { useRoute } from '@react-navigation/native';
 import Button from '../../components/Button';
-import useEventListener from '../../hooks/useEventListener';
 import InputBox from '../../components/InputBox';
 import Carousel from 'react-native-snap-carousel';
-import { device } from '../../constants';
+import { colors, device } from '../../constants';
 import { PicklistItem } from '../../data/picklist/PicklistItem';
 import InputSpinner from '../../components/InputSpinner';
-import {Card} from "react-native-paper";
+import { Card }  from 'react-native-paper';
+import SCAN from '../../assets/images/scan.jpg';
+import TICK from '../../assets/images/tick.png';
+import CLEAR from '../../assets/images/icon_clear.png';
+import Radio from '../../components/Radio';
+import DropDown from 'react-native-paper-dropdown';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
-const reducer = (action: any, state: any = {}) => {
-  switch (action.type) {
-     case 'UPDATE_QUNTITY':
-       state.quantityPicked = action.payload;
-      return ({...state, quantityPicked: action.payload});
-     case 'UPDATE':
-        return action.payload;
-     default:
-        return state;
-  }
-};
-
-const initialValue = {
-  error: '',
-  pickListItem: [],
-  order: null,
-  productSearchQuery: '',
-  binLocationSearchQuery: '',
-  quantityPicked: '0',
-  product: null,
-  productCode: '',
-  binLocation: null,
-  lotNumber: '',
-  binLocationName: '',
-};
+// TODO: Refactor (pull from api, when shortage reason codes will be available)
+const SHORTAGE_REASON_CODES = [
+  { value: 'INSUFFICIENT_QUANTITY_AVAILABLE', label: 'Insufficient quantity in location' },
+  { value: 'DIFFERENT_LOCATION', label: 'Wrong item in location' },
+  { value: 'DAMAGED', label: 'Damaged inventory in location' }
+];
 
 const PickOrderItem = (props: any) => {
-  const route = useRoute();
   const dispatch = useDispatch();
-  const barcodeData = useEventListener();
-  const [productData, producDispatch] = useReducer(reducer, initialValue);
-  const [pickListItemData, dispatchPickListItemData] = useReducer((pickListItemDataState: any, action: any) => {
-    let picklistItems = pickListItemDataState;
-    picklistItems[action.index].quantityToPick = parseInt(action.query);
-    return picklistItems;
-  }, props.pickList? props.pickList.picklistItems : []);
 
-  useEffect(() => {
-    if (barcodeData && Object.keys(barcodeData).length !== 0) {
-      onBarCodeScanned(barcodeData.data);
-    }
-  }, [barcodeData]);
-
-  const showErrorPopup = (
-    data: any,
-    query: any,
-    actionCallback: any,
-    searchBarcode: any,
-  ) => {
-    showPopup({
-      title: data.errorMessage
-        ? `Failed to load search results with value = "${query}"`
-        : null,
-      message:
-        data.errorMessage ??
-        `Failed to load search results with value = "${query}"`,
-      positiveButton: {
-        text: 'Retry',
-        callback: () => {
-          dispatch(searchBarcode(query, actionCallback));
-        },
-      },
-      negativeButtonText: 'Cancel',
-    });
-  };
-
-  const onBarCodeScanned = (query: string) => {
-    if (!query) {
-      showPopup({
-        message: 'Search query is empty',
-        positiveButton: {text: 'Ok'},
-      });
-      return;
-    }
-    if (query.includes('LOG-XXX')) {
-      const actionCallback = (data: any) => {
-        if (data && data.error) {
-          showErrorPopup(
-            data,
-            query,
-            actionCallback,
-            searchProductGloballyAction,
-          );
-        } else {
-          if (data.length == 0) {
-            showPopup({
-              message: `No search results found for product name "${query}"`,
-              positiveButton: {text: 'Ok'},
-            });
-          } else {
-            if (data && Object.keys(data).length !== 0) {
-              if (
-                productData.pickListItem?.productCode !== data.data[0].productCode
-              ) {
-                showPopup({
-                  message: `You have scanned a wrong product barcode "${query}"`,
-                  positiveButton: {text: 'Ok'},
-                });
-              } else {
-                productData.quantityPicked = (
-                  parseInt(productData.quantityPicked, 10) + 1
-                ).toString();
-                productData.product = data.data[0];
-                productData.productCode = data.data[0].productCode;
-              }
-              producDispatch({type: 'UPDATE', payload: {...productData}})
-            }
-          }
-          dispatch(hideScreenLoading());
-        }
-      };
-      dispatch(searchProductGloballyAction(query, actionCallback));
-    } else {
-      const actionBinLocationCallback = (data: any) => {
-        if (data && data.error) {
-          showErrorPopup(
-            data,
-            query,
-            actionBinLocationCallback,
-            searchLocationByLocationNumber,
-          );
-        } else {
-          if (data.length == 0) {
-            showPopup({
-              message: `No search results found for Location name "${query}"`,
-              positiveButton: {text: 'Ok'},
-            });
-          } else {
-            if (data && Object.keys(data).length !== 0) {
-              if (productData.binLocation === '' || productData.binLocation === data.name) {
-                productData.binLocation = data;
-                productData.binLocationSearchQuery = '';
-              }
-              producDispatch({type: 'UPDATE', payload: {...productData}})
-            } else {
-              showPopup({
-                message: `You have scanned a wrong bin location barcode "${query}"`,
-                positiveButton: {text: 'Ok'},
-              });
-            }
-          }
-          dispatch(hideScreenLoading());
-        }
-      };
-      dispatch(
-        searchLocationByLocationNumber(query, actionBinLocationCallback),
-      );
-    }
-  };
+  const [picklistItems, setPicklistItems] = useState<any>(props.pickList ? props.pickList.picklistItems : []);
+  const [showDropDown, setShowDropDown] = useState<boolean>(false);
 
   const formSubmit = (id: string) => {
-    const itemToSave = _.find(pickListItemData, item => item.id === id);
+    const itemToSave = _.find(picklistItems, item => item.id === id);
 
     try {
       let errorTitle = '';
       let errorMessage = '';
-      if (!Number(itemToSave.quantityToPick)) {
+
+      const scannedLotNumberValid = isPropertyValid(itemToSave, 'lotNumber', 'scannedLotNumber');
+      const scannedBinLocationValid = isPropertyValid(itemToSave, 'binLocation.locationNumber', 'scannedBinLocation');
+
+      if (!scannedLotNumberValid || !scannedBinLocationValid) {
+        errorTitle = 'Lot number and bin location are invalid';
+        errorMessage = 'Scan proper lot number and bin location';
+      }
+
+      if (!Number(itemToSave.quantityToPick) && !itemToSave.shortage) {
         errorTitle = 'Quantity To Pick!';
         errorMessage = 'Please pick some quantity.';
       } else if (Number(itemToSave.quantityToPick) > Number(itemToSave.quantityRemaining)) {
         errorTitle = 'Quantity To Pick!';
         errorMessage = 'Quantity to pick cannot exceed quantity remaining!';
       }
+
+      if (itemToSave.shortage && !itemToSave.shortageReasonCode) {
+        errorTitle = 'Shortage Reason Code!';
+        errorMessage = 'You have to provide Reason Code for item shortage!';
+      }
+
       if (errorTitle != '') {
         showPopup({
           title: errorTitle,
           message: errorMessage,
-          negativeButtonText: 'Cancel',
         });
         return Promise.resolve(null);
       }
@@ -197,6 +73,8 @@ const PickOrderItem = (props: any) => {
         'product.id': itemToSave['product.id'],
         productCode: itemToSave.productCode,
         quantityPicked: itemToSave.quantityToPick,
+        shortage: itemToSave.shortage,
+        shortageReasonCode: itemToSave.shortageReasonCode,
       };
 
       const actionCallback = (data: any) => {
@@ -230,130 +108,71 @@ const PickOrderItem = (props: any) => {
     }
   };
 
-  const productSearchQueryChange = (query: string) => {
-    producDispatch({type: 'UPDATE', payload: {...productData,
-      productSearchQuery: query + '343434',
-    }});
-    onProductBarCodeSearchQuerySubmitted();
-  };
-
-  const onProductBarCodeSearchQuerySubmitted = () => {
-    if (!productData.productCode) {
-      showPopup({
-        message: 'Search query is empty',
-        positiveButton: {
-          text: 'Ok',
-        },
-      });
-      return;
-    }
-
-    const actionCallback = (data: any) => {
-      if (!data || data.data.length == 0) {
-        showPopup({
-          message: 'Product not found with ProductCode:' + productData.productCode,
-          positiveButton: {
-            text: 'Ok',
-          },
-        });
-        producDispatch({type: 'UPDATE', payload: {
-          ...productData,
-          productCode: '',
-          productSearchQuery: '',
-        }});
-        return;
-      } else if (data.data.length == 1) {
-        producDispatch({type: 'UPDATE', payload: {
-          ...productData,
-          product: data.data[0],
-          quantityPicked: (parseInt(productData.quantityPicked, 10) + 1).toString(),
-          productSearchQuery: '',
-        }});
-      }
-    };
-    dispatch(searchProductByCodeAction(productData.productCode, actionCallback));
-  };
-
-  const onBinLocationBarCodeSearchQuerySubmitted = () => {
-    if (!productData.binLocationName) {
-      showPopup({
-        message: 'Search query is empty',
-        positiveButton: {
-          text: 'Ok',
-        },
-      });
-      return;
-    }
-
-    const actionCallback = (location: any) => {
-      if (!location || location.error) {
-        showPopup({
-          message:
-            'Bin Location not found with LocationNumber:' +
-            productData.binLocationName,
-          positiveButton: {
-            text: 'Ok',
-          },
-        });
-        producDispatch({type: 'UPDATE', payload: {
-          ...productData,
-          binLocationName: '',
-          binLocationSearchQuery: '',
-        }});
-        producDispatch({type: 'UPDATE', payload: {
-          ...productData,
-          binLocationName: '',
-          binLocationSearchQuery: '',
-        }});
-        return;
-      } else if (location) {
-        producDispatch({type: 'UPDATE', payload: {
-          ...productData,
-          binLocation: location,
-          binLocationSearchQuery: '',
-        }})
-      }
-    };
-    dispatch(
-      searchLocationByLocationNumber(productData.binLocationName, actionCallback),
+  const setPicklistItemsHelper = (value: string | number | boolean, index: number, property: string) => {
+    setPicklistItems(
+      produce((draft: any) => {
+        const item = draft.find((item: any, draftIndex: number) => draftIndex === index);
+        item[property] = value;
+      })
     );
   };
 
-  const binLocationSearchQueryChange = (query: string) => {
-    producDispatch({type: 'UPDATE', payload: {
-      ...productData,
-      binLocationSearchQuery: query,
-    }});
-    onBinLocationBarCodeSearchQuerySubmitted();
+  const setPicklistItemsQuantityHelper = (quantity: number, quantityRemaining: number, index: number) => {
+    setPicklistItems(
+      produce((draft: any) => {
+        const item = draft.find((item: any, draftIndex: number) => draftIndex === index);
+        item.quantityToPick = quantity;
+        if (quantity === quantityRemaining) {
+          item.shortage = false;
+          item.shortageReasonCode = '';
+        }
+      })
+    );
   };
 
-  const quantityPickedChange = (query: string, index: number) => {
-    dispatchPickListItemData({query, index});
-    producDispatch({type: 'UPDATE_QUNTITY', payload: query});
-  };
+  const isPropertyValid = (item: any, property: string, scannedProperty: string) => {
+    if (!item[property] && !item[scannedProperty]) {
+      return true;
+    }
 
-  const onChangeProduct = (text: string) => {
-    productData.productCode = text;
-    producDispatch({type: 'UPDATE', payload: { ...productData}});
-  };
+    return item[property] === item[scannedProperty];
+  }
 
-  const onChangeBin = (text: string) => {
-    productData.binLocationName = text;
-    producDispatch({type: 'UPDATE', payload: { ...productData}});
-  };
+  const getIcon = (item: any, property: string, scannedProperty: string) => {
+    const isScannedPropertyValid = isPropertyValid(item, property, scannedProperty);
+
+    if ((!item[property] && !item[scannedProperty]) || isScannedPropertyValid) {
+      return TICK;
+    }
+
+    if (!item[scannedProperty]) {
+      return SCAN;
+    }
+
+    return CLEAR;
+  }
+
+  const showShortageInfo = (item: PicklistItem) => {
+    showPopup({
+      title: 'Shortage Info:',
+      message: `Shortage Quantity: ${item?.quantityCanceled ?? 0}\nShortage Reason: ${item?.reasonCode ?? 'None'}\nPicking Person: ${item['picker.name'] ?? 'None'}`,
+      positiveButton: { text: 'Ok' },
+    });
+  }
 
   return (
     <View style={styles.screenContainer}>
-      <View style={styles.swiperView}>
         <Carousel
           key={3}
-          dimensions={{width: device.windowWidth}}
           sliderWidth={device.windowWidth}
           sliderHeight={device.windowHeight}
-          itemWidth={device.windowWidth - 70}
-          data={pickListItemData}
+          activeSlideAlignment="start"
+          itemWidth={device.windowWidth-20}
+          data={picklistItems}
           firstItem={props.selectedPinkItemIndex ? props.selectedPinkItemIndex : 0}
           scrollEnabled={true}
+          pointerEvents={'none'}
+          lockScrollWhileSnapping
           renderItem={({item, index}: ListRenderItemInfo<PicklistItem>) => {
             return (
               <Card key={index}>
@@ -361,65 +180,148 @@ const PickOrderItem = (props: any) => {
                   <View style={styles.inputContainer}>
                     <View style={styles.listItemContainer}>
                       <View style={styles.row}>
-                        <View style={styles.col50}>
+                        <View style={styles.col33}>
                           <Text style={styles.label}>Product Code</Text>
                           <Text style={styles.value}>{item?.productCode}</Text>
                         </View>
-                        <View style={styles.col50}>
+                        <View style={styles.col33}>
                           <Text style={styles.label}>Product Name</Text>
                           <Text style={styles.value}>
                             {item?.['product.name']}
                           </Text>
                         </View>
-                      </View>
-
-                      <View style={styles.row}>
-                        <View style={styles.col50}>
-                          <Text style={styles.label}>Picked</Text>
+                        <View style={styles.col33}>
+                          <Text style={styles.label}>Lot Number</Text>
                           <Text style={styles.value}>
-                            {item?.quantityPicked} / {item?.quantityRequested}
+                            {item?.lotNumber??'Default'}
                           </Text>
                         </View>
-                        <View style={styles.col50}>
+                      </View>
+                    </View>
+                    <View>
+                      <InputBox
+                        value={item.scannedLotNumber}
+                        placeholder={item.lotNumber || 'Lot Number'}
+                        label={item.lotNumber || 'Lot Number'}
+                        disabled={false}
+                        onEndEdit={(value: any) => setPicklistItemsHelper(value, index, 'scannedLotNumber')}
+                        onChange={(value: any) => setPicklistItemsHelper(value, index, 'scannedLotNumber')}
+                        editable
+                        icon={getIcon(item, 'lotNumber', 'scannedLotNumber')}
+                        onIconClick={() => {
+                          if (item.scannedLotNumber && !isPropertyValid(item, 'lotNumber', 'scannedLotNumber')) {
+                            setPicklistItemsHelper('', index, 'scannedLotNumber')
+                            return;
+                          }
+                          showPopup({
+                            message: `Scan lot number. Expected: ${item.lotNumber || 'DEFAULT (empty)'}.\n\nTo validate lot number click on this field and scan lot number.`,
+                            positiveButton: {
+                              text: 'Ok',
+                            },
+                          })
+                        }}
+                      />
+                    </View>
+                    <View>
+                      <View style={styles.row}>
+                        <View style={styles.col33}>
+                          <Text style={styles.label}>Location</Text>
+                          <Text style={styles.value}>
+                            {item?.['binLocation.name']??'Default'}
+                          </Text>
+                        </View>
+                        <View style={styles.col33}>
+                          <Text style={styles.label}>Type</Text>
+                          <Text style={styles.value}>
+                            {item?.['binLocation.locationType']??'None'}
+                          </Text>
+                        </View>
+                        <View style={styles.col33}>
+                          <Text style={styles.label}>Zone</Text>
+                          <Text style={styles.value}>
+                            {item?.['binLocation.zoneName']??'None'}
+                          </Text>
+                        </View>
+                      </View>
+                      <InputBox
+                        value={item.scannedBinLocation}
+                        placeholder={item['binLocation.locationNumber'] || 'Default'}
+                        label={item['binLocation.locationNumber'] || 'Bin Location'}
+                        disabled={false}
+                        onEndEdit={(value: any) => setPicklistItemsHelper(value, index, 'scannedBinLocation')}
+                        onChange={(value: any) => setPicklistItemsHelper(value, index, 'scannedBinLocation')}
+                        editable
+                        icon={getIcon(item, 'binLocation.locationNumber', 'scannedBinLocation')}
+                        onIconClick={() => {
+                          if (item.scannedBinLocation && !isPropertyValid(item, 'binLocation.locationNumber', 'scannedBinLocation')) {
+                            setPicklistItemsHelper('', index, 'scannedBinLocation')
+                            return;
+                          }
+                          showPopup({
+                            message: `Scan bin location. Expected: ${item['binLocation.locationNumber'] || 'DEFAULT (empty)'}.\n\nTo validate bin location click on this field and scan bin location.`,
+                            positiveButton: {
+                              text: 'Ok',
+                            },
+                          })
+                        }}
+                      />
+
+                      <View style={styles.row}>
+                        <View style={item?.reasonCode ? styles.col33 : styles.col50}>
+                          <Text style={styles.label}>Picked</Text>
+                          <Text style={styles.value}>
+                            {item?.quantityPicked} / {item?.quantity} {/* quantity is the "quantity required" for the picklist item */}
+                          </Text>
+                        </View>
+                        <View style={item?.reasonCode ? styles.col33 : styles.col50}>
                           <Text style={styles.label}>Remaining</Text>
                           <Text style={styles.value}>
                             {item?.quantityRemaining}
                           </Text>
                         </View>
+                        {item?.reasonCode && (
+                          <View style={styles.col33}>
+                            <TouchableOpacity
+                              onPress={() => showShortageInfo(item)}>
+                              <View style={styles.shortageLabel}>
+                                <FontAwesome5
+                                  name="exclamation-triangle"
+                                  size={10}
+                                  color={colors.headerColor}
+                                  style={styles.infoButton}
+                                />
+                                <Text style={styles.value}>SHORTAGE</Text>
+                              </View>
+                            </TouchableOpacity>
+                          </View>)}
                       </View>
-                    </View>
-                    <View style={styles.from}>
-                      <InputBox
-                        value={item.productCode}
-                        disabled={true}
-                        editable={false}
-                        onEndEdit={productSearchQueryChange}
-                        onChange={onChangeProduct}
-                        label={'Product Code'}
-                      />
-                      <InputBox
-                        value={item.lotNumber}
-                        label={'Lot Number'}
-                        disabled={true}
-                        onEndEdit={binLocationSearchQueryChange}
-                        onChange={onChangeBin}
-                        editable={false}
-                      />
-                      <InputBox
-                        value={item['binLocation.name']}
-                        label={'Bin Location'}
-                        disabled={true}
-                        onEndEdit={binLocationSearchQueryChange}
-                        onChange={onChangeBin}
-                        editable={false}
-                      />
+
                       <View style={styles.inputSpinner}>
                         <InputSpinner
                           title={"Quantity to Pick"}
-                          setValue={(value: any) => quantityPickedChange(value, index)}
+                          setValue={(value: any) => setPicklistItemsQuantityHelper(parseInt(value), item?.quantityRemaining, index)}
                           value={item.quantityToPick}
                         />
                       </View>
+                      {item.quantityToPick < item.quantityRemaining && (
+                        <Radio
+                          title={"Shortage (not enough quantity to pick)"}
+                          setChecked={(value: any) => setPicklistItemsHelper(value, index, 'shortage')}
+                          checked={item.shortage}
+                        />
+                      )}
+                      {item.quantityToPick < item.quantityRemaining && item.shortage && (
+                        <DropDown
+                          label="Shortage Reason Code"
+                          mode="outlined"
+                          visible={showDropDown}
+                          showDropDown={() => setShowDropDown(true)}
+                          onDismiss={() => setShowDropDown(false)}
+                          value={item.shortageReasonCode}
+                          setValue={(value: any) => setPicklistItemsHelper(value, index, 'shortageReasonCode')}
+                          list={SHORTAGE_REASON_CODES}
+                        />
+                      )}
                       <Button title="Pick Item" onPress={() => formSubmit(item.id)} disabled={!item?.quantityRemaining} />
                     </View>
                   </View>
@@ -428,7 +330,6 @@ const PickOrderItem = (props: any) => {
             );
           }}
         />
-      </View>
     </View>
   );
 };

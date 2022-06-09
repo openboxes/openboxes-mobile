@@ -1,10 +1,10 @@
 // noinspection DuplicatedCode
 
-import React, {ReactElement} from 'react';
-import {Searchbar} from 'react-native-paper';
-import {StyleSheet} from 'react-native';
-import {Platform, StatusBar} from 'react-native';
-import Icon, {Name} from '../../components/Icon';
+import React, { ReactElement } from 'react';
+import { Searchbar } from 'react-native-paper';
+import { StyleSheet } from 'react-native';
+import { Platform, StatusBar } from 'react-native';
+import Icon, { Name } from '../../components/Icon';
 import Theme from '../../utils/Theme';
 
 export interface Props {
@@ -33,21 +33,17 @@ When the user taps on the search button, the header transforms into a search box
 does not follow the color template of their header component. So changes have been made to the theme and styling of the
 SearchBar component to ensure that the color scheme of the normal header and the Searchbar remains the same.
 */
-export default class ProductsSearchCodeHeader extends React.Component<
-  Props,
-  State
-> {
+export default class ProductsSearchCodeHeader extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      searchQuery: '',
+      searchQuery: ''
     };
     this.onSearchButtonPress = this.onSearchButtonPress.bind(this);
     this.onSearchQueryChange = this.onSearchQueryChange.bind(this);
     this.onClearIconPressed = this.onClearIconPressed.bind(this);
     // this.getClearIcon = this.getClearIcon.bind(this);
-    this.onSearchProductCodeQuerySubmitted =
-      this.onSearchProductCodeQuerySubmitted.bind(this);
+    this.onSearchProductCodeQuerySubmitted = this.onSearchProductCodeQuerySubmitted.bind(this);
     // setStatusBarBackgroundColor(Theme.colors.primary, false);
   }
 
@@ -57,29 +53,22 @@ export default class ProductsSearchCodeHeader extends React.Component<
 
   onSearchQueryChange(query: string) {
     this.setState({
-      searchQuery: query,
+      searchQuery: query
     });
   }
 
   onClearIconPressed() {
-    if (this.state.searchQuery.length == 0) {
+    if (this.state.searchQuery.length === 0) {
       this.props.onSearchBoxVisibilityChange(false);
     } else {
       this.setState({
-        searchQuery: '',
+        searchQuery: ''
       });
     }
   }
 
   getClearIcon(): ReactElement {
-    return (
-      <Icon
-        name={Name.Cross}
-        onPress={this.onClearIconPressed}
-        size={24}
-        color={Theme.colors.surface}
-      />
-    );
+    return <Icon name={Name.Cross} size={24} color={Theme.colors.surface} onPress={this.onClearIconPressed} />;
   }
 
   onSearchProductCodeQuerySubmitted() {
@@ -89,6 +78,7 @@ export default class ProductsSearchCodeHeader extends React.Component<
   render() {
     return this.props.searchBoxProductCodeVisible ? (
       <Searchbar
+        autoFocus
         theme={{
           colors: {
             /*
@@ -96,19 +86,18 @@ export default class ProductsSearchCodeHeader extends React.Component<
                 necessary since the background color has been set to the normally primary purple color.
                 */
             primary: white,
-            placeholder: placeholderColor,
-          },
+            placeholder: placeholderColor
+          }
         }}
         placeholder="Search by product code"
-        onChangeText={this.onSearchQueryChange}
         value={this.state.searchQuery}
         style={styles.searchBar}
         clearIcon={this.getClearIcon}
-        autoFocus={true}
         inputStyle={{
-          color: white,
+          color: white
         }}
         iconColor={white}
+        onChangeText={this.onSearchQueryChange}
         onSubmitEditing={this.onSearchProductCodeQuerySubmitted}
       />
     ) : (
@@ -124,6 +113,6 @@ const styles = StyleSheet.create({
     elevation: 4,
     backgroundColor: backgroundColor,
     borderRadius: 0,
-    color: white,
-  },
+    color: white
+  }
 });
