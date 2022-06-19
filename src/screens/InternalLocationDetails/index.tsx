@@ -1,10 +1,9 @@
 /* eslint-disable complexity */
 import React, { useEffect, useState } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import styles from './styles';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import useEventListener from '../../hooks/useEventListener';
 import showPopup from '../../components/Popup';
 import { hideScreenLoading } from '../../redux/actions/main';
 import { getInternalLocationDetail, getInternalLocationDetails } from '../../redux/actions/locations';
@@ -162,24 +161,28 @@ const InternalLocationDetails = () => {
   return (
     <View style={styles.screenContainer}>
       {state.locationData && (
-        <View>
-          <Text style={styles.boxHeading}>Details</Text>
-          <View style={styles.rowItem}>
-            <RenderItem title={'Bin Location Name'} subTitle={state.locationData?.name ?? ''} />
-            <RenderItem title={'Location Type'} subTitle={state.locationData?.locationType.name ?? ''} />
+        <>
+          <View>
+            <Text style={styles.boxHeading}>Details</Text>
+            <View style={styles.rowItem}>
+              <RenderItem title={'Bin Location Name'} subTitle={state.locationData?.name ?? ''} />
+              <RenderItem title={'Location Type'} subTitle={state.locationData?.locationType.name ?? ''} />
+            </View>
+            <View style={styles.rowItem}>
+              <RenderItem title={'Facility Name'} subTitle={state.locationData?.parentLocation?.name ?? ''} />
+              <RenderItem title={'Zone Name'} subTitle={state.locationData?.zoneName ?? 'N/A'} />
+            </View>
+            <Text style={styles.boxHeading}>Available Items ({state.locationData.availableItems.length ?? '0'})</Text>
           </View>
-          <View style={styles.rowItem}>
-            <RenderItem title={'Facility Name'} subTitle={state.locationData?.parentLocation?.name ?? ''} />
-            <RenderItem title={'Zone Name'} subTitle={state.locationData?.zoneName ?? 'N/A'} />
-          </View>
-          <Text style={styles.boxHeading}>Available Items ({state.locationData.availableItems.length ?? '0'})</Text>
-          {state.locationData?.availableItems?.map((item: any, index: any) => {
-            return renderListItem(item, index);
-          })}
-          <View style={styles.bottom}>
-            <Button title={'Print Barcode Label'} onPress={handleClick} />
-          </View>
-        </View>
+          <ScrollView>
+            {state.locationData?.availableItems?.map((item: any, index: any) => {
+              return renderListItem(item, index);
+            })}
+            <View style={styles.bottom}>
+              <Button title={'Print Barcode Label'} onPress={handleClick} />
+            </View>
+          </ScrollView>
+        </>
       )}
       <PrintModal
         visible={state.visible}
