@@ -9,6 +9,7 @@ import { orderDetailsVMMapper } from './OrderDetailsVMMapper';
 import { getPickListAction } from '../../redux/actions/orders';
 import { State, DispatchProps, Props } from './types';
 import PickOrderItem from '../PickList';
+import Button from '../../components/Button';
 
 class OrderDetails extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -138,6 +139,16 @@ class OrderDetails extends React.Component<Props, State> {
                 successfulPickCallback={() => this.getOrderDetails()}
               />
             )}
+            <Button
+              title="Move to Packing"
+              onPress={() =>
+                this.props.navigation.navigate('PackingLocationPage', {
+                  orderId: vm?.id,
+                  packingLocation: vm?.packingLocation
+                })}
+            >
+              Move to Packing
+            </Button>
           </View>
         </View>
       </ScrollView>
