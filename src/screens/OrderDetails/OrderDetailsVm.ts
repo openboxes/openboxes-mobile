@@ -18,6 +18,6 @@ export interface OrderDetailsVm {
   picklistItems: Item[];
   requestedDeliveryDate: Date;
   expectedShippingDate: Date;
-  packingLocation: string;
-  loadingLocation: string;
+  packingLocation: Location | null;
+  loadingLocation: Location | null;
 }

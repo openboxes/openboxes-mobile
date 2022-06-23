@@ -49,6 +49,7 @@ import PutawayDetails from './screens/PutawayDetails';
 import Placeholder from './screens/Placeholder';
 import { Provider } from 'react-native-paper';
 import AppInfoScreen from './screens/AppInfo/AppInfoScreen';
+import PackingLocationPage from './screens/PackingLocationPage';
 
 const Stack = createStackNavigator();
 export interface OwnProps {
@@ -228,6 +229,11 @@ class Main extends Component<Props, State> {
                 name="Placeholder"
                 options={{ title: 'Work in progress' }}
                 component={Placeholder}
+              />
+              <Stack.Screen
+                name="PackingLocationPage"
+                options={{ title: 'Packing Location' }}
+                component={PackingLocationPage}
               />
               <Stack.Screen name="AppInfo" component={AppInfoScreen} />
             </Stack.Navigator>
