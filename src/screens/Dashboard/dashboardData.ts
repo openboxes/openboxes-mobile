@@ -12,7 +12,7 @@ const dashboardData = [
   {
     screenName: 'Loading',
     icon: require('../../assets/images/loading.png'),
-    navigationScreenName: 'OutboundStockList'
+    navigationScreenName: 'OutboundLoadingList'
   },
   {
     screenName: 'Receiving',
