@@ -1,4 +1,4 @@
-import { Dimensions } from 'react-native';
+import { Dimensions, StatusBar } from 'react-native';
 
 export const colors = {
   headerColor: '#003369',
@@ -9,7 +9,8 @@ export const device = {
   windowWidth: Dimensions.get('window').width,
   windowHeight: Dimensions.get('window').height,
   screenWidth: Dimensions.get('screen').width,
-  screenHeight: Dimensions.get('screen').height
+  screenHeight: Dimensions.get('screen').height,
+  statusBarHeight: StatusBar.currentHeight || 0
 };
 
 export const ratio = {

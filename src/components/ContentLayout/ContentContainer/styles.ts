@@ -8,6 +8,6 @@ export default StyleSheet.create({
     margin: constainerMargin,
     display: 'flex',
     flexDirection: 'column',
-    minHeight: device.windowHeight - appHeaderHeight - 2 * constainerMargin
+    minHeight: device.windowHeight - device.statusBarHeight - appHeaderHeight - 2 * constainerMargin
   }
 });

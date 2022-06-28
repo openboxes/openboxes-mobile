@@ -23,7 +23,7 @@ import Location from './data/location/Location';
 import { Session } from './data/auth/Session';
 import { getSessionAction } from './redux/actions/main';
 import showPopup from './components/Popup';
-import { colors } from './constants';
+import { colors, appHeaderHeight } from './constants';
 import Scan from './screens/Scan';
 import PutawayList from './screens/PutawayList';
 import Settings from './screens/Settings';
@@ -158,7 +158,8 @@ class Main extends Component<Props, State> {
                 },
                 headerTintColor: '#ffffff',
                 headerStyle: {
-                  backgroundColor: colors.headerColor
+                  backgroundColor: colors.headerColor,
+                  height: appHeaderHeight
                 }
               })}
             >
