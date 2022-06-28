@@ -208,28 +208,29 @@ class Main extends Component<Props, State> {
               <Stack.Screen
                 name="OutboundStockList"
                 component={OutboundStockList}
-                options={{ title: 'Packing List' }}
+                options={{ title: 'Packing Order List' }}
               />
               <Stack.Screen
                 name="OutboundStockDetails"
                 component={OutboundStockDetails}
-                options={{ title: 'Packing Details' }}
+                options={{ title: 'Packing Order Details' }}
               />
               <Stack.Screen
                 name="OutboundLoadingList"
                 component={OutboundLoadingList}
-                options={{ title: 'Loading List' }}
+                options={{ title: 'Loading Order List' }}
               />
               <Stack.Screen
                 name="OutboundLoadingDetails"
                 component={OutboundLoadingDetails}
-                options={{ title: 'Loading Details' }}
+                options={{ title: 'Loading Order Details' }}
               />
               <Stack.Screen name="AdjustStock" component={AdjustStock} />
               <Stack.Screen name="Transfer" component={Transfer} />
               <Stack.Screen
                 name="ShipmentDetails"
                 component={ShipItemDetails}
+                options={{ title: 'Pack Item' }}
               />
               <Stack.Screen
                 name="InternalLocationDetail"

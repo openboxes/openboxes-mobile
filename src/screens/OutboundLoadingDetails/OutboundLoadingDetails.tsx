@@ -74,8 +74,8 @@ class OutboundLoadingDetails extends React.Component<Props, State> {
           </View>
           <View style={styles.row}>
             <View style={styles.col50}>
-              <Text style={styles.label}>LPNs To Be Loaded</Text>
-              <Text style={styles.value}>{this.state.shipment?.availableContainers.length}</Text>
+              <Text style={styles.label}>Loading Location</Text>
+              <Text style={styles.value}>{this.state.shipment?.loadingLocation}</Text>
             </View>
             <View style={styles.col50}>
               <Text style={styles.label}>Expected Delivery Date</Text>
@@ -84,12 +84,8 @@ class OutboundLoadingDetails extends React.Component<Props, State> {
           </View>
           <View style={styles.row}>
             <View style={styles.col50}>
-              <Text style={styles.label}>Packing Location</Text>
-              <Text style={styles.value}>{this.state.shipment?.packingLocation}</Text>
-            </View>
-            <View style={styles.col50}>
-              <Text style={styles.label}>Loading Location</Text>
-              <Text style={styles.value}>{this.state.shipment?.loadingLocation}</Text>
+              <Text style={styles.label}>LPNs To Be Loaded</Text>
+              <Text style={styles.value}>{this.state.shipment?.availableContainers.length}</Text>
             </View>
           </View>
         </View>

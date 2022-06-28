@@ -72,49 +72,41 @@ class OutboundLoadingList extends React.Component<Props, State> {
 
   filterShipments = (searchTerm: string) => {
     if (searchTerm) {
-      // Find exact match by shipment number or container number (if found, then redirect to the loading screen)
-      const exactShipment = _.find(this.state.shipments, (shipment: Shipment) => {
-        const matchingShipmentNumber = shipment?.shipmentNumber?.toLowerCase() === searchTerm.toLowerCase();
+      // Find exact match by LPN
+      const exactShipmentByLPN = _.find(this.state.shipments, (shipment: Shipment) => _.find(
+        shipment?.availableContainers,
+        (container: Container) => container.containerNumber === searchTerm
+      ));
 
-        const matchingContainer = _.find(
-          shipment?.availableContainers,
-          (container) => container.containerNumber === searchTerm
-        );
+      if (exactShipmentByLPN) {
+        this.resetFiltering();
+        // TODO: make it redirect to LOAD LPN page instead of loading order details
+        this.showShipmentLoadScreen(exactShipmentByLPN);
+        return;
+      }
 
-        return matchingShipmentNumber || matchingContainer;
+      // If no exact match by LPN, then filter by <shipment number or loading location> containing the search term
+      const filteredShipments = _.filter(this.state.shipments, (shipment: Shipment) => {
+        const matchingShipmentNumber = shipment?.shipmentNumber?.toLowerCase()?.includes(searchTerm.toLowerCase());
+
+        const matchingLoadingLocation =
+          shipment?.loadingLocation?.locationNumber?.toLowerCase()?.includes(searchTerm.toLowerCase()) ||
+          shipment?.loadingLocation?.name?.toLowerCase()?.includes(searchTerm.toLowerCase());
+
+        return (matchingShipmentNumber || matchingLoadingLocation) as boolean;
       });
 
-      if (exactShipment) {
+      // if only one match, then redirect to loading order details
+      if (filteredShipments.length === 1) {
         this.resetFiltering();
-        this.showShipmentLoadScreen(exactShipment);
-      } else {
-        // If no exact match, then filter by <shipment number, container number, loading location> containing the search term
-        const filteredShipments = _.filter(this.state.shipments, (shipment: Shipment) => {
-          const matchingShipmentNumber = shipment?.shipmentNumber?.toLowerCase()?.includes(searchTerm.toLowerCase());
-
-          const matchingContainer = _.find(shipment?.availableContainers, (container: Container) =>
-            container.containerNumber?.toLowerCase()?.includes(searchTerm.toLowerCase())
-          );
-          
-          const matchingLoadingLocation =
-            shipment?.loadingLocation?.locationNumber?.toLowerCase()?.includes(searchTerm.toLowerCase()) ||
-            shipment?.loadingLocation?.name?.toLowerCase()?.includes(searchTerm.toLowerCase());
-
-          // Return as bool
-          return !!(matchingShipmentNumber || matchingContainer || matchingLoadingLocation);
-        });
-        
-        // if only one match, then redirect to 970EDX
-        if (filteredShipments.length === 1) {
-          this.resetFiltering();
-          this.showShipmentLoadScreen(filteredShipments[0]);
-        }
-
-        this.setState({
-          ...this.state,
-          filteredShipments
-        });
+        this.showShipmentLoadScreen(filteredShipments[0]);
+        return;
       }
+
+      this.setState({
+        ...this.state,
+        filteredShipments
+      });
 
       return;
     }
@@ -134,7 +126,7 @@ class OutboundLoadingList extends React.Component<Props, State> {
       <View style={styles.screenContainer}>
         <BarcodeSearchHeader
           autoSearch
-          placeholder={'Search for shipment'}
+          placeholder={'Search for Order'}
           resetSearch={this.resetFiltering}
           searchBox={false}
           onSearchTermSubmit={this.filterShipments}
@@ -173,9 +165,8 @@ class OutboundLoadingList extends React.Component<Props, State> {
                   </View>
                   <View style={styles.row}>
                     <View style={styles.col50}>
-                      <Text style={styles.label}>LPNs To Be Loaded</Text>
-                      {/* TODO: change into number of lpns to load property */}
-                      <Text style={styles.value}>{shipment.item.availableContainers.length}</Text>
+                      <Text style={styles.label}>Loading Location</Text>
+                      <Text style={styles.value}>{shipment.item.loadingLocation}</Text>
                     </View>
                     <View style={styles.col50}>
                       <Text style={styles.label}>Expected Delivery Date</Text>
@@ -184,12 +175,9 @@ class OutboundLoadingList extends React.Component<Props, State> {
                   </View>
                   <View style={styles.row}>
                     <View style={styles.col50}>
-                      <Text style={styles.label}>Packing Location</Text>
-                      <Text style={styles.value}>{shipment.item.packingLocation}</Text>
-                    </View>
-                    <View style={styles.col50}>
-                      <Text style={styles.label}>Loading Location</Text>
-                      <Text style={styles.value}>{shipment.item.loadingLocation}</Text>
+                      <Text style={styles.label}>LPNs To Be Loaded</Text>
+                      {/* TODO: change into number of lpns to load property */}
+                      <Text style={styles.value}>{shipment.item.availableContainers.length}</Text>
                     </View>
                   </View>
                 </Card.Content>
