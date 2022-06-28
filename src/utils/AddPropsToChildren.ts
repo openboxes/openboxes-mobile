@@ -1,6 +1,6 @@
 import React, { JSXElementConstructor, ReactElement } from 'react';
 
-type ChildType = ReactElement<any, string | JSXElementConstructor<any> | JSXElementConstructor<any>>;
+type ChildType = ReactElement<any, string | JSXElementConstructor<any>>;
 
 const AddPropsToChildren = (children: React.ReactNode, callback: (child: ChildType) => any) => {
   if (Array.isArray(children)) {

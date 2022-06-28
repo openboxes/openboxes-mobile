@@ -4,7 +4,7 @@ import { Props } from './types';
 import styles from './styles';
 import AddPropsToChildren from '../../../utils/AddPropsToChildren';
 
-const ContentHeader: React.FC<Props> = (props) => {
+const ContentFooter: React.FC<Props> = (props) => {
   const { children, direction = 'row', ...otherProps } = props;
 
   const directionStyle = direction === 'row' ? styles.directionRow : styles.directionColumn;
@@ -23,4 +23,4 @@ const ContentHeader: React.FC<Props> = (props) => {
   );
 };
 
-export default ContentHeader;
+export default ContentFooter;
