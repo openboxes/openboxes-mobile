@@ -1,6 +1,6 @@
 interface LabeledDataProps {
   label: string;
-  data: string | number;
+  value: string | number;
   defaultValue?: string | number;
 }
 
