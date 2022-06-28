@@ -6,7 +6,9 @@ import {
   GET_PICKLIST_ITEM_REQUEST,
   SUBMIT_PICKLIST_ITEM_PICKUP_REQUEST,
   GET_STOCK_MOVEMENT_LIST,
-  SUBMIT_PICKLIST_ITEM_PICKUP_SUCCESS
+  SUBMIT_PICKLIST_ITEM_PICKUP_SUCCESS,
+  SUBMIT_PACKING_LOCATION_REQUEST,
+  SUBMIT_PACKING_LOCATION_SUCCESS,
 } from '../actions/orders';
 import { hideScreenLoading, showScreenLoading } from '../actions/main';
 import * as api from '../../apis';
@@ -128,10 +130,33 @@ function* submitPickListItem(action: any) {
   }
 }
 
+function* submitPackingLocation(action: any) {
+  try {
+    const response: any = yield call(
+      api.submitPackingLocation,
+      action.payload.id,
+      action.payload.requestBody
+    );
+    yield put({
+      type: SUBMIT_PACKING_LOCATION_SUCCESS,
+      payload: response
+    });
+    yield action.callback(response);
+  } catch (error) {
+    if (error.code != 401) {
+      yield action.callback({
+        error: true,
+        errorMessage: error.message
+      });
+    }
+  }
+}
+
 export default function* watcher() {
   yield takeLatest(GET_ORDERS_REQUEST, getOrders);
   yield takeLatest(GET_PICKLIST_REQUEST, getPickList);
   yield takeLatest(GET_PICKLIST_ITEM_REQUEST, getPickListItem);
   yield takeLatest(SUBMIT_PICKLIST_ITEM_PICKUP_REQUEST, submitPickListItem);
+  yield takeLatest(SUBMIT_PACKING_LOCATION_REQUEST, submitPackingLocation);
   yield takeLatest(GET_STOCK_MOVEMENT_LIST, getStockMovement);
 }

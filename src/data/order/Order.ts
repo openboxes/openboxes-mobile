@@ -14,8 +14,8 @@ export interface Order {
   origin: Location | null;
   destination: Location | null;
   picklist: PicklistItem | null;
-  packingLocation: string | null;
-  loadingLocation: string | null;
+  packingLocation: Location | null;
+  loadingLocation: Location | null;
 }
 
 interface GetOrdersApiResponse {

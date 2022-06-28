@@ -9,8 +9,10 @@ export const SUBMIT_PICKLIST_ITEM_PICKUP_REQUEST = 'SUBMIT_PICKLIST_ITEM_PICKUP_
 export const SUBMIT_PICKLIST_ITEM_PICKUP_SUCCESS = 'SUBMIT_PICKLIST_ITEM_PICKUP_SUCCESS';
 
 export const GET_PICKLIST_REQUEST_SUCCESS = 'GET_PICKLIST_REQUEST_SUCCESS';
-export const GET_PICKLIST_REQUEST_SUCCESS_FAIL =
-  'GET_PICKLIST_REQUEST_SUCCESS_FAIL';
+export const GET_PICKLIST_REQUEST_SUCCESS_FAIL = 'GET_PICKLIST_REQUEST_SUCCESS_FAIL';
+
+export const SUBMIT_PACKING_LOCATION_REQUEST = 'SUBMIT_PACKING_LOCATION_REQUEST';
+export const SUBMIT_PACKING_LOCATION_SUCCESS = 'SUBMIT_PACKING_LOCATION_SUCCESS';
 
 export function getOrdersAction(value: string | null, callback: (products: any) => void) {
   return {
@@ -58,6 +60,18 @@ export function getStockMovements(direction: string | null, status: string | nul
   return {
     type: GET_STOCK_MOVEMENT_LIST,
     payload: { direction, status },
+    callback,
+  };
+}
+
+export function submitPackingLocation(
+  id: string,
+  requestBody: any,
+  callback: (data: any) => void,
+) {
+  return {
+    type: SUBMIT_PACKING_LOCATION_REQUEST,
+    payload: { id, requestBody },
     callback,
   };
 }
