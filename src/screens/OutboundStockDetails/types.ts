@@ -21,7 +21,7 @@ export interface StateProps {
 export interface DispatchProps {
   showScreenLoading: (message?: string) => void;
   hideScreenLoading: () => void;
-  getShipmentReadyToBePacked: (
+  getShipment: (
     id: string,
     callback: (data: any) => void
   ) => void;

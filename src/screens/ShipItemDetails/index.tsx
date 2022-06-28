@@ -8,7 +8,7 @@ import Button from '../../components/Button';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
 import showPopup from '../../components/Popup';
-import { getShipmentPacking, submitShipmentDetails } from '../../redux/actions/packing';
+import { getShipment, submitShipmentDetails } from '../../redux/actions/packing';
 import AutoInputInternalLocation from '../../components/AutoInputInternalLocation';
 import InputSpinner from '../../components/InputSpinner';
 
@@ -37,7 +37,7 @@ const ShipItemDetails = () => {
           positiveButton: {
             text: 'Retry',
             callback: () => {
-              dispatch(getShipmentPacking(id, callback));
+              dispatch(getShipment(id, callback));
             }
           },
           negativeButtonText: 'Cancel'
@@ -56,7 +56,7 @@ const ShipItemDetails = () => {
         }
       }
     };
-    dispatch(getShipmentPacking(id, callback));
+    dispatch(getShipment(id, callback));
   };
 
   const submitShipmentDetail = (id: string) => {

@@ -8,7 +8,7 @@ import { Order } from '../../data/order/Order';
 import styles from './styles';
 import InputBox from '../../components/InputBox';
 import Button from '../../components/Button';
-import { getShipmentOrigin, getShipmentPacking } from '../../redux/actions/packing';
+import { getShipmentOrigin } from '../../redux/actions/packing';
 import { RootState } from '../../redux/reducers';
 import AutoInputInternalLocation from '../../components/AutoInputInternalLocation';
 
@@ -42,21 +42,6 @@ class CreateLpn extends React.Component<Props, State> {
     this.getShipmentOrigin();
   }
 
-  fetchContainerList = () => {
-    const actionCallback = (data: any) => {
-      if (data?.error) {
-        showPopup({
-          title: data.errorMessage ? 'Container' : 'Error',
-          message: data.errorMessage ?? 'Failed to fetch Container List',
-          positiveButton: {
-            text: 'Ok'
-          }
-        });
-      }
-    };
-    this.props.getShipmentPacking('OUTBOUND', actionCallback);
-  };
-
   getShipmentOrigin = () => {
     const { selectedLocation } = this.props;
     const actionCallback = (data: any) => {
@@ -69,7 +54,7 @@ class CreateLpn extends React.Component<Props, State> {
           }
         });
       } else {
-        let stockMovementList: string[] = [];
+        let stockMovementList: any = [];
         data.map((item: any) => {
           const shipmentData = {
             name: item.shipmentNumber,
@@ -155,7 +140,7 @@ class CreateLpn extends React.Component<Props, State> {
           />
         </View>
         <View style={styles.bottom}>
-          <Button title="Submit" onPress={this.saveLpn} />
+          <Button title="Submit" onPress={this.saveLpn} disabled={false} />
         </View>
       </ScrollView>
     );
@@ -166,7 +151,6 @@ const mapStateToProps = (state: RootState) => ({
   selectedLocation: state.mainReducer.currentLocation
 });
 const mapDispatchToProps: DispatchProps = {
-  getShipmentPacking,
   getShipmentOrigin,
   saveAndUpdateLpn
 };

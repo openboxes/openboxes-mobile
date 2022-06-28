@@ -16,6 +16,7 @@ import _ from 'lodash';
 import ShipmentItems from '../../data/inbound/ShipmentItems';
 import { Container } from '../../data/container/Container';
 
+// List of shipments ready for packing
 class OutboundStockList extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);

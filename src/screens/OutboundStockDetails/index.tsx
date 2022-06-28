@@ -6,11 +6,12 @@ import { connect } from 'react-redux';
 import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
 import { RootState } from '../../redux/reducers';
 import styles from './styles';
-import { getShipmentReadyToBePacked } from '../../redux/actions/packing';
+import { getShipment } from '../../redux/actions/packing';
 import OutboundVMMapper from './OutboubVmMapper';
 import ContainerDetails from './ContainerDetails';
 import Button from '../../components/Button';
 
+// Shipment packing
 class OutboundStockDetails extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
@@ -46,7 +47,7 @@ class OutboundStockDetails extends React.Component<Props, State> {
       this.props.hideScreenLoading();
     };
     this.props.showScreenLoading('Loading..');
-    this.props.getShipmentReadyToBePacked(shipmentId, actionCallback);
+    this.props.getShipment(shipmentId, actionCallback);
   };
 
   render() {
@@ -115,6 +116,6 @@ const mapStateToProps = (state: RootState) => ({
 const mapDispatchToProps: DispatchProps = {
   showScreenLoading,
   hideScreenLoading,
-  getShipmentReadyToBePacked
+  getShipment
 };
 export default connect(mapStateToProps, mapDispatchToProps)(OutboundStockDetails);
