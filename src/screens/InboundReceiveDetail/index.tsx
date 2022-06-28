@@ -16,7 +16,7 @@ import InputSpinner from '../../components/InputSpinner';
 import Radio from '../../components/Radio';
 import CLEAR from '../../assets/images/icon_clear.png';
 import SelectDropdown from 'react-native-select-dropdown';
-import LabledData from '../../components/LabeledData';
+import LabeledData from '../../components/LabeledData';
 
 const renderIcon = () => {
   return <Image style={styles.arrowDownIcon} source={require('../../assets/images/arrow-down.png')} />;
@@ -188,20 +188,20 @@ const InboundReceiveDetail = () => {
     return (
       <View style={styles.itemView}>
         <View style={styles.rowItem}>
-          <LabledData label="Shipment Number" data={shipmentData?.shipmentNumber} />
-          <LabledData label="Description" data={shipmentData?.name} />
+          <LabeledData label="Shipment Number" value={shipmentData?.shipmentNumber} />
+          <LabeledData label="Description" value={shipmentData?.name} />
         </View>
         <View style={styles.rowItem}>
-          <LabledData label="Product Code" data={shipmentItem['product.productCode']} />
-          <LabledData label="Name" data={shipmentItem['product.name']} />
+          <LabeledData label="Product Code" value={shipmentItem['product.productCode']} />
+          <LabeledData label="Name" value={shipmentItem['product.name']} />
         </View>
         <View style={styles.rowItem}>
-          <LabledData label="Lot / Serial Number" data={shipmentItem.lotNumber ?? 'Default'} />
-          <LabledData label="Expiration Date" data={shipmentItem.expirationDate ?? 'Never'} />
+          <LabeledData label="Lot / Serial Number" value={shipmentItem.lotNumber ?? 'Default'} />
+          <LabeledData label="Expiration Date" value={shipmentItem.expirationDate ?? 'Never'} />
         </View>
         <View style={styles.rowItem}>
-          <LabledData label="Quantity Shipped" data={shipmentItem.quantityShipped} />
-          <LabledData label="Quantity Received" data={shipmentItem.quantityReceived} />
+          <LabeledData label="Quantity Shipped" value={shipmentItem.quantityShipped} />
+          <LabeledData label="Quantity Received" value={shipmentItem.quantityReceived} />
         </View>
       </View>
     );

@@ -20,15 +20,4 @@ export interface OwnProps {
   route: any;
 }
 
-export interface StateProps {
-  //no-op
-}
-
-export interface DispatchProps {
-  showScreenLoading: (message?: string) => void;
-  hideScreenLoading: () => void;
-  // useNavigation: () => void;
-  getPickListAction: (id: any, callback: (data: any) => void) => void;
-}
-
-export type Props = PicklistOwnProps & StateProps & DispatchProps & OwnProps;
+export type Props = PicklistOwnProps & OwnProps;
