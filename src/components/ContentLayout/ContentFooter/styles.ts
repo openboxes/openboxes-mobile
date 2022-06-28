@@ -5,17 +5,25 @@ export default StyleSheet.create({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    marginVertical: -(10 / 2),
-    marginHorizontal: -(10 / 2)
+    flexWrap: 'wrap'
   },
   directionRow: {
     flexDirection: 'row'
   },
   directionColumn: {
     flexDirection: 'column'
-  },
-  gap: {
-    marginVertical: 10 / 2,
-    marginHorizontal: 10 / 2
   }
 });
+
+export const gapStyle = ({ gap }: { gap: number }) => {
+  return StyleSheet.create({
+    container: {
+      marginVertical: -gap,
+      marginHorizontal: -gap
+    },
+    gap: {
+      marginVertical: gap,
+      marginHorizontal: gap
+    }
+  });
+};
