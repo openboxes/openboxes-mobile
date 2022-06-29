@@ -2,6 +2,8 @@
 import React, { Component } from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import ChooseCurrentLocation from './ChooseCurrentLocation';
+import Dashboard from './Dashboard';
+import Settings from './Settings';
 import { Image } from 'react-native';
 import { colors } from '../constants';
 
@@ -32,8 +34,9 @@ class DrawerNavigator extends Component {
           )
         }}
       >
-        <Drawer.Screen name="Choose Current Location" component={ChooseCurrentLocation} />
-      </Drawer.Navigator>
+        <Drawer.Screen name="Choose Location" component={ChooseCurrentLocation} />
+        <Drawer.Screen name="Dashboard" component={Dashboard} />
+       </Drawer.Navigator>
     );
   }
 }
