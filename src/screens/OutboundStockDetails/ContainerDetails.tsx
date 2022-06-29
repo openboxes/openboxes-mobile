@@ -50,7 +50,7 @@ const ContainerDetails = ({ item }: any) => {
           <Text style={styles.headerTitle}>{title}</Text>
           {data[0].container?.id &&
           <>
-            <Text>{data[0]?.container?.status ?? 'Unknown'}</Text>
+            <Text>{data[0]?.container?.status ?? ''}</Text>
             <TouchableOpacity style={styles.infoButton}
               onPress={() => {
                 navigation.navigate('LpnDetail', {
