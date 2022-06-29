@@ -2,17 +2,10 @@
 import React from 'react';
 import styles from './styles';
 import { SectionList, Text, TouchableOpacity, View } from 'react-native';
-import { Container } from '../../data/container/Container';
 import { useNavigation } from '@react-navigation/native';
 import { Card } from 'react-native-paper';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { colors } from '../../constants';
-
-interface Props {
-  item: Container;
-  onPress: any | null;
-  navigation: any | null;
-}
 
 const ContainerDetails = ({ item }: any) => {
   const navigation = useNavigation<any>();
@@ -55,17 +48,21 @@ const ContainerDetails = ({ item }: any) => {
       renderSectionHeader={({ section: { data, title } }) => (
         <View style={styles.headerContainer}>
           <Text style={styles.headerTitle}>{title}</Text>
-          <TouchableOpacity
-            style={styles.infoButton}
-            onPress={() => {
-              navigation.navigate('LpnDetail', {
-                id: data[0]?.container?.id,
-                shipmentNumber: data[0]?.shipment?.shipmentNumber
-              });
-            }}
-          >
-            <FontAwesome5 name="chevron-right" size={20} color={colors.headerColor} />
-          </TouchableOpacity>
+          {data[0].container?.id &&
+          <>
+            <Text>{data[0]?.container?.status ?? ''}</Text>
+            <TouchableOpacity style={styles.infoButton}
+              onPress={() => {
+                navigation.navigate('LpnDetail', {
+                  id: data[0]?.container?.id,
+                  shipmentNumber: data[0]?.shipment?.shipmentNumber
+                });
+              }}
+            >
+              <FontAwesome5 name="chevron-right" size={24} color={colors.headerColor} />
+            </TouchableOpacity>
+          </>
+          }
         </View>
       )}
       sections={item}

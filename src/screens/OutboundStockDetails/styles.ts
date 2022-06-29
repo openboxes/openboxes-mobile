@@ -179,17 +179,20 @@ export default StyleSheet.create({
     color: Theme.colors.text,
     width: '90%'
   },
+  buttonBar: {
+    padding: 1
+  },
   headerTitle: {
-    fontWeight: 'bold',
-    fontSize: 16,
+    fontWeight: 'normal',
+    fontSize: 14,
     flex: 1
   },
   headerContainer: {
-    backgroundColor: 'white',
     flexDirection: 'row',
     margin: 5,
-    padding: 10,
-    justifyContent: 'center'
+    padding: 5,
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   infoButton: {
     width: 25,
