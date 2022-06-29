@@ -161,5 +161,8 @@ export default StyleSheet.create({
   bottomList: {
     marginTop: 10,
     flex: 1
+  },
+  statusMessage: {
+    fontSize: 10,
   }
 });

@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 import Theme from '../../utils/Theme';
-import { ratio } from '../../constants';
+import { ratio, colors } from '../../constants';
 
 export default StyleSheet.create({
   screenContainer: {
@@ -192,5 +192,18 @@ export default StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row'
-  }
+  },
+  cardTitle: {
+    backgroundColor: Theme.colors.background,
+  },
+  cardTitleString: {
+    padding: 0,
+    fontSize: 16,
+    marginRight: 10
+  },
+  status: {
+    marginRight: 20,
+    color: Theme.colors.text,
+  },
+
 });

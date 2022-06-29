@@ -154,8 +154,8 @@ const PickOrderItem = (props: any) => {
 
   const showShortageInfo = (item: PicklistItem) => {
     showPopup({
-      title: 'Shortage Info:',
-      message: `Shortage Quantity: ${item?.quantityCanceled ?? 0}\nShortage Reason: ${item?.reasonCode ?? 'None'}\nPicking Person: ${item['picker.name'] ?? 'None'}`,
+      title: 'Shortage Details',
+      message: `Shortage Quantity: ${item?.quantityCanceled ?? 0}\nReason: ${item?.reasonCodeMessage ?? 'None'}\nPicker: ${item?.picker?.name ?? 'Unassigned'}`,
       positiveButton: { text: 'Ok' },
     });
   }
@@ -175,7 +175,13 @@ const PickOrderItem = (props: any) => {
           lockScrollWhileSnapping
           renderItem={({item, index}: ListRenderItemInfo<PicklistItem>) => {
             return (
-              <Card key={index}>
+              <Card key={index} style={styles.card}>
+                <Card.Title
+                  title={<Text>Pick Task ({item?.indexString ?? ''}) </Text>}
+                  subtitle={<Text>{item?.pickTypeClassification ?? ''}</Text>}
+                  right={(props) => <Text style={styles.status} {...props}>{item?.statusMessage ?? ''}</Text>}
+                  style={styles.cardTitle} titleStyle={styles.cardTitleString}
+                />
                 <Card.Content>
                   <View style={styles.inputContainer}>
                     <View style={styles.listItemContainer}>
@@ -267,33 +273,44 @@ const PickOrderItem = (props: any) => {
                       />
 
                       <View style={styles.row}>
-                        <View style={item?.reasonCode ? styles.col33 : styles.col50}>
+                        <View style={styles.col33}>
                           <Text style={styles.label}>Picked</Text>
                           <Text style={styles.value}>
                             {item?.quantityPicked} / {item?.quantity} {/* quantity is the "quantity required" for the picklist item */}
                           </Text>
                         </View>
-                        <View style={item?.reasonCode ? styles.col33 : styles.col50}>
+                        <View style={styles.col33}>
                           <Text style={styles.label}>Remaining</Text>
                           <Text style={styles.value}>
                             {item?.quantityRemaining}
                           </Text>
                         </View>
-                        {item?.reasonCode && (
+                        {item?.shortage && (
                           <View style={styles.col33}>
+                            <Text style={styles.label}>Status</Text>
                             <TouchableOpacity
                               onPress={() => showShortageInfo(item)}>
-                              <View style={styles.shortageLabel}>
+                              <View>
+                                <Text style={styles.value}>
                                 <FontAwesome5
                                   name="exclamation-triangle"
                                   size={10}
                                   color={colors.headerColor}
                                   style={styles.infoButton}
                                 />
-                                <Text style={styles.value}>SHORTAGE</Text>
+                                    &nbsp;Shortage
+                                </Text>
                               </View>
                             </TouchableOpacity>
                           </View>)}
+                          {!item.shortage && (
+                             <View style={styles.col33}>
+                                <Text style={styles.label}>Picked by</Text>
+                                <Text style={styles.value}>
+                                    {item?.picker?.name??'Unassigned'}
+                                </Text>
+                             </View>
+                          )}
                       </View>
 
                       <View style={styles.inputSpinner}>

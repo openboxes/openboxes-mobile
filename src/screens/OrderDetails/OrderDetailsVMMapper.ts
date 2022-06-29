@@ -11,6 +11,7 @@ export function orderDetailsVMMapper(
     identifier: props.order ? props.order.identifier : "",
     name: props.order ? props.order.name : "",
     status: props.order ? props.order.statusCode : "",
+    statusMessage: props.pickList ? props.pickList.statusMessage : "",
     description: props.order ? props.order.description ?? "No description provided" : "",
     origin: props.order ? props.order.origin : null,
     destination: props.order ? props.order.destination : null,

@@ -115,7 +115,10 @@ class OrderDetails extends React.Component<Props, State> {
             </View>
             <View style={styles.col50}>
               <Text style={styles.label}>Status</Text>
-              <Text style={styles.value}>{vm.status}</Text>
+              <Text style={styles.value}>{vm.status} {pickList?.statusMessage && (
+                  <Text style={styles.statusMessage}>(Picked {pickList?.statusMessage ?? '0'} items)</Text>
+                )}
+              </Text>
             </View>
           </View>
           <View style={styles.row}>
