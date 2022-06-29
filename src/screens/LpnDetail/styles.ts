@@ -25,9 +25,9 @@ export default StyleSheet.create({
     borderRadius: Theme.roundness,
     borderColor: Theme.colors.backdrop,
     borderWidth: 1,
-    margin: 4,
-    padding: 4,
-    justifyContent: 'center'
+    margin: 0,
+    padding: 0,
+    marginTop: 5
   },
   listItemNameContainer: {
     display: 'flex',
@@ -73,6 +73,13 @@ export default StyleSheet.create({
     marginStart: 4,
     width: '50%'
   },
+  col100: {
+    display: 'flex',
+    flexDirection: 'column',
+    flex: 0,
+    marginStart: 4,
+    width: '95%'
+  },
   label: {
     fontSize: 12,
     color: Theme.colors.placeholder
@@ -87,7 +94,7 @@ export default StyleSheet.create({
   },
   select: {
     width: '100%',
-    borderWidth: 2,
+    borderWidth: 1,
     height: 40,
     alignSelf: 'center',
     borderColor: 'grey',
