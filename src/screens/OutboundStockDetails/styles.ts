@@ -191,7 +191,8 @@ export default StyleSheet.create({
     flexDirection: 'row',
     margin: 5,
     padding: 5,
-    justifyContent: 'center'
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   infoButton: {
     width: 25,

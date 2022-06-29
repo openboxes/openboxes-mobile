@@ -2,17 +2,10 @@
 import React from 'react';
 import styles from './styles';
 import { SectionList, Text, TouchableOpacity, View } from 'react-native';
-import { Container } from '../../data/container/Container';
 import { useNavigation } from '@react-navigation/native';
-import { Card, Badge } from 'react-native-paper';
+import { Card } from 'react-native-paper';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { colors } from '../../constants';
-
-interface Props {
-  item: Container;
-  onPress: any | null;
-  navigation: any | null;
-}
 
 const ContainerDetails = ({ item }: any) => {
   const navigation = useNavigation<any>();
@@ -57,7 +50,7 @@ const ContainerDetails = ({ item }: any) => {
           <Text style={styles.headerTitle}>{title}</Text>
           {data[0].container?.id &&
           <>
-{/*             <Text>{data[0]?.container?.status ?? 'Unknown'}</Text> */}
+            <Text>{data[0]?.container?.status ?? 'Unknown'}</Text>
             <TouchableOpacity style={styles.infoButton}
               onPress={() => {
                 navigation.navigate('LpnDetail', {
