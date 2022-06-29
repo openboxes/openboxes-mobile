@@ -24,7 +24,7 @@ export default StyleSheet.create({
     marginBottom: 20
   },
   stashEmpty: {
-    height: 250,
-    width: 250
+    height: 100,
+    width: 100
   }
 });
