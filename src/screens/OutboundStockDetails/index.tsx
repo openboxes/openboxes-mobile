@@ -1,6 +1,7 @@
 import { DispatchProps, Props, State } from './types';
 import React from 'react';
 import { ScrollView, Text, View } from 'react-native';
+import { Card, Title, Paragraph } from 'react-native-paper';
 import { connect } from 'react-redux';
 import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
 import { RootState } from '../../redux/reducers';
@@ -50,50 +51,47 @@ class OutboundStockDetails extends React.Component<Props, State> {
 
   render() {
     return (
-      <ScrollView style={styles.screenContainer}>
-        <View style={styles.contentContainer}>
-          <View style={styles.row}>
-            <View style={styles.col50}>
-              <Text style={styles.label}>Shipment Number</Text>
-              <Text style={styles.value}>{this.state.shipment?.shipmentNumber}</Text>
+      <>
+        <ScrollView style={styles.screenContainer}>
+          <View style={styles.contentContainer}>
+            <View style={styles.row}>
+              <View style={styles.col50}>
+                <Text style={styles.label}>Shipment Number</Text>
+                <Text style={styles.value}>{this.state.shipment?.shipmentNumber}</Text>
+              </View>
+              <View style={styles.col50}>
+                <Text style={styles.label}>Status</Text>
+                <Text style={styles.value}>{this.state.shipment?.requisitionStatus}</Text>
+              </View>
             </View>
-            <View style={styles.col50}>
-              <Text style={styles.label}>Status</Text>
-              <Text style={styles.value}>{this.state.shipment?.requisitionStatus}</Text>
+            <View style={styles.row}>
+              <View style={styles.col50}>
+                <Text style={styles.label}>Destination</Text>
+                <Text style={styles.value}>{this.state.shipment?.destination.name}</Text>
+              </View>
+              <View style={styles.col50}>
+                <Text style={styles.label}>Expected Shipping Date</Text>
+                <Text style={styles.value}>{this.state.shipment?.expectedShippingDate}</Text>
+              </View>
             </View>
-          </View>
-          <View style={styles.row}>
-            <View style={styles.col50}>
-              <Text style={styles.label}>Destination</Text>
-              <Text style={styles.value}>{this.state.shipment?.destination.name}</Text>
-            </View>
-            <View style={styles.col50}>
-              <Text style={styles.label}>Expected Shipping Date</Text>
-              <Text style={styles.value}>{this.state.shipment?.expectedShippingDate}</Text>
-            </View>
-          </View>
-          <View style={styles.row}>
-            <View style={styles.col50}>
-              <Text style={styles.label}>Packing Location</Text>
-              <Text style={styles.value}>{this.state.shipment?.packingLocation}</Text>
-            </View>
-            <View style={styles.col50}>
-              <Text style={styles.label}>Loading Location</Text>
-              <Text style={styles.value}>{this.state.shipment?.loadingLocation}</Text>
-            </View>
-          </View>
-
-          <View style={styles.row}>
-            <View style={styles.col50}>
-              <Text style={styles.label}>Number of containers</Text>
-              <Text style={styles.value}>{this.state.shipment?.availableContainers.length}</Text>
-            </View>
-            <View style={styles.col50}>
-              <Text style={styles.label}>Items packed</Text>
-              <Text style={styles.value}>{this.state.shipment?.packingStatus}</Text>
+            <View style={styles.row}>
+              <View style={styles.col50}>
+                <Text style={styles.label}>Packing Location</Text>
+                <Text style={styles.value}>
+                  {this.state.shipment?.packingLocation?.name ?? 'Unassigned'}
+                </Text>
+              </View>
+              <View style={styles.col50}>
+                <Text style={styles.label}>Items Packed</Text>
+                <Text style={styles.value}>
+                  {}{this.state.shipment?.packingStatusDetails?.statusMessage}
+                </Text>
+              </View>
             </View>
           </View>
           <ContainerDetails item={this.state.shipmentData?.sectionData ?? []} />
+        </ScrollView>
+        <View style={styles.buttonBar}>
           <Button
             title={'Create LPN'}
             disabled={false}
@@ -105,7 +103,7 @@ class OutboundStockDetails extends React.Component<Props, State> {
             }}
           />
         </View>
-      </ScrollView>
+      </>
     );
   }
 }
