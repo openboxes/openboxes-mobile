@@ -167,21 +167,11 @@ class OutboundStockList extends React.Component<Props, State> {
                   <View style={styles.row}>
                     <View style={styles.col50}>
                       <Text style={styles.label}>Packing Location</Text>
-                      <Text style={styles.value}>{shipment.item.packingLocation}</Text>
+                      <Text style={styles.value}>{shipment.item.packingLocation?.name ?? 'Unassigned'}</Text>
                     </View>
                     <View style={styles.col50}>
-                      <Text style={styles.label}>Loading Location</Text>
-                      <Text style={styles.value}>{shipment.item.loadingLocation}</Text>
-                    </View>
-                  </View>
-                  <View style={styles.row}>
-                    <View style={styles.col50}>
-                      <Text style={styles.label}>Number of containers</Text>
-                      <Text style={styles.value}>{shipment.item.availableContainers.length}</Text>
-                    </View>
-                    <View style={styles.col50}>
-                      <Text style={styles.label}>Items packed</Text>
-                      <Text style={styles.value}>{shipment.item.packingStatus}</Text>
+                      <Text style={styles.label}>Items Packed</Text>
+                      <Text style={styles.value}>{shipment.item.packingStatusDetails?.statusMessage ?? 'Not Available'}</Text>
                     </View>
                   </View>
                 </Card.Content>
