@@ -1,17 +1,27 @@
+import _ from 'lodash';
 import React from 'react';
 import { View, ScrollView } from 'react-native';
 import { Props } from './types';
 import styles from './styles';
+import { ContentHeader, ContentFooter, ContentBody } from '../index';
 
 const ContentContainer: React.FC<Props> = (props) => {
-  const { children, style, scroll = true, ...otherProps } = props;
+  const { children, style, ...otherProps } = props;
 
-  const ContainerComponent = scroll ? ScrollView : View;
-
+  const arrayChildren = React.Children.toArray(children) as React.ReactElement[];
+  const header = _.find(arrayChildren, (child) => _.get(child, 'type.name') === ContentHeader.name);
+  const body = _.find(arrayChildren, (child) => _.get(child, 'type.name') === ContentBody.name);
+  const footer = _.find(arrayChildren, (child) => _.get(child, 'type.name') === ContentFooter.name);
   return (
-    <ContainerComponent {...otherProps}>
-      <View style={[style, styles.container]}>{children}</View>
-    </ContainerComponent>
+    <View {...otherProps} style={[style, styles.container]}>
+      {header?.props?.fixed ? header : null}
+      <ScrollView style={{ flex: 1 }}>
+        {header?.props?.fixed ? null : header}
+        {body}
+        {footer?.props?.fixed ? null : footer}
+      </ScrollView>
+      {footer?.props?.fixed ? footer : null}
+    </View>
   );
 };
 

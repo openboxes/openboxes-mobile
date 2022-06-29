@@ -1,13 +1,13 @@
 import { StyleSheet } from 'react-native';
 import { device, appHeaderHeight } from '../../../constants';
 
-const constainerMargin = 10;
+const containerMargin = 10;
 
 export default StyleSheet.create({
   container: {
-    margin: constainerMargin,
+    margin: containerMargin,
     display: 'flex',
     flexDirection: 'column',
-    minHeight: device.windowHeight - device.statusBarHeight - appHeaderHeight - 2 * constainerMargin
+    minHeight: device.windowHeight - appHeaderHeight - 2 * containerMargin
   }
 });

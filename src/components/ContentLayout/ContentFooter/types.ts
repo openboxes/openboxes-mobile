@@ -5,4 +5,5 @@ export interface Props extends ViewProps {
   children: React.ReactNode;
   direction?: 'column' | 'row';
   gap?: number;
+  fixed?: boolean;
 }
