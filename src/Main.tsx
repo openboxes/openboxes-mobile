@@ -51,7 +51,8 @@ import { Provider } from 'react-native-paper';
 import AppInfoScreen from './screens/AppInfo/AppInfoScreen';
 import PackingLocationPage from './screens/PackingLocationPage';
 import OutboundLoadingList from './screens/OutboundLoadingList/OutboundLoadingList';
-import OutboundLoadingDetails from './screens/OutboundLoadingDetails/OutboundLoadingDetails';
+import OutboundLoadingDetails from './screens/OutboundLoadingDetails';
+import OutboundLoadingContainer from './screens/OutboundLoadingContainer';
 
 const Stack = createStackNavigator();
 export interface OwnProps {
@@ -224,6 +225,11 @@ class Main extends Component<Props, State> {
                 name="OutboundLoadingDetails"
                 component={OutboundLoadingDetails}
                 options={{ title: 'Loading Order Details' }}
+              />
+              <Stack.Screen
+                name="OutboundLoadingContainer"
+                component={OutboundLoadingContainer}
+                options={{ title: 'Load LPN' }}
               />
               <Stack.Screen name="AdjustStock" component={AdjustStock} />
               <Stack.Screen name="Transfer" component={Transfer} />

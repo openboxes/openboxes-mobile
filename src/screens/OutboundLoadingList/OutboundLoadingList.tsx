@@ -64,9 +64,17 @@ class OutboundLoadingList extends React.Component<Props, State> {
     this.props.getShipmentsReadyToBePacked(currentLocation.id, 'PENDING', this.actionCallback);
   };
 
-  showShipmentLoadScreen = (shipment: any) => {
+  showLoadingDetailsScreen = (shipment: any) => {
     this.props.navigation.navigate('OutboundLoadingDetails', {
       shipmentId: shipment.id
+    });
+  };
+
+  showLoadingLPNScreen = (shipment: Shipment, container: Container) => {
+    this.props.navigation.navigate('OutboundLoadingContainer', {
+      shipment: shipment,
+      container: container,
+      scanned: true
     });
   };
 
@@ -79,9 +87,11 @@ class OutboundLoadingList extends React.Component<Props, State> {
       ));
 
       if (exactShipmentByLPN) {
+        const exactContainer = _.find(exactShipmentByLPN?.availableContainers, (container: Container) =>
+          container.containerNumber === searchTerm);
+
         this.resetFiltering();
-        // TODO: make it redirect to LOAD LPN page instead of loading order details
-        this.showShipmentLoadScreen(exactShipmentByLPN);
+        this.showLoadingLPNScreen(exactShipmentByLPN, exactContainer);
         return;
       }
 
@@ -99,7 +109,7 @@ class OutboundLoadingList extends React.Component<Props, State> {
       // if only one match, then redirect to loading order details
       if (filteredShipments.length === 1) {
         this.resetFiltering();
-        this.showShipmentLoadScreen(filteredShipments[0]);
+        this.showLoadingDetailsScreen(filteredShipments[0]);
         return;
       }
 
@@ -140,7 +150,7 @@ class OutboundLoadingList extends React.Component<Props, State> {
             renderItem={(shipment: ListRenderItemInfo<Shipment>) => (
               <Card
                 style={LayoutStyle.listItemContainer}
-                onPress={() => this.showShipmentLoadScreen(shipment.item)}
+                onPress={() => this.showLoadingDetailsScreen(shipment.item)}
               >
                 <Card.Content>
                   <View style={styles.row}>

@@ -1,5 +1,4 @@
 import ShipmentItems from '../inbound/ShipmentItems';
-import { Container } from './Container';
 import Location from '../location/Location';
 
 export interface PackingStatusDetails {
@@ -15,6 +14,14 @@ export interface LoadingStatusDetails {
   totalContainerCount: number;
   emptyContainerCount: number;
   loadingLocation: Location;
+}
+
+export interface Container {
+  id: string;
+  name: string;
+  containerNumber: string;
+  containerType: any;
+  status: string;
 }
 
 export interface Shipment {
