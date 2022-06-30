@@ -90,8 +90,8 @@ class OutboundLoadingList extends React.Component<Props, State> {
         const matchingShipmentNumber = shipment?.shipmentNumber?.toLowerCase()?.includes(searchTerm.toLowerCase());
 
         const matchingLoadingLocation =
-          shipment?.loadingLocation?.locationNumber?.toLowerCase()?.includes(searchTerm.toLowerCase()) ||
-          shipment?.loadingLocation?.name?.toLowerCase()?.includes(searchTerm.toLowerCase());
+          shipment?.loadingStatusDetails?.loadingLocation?.locationNumber?.toLowerCase()?.includes(searchTerm.toLowerCase()) ||
+          shipment?.loadingStatusDetails?.loadingLocation?.name?.toLowerCase()?.includes(searchTerm.toLowerCase());
 
         return (matchingShipmentNumber || matchingLoadingLocation) as boolean;
       });
@@ -126,7 +126,7 @@ class OutboundLoadingList extends React.Component<Props, State> {
       <View style={styles.screenContainer}>
         <BarcodeSearchHeader
           autoSearch
-          placeholder={'Search for Order'}
+          placeholder={'Search or scan barcode'}
           resetSearch={this.resetFiltering}
           searchBox={false}
           onSearchTermSubmit={this.filterShipments}
@@ -175,9 +175,8 @@ class OutboundLoadingList extends React.Component<Props, State> {
                   </View>
                   <View style={styles.row}>
                     <View style={styles.col50}>
-                      <Text style={styles.label}>LPNs To Be Loaded</Text>
-                      {/* TODO: change into number of lpns to load property */}
-                      <Text style={styles.value}>{shipment.item.availableContainers.length}</Text>
+                      <Text style={styles.label}>Containers Loaded</Text>
+                      <Text style={styles.value}>{shipment.item.loadingStatusDetails.statusMessage}</Text>
                     </View>
                   </View>
                 </Card.Content>

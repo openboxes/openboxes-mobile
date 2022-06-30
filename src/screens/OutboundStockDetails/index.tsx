@@ -11,7 +11,7 @@ import OutboundVMMapper from './OutboubVmMapper';
 import ContainerDetails from './ContainerDetails';
 import Button from '../../components/Button';
 
-// Shipment packing
+// Shipment packing (Packing Order Details)
 class OutboundStockDetails extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
@@ -79,13 +79,13 @@ class OutboundStockDetails extends React.Component<Props, State> {
               <View style={styles.col50}>
                 <Text style={styles.label}>Packing Location</Text>
                 <Text style={styles.value}>
-                  {this.state.shipment?.packingLocation?.name ?? 'Unassigned'}
+                  {this.state.shipment?.packingLocation ?? 'Unassigned'}
                 </Text>
               </View>
               <View style={styles.col50}>
                 <Text style={styles.label}>Items Packed</Text>
                 <Text style={styles.value}>
-                  {}{this.state.shipment?.packingStatusDetails?.statusMessage}
+                  {this.state.shipment?.packingStatusDetails?.statusMessage}
                 </Text>
               </View>
             </View>

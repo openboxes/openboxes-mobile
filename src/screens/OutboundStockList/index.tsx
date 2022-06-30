@@ -128,7 +128,7 @@ class OutboundStockList extends React.Component<Props, State> {
       <View style={styles.screenContainer}>
         <BarcodeSearchHeader
           autoSearch
-          placeholder={'Order or Container Number'}
+          placeholder={'Search or scan barcode'}
           resetSearch={this.resetFiltering}
           searchBox={false}
           onSearchTermSubmit={this.filterShipments}
@@ -168,7 +168,7 @@ class OutboundStockList extends React.Component<Props, State> {
                   <View style={styles.row}>
                     <View style={styles.col50}>
                       <Text style={styles.label}>Packing Location</Text>
-                      <Text style={styles.value}>{shipment.item.packingLocation?.name ?? 'Unassigned'}</Text>
+                      <Text style={styles.value}>{shipment.item.packingLocation ?? 'Unassigned'}</Text>
                     </View>
                     <View style={styles.col50}>
                       <Text style={styles.label}>Items Packed</Text>

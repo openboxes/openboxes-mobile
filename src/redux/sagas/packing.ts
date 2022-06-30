@@ -7,6 +7,7 @@ import {
   GET_SHIPMENT_REQUEST,
   GET_SHIPMENT_SUCCESS,
   GET_SHIPMENTS_READY_TO_BE_PACKED,
+  GET_SHIPMENTS_READY_TO_BE_PACKED_SUCCESS,
   GET_SUBMIT_SHIPMENT_DETAILS_REQUEST,
   GET_SUBMIT_SHIPMENT_DETAILS_SUCCESS,
   GET_SHIPMENT_TYPE_REQUEST,
@@ -28,7 +29,7 @@ function* getShipmentsReadyToBePacked(action: any) {
       action.payload.shipmentStatusCode
     );
     yield put({
-      type: GET_SHIPMENT_SUCCESS,
+      type: GET_SHIPMENTS_READY_TO_BE_PACKED_SUCCESS,
       payload: response.data
     });
     yield action.callback(response.data);

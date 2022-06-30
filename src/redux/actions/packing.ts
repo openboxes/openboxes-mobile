@@ -1,4 +1,5 @@
 export const GET_SHIPMENTS_READY_TO_BE_PACKED = "GET_SHIPMENTS_READY_TO_BE_PACKED"
+export const GET_SHIPMENTS_READY_TO_BE_PACKED_SUCCESS = "GET_SHIPMENTS_READY_TO_BE_PACKED_SUCCESS"
 export const GET_SHIPMENT_REQUEST = "GET_SHIPMENT_REQUEST"
 export const GET_SHIPMENT_SUCCESS = 'GET_SHIPMENT_SUCCESS';
 export const GET_SHIPMENT_ORIGIN_REQUEST = "GET_SHIPMENT_ORIGIN_REQUEST"
@@ -34,6 +35,7 @@ export const getContainerType = (callback: (products: any) => void, id?: any) =>
         callback
     };
 }
+
 export const getShipmentOrigin = (id: any, callback: (products: any) => void) => {
     return {
         type: GET_SHIPMENT_ORIGIN_REQUEST,
