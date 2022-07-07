@@ -50,7 +50,7 @@ class LpnDetail extends React.Component<Props, State> {
           positiveButton: {
             text: 'Retry',
             callback: () => {
-              this.props.updateContainerStatus(id, status, actionCallback);
+              this.props.updateContainerStatus(id, { status }, actionCallback);
             }
           },
           negativeButtonText: 'Cancel'
@@ -60,7 +60,7 @@ class LpnDetail extends React.Component<Props, State> {
       }
     };
 
-    this.props.updateContainerStatus(id, status, actionCallback);
+    this.props.updateContainerStatus(id, { status }, actionCallback);
   };
 
   getContainerDetails = (id: string, openModal: boolean) => {

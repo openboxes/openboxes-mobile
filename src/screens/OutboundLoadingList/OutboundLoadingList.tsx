@@ -59,7 +59,7 @@ class OutboundLoadingList extends React.Component<Props, State> {
   fetchShipmentsReadyForLoading = () => {
     const { currentLocation } = this.props;
     this.props.showScreenLoading('Loading..');
-    // TODO: For now were pull the same list of shipments as for packing list. Later change to the list of shipments
+    // For now were pull the same list of shipments as for packing list. Later change to the list of shipments
     // ready to be loaded
     this.props.getShipmentsReadyToBePacked(currentLocation.id, 'PENDING', this.actionCallback);
   };
@@ -103,7 +103,7 @@ class OutboundLoadingList extends React.Component<Props, State> {
           shipment?.loadingStatusDetails?.loadingLocation?.locationNumber?.toLowerCase()?.includes(searchTerm.toLowerCase()) ||
           shipment?.loadingStatusDetails?.loadingLocation?.name?.toLowerCase()?.includes(searchTerm.toLowerCase());
 
-        return (matchingShipmentNumber || matchingLoadingLocation) as boolean;
+        return matchingShipmentNumber || matchingLoadingLocation;
       });
 
       // if only one match, then redirect to loading order details

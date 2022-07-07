@@ -47,17 +47,19 @@ const OutboundLoadingContainer = () => {
       let errorTitle = '';
       let errorMessage = '';
 
+      const loadingLocationNumber = shipment?.loadingStatusDetails?.loadingLocation?.locationNumber;
       const scannedLPNValid = isPropertyValid(container?.containerNumber, scannedLPN);
       const scannedLoadingLocationValid = isPropertyValid(
         shipment?.loadingStatusDetails?.loadingLocation?.locationNumber, scannedLoadingLocation,
       );
+
 
       if (!scannedLPNValid) {
         errorTitle = 'LPN Container Number is invalid';
         errorMessage = 'Scan proper LPN Container Number';
       }
 
-      if (!scannedLoadingLocationValid) {
+      if (loadingLocationNumber && !scannedLoadingLocationValid) {
         errorTitle = 'Loading Location is invalid';
         errorMessage = 'Scanned Loading Location is not for this load';
       }
@@ -70,49 +72,39 @@ const OutboundLoadingContainer = () => {
         return Promise.resolve(null);
       }
 
+      let payload;
+      if (!loadingLocationNumber && scannedLoadingLocation) {
+        payload = {
+          status: 'LOADED',
+          loadingLocation: scannedLoadingLocation
+        };
+      } else {
+        payload = {
+          status: 'LOADED',
+        };
+      }
+
       const actionCallback = (data: any) => {
-        if (data && data.error) {
+        if (data?.error) {
           showPopup({
             title: data.errorMessage ? 'Failed to load container' : null,
             message: data.errorMessage || 'Failed to load container',
           });
-        } else {
-          ToastAndroid.show('Loaded container successfully!', ToastAndroid.SHORT);
-          console.log(shipment?.loadedContainerCount);
-          const totalContainersLoaded = shipment?.loadedContainerCount + 1;
-          if (totalContainersLoaded >= shipment?.totalContainerCount) {
-            Alert.alert(
-              'All containers are loaded', // title
-              'What do you want to do now?', // message
-              [{ // button list
-                text: 'Go to the details',
-                onPress: () =>
-                  navigation.navigate('OutboundLoadingDetails', {
-                    shipmentId: shipment?.id,
-                    refetchShipment: true
-                  })
-              },
-              {
-                text: 'Go to the loading list',
-                onPress: () => navigation.navigate('OutboundLoadingList')
-              }],
-              {
-                cancelable: false
-              },
-            );
-          } else {
-            navigation.navigate('OutboundLoadingDetails', {
-              shipmentId: shipment?.id,
-              refetchShipment: true
-            })
-          }
+          return;
         }
+
+        ToastAndroid.show('Loaded container successfully!', ToastAndroid.SHORT);
+
+        navigation.navigate('OutboundLoadingDetails', {
+          shipmentId: shipment?.id,
+          refetchShipment: true
+        });
       };
 
       dispatch(
         updateContainerStatus(
           container?.id as string,
-          'LOADED',
+          payload,
           actionCallback,
         )
       );

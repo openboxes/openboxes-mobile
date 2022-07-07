@@ -65,23 +65,23 @@ function* getContainerDetail(action: any) {
 }
 
 function* updateContainerStatus(action: any) {
-    try {
-        const response = yield call(
-            api.updateContainerStatus,
-            action.payload.id,
-            action.payload.status
-        );
-        yield put({
-            type: GET_CONTAINER_STATUS_DETAIL_RESPONSE_SUCCESS,
-            payload: response.data,
-        });
-        yield action.callback(response.data);
-    } catch (e) {
-        yield action.callback({
-            error: true,
-            errorMessage: e.message,
-        });
-    }
+  try {
+    const response = yield call(
+      api.updateContainerStatus,
+      action.payload.id,
+      action.payload.requestBody
+    );
+    yield put({
+      type: GET_CONTAINER_STATUS_DETAIL_RESPONSE_SUCCESS,
+      payload: response.data,
+    });
+    yield action.callback(response.data);
+  } catch (e) {
+    yield action.callback({
+      error: true,
+      errorMessage: e.message,
+    });
+  }
 }
 
 export default function* watcher() {

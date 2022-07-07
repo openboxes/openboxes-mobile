@@ -1,6 +1,6 @@
 import { DispatchProps, Props, State } from '../OutboundStockDetails/types';
 import React from 'react';
-import {FlatList, ListRenderItemInfo, Text, View} from 'react-native';
+import {Alert, FlatList, ListRenderItemInfo, Text, View} from 'react-native';
 import { connect } from 'react-redux';
 import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
 import { RootState } from '../../redux/reducers';
@@ -40,6 +40,25 @@ class OutboundLoadingDetails extends React.Component<Props, State> {
     if (!data || data?.error) {
       return Promise.resolve(null);
     } else {
+      if (data?.loadedContainerCount === data?.totalContainerCount) {
+        Alert.alert(
+          'All containers are loaded', // title
+          'What do you want to do now?', // message
+          [
+            { // button list
+              text: 'See the details',
+              onPress: () => null
+            },
+            {
+              text: 'Go to the loading list',
+              onPress: () => this.props.navigation.navigate('OutboundLoadingList')
+            }],
+          {
+            cancelable: false
+          },
+        );
+      }
+
       this.setState({
         shipment: data,
         scannedContainer: ''

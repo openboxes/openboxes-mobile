@@ -13,7 +13,7 @@ export interface DispatchProps {
   getContainer: (id: string, callback: (data: any) => void) => void;
   updateContainerStatus: (
     id: string,
-    status: any,
+    requestBody: any,
     callback: (data: any) => void
   ) => void;
 }
