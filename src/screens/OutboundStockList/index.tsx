@@ -77,7 +77,10 @@ class OutboundStockList extends React.Component<Props, State> {
           shipment?.availableContainers,
           (container) => container.containerNumber === searchTerm
         );
-        return matchingShipmentNumber || matchingContainer;
+        const matchingPackingLocation =
+          shipment?.packingStatusDetails?.packingLocation?.locationNumber?.toLowerCase() === searchTerm.toLowerCase() ||
+          shipment?.packingStatusDetails?.packingLocation?.name?.toLowerCase() === searchTerm.toLowerCase();
+        return matchingShipmentNumber || matchingContainer || matchingPackingLocation;
       });
 
       if (exactOutboundOrder) {
@@ -101,9 +104,22 @@ class OutboundStockList extends React.Component<Props, State> {
             return matchingLotNumber || matchingCode || matchingName;
           });
 
+          const matchingPackingLocation =
+            shipment?.packingStatusDetails?.packingLocation?.locationNumber?.toLowerCase()?.includes(searchTerm.toLowerCase()) ||
+            shipment?.packingStatusDetails?.packingLocation?.name?.toLowerCase()?.includes(searchTerm.toLowerCase());
+
           // Return as bool
-          return !!(matchingShipmentNumber || matchingContainer || matchingLotNumberOrProduct);
+          return !!(matchingShipmentNumber || matchingContainer || matchingLotNumberOrProduct || matchingPackingLocation);
         });
+
+        if (filteredShipments?.length === 0) {
+          showPopup({
+            message: `No shipment associated with the given identifier: ${searchTerm}`,
+          });
+          this.resetFiltering();
+          return;
+        }
+
         this.setState({
           ...this.state,
           filteredShipments

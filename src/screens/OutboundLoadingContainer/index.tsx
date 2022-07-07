@@ -53,7 +53,6 @@ const OutboundLoadingContainer = () => {
         shipment?.loadingStatusDetails?.loadingLocation?.locationNumber, scannedLoadingLocation,
       );
 
-
       if (!scannedLPNValid) {
         errorTitle = 'LPN Container Number is invalid';
         errorMessage = 'Scan proper LPN Container Number';
