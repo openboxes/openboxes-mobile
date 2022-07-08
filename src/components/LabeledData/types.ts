@@ -1,7 +1,8 @@
 interface LabeledDataProps {
   label: string;
-  data: string | number;
+  value: string | number;
   defaultValue?: string | number;
+  style?: any;
 }
 
 export type Props = LabeledDataProps;

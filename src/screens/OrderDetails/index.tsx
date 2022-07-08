@@ -1,168 +1,141 @@
 import _ from 'lodash';
-import React from 'react';
-import { connect } from 'react-redux';
-import { Alert, ScrollView, Text, View } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 
-import styles from './styles';
+import { Props } from './types';
+import PickList from '../../data/picklist/PickList';
+import { Props as LabeledDataType } from '../../components/LabeledData/types';
+
 import { showScreenLoading, hideScreenLoading } from '../../redux/actions/main';
-import { orderDetailsVMMapper } from './OrderDetailsVMMapper';
 import { getPickListAction } from '../../redux/actions/orders';
-import { State, DispatchProps, Props } from './types';
+
+import { Alert } from 'react-native';
 import PickOrderItem from '../PickList';
 import Button from '../../components/Button';
+import { ContentContainer, ContentHeader, ContentFooter, ContentBody } from '../../components/ContentLayout';
+import DetailsTable from '../../components/DetailsTable';
+import showPopup from '../../components/Popup';
+import { orderDetailsVMMapper } from './OrderDetailsVMMapper';
 
-class OrderDetails extends React.Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
+const OrderDetails: React.FC<Props> = (props) => {
+  const [pickList, setPickList] = useState<PickList | null>(null);
+  const [initialPicklistItemIndex, setInitialPicklistItemIndex] = useState<number>(0);
 
-    this.state = {
-      pickList: null,
-      error: null,
-      initialPicklistItemIndex: 0
-    };
-  }
+  const dispatch = useDispatch();
 
-  componentDidMount() {
-    this.getOrderDetails();
-  }
+  const getInitiallyDisplayedPickItemIndex = (picklistItems: any) => {
+    return _.findIndex(picklistItems, (item: any) => Number(item.quantityRemaining) > 0);
+  };
 
-  getOrderDetails() {
-    this.props.showScreenLoading('Loading');
-    const { order } = this.props.route.params;
+  const getOrderDetails = () => {
+    dispatch(showScreenLoading('Loading'));
+    const { order } = props.route.params;
 
     const actionCallback = (data: any) => {
       if (data?.length === 0) {
-        this.props.hideScreenLoading();
-        this.setState({
-          pickList: data,
-          error: 'No Picklist found'
+        dispatch(hideScreenLoading());
+        setPickList(null);
+        props.navigation.navigate('Orders', {
+          refetchOrders: true
         });
-      } else {
-        const initialPicklistItemIndex = this.getInitiallyDisplayedPickItemIndex(data?.picklistItems);
+        showPopup({ message: 'No Picklist found', positiveButton: 'ok' });
+        return;
+      }
 
-        if (initialPicklistItemIndex === -1) {
-          Alert.alert(
-            'All items are picked', // title
-            'What do you want to do now?', // message
-            [{ // button list
+      if (getInitiallyDisplayedPickItemIndex(data?.picklistItems) === -1) {
+        Alert.alert(
+          'All items are picked',
+          'What do you want to do now?',
+          [
+            {
               text: 'Go back',
               onPress: () =>
-                this.props.navigation.navigate('Orders', {
+                props.navigation.navigate('Orders', {
                   refetchOrders: true
                 })
             },
             {
               text: 'Move to Packing',
               onPress: () =>
-                this.props.navigation.navigate('PackingLocationPage', {
+                props.navigation.navigate('PackingLocationPage', {
                   orderId: order?.id,
                   packingLocation: order?.packingLocation
                 })
             },
-              {
-                text: 'View',
-                onPress: () => null
-              }],
             {
-              cancelable: false
-            },
-          );
-        }
-
-        this.setState(
+              text: 'View',
+              onPress: () => null
+            }
+          ],
           {
-            pickList: null,
-            error: null,
-            initialPicklistItemIndex: 0
-          },
-          () =>
-            this.setState(
-              {
-                pickList: {
-                  ...data,
-                  picklistItems: _.map(data.picklistItems, (item: any) => ({
-                    ...item,
-                    quantityToPick: item.quantityRemaining
-                  }))
-                },
-                error: null,
-                initialPicklistItemIndex
-              },
-              () => this.props.hideScreenLoading()
-            )
+            cancelable: false
+          }
         );
       }
+      setPickList({
+        ...data,
+        picklistItems: _.map(data.picklistItems, (item: any) => ({
+          ...item,
+          quantityToPick: item.quantityRemaining
+        }))
+      });
+      setInitialPicklistItemIndex(initialPicklistItemIndex);
+      dispatch(hideScreenLoading());
     };
 
-    this.props.getPickListAction(order?.picklist?.id, actionCallback);
-  }
+    dispatch(getPickListAction(order?.picklist?.id, actionCallback));
+  };
 
-  getInitiallyDisplayedPickItemIndex(picklistItems: any) {
-    return _.findIndex(picklistItems, (item: any) => Number(item.quantityRemaining) > 0);
-  }
+  useEffect(() => {
+    getOrderDetails();
+  }, []);
 
-  render() {
-    const { initialPicklistItemIndex, pickList } = this.state;
+  const {
+    id: orderId,
+    identifier,
+    status,
+    destination,
+    expectedShippingDate,
+    packingLocation
+  } = orderDetailsVMMapper(props.route?.params);
 
-    const vm = orderDetailsVMMapper(this.props.route?.params, this.state);
-    return (
-      <ScrollView style={styles.screenContainer}>
-        <View style={styles.contentContainer}>
-          <View style={styles.row}>
-            <View style={styles.col50}>
-              <Text style={styles.label}>Identifier</Text>
-              <Text style={styles.value}>{vm.identifier}</Text>
-            </View>
-            <View style={styles.col50}>
-              <Text style={styles.label}>Status</Text>
-              <Text style={styles.value}>{vm.status} {pickList?.statusMessage && (
-                  <Text style={styles.statusMessage}>(Picked {pickList?.statusMessage ?? '0'} items)</Text>
-                )}
-              </Text>
-            </View>
-          </View>
-          <View style={styles.row}>
-            <View style={styles.col50}>
-              <Text style={styles.label}>Destination</Text>
-              <Text style={styles.value}>
-                {vm.destination.locationNumber}-{vm.destination.name}
-              </Text>
-            </View>
-            <View style={styles.col50}>
-              <Text style={styles.label}>Expected Shipping Date</Text>
-              <Text style={styles.value}>{vm.expectedShippingDate}</Text>
-            </View>
-          </View>
-          <View style={styles.bottomList}>
-            {pickList?.picklistItems && pickList?.picklistItems?.length > 0 && (
-              <PickOrderItem
-                pickList={pickList}
-                pickListItem={pickList?.picklistItems[initialPicklistItemIndex]}
-                selectedPinkItemIndex={initialPicklistItemIndex}
-                successfulPickCallback={() => this.getOrderDetails()}
-              />
-            )}
-            <Button
-              title="Move to Packing"
-              onPress={() =>
-                this.props.navigation.navigate('PackingLocationPage', {
-                  orderId: vm?.id,
-                  packingLocation: vm?.packingLocation
-                })}
-            >
-              Move to Packing
-            </Button>
-          </View>
-        </View>
-      </ScrollView>
-    );
-  }
-}
+  const statusMessage = _.get(pickList, 'statusMessage', '0');
 
-const mapDispatchToProps: DispatchProps = {
-  getPickListAction,
-  showScreenLoading,
-  hideScreenLoading
+  const detailsData: LabeledDataType[] = [
+    { label: 'Identifier', value: identifier },
+    { label: 'Status', value: `${status} (Picked ${statusMessage})` },
+    { label: 'Destination', value: `${destination?.locationNumber}-${destination?.name}` },
+    { label: 'Expected Shipping Date', value: `${expectedShippingDate}` }
+  ];
+
+  return (
+    <ContentContainer>
+      <ContentHeader>
+        <DetailsTable data={detailsData} />
+      </ContentHeader>
+      <ContentBody>
+        {pickList?.picklistItems && pickList?.picklistItems?.length > 0 && (
+          <PickOrderItem
+            pickList={pickList}
+            pickListItem={pickList?.picklistItems[initialPicklistItemIndex]}
+            selectedPinkItemIndex={initialPicklistItemIndex}
+            successfulPickCallback={() => getOrderDetails()}
+          />
+        )}
+      </ContentBody>
+      <ContentFooter fixed>
+        <Button
+          title="Move to Packing"
+          onPress={() =>
+            props.navigation.navigate('PackingLocationPage', {
+              orderId,
+              packingLocation
+            })
+          }
+        />
+      </ContentFooter>
+    </ContentContainer>
+  );
 };
 
-export default connect(null, mapDispatchToProps)(OrderDetails);
+export default OrderDetails;

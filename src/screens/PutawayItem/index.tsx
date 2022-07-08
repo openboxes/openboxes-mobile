@@ -181,7 +181,6 @@ class PutawayItem extends Component<Props, State> {
           </View>
           <Button
             disabled={quantity > item.quantity || Number(quantity) <= 0}
-            style={styles.submitButton}
             title="Create Putaway"
             onPress={this.create}
           />

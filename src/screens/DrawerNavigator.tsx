@@ -5,7 +5,7 @@ import ChooseCurrentLocation from './ChooseCurrentLocation';
 import Dashboard from './Dashboard';
 import Settings from './Settings';
 import { Image } from 'react-native';
-import { colors } from '../constants';
+import { colors, appHeaderHeight } from '../constants';
 
 const Drawer = createDrawerNavigator();
 
@@ -15,7 +15,8 @@ class DrawerNavigator extends Component {
       <Drawer.Navigator
         screenOptions={{
           headerStyle: {
-            backgroundColor: colors.headerColor
+            backgroundColor: colors.headerColor,
+            height: appHeaderHeight
           },
           headerTitleStyle: {
             color: 'white'

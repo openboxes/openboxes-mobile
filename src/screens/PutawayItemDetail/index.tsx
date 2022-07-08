@@ -7,7 +7,8 @@ import InputBox from '../../components/InputBox';
 import { useDispatch } from 'react-redux';
 import { submitPutawayItem } from '../../redux/actions/putaways';
 import Button from '../../components/Button';
-import LabledData from "../../components/LabeledData";
+import DetailsTable from "../../components/DetailsTable";
+import {Props as LabeledDataType} from "../../components/LabeledData/types";
 
 const PutawayItemDetail = () => {
   const route = useRoute();
@@ -112,26 +113,20 @@ const PutawayItemDetail = () => {
     setState({...state, scannedPutawayLocation: text});
   };
 
+  const detailsData: LabeledDataType[] = [
+    { label: 'Putaway Identifier', value: state.putAway?.putawayNumber },
+    { label: 'Quantity to Putaway', value: state.putAwayItem?.quantity.toString() },
+    { label: 'Product Code', value: state.putAwayItem?.['product.productCode'] },
+    { label: 'Product Name', value: state.putAwayItem?.['product.name'] },
+    { label: 'Lot Number', value: state.putAwayItem?.['inventoryItem.lotNumber'], defaultValue: "Default" },
+    { label: 'Expiry Date', value: state.putAwayItem?.['inventoryItem.expiryDate'], defaultValue: "Never" },
+    { label: 'Current Location', value: state.putAwayItem?.['currentLocation.name'], defaultValue: "Default" },
+    { label: 'Putaway Location', value: state.putAwayItem?.['putawayLocation.name'], defaultValue: "Default" },
+  ];
+
   return (
     <ScrollView>
-      <View style={styles.contentContainer}>
-        <View style={styles.rowItem}>
-          <LabledData label="Putaway Identifier" data={state.putAway?.putawayNumber} />
-          <LabledData label="Quantity to Putaway" data={state.putAwayItem?.quantity.toString()} />
-        </View>
-        <View style={styles.rowItem}>
-          <LabledData label="Product Code" data={state.putAwayItem?.['product.productCode']} />
-          <LabledData label="Product Name" data={state.putAwayItem?.['product.name']} />
-        </View>
-        <View style={styles.rowItem}>
-          <LabledData label="Lot Number" data={state.putAwayItem?.['inventoryItem.lotNumber']} defaultValue='Default' />
-          <LabledData label="Expiry Date" data={state.putAwayItem?.['inventoryItem.expiryDate']} defaultValue='Never' />
-        </View>
-        <View style={styles.rowItem}>
-          <LabledData label="Current Location" data={state.putAwayItem?.['currentLocation.name']} defaultValue="Default"/>
-          <LabledData label="Putaway Location" data={state.putAwayItem?.['putawayLocation.name']} defaultValue="Default"/>
-        </View>
-      </View>
+      <DetailsTable style={{ margin: 10 }} data={detailsData} />
       <View style={styles.contentContainer}>
         <View style={styles.from}>
           <InputBox
