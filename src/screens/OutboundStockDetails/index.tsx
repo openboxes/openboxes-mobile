@@ -1,7 +1,6 @@
 import { DispatchProps, Props, State } from './types';
 import React from 'react';
 import { ScrollView, Text, View } from 'react-native';
-import { Card, Title, Paragraph } from 'react-native-paper';
 import { connect } from 'react-redux';
 import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
 import { RootState } from '../../redux/reducers';
@@ -10,6 +9,10 @@ import { getShipment } from '../../redux/actions/packing';
 import OutboundVMMapper from './OutboubVmMapper';
 import ContainerDetails from './ContainerDetails';
 import Button from '../../components/Button';
+import InputBox from '../../components/InputBox';
+import ShipmentItems from '../../data/inbound/ShipmentItems';
+import { Container } from '../../data/container/Shipment';
+import showPopup from '../../components/Popup';
 
 // Shipment packing (Packing Order Details)
 class OutboundStockDetails extends React.Component<Props, State> {
@@ -18,7 +21,8 @@ class OutboundStockDetails extends React.Component<Props, State> {
     this.state = {
       error: null,
       shipment: null,
-      shipmentData: null
+      shipmentData: null,
+      scannedValue: ''
     };
   }
 
@@ -48,6 +52,78 @@ class OutboundStockDetails extends React.Component<Props, State> {
     };
     this.props.showScreenLoading('Loading..');
     this.props.getShipment(shipmentId, actionCallback);
+  };
+
+  onScan = (value: string) => {
+    this.setState({ scannedValue: value }, () => {
+      if (value) {
+        const matchingLotNumberOrProduct = this.findMatchingLotNumberOrProduct(value);
+        if (matchingLotNumberOrProduct) {
+          this.setState({ scannedValue: '' }, () => {
+            this.showOrderDetailsScreen(matchingLotNumberOrProduct);
+          });
+          return;
+        }
+
+        const matchingContainer = this.findMatchingContainer(value);
+        if (matchingContainer) {
+          this.setState({ scannedValue: '' }, () => {
+            this.showLPNDetailsScreen(matchingContainer, this.state.shipment?.shipmentNumber);
+          });
+          return;
+        }
+      }
+    });
+  };
+
+  onScanEnd = (value: string) => {
+    if (value) {
+      const matchingLotNumberOrProduct = this.findMatchingLotNumberOrProduct(value);
+      if (matchingLotNumberOrProduct) {
+        this.showOrderDetailsScreen(matchingLotNumberOrProduct);
+        return;
+      }
+      const matchingContainer = this.findMatchingContainer(value);
+      if (matchingContainer) {
+        this.showLPNDetailsScreen(matchingContainer, this.state.shipment?.shipmentNumber);
+        return;
+      }
+      showPopup({
+        message: `Unable to locate a product, item, or container with identifier: ${value}`
+      });
+      this.setState({ scannedValue: '' });
+    }
+  };
+
+  findMatchingLotNumberOrProduct = (input: string) => {
+    const searchTerm = input.toLowerCase();
+    return this.state.shipment?.shipmentItems?.find(
+      (item: ShipmentItems) =>
+        item.lotNumber?.toLowerCase().includes(searchTerm) ||
+        item.inventoryItem?.product?.productCode?.toLowerCase()?.includes(searchTerm)
+    );
+  };
+
+  findMatchingContainer = (input: string) => {
+    const searchTerm = input.toLowerCase();
+    return this.state.shipment?.availableContainers?.find(
+      (container: Container) =>
+        container.containerNumber?.toLowerCase()?.includes(searchTerm) ||
+        container?.name?.toLowerCase().includes(searchTerm)
+    );
+  };
+
+  showOrderDetailsScreen = (item: any) => {
+    this.props.navigation.navigate('ShipmentDetails', {
+      item: item
+    });
+  };
+
+  showLPNDetailsScreen = (container: Container, shipmentNumber: string | undefined) => {
+    this.props.navigation.navigate('LpnDetail', {
+      id: container?.id,
+      shipmentNumber: shipmentNumber
+    });
   };
 
   render() {
@@ -90,6 +166,15 @@ class OutboundStockDetails extends React.Component<Props, State> {
               </View>
             </View>
           </View>
+          <InputBox
+            style={styles.scanSearch}
+            value={this.state.scannedValue}
+            disabled={false}
+            editable={false}
+            label={'Search'}
+            onChange={this.onScan}
+            onEndEdit={this.onScanEnd}
+          />
           <ContainerDetails item={this.state.shipmentData?.sectionData ?? []} />
         </ScrollView>
         <View style={styles.buttonBar}>
