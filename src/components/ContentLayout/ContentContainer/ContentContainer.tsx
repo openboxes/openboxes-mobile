@@ -15,11 +15,11 @@ const ContentContainer: React.FC<Props> = (props) => {
   return (
     <View {...otherProps} style={[style, styles.container]}>
       {header?.props?.fixed ? header : null}
-      <ScrollView style={{ flex: 1 }}>
-        {header?.props?.fixed ? null : header}
-        {body}
-        {footer?.props?.fixed ? null : footer}
-      </ScrollView>
+          <ScrollView contentContainerStyle={styles.scrollContentContainer}>
+            {header?.props?.fixed ? null : header}
+            {body}
+            {footer?.props?.fixed ? null : footer}
+          </ScrollView>
       {footer?.props?.fixed ? footer : null}
     </View>
   );

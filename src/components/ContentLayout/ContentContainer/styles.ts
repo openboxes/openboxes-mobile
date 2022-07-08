@@ -1,5 +1,4 @@
 import { StyleSheet } from 'react-native';
-import { device, appHeaderHeight } from '../../../constants';
 
 const containerMargin = 10;
 
@@ -8,6 +7,11 @@ export default StyleSheet.create({
     margin: containerMargin,
     display: 'flex',
     flexDirection: 'column',
-    minHeight: device.windowHeight - appHeaderHeight - 2 * containerMargin
+    flex: 1
+  },
+  scrollContentContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    flexGrow: 1
   }
 });

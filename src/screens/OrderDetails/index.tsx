@@ -125,7 +125,6 @@ const OrderDetails: React.FC<Props> = (props) => {
       </ContentBody>
       <ContentFooter fixed>
         <Button
-          style={{ marginBottom: 20 }}
           title="Move to Packing"
           onPress={() =>
             props.navigation.navigate('PackingLocationPage', {

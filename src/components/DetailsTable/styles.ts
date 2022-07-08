@@ -5,10 +5,6 @@ export default StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     flexWrap: 'wrap'
-  },
-  col50: {
-    width: '50%',
-    marginBottom: 10
   }
 });
 
