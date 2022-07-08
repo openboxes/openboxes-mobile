@@ -4,7 +4,8 @@ import { OutboundVM } from './OutboundVM';
 export interface State {
   error: string | null;
   shipment: Shipment | null;
-  shipmentData: OutboundVM | null;
+  shipmentData?: OutboundVM | null; // for packing details only | not required for loading details and load LPM
+  scannedContainer?: string
 }
 
 export interface OwnProps {
@@ -21,7 +22,7 @@ export interface StateProps {
 export interface DispatchProps {
   showScreenLoading: (message?: string) => void;
   hideScreenLoading: () => void;
-  getShipmentReadyToBePacked: (
+  getShipment: (
     id: string,
     callback: (data: any) => void
   ) => void;

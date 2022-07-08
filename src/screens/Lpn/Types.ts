@@ -6,13 +6,12 @@ export interface OwnProps {
 }
 
 export interface StateProps {
-  //no-op
+  selectedLocation: any;
   currentLocation?: Location | null;
 }
 
 export interface DispatchProps {
   getShipmentOrigin: (id: string, callback: (data: any) => void) => void;
-  getShipmentPacking: (id: any, callback: (data: any) => void) => void;
   saveAndUpdateLpn: (requestBody: any, callback: (data: any) => void) => void;
 }
 

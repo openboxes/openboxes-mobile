@@ -199,5 +199,9 @@ export default StyleSheet.create({
     height: 25,
     marginHorizontal: 10,
     alignItems: 'center'
-  }
+  },
+  scanSearch: {
+    marginHorizontal: 8,
+    backgroundColor: 'white'
+  },
 });

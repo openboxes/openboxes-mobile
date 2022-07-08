@@ -4,7 +4,6 @@ import { Container } from '../../data/container/Container';
 import { FlatList, ListRenderItemInfo, ScrollView, Text, Image, TouchableOpacity, View } from 'react-native';
 import { ContainerShipmentItem } from '../../data/container/ContainerShipmentItem';
 import { fetchContainer, getContainer, updateContainerStatus } from '../../redux/actions/lpn';
-import { getShipmentPacking } from '../../redux/actions/packing';
 import { connect } from 'react-redux';
 import styles from './styles';
 import Button from '../../components/Button';
@@ -51,7 +50,7 @@ class LpnDetail extends React.Component<Props, State> {
           positiveButton: {
             text: 'Retry',
             callback: () => {
-              this.props.updateContainerStatus(id, status, actionCallback);
+              this.props.updateContainerStatus(id, { status }, actionCallback);
             }
           },
           negativeButtonText: 'Cancel'
@@ -61,7 +60,7 @@ class LpnDetail extends React.Component<Props, State> {
       }
     };
 
-    this.props.updateContainerStatus(id, status, actionCallback);
+    this.props.updateContainerStatus(id, { status }, actionCallback);
   };
 
   getContainerDetails = (id: string, openModal: boolean) => {
@@ -225,7 +224,6 @@ class LpnDetail extends React.Component<Props, State> {
 
 const mapDispatchToProps: DispatchProps = {
   fetchContainer,
-  getShipmentPacking,
   getContainer,
   updateContainerStatus
 };

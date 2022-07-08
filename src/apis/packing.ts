@@ -6,11 +6,7 @@ export function getShipmentsReadyToBePacked(locationId: string, shipmentStatusCo
   );
 }
 
-export function getShipmentReadyToBePacked(id: string) {
-  return apiClient.get('/shipments/' + id);
-}
-
-export function getShipmentPacking(id: string) {
+export function getShipment(id: string) {
   return apiClient.get(`/shipments/${id}`);
 }
 

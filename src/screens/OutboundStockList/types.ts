@@ -12,7 +12,6 @@ export interface OwnProps {
 }
 
 export interface StateProps {
-  outboundStockList: any;
   currentLocation: any;
 }
 

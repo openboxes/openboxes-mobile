@@ -10,11 +10,10 @@ export interface StateProps {
 
 export interface DispatchProps {
   fetchContainer: (id: string, callback: (data: any) => void) => void;
-  getShipmentPacking: (id: string, callback: (data: any) => void) => void;
   getContainer: (id: string, callback: (data: any) => void) => void;
   updateContainerStatus: (
     id: string,
-    status: any,
+    requestBody: any,
     callback: (data: any) => void
   ) => void;
 }

@@ -16,6 +16,7 @@ import _ from 'lodash';
 import ShipmentItems from '../../data/inbound/ShipmentItems';
 import { Container } from '../../data/container/Container';
 
+// List of shipments ready for packing
 class OutboundStockList extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
@@ -76,7 +77,10 @@ class OutboundStockList extends React.Component<Props, State> {
           shipment?.availableContainers,
           (container) => container.containerNumber === searchTerm
         );
-        return matchingShipmentNumber || matchingContainer;
+        const matchingPackingLocation =
+          shipment?.packingStatusDetails?.packingLocation?.locationNumber?.toLowerCase() === searchTerm.toLowerCase() ||
+          shipment?.packingStatusDetails?.packingLocation?.name?.toLowerCase() === searchTerm.toLowerCase();
+        return matchingShipmentNumber || matchingContainer || matchingPackingLocation;
       });
 
       if (exactOutboundOrder) {
@@ -100,9 +104,22 @@ class OutboundStockList extends React.Component<Props, State> {
             return matchingLotNumber || matchingCode || matchingName;
           });
 
+          const matchingPackingLocation =
+            shipment?.packingStatusDetails?.packingLocation?.locationNumber?.toLowerCase()?.includes(searchTerm.toLowerCase()) ||
+            shipment?.packingStatusDetails?.packingLocation?.name?.toLowerCase()?.includes(searchTerm.toLowerCase());
+
           // Return as bool
-          return !!(matchingShipmentNumber || matchingContainer || matchingLotNumberOrProduct);
+          return !!(matchingShipmentNumber || matchingContainer || matchingLotNumberOrProduct || matchingPackingLocation);
         });
+
+        if (filteredShipments?.length === 0) {
+          showPopup({
+            message: `No shipment associated with the given identifier: ${searchTerm}`,
+          });
+          this.resetFiltering();
+          return;
+        }
+
         this.setState({
           ...this.state,
           filteredShipments
@@ -127,7 +144,7 @@ class OutboundStockList extends React.Component<Props, State> {
       <View style={styles.screenContainer}>
         <BarcodeSearchHeader
           autoSearch
-          placeholder={'Order or Container Number'}
+          placeholder={'Search or scan barcode'}
           resetSearch={this.resetFiltering}
           searchBox={false}
           onSearchTermSubmit={this.filterShipments}
@@ -167,7 +184,7 @@ class OutboundStockList extends React.Component<Props, State> {
                   <View style={styles.row}>
                     <View style={styles.col50}>
                       <Text style={styles.label}>Packing Location</Text>
-                      <Text style={styles.value}>{shipment.item.packingLocation?.name ?? 'Unassigned'}</Text>
+                      <Text style={styles.value}>{shipment.item.packingLocation ?? 'Unassigned'}</Text>
                     </View>
                     <View style={styles.col50}>
                       <Text style={styles.label}>Items Packed</Text>

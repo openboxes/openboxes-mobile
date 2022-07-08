@@ -13,10 +13,10 @@ export function saveAndUpdateLpn(
   requestBody: any,
   callback: (data: any) => void,
 ) {
-  console.log('action OK saveAndUpdateLpn');
+
   return {
     type: SAVE_OR_UPDATE_LPN,
-    payload: {requestBody},
+    payload: { requestBody },
     callback,
   };
 }
@@ -24,7 +24,7 @@ export function saveAndUpdateLpn(
 export function fetchContainer(id: string, callback: (data: any) => void) {
     return {
         type: FETCH_CONTAINER_DETAIL,
-        payload: {id},
+        payload: { id },
         callback,
   };
 }
@@ -32,19 +32,19 @@ export function fetchContainer(id: string, callback: (data: any) => void) {
 export function getContainer(id: string, callback: (data: any) => void) {
     return {
         type: GET_CONTAINER_DETAIL,
-        payload: {id},
+        payload: { id },
         callback,
   };
 }
 
 export function updateContainerStatus(
     id: string,
-    status: any,
+    requestBody: any,
     callback: (data: any) => void,
 ) {
     return {
         type: GET_CONTAINER_STATUS_DETAIL,
-        payload: {id, status},
+        payload: { id, requestBody },
         callback
     }
 }
