@@ -5,7 +5,8 @@ export interface State {
   error: string | null;
   shipment: Shipment | null;
   shipmentData?: OutboundVM | null; // for packing details only | not required for loading details and load LPM
-  scannedContainer?: string
+  scannedContainer?: string;
+  scannedValue?: string;
 }
 
 export interface OwnProps {
