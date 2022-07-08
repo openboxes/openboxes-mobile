@@ -1,8 +1,7 @@
-/* eslint-disable complexity */
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styles from './styles';
-import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Image, ScrollView, TouchableOpacity, View } from 'react-native';
 import DatePicker from 'react-native-datepicker';
 import InputBox from '../../components/InputBox';
 import Button from '../../components/Button';
@@ -16,7 +15,8 @@ import InputSpinner from '../../components/InputSpinner';
 import Radio from '../../components/Radio';
 import CLEAR from '../../assets/images/icon_clear.png';
 import SelectDropdown from 'react-native-select-dropdown';
-import LabeledData from '../../components/LabeledData';
+import { Props as LabeledDataType } from '../../components/LabeledData/types';
+import DetailsTable from "../../components/DetailsTable";
 
 const renderIcon = () => {
   return <Image style={styles.arrowDownIcon} source={require('../../assets/images/arrow-down.png')} />;
@@ -184,28 +184,16 @@ const InboundReceiveDetail = () => {
     }
   };
 
-  const RenderShipmentItem = (): JSX.Element => {
-    return (
-      <View style={styles.itemView}>
-        <View style={styles.rowItem}>
-          <LabeledData label="Shipment Number" value={shipmentData?.shipmentNumber} />
-          <LabeledData label="Description" value={shipmentData?.name} />
-        </View>
-        <View style={styles.rowItem}>
-          <LabeledData label="Product Code" value={shipmentItem['product.productCode']} />
-          <LabeledData label="Name" value={shipmentItem['product.name']} />
-        </View>
-        <View style={styles.rowItem}>
-          <LabeledData label="Lot / Serial Number" value={shipmentItem.lotNumber ?? 'Default'} />
-          <LabeledData label="Expiration Date" value={shipmentItem.expirationDate ?? 'Never'} />
-        </View>
-        <View style={styles.rowItem}>
-          <LabeledData label="Quantity Shipped" value={shipmentItem.quantityShipped} />
-          <LabeledData label="Quantity Received" value={shipmentItem.quantityReceived} />
-        </View>
-      </View>
-    );
-  };
+  const detailsData: LabeledDataType[] = [
+    { label: 'Shipment Number', value: shipmentData?.shipmentNumber },
+    { label: 'Description', value: shipmentData?.name },
+    { label: 'Product Code', value: shipmentItem['product.productCode'] },
+    { label: 'Name', value: shipmentItem['product.name'] },
+    { label: 'Lot / Serial Number', value: shipmentItem.lotNumber, defaultValue: 'Default' },
+    { label: 'Expiration Date', value: shipmentItem.expirationDate, defaultValue: 'Never' },
+    { label: 'Quantity Shipped', value: shipmentItem.quantityShipped },
+    { label: 'Quantity Received', value: shipmentItem.quantityReceived }
+  ];
 
   const getInternalLocation = (id: string = '') => {
     const callback = (data: any) => {
@@ -261,7 +249,7 @@ const InboundReceiveDetail = () => {
 
   return (
     <ScrollView keyboardShouldPersistTaps="always" style={styles.container}>
-      <RenderShipmentItem />
+      <DetailsTable data={detailsData} />
       <View style={styles.from}>
         <AsyncModalSelect
           placeholder="Receiving Location"
