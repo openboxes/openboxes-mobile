@@ -171,7 +171,7 @@ class OutboundStockDetails extends React.Component<Props, State> {
             value={this.state.scannedValue}
             disabled={false}
             editable={false}
-            label={'Scan IBLPN, product code or OBLPN'}
+            label={'Search'}
             onChange={this.onScan}
             onEndEdit={this.onScanEnd}
           />
