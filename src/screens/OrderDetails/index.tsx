@@ -42,7 +42,9 @@ const OrderDetails: React.FC<Props> = (props) => {
         return;
       }
 
-      if (getInitiallyDisplayedPickItemIndex(data?.picklistItems) === -1) {
+      const initialPicklistItemIndex = getInitiallyDisplayedPickItemIndex(data?.picklistItems);
+
+      if (initialPicklistItemIndex === -1) {
         Alert.alert(
           'All items are picked',
           'What do you want to do now?',
