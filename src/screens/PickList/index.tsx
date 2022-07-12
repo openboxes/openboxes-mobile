@@ -163,7 +163,7 @@ const PickOrderItem = (props: any) => {
   return (
     <View style={styles.screenContainer}>
         <Carousel
-          key={3}
+          key={props.selectedPinkItemIndex}
           sliderWidth={device.windowWidth}
           sliderHeight={device.windowHeight}
           activeSlideAlignment="start"
@@ -171,6 +171,7 @@ const PickOrderItem = (props: any) => {
           data={picklistItems}
           firstItem={props.selectedPinkItemIndex ? props.selectedPinkItemIndex : 0}
           scrollEnabled={true}
+          useScrollView={true}
           pointerEvents={'none'}
           lockScrollWhileSnapping
           renderItem={({item, index}: ListRenderItemInfo<PicklistItem>) => {
