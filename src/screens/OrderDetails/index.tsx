@@ -122,7 +122,6 @@ const OrderDetails: React.FC<Props> = (props) => {
         {!_.isEmpty(pickListItems) && (
           <PickOrderItem
             picklistItems={pickListItems}
-            setPicklistItems={setPickListItems}
             selectedPicklistItemIndex={initialPicklistItemIndex}
             successfulPickCallback={getOrderDetails}
           />

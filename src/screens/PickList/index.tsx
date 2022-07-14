@@ -1,40 +1,19 @@
-import React, { useState } from 'react';
-import produce from 'immer';
-import _ from 'lodash';
+import React from 'react';
 import styles from './styles';
-import { ListRenderItemInfo, Text, View, ToastAndroid, TouchableOpacity } from 'react-native';
+import { ListRenderItemInfo, View, ToastAndroid } from 'react-native';
 import { useDispatch } from 'react-redux';
 import showPopup from '../../components/Popup';
 import { submitPickListItem } from '../../redux/actions/orders';
-import Button from '../../components/Button';
-import InputBox from '../../components/InputBox';
 import Carousel from 'react-native-snap-carousel';
-import { colors, device } from '../../constants';
+import { device } from '../../constants';
 import { PicklistItem } from '../../data/picklist/PicklistItem';
-import InputSpinner from '../../components/InputSpinner';
-import { Card } from 'react-native-paper';
-import SCAN from '../../assets/images/scan.jpg';
-import TICK from '../../assets/images/tick.png';
-import CLEAR from '../../assets/images/icon_clear.png';
-import Radio from '../../components/Radio';
-import DropDown from 'react-native-paper-dropdown';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
-// TODO: Refactor (pull from api, when shortage reason codes will be available)
-const SHORTAGE_REASON_CODES = [
-  { value: 'INSUFFICIENT_QUANTITY_AVAILABLE', label: 'Insufficient quantity in location' },
-  { value: 'DIFFERENT_LOCATION', label: 'Wrong item in location' },
-  { value: 'DAMAGED', label: 'Damaged inventory in location' }
-];
+import PickListItem from "../../components/PickListItem";
 
-const PickOrderItem = ({ picklistItems, setPicklistItems, selectedPicklistItemIndex, successfulPickCallback }: any) => {
+const PickOrderItem = ({ picklistItems, selectedPicklistItemIndex, successfulPickCallback }: any) => {
   const dispatch = useDispatch();
 
-  const [showDropDown, setShowDropDown] = useState<boolean>(false);
-
-  const formSubmit = (id: string) => {
-    const itemToSave = _.find(picklistItems, (item) => item.id === id);
-
+  const formSubmit = (itemToSave: any) => {
     try {
       let errorTitle = '';
       let errorMessage = '';
@@ -107,58 +86,12 @@ const PickOrderItem = ({ picklistItems, setPicklistItems, selectedPicklistItemIn
     }
   };
 
-  const setPicklistItemsHelper = (value: string | number | boolean, index: number, property: string) => {
-    setPicklistItems(
-      produce((draft: any) => {
-        const item = draft.find((item: any, draftIndex: number) => draftIndex === index);
-        item[property] = value;
-      })
-    );
-  };
-
-  const setPicklistItemsQuantityHelper = (quantity: number, quantityRemaining: number, index: number) => {
-    setPicklistItems(
-      produce((draft: any) => {
-        const item = draft.find((item: any, draftIndex: number) => draftIndex === index);
-        item.quantityToPick = quantity;
-        if (quantity === quantityRemaining) {
-          item.shortage = false;
-          item.shortageReasonCode = '';
-        }
-      })
-    );
-  };
-
   const isPropertyValid = (item: any, property: string, scannedProperty: string) => {
     if (!item[property] && !item[scannedProperty]) {
       return true;
     }
 
     return item[property] === item[scannedProperty];
-  };
-
-  const getIcon = (item: any, property: string, scannedProperty: string) => {
-    const isScannedPropertyValid = isPropertyValid(item, property, scannedProperty);
-
-    if ((!item[property] && !item[scannedProperty]) || isScannedPropertyValid) {
-      return TICK;
-    }
-
-    if (!item[scannedProperty]) {
-      return SCAN;
-    }
-
-    return CLEAR;
-  };
-
-  const showShortageInfo = (item: PicklistItem) => {
-    showPopup({
-      title: 'Shortage Details',
-      message: `Shortage Quantity: ${item?.quantityCanceled ?? 0}\nReason: ${
-        item?.reasonCodeMessage ?? 'None'
-      }\nPicker: ${item?.picker?.name ?? 'Unassigned'}`,
-      positiveButton: { text: 'Ok' }
-    });
   };
 
   return (
@@ -175,179 +108,8 @@ const PickOrderItem = ({ picklistItems, setPicklistItems, selectedPicklistItemIn
         sliderHeight={device.windowHeight}
         pointerEvents={'none'}
         activeSlideAlignment="start"
-        renderItem={({ item, index }: ListRenderItemInfo<PicklistItem>) => {
-          return (
-            <Card key={index} style={styles.card}>
-              <Card.Title
-                title={<Text>Pick Task ({item?.indexString ?? ''}) </Text>}
-                subtitle={<Text>{item?.pickTypeClassification ?? ''}</Text>}
-                right={(props) => (
-                  <Text style={styles.status} {...props}>
-                    {item?.statusMessage ?? ''}
-                  </Text>
-                )}
-                style={styles.cardTitle}
-                titleStyle={styles.cardTitleString}
-              />
-              <Card.Content>
-                <View style={styles.inputContainer}>
-                  <View style={styles.listItemContainer}>
-                    <View style={styles.row}>
-                      <View style={styles.col33}>
-                        <Text style={styles.label}>Product Code</Text>
-                        <Text style={styles.value}>{item?.productCode}</Text>
-                      </View>
-                      <View style={styles.col33}>
-                        <Text style={styles.label}>Product Name</Text>
-                        <Text style={styles.value}>{item?.['product.name']}</Text>
-                      </View>
-                      <View style={styles.col33}>
-                        <Text style={styles.label}>Lot Number</Text>
-                        <Text style={styles.value}>{item?.lotNumber ?? 'Default'}</Text>
-                      </View>
-                    </View>
-                  </View>
-                  <View>
-                    <InputBox
-                      editable
-                      value={item.scannedLotNumber}
-                      placeholder={item.lotNumber || 'Lot Number'}
-                      label={item.lotNumber || 'Lot Number'}
-                      disabled={false}
-                      icon={getIcon(item, 'lotNumber', 'scannedLotNumber')}
-                      onEndEdit={(value: any) => setPicklistItemsHelper(value, index, 'scannedLotNumber')}
-                      onChange={(value: any) => setPicklistItemsHelper(value, index, 'scannedLotNumber')}
-                      onIconClick={() => {
-                        if (item.scannedLotNumber && !isPropertyValid(item, 'lotNumber', 'scannedLotNumber')) {
-                          setPicklistItemsHelper('', index, 'scannedLotNumber');
-                          return;
-                        }
-                        showPopup({
-                          message: `Scan lot number. Expected: ${
-                            item.lotNumber || 'DEFAULT (empty)'
-                          }.\n\nTo validate lot number click on this field and scan lot number.`,
-                          positiveButton: {
-                            text: 'Ok'
-                          }
-                        });
-                      }}
-                    />
-                  </View>
-                  <View>
-                    <View style={styles.row}>
-                      <View style={styles.col33}>
-                        <Text style={styles.label}>Location</Text>
-                        <Text style={styles.value}>{item?.['binLocation.name'] ?? 'Default'}</Text>
-                      </View>
-                      <View style={styles.col33}>
-                        <Text style={styles.label}>Type</Text>
-                        <Text style={styles.value}>{item?.['binLocation.locationType'] ?? 'None'}</Text>
-                      </View>
-                      <View style={styles.col33}>
-                        <Text style={styles.label}>Zone</Text>
-                        <Text style={styles.value}>{item?.['binLocation.zoneName'] ?? 'None'}</Text>
-                      </View>
-                    </View>
-                    <InputBox
-                      editable
-                      value={item.scannedBinLocation}
-                      placeholder={item['binLocation.locationNumber'] || 'Default'}
-                      label={item['binLocation.locationNumber'] || 'Bin Location'}
-                      disabled={false}
-                      icon={getIcon(item, 'binLocation.locationNumber', 'scannedBinLocation')}
-                      onEndEdit={(value: any) => setPicklistItemsHelper(value, index, 'scannedBinLocation')}
-                      onChange={(value: any) => setPicklistItemsHelper(value, index, 'scannedBinLocation')}
-                      onIconClick={() => {
-                        if (
-                          item.scannedBinLocation &&
-                          !isPropertyValid(item, 'binLocation.locationNumber', 'scannedBinLocation')
-                        ) {
-                          setPicklistItemsHelper('', index, 'scannedBinLocation');
-                          return;
-                        }
-                        showPopup({
-                          message: `Scan bin location. Expected: ${
-                            item['binLocation.locationNumber'] || 'DEFAULT (empty)'
-                          }.\n\nTo validate bin location click on this field and scan bin location.`,
-                          positiveButton: {
-                            text: 'Ok'
-                          }
-                        });
-                      }}
-                    />
-
-                    <View style={styles.row}>
-                      <View style={styles.col33}>
-                        <Text style={styles.label}>Picked</Text>
-                        <Text style={styles.value}>
-                          {item?.quantityPicked} / {item?.quantity}{' '}
-                          {/* quantity is the "quantity required" for the picklist item */}
-                        </Text>
-                      </View>
-                      <View style={styles.col33}>
-                        <Text style={styles.label}>Remaining</Text>
-                        <Text style={styles.value}>{item?.quantityRemaining}</Text>
-                      </View>
-                      {item?.shortage && (
-                        <View style={styles.col33}>
-                          <Text style={styles.label}>Status</Text>
-                          <TouchableOpacity onPress={() => showShortageInfo(item)}>
-                            <View>
-                              <Text style={styles.value}>
-                                <FontAwesome5
-                                  name="exclamation-triangle"
-                                  size={10}
-                                  color={colors.headerColor}
-                                  style={styles.infoButton}
-                                />
-                                &nbsp;Shortage
-                              </Text>
-                            </View>
-                          </TouchableOpacity>
-                        </View>
-                      )}
-                      {!item.shortage && (
-                        <View style={styles.col33}>
-                          <Text style={styles.label}>Picked by</Text>
-                          <Text style={styles.value}>{item?.picker?.name ?? 'Unassigned'}</Text>
-                        </View>
-                      )}
-                    </View>
-
-                    <View style={styles.inputSpinner}>
-                      <InputSpinner
-                        title={'Quantity to Pick'}
-                        setValue={(value: any) =>
-                          setPicklistItemsQuantityHelper(parseInt(value), item?.quantityRemaining, index)
-                        }
-                        value={item.quantityToPick}
-                      />
-                    </View>
-                    {item.quantityToPick < item.quantityRemaining && (
-                      <Radio
-                        title={'Shortage (not enough quantity to pick)'}
-                        setChecked={(value: any) => setPicklistItemsHelper(value, index, 'shortage')}
-                        checked={item.shortage}
-                      />
-                    )}
-                    {item.quantityToPick < item.quantityRemaining && item.shortage && (
-                      <DropDown
-                        label="Shortage Reason Code"
-                        mode="outlined"
-                        visible={showDropDown}
-                        showDropDown={() => setShowDropDown(true)}
-                        value={item.shortageReasonCode}
-                        setValue={(value: any) => setPicklistItemsHelper(value, index, 'shortageReasonCode')}
-                        list={SHORTAGE_REASON_CODES}
-                        onDismiss={() => setShowDropDown(false)}
-                      />
-                    )}
-                    <Button title="Pick Item" disabled={!item?.quantityRemaining} onPress={() => formSubmit(item.id)} />
-                  </View>
-                </View>
-              </Card.Content>
-            </Card>
-          );
+        renderItem={({ item }: ListRenderItemInfo<PicklistItem>) => {
+          return <PickListItem item={item} onPickItem={formSubmit} />;
         }}
       />
     </View>
