@@ -4,15 +4,15 @@ import InventoryItem from './InventoryItem';
 
 export interface PicklistItem {
   id: string | '';
-  status: String;
-  productCode: String;
+  status: string;
+  productCode: string;
   product: Product;
-  lotNumber: String;
+  lotNumber: string;
   expirationDate: Date;
   quantityPicked: number;
   quantityRequired: number;
-  reasonCode: String;
-  comment: String;
+  reasonCode: string;
+  comment: string;
   binLocation: BinLocation | null;
   inventoryItem: InventoryItem | null;
   quantityRequested: number;
@@ -49,7 +49,7 @@ export interface PicklistItem {
   scannedLotNumber?: string | null;
   scannedBinLocation?: string | null;
   shortage?: boolean | null;
-  shortageReasonCode?: String | null;
+  shortageReasonCode?: string | null;
 }
 export interface GetPickListItemsApiResponse {
   data: PicklistItem[];

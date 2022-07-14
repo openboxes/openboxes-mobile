@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux';
 
 import { Props } from './types';
 import PickList from '../../data/picklist/PickList';
+import { PicklistItem } from '../../data/picklist/PicklistItem';
 import { Props as LabeledDataType } from '../../components/LabeledData/types';
 
 import { showScreenLoading, hideScreenLoading } from '../../redux/actions/main';
@@ -19,6 +20,7 @@ import { orderDetailsVMMapper } from './OrderDetailsVMMapper';
 
 const OrderDetails: React.FC<Props> = (props) => {
   const [pickList, setPickList] = useState<PickList | null>(null);
+  const [pickListItems, setPickListItems] = useState<PicklistItem[]>([]);
   const [initialPicklistItemIndex, setInitialPicklistItemIndex] = useState<number>(0);
 
   const dispatch = useDispatch();
@@ -35,6 +37,7 @@ const OrderDetails: React.FC<Props> = (props) => {
       if (data?.length === 0) {
         dispatch(hideScreenLoading());
         setPickList(null);
+        setPickListItems([]);
         props.navigation.navigate('Orders', {
           refetchOrders: true
         });
@@ -74,13 +77,13 @@ const OrderDetails: React.FC<Props> = (props) => {
           }
         );
       }
-      setPickList({
-        ...data,
-        picklistItems: _.map(data.picklistItems, (item: any) => ({
+      setPickList(data);
+      setPickListItems(
+        _.map(data.picklistItems, (item: any) => ({
           ...item,
           quantityToPick: item.quantityRemaining
         }))
-      });
+      );
       setInitialPicklistItemIndex(initialPicklistItemIndex);
       dispatch(hideScreenLoading());
     };
@@ -116,12 +119,11 @@ const OrderDetails: React.FC<Props> = (props) => {
         <DetailsTable data={detailsData} />
       </ContentHeader>
       <ContentBody>
-        {pickList?.picklistItems && pickList?.picklistItems?.length > 0 && (
+        {!_.isEmpty(pickListItems) && (
           <PickOrderItem
-            pickList={pickList}
-            pickListItem={pickList?.picklistItems[initialPicklistItemIndex]}
-            selectedPinkItemIndex={initialPicklistItemIndex}
-            successfulPickCallback={() => getOrderDetails()}
+            picklistItems={pickListItems}
+            selectedPicklistItemIndex={initialPicklistItemIndex}
+            successfulPickCallback={getOrderDetails}
           />
         )}
       </ContentBody>

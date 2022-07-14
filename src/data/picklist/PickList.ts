@@ -1,6 +1,5 @@
 import Person from './Person';
 import Requisition from './Requisition';
-import { Item } from './Item';
 import { PicklistItem } from './PicklistItem';
 
 interface PickList {
