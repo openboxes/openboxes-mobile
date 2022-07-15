@@ -160,7 +160,9 @@ class OutboundLoadingList extends React.Component<Props, State> {
                     </View>
                     <View style={styles.col50}>
                       <Text style={styles.label}>Status</Text>
-                      <Text style={styles.value}>{shipment.item.requisitionStatus}</Text>
+                      <Text style={styles.value}>
+                        {shipment.item.displayStatus} ({shipment.item.loadingStatusDetails.statusMessage} containers)
+                      </Text>
                     </View>
                   </View>
                   <View style={styles.row}>
@@ -181,12 +183,6 @@ class OutboundLoadingList extends React.Component<Props, State> {
                     <View style={styles.col50}>
                       <Text style={styles.label}>Expected Delivery Date</Text>
                       <Text style={styles.value}>{shipment.item.expectedDeliveryDate}</Text>
-                    </View>
-                  </View>
-                  <View style={styles.row}>
-                    <View style={styles.col50}>
-                      <Text style={styles.label}>Containers Loaded</Text>
-                      <Text style={styles.value}>{shipment.item.loadingStatusDetails.statusMessage}</Text>
                     </View>
                   </View>
                 </Card.Content>

@@ -138,7 +138,7 @@ class OutboundStockDetails extends React.Component<Props, State> {
               </View>
               <View style={styles.col50}>
                 <Text style={styles.label}>Status</Text>
-                <Text style={styles.value}>{this.state.shipment?.requisitionStatus}</Text>
+                <Text style={styles.value}>{this.state.shipment?.displayStatus}</Text>
               </View>
             </View>
             <View style={styles.row}>

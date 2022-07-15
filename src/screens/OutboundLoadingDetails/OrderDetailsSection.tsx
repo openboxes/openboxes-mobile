@@ -16,7 +16,7 @@ const OrderDetailsSection = (props: Props) => (
       </View>
       <View style={styles.col50}>
         <Text style={styles.label}>Status</Text>
-        <Text style={styles.value}>{props?.shipment?.requisitionStatus}</Text>
+        <Text style={styles.value}>{props?.shipment?.displayStatus} ({props?.shipment?.loadingStatusDetails?.statusMessage} containers)</Text>
       </View>
     </View>
     <View style={styles.row}>
@@ -37,12 +37,6 @@ const OrderDetailsSection = (props: Props) => (
       <View style={styles.col50}>
         <Text style={styles.label}>Expected Delivery Date</Text>
         <Text style={styles.value}>{props?.shipment?.expectedDeliveryDate}</Text>
-      </View>
-    </View>
-    <View style={styles.row}>
-      <View style={styles.col50}>
-        <Text style={styles.label}>Containers Loaded</Text>
-        <Text style={styles.value}>{props?.shipment?.loadingStatusDetails?.statusMessage}</Text>
       </View>
     </View>
   </View>
