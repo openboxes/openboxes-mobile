@@ -13,7 +13,7 @@ import EmptyView from '../../components/EmptyView';
 import SelectDropdown from 'react-native-select-dropdown';
 import { Card } from 'react-native-paper';
 
-const containerStatuses = ['OPEN', 'PACKING', 'PACKED', 'LOADED', 'UNLOADED', 'UNPACKING', 'UNPACKED'];
+const containerStatuses = ['OPEN', 'PACKING', 'PACKED', 'LOADING', 'LOADED', 'MISSING'];
 
 const renderIcon = () => {
   return <Image style={styles.arrowDownIcon} source={require('../../assets/images/arrow-down.png')} />;
