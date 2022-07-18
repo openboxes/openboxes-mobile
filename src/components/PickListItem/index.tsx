@@ -34,17 +34,23 @@ const PickListItem: React.FC<Props> = ({ item, onPickItem }) => {
   const [scannedLotNumber, setScannedLotNumber] = useState<string>('');
   const [scannedBinLocation, setScannedBinLocation] = useState<string>('');
 
-  const getIcon = (item: any, property: string, scannedProperty: string) => {
-    const isScannedPropertyValid = isPropertyValid(item, property, scannedProperty);
+  const isPropertyValid = (itemValue?: string, value?: string) => {
+    if (!itemValue && !value) {
+      return true;
+    }
 
-    if ((!item[property] && !item[scannedProperty]) || isScannedPropertyValid) {
+    return itemValue === value;
+  };
+
+  const getIcon = (value?: string, itemValue?: string) => {
+    const isScannedPropertyValid = isPropertyValid(itemValue, value);
+
+    if ((!itemValue && !value) || isScannedPropertyValid) {
       return TICK;
     }
-
-    if (!item[scannedProperty]) {
+    if (!value) {
       return SCAN;
     }
-
     return CLEAR;
   };
 
@@ -56,14 +62,6 @@ const PickListItem: React.FC<Props> = ({ item, onPickItem }) => {
       }\nPicker: ${item?.picker?.name ?? 'Unassigned'}`,
       positiveButton: { text: 'Ok' }
     });
-  };
-
-  const isPropertyValid = (item: any, property: string, scannedProperty: string) => {
-    if (!item[property] && !item[scannedProperty]) {
-      return true;
-    }
-
-    return item[property] === item[scannedProperty];
   };
 
   return (
@@ -93,15 +91,15 @@ const PickListItem: React.FC<Props> = ({ item, onPickItem }) => {
           <View>
             <InputBox
               editable
-              value={item.scannedLotNumber}
+              value={scannedLotNumber}
               placeholder={item.lotNumber || 'Lot Number'}
               label={item.lotNumber || 'Lot Number'}
               disabled={false}
-              icon={getIcon(item, 'lotNumber', 'scannedLotNumber')}
+              icon={getIcon(scannedLotNumber, item.lotNumber)}
               onEndEdit={setScannedLotNumber}
               onChange={setScannedLotNumber}
               onIconClick={() => {
-                if (item.scannedLotNumber && !isPropertyValid(item, 'lotNumber', 'scannedLotNumber')) {
+                if (scannedLotNumber && !isPropertyValid(scannedLotNumber, item.lotNumber)) {
                   setScannedLotNumber('');
                   return;
                 }
@@ -128,18 +126,15 @@ const PickListItem: React.FC<Props> = ({ item, onPickItem }) => {
             />
             <InputBox
               editable
-              value={item.scannedBinLocation}
+              value={scannedBinLocation}
               placeholder={item['binLocation.locationNumber'] || 'Default'}
               label={item['binLocation.locationNumber'] || 'Bin Location'}
               disabled={false}
-              icon={getIcon(item, 'binLocation.locationNumber', 'scannedBinLocation')}
+              icon={getIcon(scannedBinLocation, item['binLocation.locationNumber'])}
               onEndEdit={setScannedBinLocation}
               onChange={setScannedBinLocation}
               onIconClick={() => {
-                if (
-                  item.scannedBinLocation &&
-                  !isPropertyValid(item, 'binLocation.locationNumber', 'scannedBinLocation')
-                ) {
+                if (scannedBinLocation && !isPropertyValid(scannedBinLocation, item['binLocation.locationNumber'])) {
                   setScannedBinLocation('');
                   return;
                 }
