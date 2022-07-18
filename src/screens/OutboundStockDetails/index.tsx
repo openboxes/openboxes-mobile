@@ -100,6 +100,7 @@ class OutboundStockDetails extends React.Component<Props, State> {
     return this.state.shipment?.shipmentItems?.find(
       (item: ShipmentItems) =>
         item.inventoryItem?.lotNumber?.toLowerCase().includes(searchTerm) ||
+        item.lotNumber?.toLowerCase().includes(searchTerm) ||
         item.inventoryItem?.product?.productCode?.toLowerCase()?.includes(searchTerm)
     );
   };

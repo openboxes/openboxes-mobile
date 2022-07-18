@@ -96,7 +96,8 @@ class OutboundStockList extends React.Component<Props, State> {
           );
 
           const matchingLotNumberOrProduct = _.find(shipment?.shipmentItems, (item: ShipmentItems) => {
-            const matchingLotNumber = item.lotNumber?.toLowerCase()?.includes(searchTerm.toLowerCase());
+            const matchingLotNumber = item.lotNumber?.toLowerCase()?.includes(searchTerm.toLowerCase()) ||
+                item.inventoryItem?.lotNumber?.toLowerCase()?.includes(searchTerm.toLowerCase());
             const matchingCode = item.inventoryItem?.product?.productCode
               ?.toLowerCase()
               ?.includes(searchTerm.toLowerCase());
