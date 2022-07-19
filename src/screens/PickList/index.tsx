@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import styles from './styles';
 import { ListRenderItemInfo, View, ToastAndroid } from 'react-native';
 import { useDispatch } from 'react-redux';
@@ -12,6 +12,12 @@ import PickListItem from "../../components/PickListItem";
 
 const PickOrderItem = ({ picklistItems, selectedPicklistItemIndex, successfulPickCallback }: any) => {
   const dispatch = useDispatch();
+  const carouselRef = useRef<Carousel<any>>(null);
+
+  useEffect(() => {
+    carouselRef.current?.snapToItem(selectedPicklistItemIndex);
+  }, [picklistItems, selectedPicklistItemIndex]);
+
 
   const formSubmit = (itemToSave: any) => {
     try {
@@ -97,6 +103,7 @@ const PickOrderItem = ({ picklistItems, selectedPicklistItemIndex, successfulPic
   return (
     <View style={styles.screenContainer}>
       <Carousel
+        ref={carouselRef}
         scrollEnabled
         useScrollView
         lockScrollWhileSnapping
