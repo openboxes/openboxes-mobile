@@ -9,7 +9,7 @@ import { getCandidates } from '../../redux/actions/putaways';
 import EmptyView from '../../components/EmptyView';
 import { Card } from 'react-native-paper';
 import { LayoutStyle } from '../../assets/styles';
-import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSearchHeader';
+import BarcodeSearchHeader from '../../components/BarcodeSearchHeader';
 import _ from 'lodash';
 
 class PutawayCandidates extends Component<Props, State> {

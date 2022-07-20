@@ -4,7 +4,8 @@ import React, { ReactElement } from 'react';
 import { Searchbar } from 'react-native-paper';
 import { StyleSheet } from 'react-native';
 import { Platform, StatusBar } from 'react-native';
-import Icon, { Name } from '../../components/Icon';
+import Icon from '../../components/Icon';
+import { Name } from '../../components/Icon/types';
 import Theme from '../../utils/Theme';
 
 export interface Props {

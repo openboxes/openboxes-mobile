@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Image, TouchableOpacity, View } from 'react-native';
 import { Menu, Provider } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
-import { logout } from '../redux/actions/auth';
+import { logout } from '../../redux/actions/auth';
 
 const OptionMenu = ({ route, navigation }: any) => {
   const dispatch = useDispatch();
@@ -20,7 +20,7 @@ const OptionMenu = ({ route, navigation }: any) => {
         }}
       >
         <Image
-          source={require('../assets/images/logo.png')}
+          source={require('../../assets/images/logo.png')}
           style={{
             resizeMode: 'stretch',
             width: 40,
@@ -49,7 +49,7 @@ const OptionMenu = ({ route, navigation }: any) => {
                 onPress={openMenu}
               >
                 <Image
-                  source={require('../assets/images/option.jpg')}
+                  source={require('../../assets/images/option.jpg')}
                   style={{
                     resizeMode: 'center',
                     width: 40,

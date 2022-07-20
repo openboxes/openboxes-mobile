@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import showPopup from '../../components/Popup';
 import { getLocationProductSummary } from '../../redux/actions/locations';
 import { RootState } from '../../redux/reducers';
-import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSearchHeader';
+import BarcodeSearchHeader from '../../components/BarcodeSearchHeader';
 import _ from 'lodash';
 import EmptyView from '../../components/EmptyView';
 import { LayoutStyle } from '../../assets/styles';

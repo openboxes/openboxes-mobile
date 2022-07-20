@@ -4,7 +4,9 @@ import React, { ReactElement } from 'react';
 import { Searchbar } from 'react-native-paper';
 import { StyleSheet } from 'react-native';
 import { Platform, StatusBar } from 'react-native';
-import Icon, { Name } from '../../components/Icon';
+import Icon from '../../components/Icon';
+import { Name } from '../../components/Icon/types';
+
 import Theme from '../../utils/Theme';
 // import {setStatusBarBackgroundColor} from 'expo-status-bar';
 import Header from '../../components/Header';
@@ -70,7 +72,7 @@ export default class ProductsSearchHeader extends React.Component<Props, State> 
   }
 
   getClearIcon(): ReactElement {
-    return <Icon name={Name.Cross} size={24} color={Theme.colors.surface} onPress={this.onClearIconPressed} />;
+    return <Icon name={Name.Boxes} size={24} color={Theme.colors.surface} onPress={this.onClearIconPressed} />;
   }
 
   onSearchQuerySubmitted() {

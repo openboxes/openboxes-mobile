@@ -1,11 +1,5 @@
 import { Alert, AlertButton } from 'react-native';
-
-export interface PopupParams {
-  message: string;
-  title?: string | null;
-  positiveButton?: any;
-  negativeButtonText?: string;
-}
+import { PopupParams } from './types';
 
 export default function showPopup(params: PopupParams) {
   let buttons: AlertButton[] = [];

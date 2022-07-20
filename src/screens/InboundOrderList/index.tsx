@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchInboundOrderList } from '../../redux/actions/inboundorder';
 import showPopup from '../../components/Popup';
-import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSearchHeader';
+import BarcodeSearchHeader from '../../components/BarcodeSearchHeader';
 import { RootState } from '../../redux/reducers';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import styles from './styles';

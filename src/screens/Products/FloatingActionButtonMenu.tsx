@@ -1,6 +1,8 @@
 import { FAB } from 'react-native-paper';
 import React from 'react';
-import Icon, { Name } from '../../components/Icon';
+import Icon from '../../components/Icon';
+import { Name } from '../../components/Icon/types';
+
 import Theme from '../../utils/Theme';
 
 export interface Props {

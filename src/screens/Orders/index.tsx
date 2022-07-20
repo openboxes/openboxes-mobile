@@ -9,7 +9,7 @@ import OrdersList from './OrdersList';
 import { Order } from '../../data/order/Order';
 import { getOrdersAction } from '../../redux/actions/orders';
 import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
-import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSearchHeader';
+import BarcodeSearchHeader from '../../components/BarcodeSearchHeader';
 
 class Index extends React.Component<Props, State> {
   constructor(props: Props) {

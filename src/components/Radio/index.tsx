@@ -1,8 +1,10 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text } from 'react-native';
 import { RadioButton } from 'react-native-paper';
+import styles from './styles';
+import { Props } from './types';
 
-const Radio = ({ title, checked, setChecked, disabled }: any) => {
+const Radio: React.FC<Props> = ({ title, checked, setChecked, disabled }) => {
   return (
     <View style={styles.container}>
       <View style={styles.radioButton}>
@@ -25,24 +27,4 @@ const Radio = ({ title, checked, setChecked, disabled }: any) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    marginTop: 15,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start'
-  },
-  title: {
-    flex: 9
-  },
-  radioButton: {
-    flex: 1
-  },
-  titleText: (disabled: any) => ({
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: disabled ? 'grey' : 'black'
-  })
-});
 export default Radio;

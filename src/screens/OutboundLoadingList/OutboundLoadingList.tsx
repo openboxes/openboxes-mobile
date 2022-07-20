@@ -11,7 +11,7 @@ import showPopup from '../../components/Popup';
 import EmptyView from '../../components/EmptyView';
 import { Card } from 'react-native-paper';
 import { LayoutStyle } from '../../assets/styles';
-import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSearchHeader';
+import BarcodeSearchHeader from '../../components/BarcodeSearchHeader';
 import _ from 'lodash';
 import { Container } from '../../data/container/Container';
 

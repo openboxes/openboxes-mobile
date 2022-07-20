@@ -12,7 +12,7 @@ import { ProductCategory } from '../../data/product/category/ProductCategory';
 import { DispatchProps, Props, State } from './types';
 import vmMapper from './VMMapper';
 import ProductsSearchCodeHeader from './ProductsSearchCodeHeader';
-import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSearchHeader';
+import BarcodeSearchHeader from '../../components/BarcodeSearchHeader';
 import {
   getProductsAction,
   searchProductByCodeAction,

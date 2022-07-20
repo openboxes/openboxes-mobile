@@ -6,7 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import Product from '../../data/product/Product';
 import onBarcodeScanned from '../../hooks/onBarcodeScanned';
 import EmptyView from '../../components/EmptyView';
-import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSearchHeader';
+import BarcodeSearchHeader from '../../components/BarcodeSearchHeader';
 import { searchBarcode } from '../../redux/actions/products';
 import showPopup from '../../components/Popup';
 import { useDispatch } from 'react-redux';
