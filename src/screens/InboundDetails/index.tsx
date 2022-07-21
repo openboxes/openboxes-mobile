@@ -6,7 +6,7 @@ import showPopup from '../../components/Popup';
 import InboundOrderContainer from './InboundOrderContainer';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { InboundDetailOwnProps } from './types';
-import InboundVMMapper from './InboundVMMapper';
+import InboundVMMapper, { containerParamMapper } from './InboundVMMapper';
 
 const InboundDetails = () => {
   const dispatch = useDispatch();
@@ -41,6 +41,11 @@ const InboundDetails = () => {
         });
       } else {
         if (data && Object.keys(data).length !== 0) {
+          const paramContainers = _.get(shipmentDetails, 'containers', []);
+          const dataContainers = _.get(data, 'containers', []);
+          if (dataContainers.length === 0) {
+            data.containers = containerParamMapper(paramContainers);
+          }
           if (data.containers) {
             const shipmentItems = _.flatten(_.map(data.containers, (container) => container.shipmentItems));
             const quantitiesRemaining = shipmentItems ? _.map(shipmentItems, (item) => item.quantityRemaining) : [];
