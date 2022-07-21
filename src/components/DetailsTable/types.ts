@@ -4,4 +4,5 @@ export interface Props {
   data: LabeledDataProps[];
   columns?: number;
   style?: any;
+  entryStyle?: any;
 }

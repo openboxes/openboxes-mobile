@@ -1,8 +1,6 @@
-/* eslint-disable no-undef */
 import React, { useEffect, useState } from 'react';
-import { FlatList, Text, View, ScrollView, ListRenderItemInfo, ToastAndroid } from 'react-native';
+import { FlatList, ListRenderItemInfo, ToastAndroid } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import styles from './styles';
 import { Card } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 import showPopup from '../../components/Popup';
@@ -10,6 +8,9 @@ import { getStockTransfersSummary, completeStockTransfer } from '../../redux/act
 import EmptyView from '../../components/EmptyView';
 import Button from '../../components/Button';
 import { LayoutStyle } from '../../assets/styles';
+import DetailsTable from '../../components/DetailsTable';
+import { Props as LabeledDataType } from '../../components/LabeledData/types';
+import { ContentContainer, ContentFooter, ContentBody } from '../../components/ContentLayout';
 
 const TransferDetails = () => {
   const route = useRoute();
@@ -69,85 +70,63 @@ const TransferDetails = () => {
     dispatch(completeStockTransfer(stockTransfer?.id, callback));
   };
 
-  const RenderData = ({ title, subText }: any): JSX.Element => {
-    return (
-      <View style={styles.columnItem}>
-        <Text style={styles.label}>{title}</Text>
-        <Text style={styles.value}>{subText}</Text>
-      </View>
-    );
-  };
+  const RenderTransferItem: React.FC = () => {
+    const renderTransferItemData: LabeledDataType[] = [
+      { label: 'Order Number', value: transferDetail?.stockTransferNumber },
+      { label: 'Status', value: transferDetail?.status },
+      { label: 'Origin', value: transferDetail?.['origin.name'] },
+      { label: 'Destination', value: transferDetail?.['destination.name'] },
+      { label: 'Description', value: transferDetail?.description },
+      { label: 'Number of Items', value: transferDetail?.stockTransferItems?.length },
+      { label: 'Created Date', value: transferDetail?.dateCreated }
+    ];
 
-  const renderTransferItem = (): JSX.Element => {
     return (
       <Card style={LayoutStyle.listItemContainer}>
         <Card.Content>
-          <View style={styles.rowItem}>
-            <RenderData title={'Order Number'} subText={transferDetail?.stockTransferNumber} />
-            <RenderData title={'Status'} subText={transferDetail?.status} />
-          </View>
-          <View style={styles.rowItem}>
-            <RenderData title={'Origin'} subText={transferDetail?.['origin.name']} />
-            <RenderData title={'Destination'} subText={transferDetail?.['destination.name']} />
-          </View>
-
-          <View style={styles.rowItem}>
-            <RenderData title={'Description'} subText={transferDetail?.description} />
-            <RenderData title={'Number of Items'} subText={transferDetail?.stockTransferItems?.length} />
-          </View>
-
-          <View style={styles.rowItem}>
-            <RenderData title={'Created Date'} subText={transferDetail?.dateCreated} />
-          </View>
+          <DetailsTable data={renderTransferItemData} />
         </Card.Content>
       </Card>
     );
   };
 
-  const renderListItem = (item: any, index: any) => {
-    return (
-      <Card key={index} style={LayoutStyle.listItemContainer}>
-        <Card.Content>
-          <View style={styles.rowItem}>
-            <RenderData title={'Product Code'} subText={item?.['product.productCode']} />
-            <RenderData title={'Product Name'} subText={item?.['product.name']} />
-          </View>
-          <View style={styles.rowItem}>
-            <RenderData title={'Origin Bin Location'} subText={item?.['originBinLocation.name']} />
-            <RenderData title={'Destination Bin Location'} subText={item?.['destinationBinLocation.name']} />
-          </View>
-          <View style={styles.rowItem}>
-            <RenderData title={'Quantity'} subText={item.quantity} />
-            <RenderData title={'Quantity OnHand'} subText={item.quantityOnHand} />
-          </View>
+  const renderListItem = (item: any) => {
+    const renderListItemData: LabeledDataType[] = [
+      { label: 'Product Code', value: item?.['product.productCode'] },
+      { label: 'Product Name', value: item?.['product.name'] },
+      { label: 'Origin Bin Location', value: item?.['originBinLocation.name'] },
+      { label: 'Destination Bin Location', value: item?.['destinationBinLocation.name'] },
+      { label: 'Quantity', value: item.quantity },
+      { label: 'Quantity OnHand', value: item.quantityOnHand },
+      { label: 'Status', value: item.status }
+    ];
 
-          <View style={styles.rowItem}>
-            <RenderData title={'Status'} subText={item.status} />
-          </View>
+    return (
+      <Card key={item?.['product.productCode']} style={LayoutStyle.listItemContainer}>
+        <Card.Content>
+          <DetailsTable data={renderListItemData} />
         </Card.Content>
       </Card>
     );
   };
   return (
-    <View style={styles.mainContainer}>
-      <ScrollView contentContainerStyle={styles.mainContainer}>
-        {renderTransferItem()}
-
-        {transferDetail?.stockTransferItems?.length > 0 ? (
+    <ContentContainer>
+      <ContentBody>
+        <RenderTransferItem />
+        {transferDetail?.stockTransferItems?.length > 0 && (
           <FlatList
             data={transferDetail?.stockTransferItems}
             horizontal={false}
             numColumns={1}
             ListEmptyComponent={<EmptyView title="Transfers" description="There are no items for Transfer" />}
-            renderItem={(item: ListRenderItemInfo<any>) => renderListItem(item?.item, item.index)}
+            renderItem={(item: ListRenderItemInfo<any>) => renderListItem(item?.item)}
           />
-        ) : null}
-      </ScrollView>
-
-      <View style={styles.bottom}>
+        )}
+      </ContentBody>
+      <ContentFooter>
         <Button title="Complete Transfer" onPress={() => completeTransfers(transferDetail)} />
-      </View>
-    </View>
+      </ContentFooter>
+    </ContentContainer>
   );
 };
 export default TransferDetails;

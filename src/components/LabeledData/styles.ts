@@ -3,12 +3,11 @@ import Theme from '../../utils/Theme';
 
 export default StyleSheet.create({
   label: {
-    fontSize: 11,
+    fontSize: 13,
     color: Theme.colors.placeholder
   },
   data: {
-    fontSize: 12,
-    color: Theme.colors.text,
-    width: '90%'
+    fontSize: 15,
+    color: Theme.colors.text
   }
 });

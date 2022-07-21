@@ -5,6 +5,8 @@ interface LabeledDataProps {
   value?: string | number | ReactElement | null;
   defaultValue?: string | number;
   style?: any;
+  labelStyle?: any;
+  valueStyle?: any;
 }
 
 export type Props = LabeledDataProps;

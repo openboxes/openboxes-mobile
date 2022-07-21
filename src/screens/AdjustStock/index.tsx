@@ -1,4 +1,3 @@
-/* eslint-disable no-shadow */
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styles from './styles';
@@ -8,10 +7,11 @@ import Button from '../../components/Button';
 import showPopup from '../../components/Popup';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import DropDown from 'react-native-paper-dropdown';
-import RenderData from '../../components/RenderData';
 import { RootState } from '../../redux/reducers';
 import { stockAdjustments } from '../../redux/actions/products';
 import InputSpinner from '../../components/InputSpinner';
+import DetailsTable from '../../components/DetailsTable';
+import { Props as LabeledDataType } from '../../components/LabeledData/types';
 
 const reasonCodes = [
   {
@@ -152,28 +152,18 @@ const AdjustStock = () => {
     dispatch(stockAdjustments(requestBody, callback));
   };
 
-  const RenderItem = (): JSX.Element => {
-    return (
-      <View style={styles.itemView}>
-        <View style={styles.rowItem}>
-          <RenderData title="Product Code" subText={item?.product.productCode} />
-          <RenderData title="Product Name" subText={item?.product.name} />
-        </View>
-        <View style={styles.rowItem}>
-          <RenderData title="Lot Number" subText={item?.inventoryItem.lotNumber ?? 'Default'} />
-          <RenderData title="Expiration Date" subText={item?.inventoryItem.expirationDate ?? 'Never'} />
-        </View>
-        <View style={styles.rowItem}>
-          <RenderData title="Bin Location" subText={item?.binLocation?.name ?? 'Default'} />
-          <RenderData title="Quantity Available" subText={item.quantityAvailableToPromise} />
-        </View>
-      </View>
-    );
-  };
+  const renderData: LabeledDataType[] = [
+    { label: 'Product Code', value: item?.product.productCode },
+    { label: 'Product Name', value: item?.product.name },
+    { label: 'Lot Number', value: item?.inventoryItem.lotNumber, defaultValue: 'Default' },
+    { label: 'Expiration Date', value: item?.inventoryItem.expirationDate, defaultValue: 'Never' },
+    { label: 'Bin Location', value: item?.binLocation?.name, defaultValue: 'Default' },
+    { label: 'Quantity Available', value: item.quantityAvailableToPromise }
+  ];
 
   return (
     <ScrollView style={styles.container}>
-      <RenderItem />
+      <DetailsTable data={renderData} />
       <View style={styles.from}>
         <InputSpinner title={'Quantity Adjusted'} value={quantityAdjusted} setValue={setQuantityAdjusted} />
         <View style={styles.dropDownDivider} />

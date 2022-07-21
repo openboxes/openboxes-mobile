@@ -7,8 +7,8 @@ import styles, { columnStyle } from './styles';
 const DetailsTable: React.FC<Props> = ({ style, data, columns = 2 }) => {
   return (
     <View style={[style, styles.container]}>
-      {data.map((dataProps) => (
-        <LabeledData key={dataProps.label} style={columnStyle(columns).column} {...dataProps} />
+      {data.map(({ style: dataStyle, ...dataProps }) => (
+        <LabeledData {...dataProps} key={dataProps.label} style={[columnStyle(columns).column, dataStyle]} />
       ))}
     </View>
   );

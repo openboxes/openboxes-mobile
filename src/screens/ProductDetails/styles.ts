@@ -92,6 +92,19 @@ export default StyleSheet.create({
     borderWidth: 1,
     borderRadius: 8
   },
+  entry: {
+    display: 'flex',
+    flexDirection: 'row',
+    borderColor: Theme.colors.background,
+    borderBottomWidth: 1,
+    marginTop: 8,
+    padding: 8,
+    justifyContent: 'space-between'
+  },
+  entryText: {
+    fontSize: 15,
+    color: Theme.colors.placeholder
+  },
   row: {
     flexDirection: 'row',
     borderColor: Theme.colors.background,

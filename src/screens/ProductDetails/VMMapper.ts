@@ -18,10 +18,7 @@ export function vmMapper(product: Product, state: State): VM {
     quantityOnHand: product.quantityOnHand ?? 0,
     quantityOnOrder: product.quantityOnOrder ?? 0,
     unitOfMeasure: product.unitOfMeasure ?? 'EA',
-    attributes: product.attributes ?? [
-      { code: '', value: '', name: '' },
-      { code: '', value: '', name: '' }
-    ],
+    attributes: product.attributes ?? [],
     productType: product?.productType ?? { name: '' },
     defaultImageUrl: product?.defaultImageUrl,
     image: product?.image,

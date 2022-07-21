@@ -1,22 +1,15 @@
 import React from 'react';
-import { SectionList, View, Text } from 'react-native';
+import { SectionList, Text } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import styles from './styles';
 import { Card } from 'react-native-paper';
 import InboundDetailProps from './types';
 import { LayoutStyle } from '../../assets/styles';
+import DetailsTable from '../../components/DetailsTable';
+import { Props as LabeledDataType } from '../../components/LabeledData/types';
 
 const InboundOrderContainer = ({ data, shipmentId, shipmentData }: InboundDetailProps) => {
   const navigation = useNavigation<any>();
-
-  const RenderData = ({ title, subText }: any): JSX.Element => {
-    return (
-      <View style={styles.columnItem}>
-        <Text style={styles.label}>{title}</Text>
-        <Text style={styles.value}>{subText}</Text>
-      </View>
-    );
-  };
 
   const navigateToInboundOrderDetails = (item: any) => {
     navigation.navigate('InboundReceiveDetail', {
@@ -24,36 +17,6 @@ const InboundOrderContainer = ({ data, shipmentId, shipmentData }: InboundDetail
       shipmentData: shipmentData,
       shipmentId: shipmentId
     });
-  };
-
-  const renderShipmentItem = (): JSX.Element => {
-    return (
-      <Card style={LayoutStyle.listItemContainer}>
-        <Card.Content>
-          <View style={styles.rowItem}>
-            <RenderData title={'Shipment Number'} subText={shipmentData?.shipmentNumber} />
-            <RenderData title={'Status'} subText={shipmentData?.status} />
-          </View>
-          <View style={styles.rowItem}>
-            <RenderData title={'Origin'} subText={shipmentData?.origin.name} />
-            <RenderData title={'Destination'} subText={shipmentData?.destination.name} />
-          </View>
-          <View style={styles.rowItem}>
-            <RenderData title={'Description'} subText={shipmentData?.name} />
-            <View>
-              <Text style={styles.label}>Items Received</Text>
-              <Text style={styles.value}>
-                {shipmentData.receivedCount} / {shipmentData?.shipmentItems.length}
-              </Text>
-            </View>
-          </View>
-          <View style={styles.rowItem}>
-            <RenderData title={'Expected Shipping Date'} subText={shipmentData?.expectedShippingDate} />
-            <RenderData title={'Expected Delivery Date'} subText={shipmentData?.expectedDeliveryDate} />
-          </View>
-        </Card.Content>
-      </Card>
-    );
   };
 
   const getStatus = (value: number) => {
@@ -66,25 +29,45 @@ const InboundOrderContainer = ({ data, shipmentId, shipmentData }: InboundDetail
     }
   };
 
-  const renderListItem = (item: any, index: any) => {
+  const renderShipmentItemData: LabeledDataType[] = [
+    { label: 'Shipment Number', value: shipmentData?.shipmentNumber },
+    { label: 'Status', value: shipmentData?.status },
+    { label: 'Origin', value: shipmentData?.origin.name },
+    { label: 'Destination', value: shipmentData?.destination.name },
+    { label: 'Description', value: shipmentData?.name },
+    { label: 'Items Received', value: `${shipmentData.receivedCount} / ${shipmentData?.shipmentItems.length}` },
+    { label: 'Expected Shipping Date', value: shipmentData?.expectedShippingDate },
+    { label: 'Expected Delivery Date', value: shipmentData?.expectedDeliveryDate }
+  ];
+
+  const renderShipmentItem: React.FC = () => {
     return (
-      <Card key={index} style={LayoutStyle.listItemContainer} onPress={() => navigateToInboundOrderDetails(item)}>
+      <Card style={LayoutStyle.listItemContainer}>
         <Card.Content>
-          <View style={styles.rowItem}>
-            <RenderData title={'Product Code'} subText={item['product.productCode']} />
-            <RenderData title={'Product Name'} subText={item['product.name']} />
-          </View>
-          <View style={styles.rowItem}>
-            <RenderData title={'Quantity Shipped'} subText={item.quantityShipped} />
-            <RenderData title={'Quantity Received'} subText={item.quantityReceived} />
-          </View>
-          <View style={styles.rowItem}>
-            <RenderData
-              title={'Quantity Remaining'}
-              subText={item.quantityRemaining > 0 ? item.quantityRemaining : 0}
-            />
-            <RenderData title={'Status'} subText={getStatus(item.quantityRemaining)} />
-          </View>
+          <DetailsTable data={renderShipmentItemData} />
+        </Card.Content>
+      </Card>
+    );
+  };
+
+  const renderListItem = (item: any) => {
+    const renderListItemData: LabeledDataType[] = [
+      { label: 'Product Code', value: item['product.productCode'] },
+      { label: 'Product Name', value: item['product.name'] },
+      { label: 'Quantity Shipped', value: item.quantityShipped },
+      { label: 'Quantity Received', value: item.quantityReceived },
+      { label: 'Quantity Remaining', value: item.quantityRemaining > 0 ? item.quantityRemaining : 0 },
+      { label: 'Status', value: getStatus(item.quantityRemaining) }
+    ];
+
+    return (
+      <Card
+        key={item['product.productCode']}
+        style={LayoutStyle.listItemContainer}
+        onPress={() => navigateToInboundOrderDetails(item)}
+      >
+        <Card.Content>
+          <DetailsTable data={renderListItemData} />
         </Card.Content>
       </Card>
     );
@@ -93,7 +76,7 @@ const InboundOrderContainer = ({ data, shipmentId, shipmentData }: InboundDetail
   return (
     <SectionList
       ListHeaderComponent={renderShipmentItem}
-      renderItem={({ item, index, section }) => renderListItem(item, index)}
+      renderItem={({ item }) => renderListItem(item)}
       renderSectionHeader={({ section: { title } }) => <Text style={styles.headerTitle}>{title}</Text>}
       sections={data}
       keyExtractor={(item, index) => item + index}

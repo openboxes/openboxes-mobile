@@ -19,7 +19,10 @@ const Radio: React.FC<Props> = ({ title, checked, setChecked, disabled }) => {
         />
       </View>
       <View style={styles.title}>
-        <Text style={styles.titleText(disabled)} onPress={() => (!disabled ? setChecked(!checked) : null)}>
+        <Text
+          style={[styles.titleText, disabled ? styles.titleColorGrey : styles.titleColorBlack]}
+          onPress={() => (!disabled ? setChecked(!checked) : null)}
+        >
           {title}
         </Text>
       </View>

@@ -13,6 +13,8 @@ import InputBox from '../../components/InputBox';
 import ShipmentItems from '../../data/inbound/ShipmentItems';
 import { Container } from '../../data/container/Shipment';
 import showPopup from '../../components/Popup';
+import DetailsTable from '../../components/DetailsTable';
+import { Props as LabeledDataType } from '../../components/LabeledData/types';
 
 // Shipment packing (Packing Order Details)
 class OutboundStockDetails extends React.Component<Props, State> {
@@ -155,15 +157,11 @@ class OutboundStockDetails extends React.Component<Props, State> {
             <View style={styles.row}>
               <View style={styles.col50}>
                 <Text style={styles.label}>Packing Location</Text>
-                <Text style={styles.value}>
-                  {this.state.shipment?.packingLocation ?? 'Unassigned'}
-                </Text>
+                <Text style={styles.value}>{this.state.shipment?.packingLocation ?? 'Unassigned'}</Text>
               </View>
               <View style={styles.col50}>
                 <Text style={styles.label}>Items Packed</Text>
-                <Text style={styles.value}>
-                  {this.state.shipment?.packingStatusDetails?.statusMessage}
-                </Text>
+                <Text style={styles.value}>{this.state.shipment?.packingStatusDetails?.statusMessage}</Text>
               </View>
             </View>
           </View>

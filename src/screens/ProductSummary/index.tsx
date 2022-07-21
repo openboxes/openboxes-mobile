@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 import React, { useEffect, useState } from 'react';
-import { FlatList, Text, View } from 'react-native';
+import { FlatList, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import styles from './styles';
 import { Card } from 'react-native-paper';
@@ -12,6 +12,8 @@ import BarcodeSearchHeader from '../../components/BarcodeSearchHeader';
 import _ from 'lodash';
 import EmptyView from '../../components/EmptyView';
 import { LayoutStyle } from '../../assets/styles';
+import DetailsTable from '../../components/DetailsTable';
+import { Props as LabeledDataType } from '../../components/LabeledData/types';
 
 const ProductSummary = () => {
   const navigation = useNavigation<any>();
@@ -66,15 +68,6 @@ const ProductSummary = () => {
     setState({ ...state });
   };
 
-  const RenderData = ({ title, subText }: any): JSX.Element => {
-    return (
-      <View style={styles.columnItem}>
-        <Text style={styles.label}>{title}</Text>
-        <Text style={styles.value}>{subText}</Text>
-      </View>
-    );
-  };
-
   const navigateToDetails = (item: any) => {
     const product = {
       id: item.productCode
@@ -83,16 +76,16 @@ const ProductSummary = () => {
   };
 
   const renderListItem = (item: any, index: any) => {
+    const renderListItemData: LabeledDataType[] = [
+      { label: 'Product Code', value: item.productCode },
+      { label: 'Quantity OnHand', value: item.quantityOnHand },
+      { label: 'Product Name', value: item.productName }
+    ];
+
     return (
       <Card key={index} style={LayoutStyle.listItemContainer} onPress={() => navigateToDetails(item)}>
         <Card.Content>
-          <View style={styles.rowItem}>
-            <RenderData title={'Product Code'} subText={item.productCode} />
-            <RenderData title={'Quantity OnHand'} subText={item.quantityOnHand} />
-          </View>
-          <View style={styles.rowItem}>
-            <RenderData title={'Product Name'} subText={item.productName} />
-          </View>
+          <DetailsTable data={renderListItemData} />
         </Card.Content>
       </Card>
     );

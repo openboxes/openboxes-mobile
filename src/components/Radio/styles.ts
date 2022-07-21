@@ -14,9 +14,14 @@ export default StyleSheet.create({
   radioButton: {
     flex: 1
   },
-  titleText: (disabled: any) => ({
+  titleText: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: disabled ? 'grey' : 'black'
-  })
+    fontWeight: 'bold'
+  },
+  titleColorBlack: {
+    color: 'black'
+  },
+  titleColorGrey: {
+    color: 'grey'
+  }
 });
