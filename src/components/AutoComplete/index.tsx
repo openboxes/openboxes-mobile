@@ -22,7 +22,6 @@ const AutoComplete = ({
   left = () => {},
   placeholder
 }: Props) => {
-  // const [inputValue, setInputValue] = useState(value);
   const [menuVisible, setMenuVisible] = useState(false);
   const [filteredData, setFilteredData] = useState([]);
 
@@ -56,7 +55,6 @@ const AutoComplete = ({
             setFilteredData(data);
           }
           setMenuVisible(true);
-          // setInputValue(text);
         }}
         onEndEditing={(e) => {
           if (onEndEdit) {

@@ -1,6 +1,6 @@
 /* eslint-disable complexity */
 import React, { useEffect, useState } from 'react';
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Text, TouchableOpacity } from 'react-native';
 import styles from './styles';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation, useRoute } from '@react-navigation/native';
@@ -74,14 +74,6 @@ const InternalLocationDetails = () => {
     dispatch(getInternalLocationDetails(id, location.id, actionLocationCallback));
   };
 
-  const RenderItem = ({ title, subTitle }: any) => {
-    return (
-      <View style={styles.columnItem}>
-        <Text style={styles.label}>{title}</Text>
-        <Text style={styles.value}>{subTitle}</Text>
-      </View>
-    );
-  };
   const navigateToDetails = (item: any) => {
     const stockItem = {
       product: {

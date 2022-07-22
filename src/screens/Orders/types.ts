@@ -22,3 +22,8 @@ export interface State {
   allOrders: Order[] | null;
   resultCount: Number;
 }
+
+export interface OrderListProps {
+  orders: Order[] | null;
+  onOrderTapped: (order: Order) => void;
+}

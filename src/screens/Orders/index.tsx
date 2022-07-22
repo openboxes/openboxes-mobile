@@ -88,14 +88,9 @@ class Index extends React.Component<Props, State> {
           searchBox={false}
           onSearchTermSubmit={this.searchOrders}
         />
-        <Text style={styles.label}>
-          Returned {this.state.resultCount} results
-        </Text>
+        <Text style={styles.label}>{`Returned ${this.state.resultCount} results`}</Text>
         <View style={styles.content}>
-          <OrdersList
-            orders={this.state.allOrders}
-            onOrderTapped={this.goToOrderDetailsScreen}
-          />
+          <OrdersList orders={this.state.allOrders} onOrderTapped={this.goToOrderDetailsScreen} />
         </View>
       </View>
     );

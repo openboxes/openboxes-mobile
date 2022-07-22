@@ -1,6 +1,6 @@
 import { DispatchProps, Props, State } from '../OutboundStockList/types';
 import React from 'react';
-import { View, FlatList, ListRenderItemInfo, Text } from 'react-native';
+import { View, FlatList, ListRenderItemInfo } from 'react-native';
 import { connect } from 'react-redux';
 import { showScreenLoading, hideScreenLoading } from '../../redux/actions/main';
 import { RootState } from '../../redux/reducers';
@@ -14,6 +14,8 @@ import { LayoutStyle } from '../../assets/styles';
 import BarcodeSearchHeader from '../../components/BarcodeSearchHeader';
 import _ from 'lodash';
 import { Container } from '../../data/container/Container';
+import { Props as LabeledDataType } from '../../components/LabeledData/types';
+import DetailsTable from '../../components/DetailsTable';
 
 // List of shipments ready for loading
 class OutboundLoadingList extends React.Component<Props, State> {
@@ -24,6 +26,7 @@ class OutboundLoadingList extends React.Component<Props, State> {
       shipments: [],
       filteredShipments: []
     };
+    this.renderDataItem = this.renderDataItem.bind(this);
   }
 
   componentDidMount() {
@@ -81,14 +84,15 @@ class OutboundLoadingList extends React.Component<Props, State> {
   filterShipments = (searchTerm: string) => {
     if (searchTerm) {
       // Find exact match by LPN
-      const exactShipmentByLPN = _.find(this.state.shipments, (shipment: Shipment) => _.find(
-        shipment?.availableContainers,
-        (container: Container) => container.containerNumber === searchTerm
-      ));
+      const exactShipmentByLPN = _.find(this.state.shipments, (shipment: Shipment) =>
+        _.find(shipment?.availableContainers, (container: Container) => container.containerNumber === searchTerm)
+      );
 
       if (exactShipmentByLPN) {
-        const exactContainer = _.find(exactShipmentByLPN?.availableContainers, (container: Container) =>
-          container.containerNumber === searchTerm);
+        const exactContainer = _.find(
+          exactShipmentByLPN?.availableContainers,
+          (container: Container) => container.containerNumber === searchTerm
+        );
 
         this.resetFiltering();
         this.showLoadingLPNScreen(exactShipmentByLPN, exactContainer);
@@ -100,7 +104,9 @@ class OutboundLoadingList extends React.Component<Props, State> {
         const matchingShipmentNumber = shipment?.shipmentNumber?.toLowerCase()?.includes(searchTerm.toLowerCase());
 
         const matchingLoadingLocation =
-          shipment?.loadingStatusDetails?.loadingLocation?.locationNumber?.toLowerCase()?.includes(searchTerm.toLowerCase()) ||
+          shipment?.loadingStatusDetails?.loadingLocation?.locationNumber
+            ?.toLowerCase()
+            ?.includes(searchTerm.toLowerCase()) ||
           shipment?.loadingStatusDetails?.loadingLocation?.name?.toLowerCase()?.includes(searchTerm.toLowerCase());
 
         return matchingShipmentNumber || matchingLoadingLocation;
@@ -131,6 +137,28 @@ class OutboundLoadingList extends React.Component<Props, State> {
     });
   };
 
+  renderDataItem(shipment: ListRenderItemInfo<Shipment>) {
+    const renderData: LabeledDataType[] = [
+      { label: 'Shipment Number', value: shipment.item.shipmentNumber },
+      {
+        label: 'Status',
+        value: `${shipment.item.displayStatus} (${shipment.item.loadingStatusDetails.statusMessage} containers)`
+      },
+      { label: 'Destination', value: shipment.item.destination.name },
+      { label: 'Expected Shipping Date', value: shipment.item.expectedShippingDate },
+      { label: 'Loading Location', value: shipment.item.loadingLocation },
+      { label: 'Expected Delivery Date', value: shipment.item.expectedDeliveryDate }
+    ];
+
+    return (
+      <Card style={LayoutStyle.listItemContainer} onPress={() => this.showLoadingDetailsScreen(shipment.item)}>
+        <Card.Content>
+          <DetailsTable data={renderData} />
+        </Card.Content>
+      </Card>
+    );
+  }
+
   render() {
     return (
       <View style={styles.screenContainer}>
@@ -147,47 +175,7 @@ class OutboundLoadingList extends React.Component<Props, State> {
             ListEmptyComponent={
               <EmptyView title="Loading" description=" There are no items to load" isRefresh={false} />
             }
-            renderItem={(shipment: ListRenderItemInfo<Shipment>) => (
-              <Card
-                style={LayoutStyle.listItemContainer}
-                onPress={() => this.showLoadingDetailsScreen(shipment.item)}
-              >
-                <Card.Content>
-                  <View style={styles.row}>
-                    <View style={styles.col50}>
-                      <Text style={styles.label}>Shipment Number</Text>
-                      <Text style={styles.value}>{shipment.item.shipmentNumber}</Text>
-                    </View>
-                    <View style={styles.col50}>
-                      <Text style={styles.label}>Status</Text>
-                      <Text style={styles.value}>
-                        {shipment.item.displayStatus} ({shipment.item.loadingStatusDetails.statusMessage} containers)
-                      </Text>
-                    </View>
-                  </View>
-                  <View style={styles.row}>
-                    <View style={styles.col50}>
-                      <Text style={styles.label}>Destination</Text>
-                      <Text style={styles.value}>{shipment.item.destination.name}</Text>
-                    </View>
-                    <View style={styles.col50}>
-                      <Text style={styles.label}>Expected Shipping Date</Text>
-                      <Text style={styles.value}>{shipment.item.expectedShippingDate}</Text>
-                    </View>
-                  </View>
-                  <View style={styles.row}>
-                    <View style={styles.col50}>
-                      <Text style={styles.label}>Loading Location</Text>
-                      <Text style={styles.value}>{shipment.item.loadingLocation}</Text>
-                    </View>
-                    <View style={styles.col50}>
-                      <Text style={styles.label}>Expected Delivery Date</Text>
-                      <Text style={styles.value}>{shipment.item.expectedDeliveryDate}</Text>
-                    </View>
-                  </View>
-                </Card.Content>
-              </Card>
-            )}
+            renderItem={this.renderDataItem}
             keyExtractor={(item) => item.id}
             style={styles.list}
           />

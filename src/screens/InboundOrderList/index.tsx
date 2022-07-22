@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FlatList, Text, View } from 'react-native';
+import { FlatList, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchInboundOrderList } from '../../redux/actions/inboundorder';
@@ -13,6 +13,8 @@ import { Card } from 'react-native-paper';
 import EmptyView from '../../components/EmptyView';
 import { LayoutStyle } from '../../assets/styles';
 import _ from 'lodash';
+import { Props as LabeledDataType } from '../../components/LabeledData/types';
+import DetailsTable from '../../components/DetailsTable';
 
 const InboundOrderList = () => {
   const dispatch = useDispatch();
@@ -67,38 +69,26 @@ const InboundOrderList = () => {
     dispatch(fetchInboundOrderList(callback, id));
   };
 
-  const RenderOrderData = ({ title, subText }: any): JSX.Element => {
-    return (
-      <View style={styles.columnItem}>
-        <Text style={styles.label}>{title}</Text>
-        <Text style={styles.value}>{subText}</Text>
-      </View>
-    );
-  };
-
   const navigateToInboundDetails = (item: any) => {
     navigation.navigate('InboundDetails', { shipmentDetails: item });
   };
 
-  const RenderListItem = ({ item, index }: any): JSX.Element => {
+  const renderListItem = ({ item, index }: any) => {
+    const itemStyles = { labelStyle: styles.label, valueStyle: styles.value };
+
+    const renderListItemDats: LabeledDataType[] = [
+      { label: 'Identifier', value: item.shipmentNumber, ...itemStyles },
+      { label: 'Status', value: item.status, ...itemStyles },
+      { label: 'Origin', value: item.origin.name, ...itemStyles },
+      { label: 'Destination', value: item.destination.name, ...itemStyles },
+      { label: 'Description', value: item.name, ...itemStyles },
+      { label: 'Items Received', value: `${item.receivedCount} / ${item.shipmentItems.length}`, ...itemStyles }
+    ];
+
     return (
       <Card style={LayoutStyle.listItemContainer} key={index} onPress={() => navigateToInboundDetails(item)}>
         <Card.Content>
-          <View style={styles.rowItem}>
-            <RenderOrderData title={'Identifier'} subText={item.shipmentNumber} />
-            <RenderOrderData title={'Status'} subText={item.status} />
-          </View>
-          <View style={styles.rowItem}>
-            <RenderOrderData title={'Origin'} subText={item.origin.name} />
-            <RenderOrderData title={'Destination'} subText={item.destination.name} />
-          </View>
-          <View style={styles.rowItem}>
-            <RenderOrderData title={'Description'} subText={item.name} />
-            <RenderOrderData
-              title={'Items Received'}
-              subText={item.receivedCount + ' / ' + item.shipmentItems.length}
-            />
-          </View>
+          <DetailsTable data={renderListItemDats} />
         </Card.Content>
       </Card>
     );
@@ -146,15 +136,14 @@ const InboundOrderList = () => {
         searchBox={false}
         onSearchTermSubmit={filterInboundOrders}
       />
-      {state.inboundOrders.length > 0 ? (
-        <FlatList
-          data={state.filteredInboundOrders.length > 0 ? state.filteredInboundOrders : state.inboundOrders}
-          keyExtractor={(inboundOrder) => inboundOrder.id}
-          renderItem={RenderListItem}
-        />
-      ) : (
-        <EmptyView title="Receiving" description="There are no items to receive" isRefresh={false} />
-      )}
+      <FlatList
+        data={state.filteredInboundOrders.length > 0 ? state.filteredInboundOrders : state.inboundOrders}
+        ListEmptyComponent={
+          <EmptyView title="Receiving" description="There are no items to receive" isRefresh={false} />
+        }
+        keyExtractor={(inboundOrder) => inboundOrder.id}
+        renderItem={renderListItem}
+      />
     </View>
   );
 };

@@ -20,5 +20,8 @@ export default StyleSheet.create({
     color: Theme.colors.placeholder,
     marginHorizontal: 5,
     marginVertical: 2
+  },
+  list: {
+    width: '100%'
   }
 });
