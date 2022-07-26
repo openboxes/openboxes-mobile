@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import { colors } from '../../assets/styles';
 
 export default StyleSheet.create({
   modalParent: {
@@ -13,12 +14,12 @@ export default StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#00000099'
+    backgroundColor: `${colors.black}99`
   },
   progressContainer: {
     flex: 0,
-    backgroundColor: '#FFFFFF',
-    shadowColor: '#000000',
+    backgroundColor: colors.white,
+    shadowColor: colors.black,
     padding: 20,
     borderRadius: 5,
     justifyContent: 'center',

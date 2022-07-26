@@ -23,7 +23,8 @@ import Location from './data/location/Location';
 import { Session } from './data/auth/Session';
 import { getSessionAction } from './redux/actions/main';
 import showPopup from './components/Popup';
-import { colors, appHeaderHeight } from './constants';
+import { appHeaderHeight } from './constants';
+import { colors } from './assets/styles';
 import Scan from './screens/Scan';
 import PutawayList from './screens/PutawayList';
 import Settings from './screens/Settings';
@@ -31,7 +32,7 @@ import PutawayItemDetail from './screens/PutawayItemDetail';
 import InboundOrderList from './screens/InboundOrderList';
 import InboundDetails from './screens/InboundDetails';
 import CreateLpn from './screens/Lpn/Create';
-import LpnDetail from './screens/LpnDetail/Index';
+import LpnDetail from './screens/LpnDetail';
 import PutawayCandidates from './screens/PutawayCandidates';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import InternalLocationDetails from './screens/InternalLocationDetails';
@@ -149,9 +150,9 @@ class Main extends Component<Props, State> {
                 headerTitleContainerStyle: {
                   width: '50%'
                 },
-                headerTintColor: '#ffffff',
+                headerTintColor: colors.white,
                 headerStyle: {
-                  backgroundColor: colors.headerColor,
+                  backgroundColor: colors.accent,
                   height: appHeaderHeight
                 }
               })}
@@ -185,21 +186,13 @@ class Main extends Component<Props, State> {
               <Stack.Screen name="LpnDetail" component={LpnDetail} />
               <Stack.Screen name="InboundReceiveDetail" component={InboundReceiveDetail} />
               <Stack.Screen name="Settings" component={Settings} />
-              <Stack.Screen
-                name="OutboundStockList"
-                component={OutboundStockList}
-                options={{ title: 'Packing' }}
-              />
+              <Stack.Screen name="OutboundStockList" component={OutboundStockList} options={{ title: 'Packing' }} />
               <Stack.Screen
                 name="OutboundStockDetails"
                 component={OutboundStockDetails}
                 options={{ title: 'Packing' }}
               />
-              <Stack.Screen
-                name="OutboundLoadingList"
-                component={OutboundLoadingList}
-                options={{ title: 'Loading' }}
-              />
+              <Stack.Screen name="OutboundLoadingList" component={OutboundLoadingList} options={{ title: 'Loading' }} />
               <Stack.Screen
                 name="OutboundLoadingDetails"
                 component={OutboundLoadingDetails}

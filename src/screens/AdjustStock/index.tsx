@@ -12,6 +12,7 @@ import { stockAdjustments } from '../../redux/actions/products';
 import InputSpinner from '../../components/InputSpinner';
 import DetailsTable from '../../components/DetailsTable';
 import { Props as LabeledDataType } from '../../components/LabeledData/types';
+import { ContentContainer, ContentFooter, ContentBody, ContentHeader } from '../../components/ContentLayout';
 
 const reasonCodes = [
   {
@@ -162,11 +163,14 @@ const AdjustStock = () => {
   ];
 
   return (
-    <ScrollView style={styles.container}>
-      <DetailsTable data={renderData} />
-      <View style={styles.from}>
-        <InputSpinner title={'Quantity Adjusted'} value={quantityAdjusted} setValue={setQuantityAdjusted} />
-        <View style={styles.dropDownDivider} />
+    <ContentContainer>
+      <ContentHeader>
+        <DetailsTable data={renderData} />
+      </ContentHeader>
+      <ContentBody>
+        <View style={styles.inputSpinner}>
+          <InputSpinner title={'Quantity Adjusted'} value={quantityAdjusted} setValue={setQuantityAdjusted} />
+        </View>
         <DropDown
           label="Reason Code"
           mode="outlined"
@@ -178,11 +182,11 @@ const AdjustStock = () => {
           onDismiss={() => setShowDropDown(false)}
         />
         <InputBox value={comments} disabled={false} editable={false} label="Comments" onChange={setComments} />
-      </View>
-      <View style={styles.bottom}>
+      </ContentBody>
+      <ContentFooter>
         <Button disabled={!comments || !reasonCode} title="Adjust Stock" onPress={onSave} />
-      </View>
-    </ScrollView>
+      </ContentFooter>
+    </ContentContainer>
   );
 };
 

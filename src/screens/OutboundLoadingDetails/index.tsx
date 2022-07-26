@@ -1,19 +1,22 @@
 import { DispatchProps, Props, State } from '../OutboundStockDetails/types';
 import React from 'react';
-import {Alert, FlatList, ListRenderItemInfo, Text, View} from 'react-native';
+import { Alert, FlatList, ListRenderItemInfo } from 'react-native';
 import { connect } from 'react-redux';
 import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
 import { RootState } from '../../redux/reducers';
 import styles from '../OutboundStockDetails/styles';
 import { getShipment } from '../../redux/actions/packing';
-import OrderDetailsSection from "./OrderDetailsSection";
-import EmptyView from "../../components/EmptyView";
-import { Shipment, Container } from "../../data/container/Shipment";
-import {Card} from "react-native-paper";
-import {LayoutStyle} from "../../assets/styles";
-import _ from "lodash";
-import InputBox from "../../components/InputBox";
-import showPopup from "../../components/Popup";
+import OrderDetailsSection from './OrderDetailsSection';
+import EmptyView from '../../components/EmptyView';
+import { Shipment, Container } from '../../data/container/Shipment';
+import { Card } from 'react-native-paper';
+import { LayoutStyle } from '../../assets/styles';
+import _ from 'lodash';
+import InputBox from '../../components/InputBox';
+import showPopup from '../../components/Popup';
+import DetailsTable from '../../components/DetailsTable';
+import { Props as LabeledDataType } from '../../components/LabeledData/types';
+import { ContentContainer, ContentBody, ContentHeader } from '../../components/ContentLayout';
 
 // Shipment loading
 class OutboundLoadingDetails extends React.Component<Props, State> {
@@ -22,8 +25,9 @@ class OutboundLoadingDetails extends React.Component<Props, State> {
     this.state = {
       error: null,
       shipment: null,
-      scannedContainer: '',
+      scannedContainer: ''
     };
+    this.renderAvailableContainers = this.renderAvailableContainers.bind(this);
   }
 
   componentDidMount() {
@@ -45,17 +49,19 @@ class OutboundLoadingDetails extends React.Component<Props, State> {
           'All containers are loaded', // title
           'What do you want to do now?', // message
           [
-            { // button list
+            {
+              // button list
               text: 'See the details',
               onPress: () => null
             },
             {
               text: 'Go to the loading list',
               onPress: () => this.props.navigation.navigate('OutboundLoadingList')
-            }],
+            }
+          ],
           {
             cancelable: false
-          },
+          }
         );
       }
 
@@ -83,24 +89,29 @@ class OutboundLoadingDetails extends React.Component<Props, State> {
   };
 
   findMatchingContainer = (searchTerm: string) => {
-    return _.find(this.state.shipment?.availableContainers, (container: Container) => (
-      container?.name?.toLowerCase() === searchTerm?.toLowerCase() ||
-      container?.containerNumber?.toLowerCase() === searchTerm?.toLowerCase()
-    ));
-  }
+    return _.find(
+      this.state.shipment?.availableContainers,
+      (container: Container) =>
+        container?.name?.toLowerCase() === searchTerm?.toLowerCase() ||
+        container?.containerNumber?.toLowerCase() === searchTerm?.toLowerCase()
+    );
+  };
 
   onContainerScan = (value: string) => {
     this.setState({ scannedContainer: value }, () => {
       if (value) {
         const matchingContainer = this.findMatchingContainer(value);
         if (matchingContainer) {
-          this.setState({
-            scannedContainer: '' // reset scan value before redirecting
-          }, () => this.showLoadingLPNScreen(matchingContainer, this.state.shipment, true));
+          this.setState(
+            {
+              scannedContainer: '' // reset scan value before redirecting
+            },
+            () => this.showLoadingLPNScreen(matchingContainer, this.state.shipment, true)
+          );
         }
       }
     });
-  }
+  };
 
   onContainerScanEnd = (value: string) => {
     if (value) {
@@ -109,18 +120,40 @@ class OutboundLoadingDetails extends React.Component<Props, State> {
         this.showLoadingLPNScreen(matchingContainer, this.state.shipment, true);
       } else {
         showPopup({
-          message: `The LPN: ${value} is not for this order`,
+          message: `The LPN: ${value} is not for this order`
         });
         this.setState({ scannedContainer: '' });
       }
     }
+  };
+
+  renderAvailableContainers(container: ListRenderItemInfo<Container>) {
+    const renderData: LabeledDataType[] = [
+      { label: 'Container Name', value: container.item?.name },
+      { label: 'Container Number', value: container.item?.containerNumber },
+      { label: 'Container Type', value: container.item?.containerType?.name },
+      { label: 'Container Status', value: container.item?.status }
+    ];
+
+    return (
+      <Card
+        style={LayoutStyle.listItemContainer}
+        onPress={() => this.showLoadingLPNScreen(container.item, this.state.shipment)}
+      >
+        <Card.Content>
+          <DetailsTable data={renderData} />
+        </Card.Content>
+      </Card>
+    );
   }
 
   render() {
     return (
-      <View style={styles.screenContainer}>
-        <View style={styles.contentContainer}>
+      <ContentContainer>
+        <ContentHeader fixed>
           <OrderDetailsSection shipment={this.state.shipment} />
+        </ContentHeader>
+        <ContentBody>
           <InputBox
             style={styles.scanSearch}
             value={this.state.scannedContainer}
@@ -135,40 +168,11 @@ class OutboundLoadingDetails extends React.Component<Props, State> {
             ListEmptyComponent={
               <EmptyView title="Loading" description="There are no containers available" isRefresh={false} />
             }
-            renderItem={(container: ListRenderItemInfo<Container>) => (
-              <Card
-                style={LayoutStyle.listItemContainer}
-                onPress={() => this.showLoadingLPNScreen(container.item, this.state.shipment)}
-              >
-                <Card.Content>
-                  <View style={styles.row}>
-                    <View style={styles.col50}>
-                      <Text style={styles.label}>Container Name</Text>
-                      <Text style={styles.value}>{container.item?.name}</Text>
-                    </View>
-                    <View style={styles.col50}>
-                      <Text style={styles.label}>Container Number</Text>
-                      <Text style={styles.value}>{container.item?.containerNumber}</Text>
-                    </View>
-                  </View>
-                  <View style={styles.row}>
-                    <View style={styles.col50}>
-                      <Text style={styles.label}>Container Type</Text>
-                      <Text style={styles.value}>{container.item?.containerType?.name}</Text>
-                    </View>
-                    <View style={styles.col50}>
-                      <Text style={styles.label}>Container Status</Text>
-                      <Text style={styles.value}>{container.item?.status}</Text>
-                    </View>
-                  </View>
-                </Card.Content>
-              </Card>
-            )}
+            renderItem={this.renderAvailableContainers}
             keyExtractor={(item) => item.id}
-            style={styles.list}
           />
-        </View>
-      </View>
+        </ContentBody>
+      </ContentContainer>
     );
   }
 }

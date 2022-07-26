@@ -135,7 +135,7 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
     return (
       <View style={styles.container}>
         {/*<Header title="Choose Location" backButtonVisible={false} />*/}
-        <ScrollView style={styles.scrollView}>
+        <ScrollView>
           <List.AccordionGroup>
             {_.map(_.keys(this.state.orgNameAndLocationsDictionary), (orgName: string) => {
               return (

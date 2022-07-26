@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { View, Text, Image } from 'react-native';
-import Styles from './Styles';
+import Styles from './styles';
 import DeviceInfo from 'react-native-device-info';
 import { BUILD_NUMBER } from '@env';
 

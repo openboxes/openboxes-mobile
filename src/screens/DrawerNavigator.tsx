@@ -3,9 +3,9 @@ import React, { Component } from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import ChooseCurrentLocation from './ChooseCurrentLocation';
 import Dashboard from './Dashboard';
-import Settings from './Settings';
 import { Image } from 'react-native';
-import { colors, appHeaderHeight } from '../constants';
+import { appHeaderHeight } from '../constants';
+import { colors } from '../assets/styles';
 
 const Drawer = createDrawerNavigator();
 
@@ -15,13 +15,13 @@ class DrawerNavigator extends Component {
       <Drawer.Navigator
         screenOptions={{
           headerStyle: {
-            backgroundColor: colors.headerColor,
+            backgroundColor: colors.accent,
             height: appHeaderHeight
           },
           headerTitleStyle: {
-            color: 'white'
+            color: colors.white
           },
-          headerTintColor: '#ffffff',
+          headerTintColor: colors.white,
           headerRight: () => (
             <Image
               source={require('../assets/images/logo.png')}
@@ -37,7 +37,7 @@ class DrawerNavigator extends Component {
       >
         <Drawer.Screen name="Choose Location" component={ChooseCurrentLocation} />
         <Drawer.Screen name="Dashboard" component={Dashboard} />
-       </Drawer.Navigator>
+      </Drawer.Navigator>
     );
   }
 }

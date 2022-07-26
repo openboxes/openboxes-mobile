@@ -5,7 +5,7 @@ import { SectionList, Text, TouchableOpacity, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Card } from 'react-native-paper';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import { colors } from '../../constants';
+import { colors } from '../../assets/styles';
 import DetailsTable from '../../components/DetailsTable';
 import { Props as LabeledDataType } from '../../components/LabeledData/types';
 
@@ -52,7 +52,7 @@ const ContainerDetails = ({ item }: any) => {
                   });
                 }}
               >
-                <FontAwesome5 name="chevron-right" size={24} color={colors.headerColor} />
+                <FontAwesome5 name="chevron-right" size={24} color={colors.accent} />
               </TouchableOpacity>
             </>
           )}

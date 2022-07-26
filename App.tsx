@@ -6,7 +6,7 @@ import rootRducer from './src/redux/reducers';
 import watchers from './src/redux/sagas';
 import Main from './src/Main';
 import { StatusBar } from 'react-native';
-import { colors } from './src/constants';
+import { colors } from './src/assets/styles';
 import * as Sentry from '@sentry/react-native';
 import { DSN_KEY } from '@env';
 
@@ -22,7 +22,7 @@ export class App extends Component {
     return (
       <Provider store={store}>
         <StatusBar
-          backgroundColor={colors.headerColor}
+          backgroundColor={colors.accent}
           hidden={false}
           barStyle="light-content"
         />

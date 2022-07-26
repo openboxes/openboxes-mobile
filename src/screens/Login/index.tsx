@@ -8,38 +8,16 @@ import showPopup from '../../components/Popup';
 import { TextInput } from 'react-native-paper';
 import Button from '../../components/Button';
 import * as NavigationService from '../../NavigationService';
+import { LoginState } from './types';
 
-import { StackNavigationProp } from '@react-navigation/stack';
-import { StackList } from '../../types/navigationTypes';
 // @ts-ignore
 import EYE_SHOW from '../../assets/images/eye_show.png';
 // @ts-ignore
 import EYE_HIDE from '../../assets/images/eye_hide.png';
 
-type ProfileScreenNavigationProp = StackNavigationProp<StackList, 'Login'>;
-
-interface OwnProps {
-  navigation: ProfileScreenNavigationProp;
-}
-
-interface StateProps {
-  //no-op
-}
-
-interface DispatchProps {
-  login: (data: any) => void;
-}
-
-type Props = OwnProps & StateProps & DispatchProps;
-
-interface State {
-  username: string;
-  password: string;
-}
-
 const Login = () => {
   const dispatch = useDispatch();
-  const [state, setState] = useState<any>({
+  const [state, setState] = useState<LoginState>({
     username: '',
     password: '',
     isSeePassword: true

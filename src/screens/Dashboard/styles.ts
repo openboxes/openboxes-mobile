@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import { colors } from '../../assets/styles';
 
 export default StyleSheet.create({
   screenContainer: {
@@ -10,7 +11,7 @@ export default StyleSheet.create({
     height: 150,
     borderRadius: 5,
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: colors.accent,
     margin: 5
   },
   cardLabel: {
@@ -31,7 +32,7 @@ export default StyleSheet.create({
   card: {
     height: '100%',
     padding: 5,
-    shadowColor: '#00000021',
+    shadowColor: `${colors.white}21`,
     shadowOffset: {
       width: 0,
       height: 6
@@ -39,6 +40,6 @@ export default StyleSheet.create({
     shadowOpacity: 0.5,
     shadowRadius: 8,
     elevation: 12,
-    backgroundColor: 'white'
+    backgroundColor: colors.white
   }
 });

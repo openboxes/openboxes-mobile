@@ -1,16 +1,18 @@
 import { DispatchProps, Props, State } from './types';
 import React from 'react';
 import { getOrdersAction } from '../../redux/actions/orders';
-import { FlatList, ListRenderItemInfo, Text, View } from 'react-native';
+import { FlatList, ListRenderItemInfo } from 'react-native';
 import { connect } from 'react-redux';
 import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
 import { RootState } from '../../redux/reducers';
-import styles from './styles';
 import EmptyView from '../../components/EmptyView';
 import { getStockTransfers } from '../../redux/actions/transfers';
 import showPopup from '../../components/Popup';
 import { Card } from 'react-native-paper';
 import { LayoutStyle } from '../../assets/styles';
+import { Props as LabeledDataType } from '../../components/LabeledData/types';
+import DetailsTable from '../../components/DetailsTable';
+import { ContentContainer, ContentBody } from '../../components/ContentLayout';
 
 class Transfers extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -19,6 +21,7 @@ class Transfers extends React.Component<Props, State> {
       error: null,
       transfersList: null
     };
+    this.renderItems = this.renderItems.bind(this);
   }
   componentDidMount() {
     this._getTransfersList();
@@ -75,55 +78,37 @@ class Transfers extends React.Component<Props, State> {
     });
   };
 
+  renderItems(item: ListRenderItemInfo<any>) {
+    const renderItemData: LabeledDataType[] = [
+      { label: 'Identify', value: item.item?.orderNumber },
+      { label: 'Status', value: item.item?.status.name },
+      { label: 'Origin', value: item.item?.origin?.name },
+      { label: 'Destination', value: item.item?.destination?.name },
+      { label: 'Number of Items', value: item.item?.orderItems?.length }
+    ];
+
+    return (
+      <Card style={LayoutStyle.listItemContainer} onPress={() => this.onStockTransfersTapped(item.item)}>
+        <Card.Content>
+          <DetailsTable data={renderItemData} />
+        </Card.Content>
+      </Card>
+    );
+  }
+
   render() {
     const { transfersList } = this.state;
     return (
-      <View style={styles.screenContainer}>
-        {transfersList ? (
-          <View style={styles.contentContainer}>
-            <FlatList
-              data={transfersList}
-              ListEmptyComponent={<EmptyView title="Transfers" description="There are no items for Transfer" />}
-              renderItem={(item: ListRenderItemInfo<any>) => (
-                <Card style={LayoutStyle.listItemContainer} onPress={() => this.onStockTransfersTapped(item.item)}>
-                  <Card.Content>
-                    <View style={styles.row}>
-                      <View style={styles.col50}>
-                        <Text style={styles.label}>Identify</Text>
-                        <Text style={styles.value}>{item.item?.orderNumber}</Text>
-                      </View>
-                      <View style={styles.col50}>
-                        <Text style={styles.label}>Status</Text>
-                        <Text style={styles.value}>{item.item?.status.name}</Text>
-                      </View>
-                    </View>
-
-                    <View style={styles.row}>
-                      <View style={styles.col50}>
-                        <Text style={styles.label}>Origin</Text>
-                        <Text style={styles.value}>{item.item?.origin?.name}</Text>
-                      </View>
-                      <View style={styles.col50}>
-                        <Text style={styles.label}>Destination</Text>
-                        <Text style={styles.value}>{item.item?.destination?.name}</Text>
-                      </View>
-                    </View>
-
-                    <View style={styles.row}>
-                      <View style={styles.col50}>
-                        <Text style={styles.label}>Number of Items</Text>
-                        <Text style={styles.value}>{item.item?.orderItems?.length}</Text>
-                      </View>
-                    </View>
-                  </Card.Content>
-                </Card>
-              )}
-              keyExtractor={(item) => item.id}
-              style={styles.list}
-            />
-          </View>
-        ) : null}
-      </View>
+      <ContentContainer>
+        <ContentBody>
+          <FlatList
+            data={transfersList}
+            ListEmptyComponent={<EmptyView title="Transfers" description="There are no items for Transfer" />}
+            renderItem={this.renderItems}
+            keyExtractor={(item) => item.id}
+          />
+        </ContentBody>
+      </ContentContainer>
     );
   }
 }

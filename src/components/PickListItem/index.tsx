@@ -4,7 +4,7 @@ import { Text, View, TouchableOpacity } from 'react-native';
 import showPopup from '../../components/Popup';
 import Button from '../../components/Button';
 import InputBox from '../../components/InputBox';
-import { colors } from '../../constants';
+import { colors } from '../../assets/styles';
 import { PicklistItem } from '../../data/picklist/PicklistItem';
 import InputSpinner from '../../components/InputSpinner';
 import { Card } from 'react-native-paper';
@@ -163,7 +163,7 @@ const PickListItem: React.FC<Props> = ({ item, onPickItem }) => {
                             <FontAwesome5
                               name="exclamation-triangle"
                               size={10}
-                              color={colors.headerColor}
+                              color={colors.accent}
                               style={styles.infoButton}
                             />
                             &nbsp;Shortage

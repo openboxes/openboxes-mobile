@@ -1,7 +1,8 @@
 import React from 'react';
 import Spinner from 'react-native-input-spinner';
 import { View } from 'react-native';
-import { colors, device } from '../../constants';
+import { device } from '../../constants';
+import { colors } from '../../assets/styles';
 import { Props } from './types';
 import styles from './styles';
 
@@ -12,7 +13,7 @@ const InputSpinner = ({ value, max, setValue }: Props) => {
         selectTextOnFocus
         showBorder
         step={1}
-        color={colors.headerColor}
+        color={colors.accent}
         max={max}
         skin="square"
         min={0}
@@ -20,9 +21,7 @@ const InputSpinner = ({ value, max, setValue }: Props) => {
         speed={1}
         width={device.windowWidth / 1.16}
         value={value}
-        onChange={(num: any) => {
-          setValue(num);
-        }}
+        onChange={setValue}
       />
     </View>
   );

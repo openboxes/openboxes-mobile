@@ -6,18 +6,20 @@ import { Card } from 'react-native-paper';
 import dashboardData from './dashboardData';
 import EmptyView from '../../components/EmptyView';
 class Dashboard extends React.Component<Props> {
-  renderItem = (item: any, index: any) => {
+  renderItem = (item: ListRenderItemInfo<any>) => {
+    const cardItem = item.item;
+    const cardIndex = item.index;
     return (
       <TouchableOpacity
-        key={index}
+        key={cardIndex}
         style={styles.cardContainer}
         onPress={() => {
-          this.props.navigation.navigate(item.navigationScreenName);
+          this.props.navigation.navigate(cardItem.navigationScreenName);
         }}
       >
         <Card style={styles.card}>
-          <Image style={styles.cardImage} resizeMode="contain" source={item.icon} />
-          <Text style={styles.cardLabel}>{item.screenName}</Text>
+          <Image style={styles.cardImage} resizeMode="contain" source={cardItem.icon} />
+          <Text style={styles.cardLabel}>{cardItem.screenName}</Text>
         </Card>
       </TouchableOpacity>
     );
@@ -31,7 +33,7 @@ class Dashboard extends React.Component<Props> {
           horizontal={false}
           numColumns={3}
           ListEmptyComponent={<EmptyView />}
-          renderItem={(item: ListRenderItemInfo<any>) => this.renderItem(item.item, item.index)}
+          renderItem={this.renderItem}
         />
       </View>
     );

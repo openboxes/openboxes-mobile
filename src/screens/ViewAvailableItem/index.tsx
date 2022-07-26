@@ -1,7 +1,6 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { Image, View } from 'react-native';
-import styles from './styles';
 import { Card } from 'react-native-paper';
 import Button from '../../components/Button';
 import DefaultProductImage from '../../assets/images/default-product.png';
@@ -48,7 +47,7 @@ const ViewAvailableItem: React.FC = () => {
   return (
     <ContentContainer>
       <ContentBody>
-        <Card style={styles.from}>
+        <Card style={{ flex: 1 }}>
           <Card.Content>
             <View style={{ width: '100%', alignItems: 'center', flex: 0 }}>
               <Image style={{ width: 150, height: 150, resizeMode: 'contain' }} source={source} />
@@ -57,7 +56,7 @@ const ViewAvailableItem: React.FC = () => {
           </Card.Content>
         </Card>
       </ContentBody>
-      <ContentFooter gap={10}>
+      <ContentFooter gap={5}>
         <Button
           title={'Adjust Stock'}
           size={'default'}

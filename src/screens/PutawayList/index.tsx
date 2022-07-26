@@ -3,7 +3,7 @@ import _ from 'lodash';
 import { DispatchProps, Props, State } from './types';
 import React from 'react';
 import { getOrdersAction } from '../../redux/actions/orders';
-import { FlatList, ListRenderItemInfo, View } from 'react-native';
+import { FlatList, ListRenderItemInfo } from 'react-native';
 import { connect } from 'react-redux';
 import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
 import styles from './styles';
@@ -16,6 +16,7 @@ import InputBox from '../../components/InputBox';
 import { LayoutStyle } from '../../assets/styles';
 import { Props as LabeledDataType } from '../../components/LabeledData/types';
 import DetailsTable from '../../components/DetailsTable';
+import { ContentContainer, ContentBody, ContentHeader } from '../../components/ContentLayout';
 
 class PutawayList extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -125,21 +126,22 @@ class PutawayList extends React.Component<Props, State> {
 
   render() {
     const { showList, putAwayList, putAwayListFiltered, lpnFilter } = this.state;
-
     return (
-      <View style={styles.screenContainer}>
-        {showList && (
-          <View style={styles.contentContainer}>
-            {putAwayList?.length && (
-              <InputBox
-                style={styles.lpnFilter}
-                value={lpnFilter}
-                disabled={false}
-                editable={false}
-                label={'Scan Lot Number'}
-                onChange={this.onChangeLpnFilter}
-              />
-            )}
+      <ContentContainer>
+        <ContentHeader fixed>
+          {putAwayList?.length && (
+            <InputBox
+              style={styles.lpnFilter}
+              value={lpnFilter}
+              disabled={false}
+              editable={false}
+              label={'Scan Lot Number'}
+              onChange={this.onChangeLpnFilter}
+            />
+          )}
+        </ContentHeader>
+        <ContentBody>
+          {showList && (
             <FlatList
               data={putAwayListFiltered?.length ? putAwayListFiltered : putAwayList}
               ListEmptyComponent={
@@ -147,11 +149,10 @@ class PutawayList extends React.Component<Props, State> {
               }
               renderItem={this.renderItems}
               keyExtractor={(item) => item.id}
-              style={styles.list}
             />
-          </View>
-        )}
-      </View>
+          )}
+        </ContentBody>
+      </ContentContainer>
     );
   }
 }
