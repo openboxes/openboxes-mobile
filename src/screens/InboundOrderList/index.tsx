@@ -73,15 +73,13 @@ const InboundOrderList = () => {
   };
 
   const renderListItem = ({ item, index }: any) => {
-    const itemStyles = { labelStyle: typography.label, valueStyle: typography.value };
-
     const renderListItemDats: LabeledDataType[] = [
-      { label: 'Identifier', value: item.shipmentNumber, ...itemStyles },
-      { label: 'Status', value: item.status, ...itemStyles },
-      { label: 'Origin', value: item.origin.name, ...itemStyles },
-      { label: 'Destination', value: item.destination.name, ...itemStyles },
-      { label: 'Description', value: item.name, ...itemStyles },
-      { label: 'Items Received', value: `${item.receivedCount} / ${item.shipmentItems.length}`, ...itemStyles }
+      { label: 'Identifier', value: item.shipmentNumber },
+      { label: 'Status', value: item.status },
+      { label: 'Origin', value: item.origin.name },
+      { label: 'Destination', value: item.destination.name },
+      { label: 'Description', value: item.name },
+      { label: 'Items Received', value: `${item.receivedCount} / ${item.shipmentItems.length}` }
     ];
 
     return (

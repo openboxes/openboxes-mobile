@@ -82,6 +82,7 @@ const PickListItem: React.FC<Props> = ({ item, onPickItem }) => {
           <DetailsTable
             style={styles.dataTable}
             columns={3}
+            gap={0.5}
             data={[
               { label: 'Product Code', value: item?.productCode },
               { label: 'Product Name', value: item?.['product.name'] },
