@@ -5,7 +5,7 @@ import { DispatchProps, Props } from './types';
 import { connect } from 'react-redux';
 import { Text, ToastAndroid } from 'react-native';
 import { Order } from '../../data/order/Order';
-import styles from './styles';
+import { margin, typography } from '../../assets/styles';
 import InputBox from '../../components/InputBox';
 import Button from '../../components/Button';
 import { getShipmentOrigin } from '../../redux/actions/packing';
@@ -118,9 +118,9 @@ class CreateLpn extends React.Component<Props, State> {
 
   render() {
     return (
-      <ContentContainer style={styles.container}>
+      <ContentContainer style={margin.M5}>
         <ContentBody>
-          <Text style={styles.label}>Shipment Number</Text>
+          <Text style={typography.label}>Shipment Number</Text>
           <AutoInputInternalLocation
             label="AutoInputInternalLocation"
             data={this.state.stockMovementList}

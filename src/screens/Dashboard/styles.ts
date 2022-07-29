@@ -2,11 +2,6 @@ import { StyleSheet } from 'react-native';
 import { colors } from '../../assets/styles';
 
 export default StyleSheet.create({
-  screenContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    flex: 1
-  },
   cardContainer: {
     height: 150,
     borderRadius: 5,

@@ -6,14 +6,13 @@ import { getOrdersAction } from '../../redux/actions/orders';
 import { FlatList, ListRenderItemInfo } from 'react-native';
 import { connect } from 'react-redux';
 import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
-import styles from './styles';
 import PutAwayItems from '../../data/putaway/PutAwayItems';
 import { fetchPutAwayFromOrderAction } from '../../redux/actions/putaways';
 import PutAway from '../../data/putaway/PutAway';
 import EmptyView from '../../components/EmptyView';
 import { Card } from 'react-native-paper';
 import InputBox from '../../components/InputBox';
-import { LayoutStyle } from '../../assets/styles';
+import { common } from '../../assets/styles';
 import { Props as LabeledDataType } from '../../components/LabeledData/types';
 import DetailsTable from '../../components/DetailsTable';
 import { ContentContainer, ContentBody, ContentHeader } from '../../components/ContentLayout';
@@ -114,7 +113,7 @@ class PutawayList extends React.Component<Props, State> {
 
     return (
       <Card
-        style={LayoutStyle.listItemContainer}
+        style={common.listItemContainer}
         onPress={() => this.goToPutawayItemDetailScreen(listRenderItemInfo.item, listRenderItemInfo.item?.putawayItem)}
       >
         <Card.Content>
@@ -131,7 +130,7 @@ class PutawayList extends React.Component<Props, State> {
         <ContentHeader fixed>
           {putAwayList?.length && (
             <InputBox
-              style={styles.lpnFilter}
+              style={common.scanSearch}
               value={lpnFilter}
               disabled={false}
               editable={false}

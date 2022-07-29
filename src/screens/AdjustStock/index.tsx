@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import styles from './styles';
-import { ScrollView, View, ToastAndroid } from 'react-native';
+import { common, margin } from '../../assets/styles';
+import { View, ToastAndroid } from 'react-native';
 import InputBox from '../../components/InputBox';
 import Button from '../../components/Button';
 import showPopup from '../../components/Popup';
@@ -168,7 +168,7 @@ const AdjustStock = () => {
         <DetailsTable data={renderData} />
       </ContentHeader>
       <ContentBody>
-        <View style={styles.inputSpinner}>
+        <View style={[common.containerCenter, margin.MB3]}>
           <InputSpinner title={'Quantity Adjusted'} value={quantityAdjusted} setValue={setQuantityAdjusted} />
         </View>
         <DropDown

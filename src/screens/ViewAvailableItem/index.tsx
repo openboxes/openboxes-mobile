@@ -1,6 +1,8 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { Image, View } from 'react-native';
+import { common } from '../../assets/styles';
+import styles from './styles';
 import { Card } from 'react-native-paper';
 import Button from '../../components/Button';
 import DefaultProductImage from '../../assets/images/default-product.png';
@@ -47,23 +49,18 @@ const ViewAvailableItem: React.FC = () => {
   return (
     <ContentContainer>
       <ContentBody>
-        <Card style={{ flex: 1 }}>
+        <Card style={common.flex1}>
           <Card.Content>
-            <View style={{ width: '100%', alignItems: 'center', flex: 0 }}>
-              <Image style={{ width: 150, height: 150, resizeMode: 'contain' }} source={source} />
+            <View style={common.containerCenter}>
+              <Image style={styles.itemImage} source={source} />
             </View>
             <DetailsTable data={renderData} />
           </Card.Content>
         </Card>
       </ContentBody>
       <ContentFooter gap={5}>
-        <Button
-          title={'Adjust Stock'}
-          size={'default'}
-          style={{ paddingHorizontal: 20 }}
-          onPress={navigateToAdjustStock}
-        />
-        <Button title={'Transfer'} size={'default'} style={{ paddingHorizontal: 20 }} onPress={navigateToTransfer} />
+        <Button title={'Adjust Stock'} size={'default'} onPress={navigateToAdjustStock} />
+        <Button title={'Transfer'} size={'default'} onPress={navigateToTransfer} />
       </ContentFooter>
     </ContentContainer>
   );

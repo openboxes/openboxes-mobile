@@ -27,9 +27,9 @@ class DrawerNavigator extends Component {
               source={require('../assets/images/logo.png')}
               style={{
                 resizeMode: 'stretch',
-                width: 40,
+                width: 30,
                 height: 30,
-                marginRight: 30
+                marginRight: 20
               }}
             />
           )

@@ -8,11 +8,5 @@ export default StyleSheet.create({
     fontWeight: 'bold',
     marginTop: 8,
     marginStart: 10
-  },
-  itemView: {
-    marginStart: 10,
-    marginEnd: 10,
-    marginTop: 5,
-    marginBottom: 10
   }
 });

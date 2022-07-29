@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styles from './styles';
+import { common, margin } from '../../assets/styles';
 import { Image, TouchableOpacity, View } from 'react-native';
 import DatePicker from 'react-native-datepicker';
 import InputBox from '../../components/InputBox';
@@ -254,7 +255,7 @@ const InboundReceiveDetail = () => {
         <DetailsTable data={detailsData} />
       </ContentHeader>
       <ContentBody>
-        <View style={styles.from}>
+        <View style={margin.MT3}>
           <AsyncModalSelect
             placeholder="Receiving Location"
             label="Receiving Location"
@@ -279,7 +280,6 @@ const InboundReceiveDetail = () => {
           <SelectDropdown
             renderDropdownIcon={renderIcon}
             data={['', 'APPROVED', 'RECALLED', 'ON_HOLD', 'QUARANTINED', 'EXPIRED', 'RESERVED', 'DAMAGED']}
-            dropdownStyle={{ justifyContent: 'flex-start' }}
             defaultValue={lotStatusCode}
             buttonTextStyle={styles.lotStatusSelectTextStyle}
             buttonTextAfterSelection={(selectedItem) => selectedItem}
@@ -311,7 +311,7 @@ const InboundReceiveDetail = () => {
               </TouchableOpacity>
             )}
           </View>
-          <View style={styles.inputSpinner}>
+          <View style={common.containerCenter}>
             <InputSpinner title={'Quantity to Receive'} value={state.quantityToReceive} setValue={onChangeQuantity} />
           </View>
           <InputBox

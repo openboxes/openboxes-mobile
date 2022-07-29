@@ -2,12 +2,6 @@ import { StyleSheet } from 'react-native';
 import Theme from '../../utils/Theme';
 
 export default StyleSheet.create({
-  itemView: {
-    marginStart: 10,
-    marginEnd: 10,
-    marginTop: 5,
-    marginBottom: 10
-  },
   rowItem: {
     flexDirection: 'row',
     borderColor: Theme.colors.background,

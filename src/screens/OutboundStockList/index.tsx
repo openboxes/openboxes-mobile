@@ -4,13 +4,12 @@ import { View, FlatList, ListRenderItemInfo } from 'react-native';
 import { connect } from 'react-redux';
 import { showScreenLoading, hideScreenLoading } from '../../redux/actions/main';
 import { RootState } from '../../redux/reducers';
-import styles from './styles';
+import { common } from '../../assets/styles';
 import { getShipmentsReadyToBePacked } from '../../redux/actions/packing';
 import { Shipment } from '../../data/container/Shipment';
 import showPopup from '../../components/Popup';
 import EmptyView from '../../components/EmptyView';
 import { Card } from 'react-native-paper';
-import { LayoutStyle } from '../../assets/styles';
 import BarcodeSearchHeader from '../../components/BarcodeSearchHeader';
 import _ from 'lodash';
 import ShipmentItems from '../../data/inbound/ShipmentItems';
@@ -162,7 +161,7 @@ class OutboundStockList extends React.Component<Props, State> {
     ];
 
     return (
-      <Card style={LayoutStyle.listItemContainer} onPress={() => this.showShipmentReadyToPackScreen(shipment.item)}>
+      <Card style={common.listItemContainer} onPress={() => this.showShipmentReadyToPackScreen(shipment.item)}>
         <Card.Content>
           <DetailsTable data={renderData} />
         </Card.Content>
@@ -170,9 +169,10 @@ class OutboundStockList extends React.Component<Props, State> {
     );
   }
 
+
   render() {
     return (
-      <View style={styles.screenContainer}>
+      <View style={[common.containerFlexColumn, common.flex1]}>
         <BarcodeSearchHeader
           autoSearch
           placeholder={'Search or scan barcode'}
@@ -180,7 +180,7 @@ class OutboundStockList extends React.Component<Props, State> {
           searchBox={false}
           onSearchTermSubmit={this.filterShipments}
         />
-        <View style={styles.contentContainer}>
+        <View style={[common.containerFlexColumn, common.flex1]}>
           <FlatList
             data={this.state.filteredShipments.length > 0 ? this.state.filteredShipments : this.state.shipments}
             ListEmptyComponent={
@@ -188,7 +188,6 @@ class OutboundStockList extends React.Component<Props, State> {
             }
             renderItem={this.renderPackingList}
             keyExtractor={(item) => item.id}
-            style={styles.list}
           />
         </View>
       </View>

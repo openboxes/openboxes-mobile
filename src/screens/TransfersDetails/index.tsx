@@ -7,7 +7,7 @@ import showPopup from '../../components/Popup';
 import { getStockTransfersSummary, completeStockTransfer } from '../../redux/actions/transfers';
 import EmptyView from '../../components/EmptyView';
 import Button from '../../components/Button';
-import { LayoutStyle } from '../../assets/styles';
+import { common } from '../../assets/styles';
 import DetailsTable from '../../components/DetailsTable';
 import { Props as LabeledDataType } from '../../components/LabeledData/types';
 import { ContentContainer, ContentFooter, ContentBody } from '../../components/ContentLayout';
@@ -82,7 +82,7 @@ const TransferDetails = () => {
     ];
 
     return (
-      <Card style={LayoutStyle.listItemContainer}>
+      <Card style={common.listItemContainer}>
         <Card.Content>
           <DetailsTable data={renderTransferItemData} />
         </Card.Content>
@@ -102,7 +102,7 @@ const TransferDetails = () => {
     ];
 
     return (
-      <Card key={item?.['product.productCode']} style={LayoutStyle.listItemContainer}>
+      <Card key={item?.['product.productCode']} style={common.listItemContainer}>
         <Card.Content>
           <DetailsTable data={renderListItemData} />
         </Card.Content>

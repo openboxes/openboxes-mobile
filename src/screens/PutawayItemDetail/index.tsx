@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { View, ScrollView } from 'react-native';
 import showPopup from '../../components/Popup';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import InputBox from '../../components/InputBox';

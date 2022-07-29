@@ -9,7 +9,7 @@ import EmptyView from '../../components/EmptyView';
 import { getStockTransfers } from '../../redux/actions/transfers';
 import showPopup from '../../components/Popup';
 import { Card } from 'react-native-paper';
-import { LayoutStyle } from '../../assets/styles';
+import { common } from '../../assets/styles';
 import { Props as LabeledDataType } from '../../components/LabeledData/types';
 import DetailsTable from '../../components/DetailsTable';
 import { ContentContainer, ContentBody } from '../../components/ContentLayout';
@@ -88,7 +88,7 @@ class Transfers extends React.Component<Props, State> {
     ];
 
     return (
-      <Card style={LayoutStyle.listItemContainer} onPress={() => this.onStockTransfersTapped(item.item)}>
+      <Card style={common.listItemContainer} onPress={() => this.onStockTransfersTapped(item.item)}>
         <Card.Content>
           <DetailsTable data={renderItemData} />
         </Card.Content>

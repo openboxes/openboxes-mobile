@@ -27,15 +27,13 @@ class Dashboard extends React.Component<Props> {
 
   render() {
     return (
-      <View style={styles.screenContainer}>
-        <FlatList
-          data={dashboardData}
-          horizontal={false}
-          numColumns={3}
-          ListEmptyComponent={<EmptyView />}
-          renderItem={this.renderItem}
-        />
-      </View>
+      <FlatList
+        data={dashboardData}
+        horizontal={false}
+        numColumns={3}
+        ListEmptyComponent={<EmptyView />}
+        renderItem={this.renderItem}
+      />
     );
   }
 }

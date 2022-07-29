@@ -3,9 +3,8 @@ import React, { ReactElement } from 'react';
 import { Order } from '../../data/order/Order';
 import EmptyView from '../../components/EmptyView';
 import { Card } from 'react-native-paper';
-import { LayoutStyle } from '../../assets/styles';
+import { common } from '../../assets/styles';
 import { OrderListProps as Props } from './types';
-import styles from './styles';
 import { Props as LabeledDataType } from '../../components/LabeledData/types';
 import DetailsTable from '../../components/DetailsTable';
 
@@ -21,7 +20,7 @@ export default function OrdersList(props: Props) {
       { label: 'Loading Location', value: order?.loadingLocation?.name, defaultValue: 'Unassigned' }
     ];
     return (
-      <Card style={LayoutStyle.listItemContainer} onPress={() => props.onOrderTapped(order)}>
+      <Card style={common.listItemContainer} onPress={() => props.onOrderTapped(order)}>
         <Card.Content>
           <DetailsTable data={renderOrderDats} />
         </Card.Content>
@@ -36,7 +35,6 @@ export default function OrdersList(props: Props) {
         renderItem={renderOrder}
         ListEmptyComponent={<EmptyView title="Picking" description="There are no items to pick" />}
         keyExtractor={(order) => order.id}
-        style={styles.list}
       />
     )
   );

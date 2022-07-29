@@ -3,6 +3,7 @@ import { Image, TouchableOpacity, View } from 'react-native';
 import { Menu, Provider } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 import { logout } from '../../redux/actions/auth';
+import styles from './styles';
 
 const OptionMenu = ({ route, navigation }: any) => {
   const dispatch = useDispatch();
@@ -12,53 +13,15 @@ const OptionMenu = ({ route, navigation }: any) => {
   const handleLogout = () => dispatch(logout());
   return (
     <Provider>
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'flex-start',
-          alignContent: 'flex-start'
-        }}
-      >
-        <Image
-          source={require('../../assets/images/logo.png')}
-          style={{
-            resizeMode: 'stretch',
-            width: 40,
-            height: 30,
-            marginTop: 10,
-            marginEnd:
-              route.name !== 'Login' && route.name !== 'Settings' ? 0 : 30
-          }}
-        />
-        {route.name !== 'Login' && route.name !== 'Settings' ? (
+      <View style={styles.menuContainer}>
+        <Image source={require('../../assets/images/logo.png')} style={styles.logo} />
+        {route.name !== 'Login' && route.name !== 'Settings' && (
           <Menu
-            style={{
-              width: 350,
-              position: 'absolute',
-              top: 50,
-              left: -50
-            }}
+            style={styles.menu}
             visible={visible}
             anchor={
-              <TouchableOpacity
-                style={{
-                  flex: 1,
-                  justifyContent: 'center',
-                  alignItems: 'center'
-                }}
-                onPress={openMenu}
-              >
-                <Image
-                  source={require('../../assets/images/option.jpg')}
-                  style={{
-                    resizeMode: 'center',
-                    width: 40,
-                    height: 40,
-                    marginHorizontal: 5,
-                    marginTop: 20,
-                    zIndex: 123
-                  }}
-                />
+              <TouchableOpacity onPress={openMenu}>
+                <Image source={require('../../assets/images/option.jpg')} style={styles.dots} />
               </TouchableOpacity>
             }
             onDismiss={closeMenu}
@@ -78,9 +41,6 @@ const OptionMenu = ({ route, navigation }: any) => {
               }}
             />
             <Menu.Item
-              style={{
-                width: '70%'
-              }}
               title="Settings"
               onPress={() => {
                 navigation.navigate('Settings');
@@ -88,9 +48,6 @@ const OptionMenu = ({ route, navigation }: any) => {
               }}
             />
             <Menu.Item
-              style={{
-                width: '70%'
-              }}
               title="Change location"
               onPress={() => {
                 navigation.navigate('Drawer');
@@ -98,24 +55,15 @@ const OptionMenu = ({ route, navigation }: any) => {
               }}
             />
             <Menu.Item
-              style={{
-                width: '70%'
-              }}
               title="App info / version"
               onPress={() => {
                 navigation.navigate('AppInfo');
                 closeMenu();
               }}
             />
-            <Menu.Item
-              style={{
-                width: '70%'
-              }}
-              title="Logout"
-              onPress={handleLogout}
-            />
+            <Menu.Item title="Logout" onPress={handleLogout} />
           </Menu>
-        ) : null}
+        )}
       </View>
     </Provider>
   );

@@ -2,7 +2,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import { connect } from 'react-redux';
-import styles from './styles';
+import { common } from '../../assets/styles';
 import showPopup from '../../components/Popup';
 import ProductsSearchHeader from './ProductsSearchHeader';
 import ProductsList from './ProductsList';
@@ -329,7 +329,7 @@ class Products extends React.Component<Props, State> {
   render() {
     const vm = vmMapper(this.state);
     return (
-      <View style={styles.screenContainer}>
+      <View style={[common.containerCenter, common.flex1]}>
         <ProductsSearchHeader
           subtitle={vm.subtitle}
           searchBoxVisible={vm.searchBoxVisible}
@@ -353,7 +353,7 @@ class Products extends React.Component<Props, State> {
           searchBox={false}
           onSearchTermSubmit={this.onSearchTermSubmit}
         />
-        <View style={styles.content}>
+        <View style={[common.containerCenter, common.flex1]}>
           <ProductsList
             products={vm.list}
             onProductTapped={(product) => {

@@ -4,11 +4,11 @@ import { useNavigation } from '@react-navigation/native';
 import styles from './styles';
 import { Card } from 'react-native-paper';
 import InboundDetailProps from './types';
-import { LayoutStyle } from '../../assets/styles';
+import { common } from '../../assets/styles';
 import DetailsTable from '../../components/DetailsTable';
 import { Props as LabeledDataType } from '../../components/LabeledData/types';
 
-const InboundOrderContainer = ({ data, shipmentId, shipmentData }: InboundDetailProps) => {
+const InboundOrderContainer: React.FC<InboundDetailProps> = ({ data, shipmentId, shipmentData }) => {
   const navigation = useNavigation<any>();
 
   const navigateToInboundOrderDetails = (item: any) => {
@@ -42,7 +42,7 @@ const InboundOrderContainer = ({ data, shipmentId, shipmentData }: InboundDetail
 
   const renderShipmentItem: React.FC = () => {
     return (
-      <Card style={LayoutStyle.listItemContainer}>
+      <Card style={common.listItemContainer}>
         <Card.Content>
           <DetailsTable data={renderShipmentItemData} />
         </Card.Content>
@@ -63,7 +63,7 @@ const InboundOrderContainer = ({ data, shipmentId, shipmentData }: InboundDetail
     return (
       <Card
         key={item['product.productCode']}
-        style={LayoutStyle.listItemContainer}
+        style={common.listItemContainer}
         onPress={() => navigateToInboundOrderDetails(item)}
       >
         <Card.Content>

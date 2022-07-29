@@ -3,7 +3,7 @@
 /* eslint-disable react/jsx-sort-props */
 import React, { useEffect, useState } from 'react';
 import { Text, View, ToastAndroid } from 'react-native';
-import styles from './styles';
+import { common, typography, margin } from '../../assets/styles';
 import Button from '../../components/Button';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
@@ -127,8 +127,8 @@ const ShipItemDetails = () => {
         />
       </ContentHeader>
       <ContentBody>
-        <View style={styles.textContainer}>
-          <Text style={styles.label}>{'Container'}</Text>
+        <View style={[common.containerFlexColumn, margin.M3]}>
+          <Text style={typography.label}>{'Container'}</Text>
           <AutoInputInternalLocation
             label="AutoInputInternalContainer"
             data={state.containerList ?? []}
@@ -137,7 +137,7 @@ const ShipItemDetails = () => {
             selectedData={setSelectedContainerItem}
           />
         </View>
-        <View style={styles.alignCenterContent}>
+        <View style={common.containerCenter}>
           <InputSpinner title={'Quantity to Pick'} value={state.quantityPicked} setValue={quantityPickedChange} />
         </View>
       </ContentBody>

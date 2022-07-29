@@ -3,12 +3,11 @@ import { FlatList, ListRenderItemInfo, TouchableOpacity } from 'react-native';
 import React, { ReactElement } from 'react';
 import EmptyView from '../../components/EmptyView';
 import { Card } from 'react-native-paper';
-import { LayoutStyle } from '../../assets/styles';
+import { common } from '../../assets/styles';
 export interface Props {
   products: Product[] | null;
   onProductTapped: (product: Product) => void;
 }
-import styles from './styles';
 import { Props as LabeledDataType } from '../../components/LabeledData/types';
 import DetailsTable from '../../components/DetailsTable';
 
@@ -24,7 +23,7 @@ export default function ProductsList(props: Props) {
 
     return (
       <TouchableOpacity onPress={() => props.onProductTapped(product)}>
-        <Card style={LayoutStyle.listItemContainer}>
+        <Card style={common.listItemContainer}>
           <Card.Content>
             <DetailsTable columns={1} data={renderProductData} />
           </Card.Content>
@@ -39,7 +38,6 @@ export default function ProductsList(props: Props) {
       renderItem={renderProduct}
       ListEmptyComponent={<EmptyView title="Product List" description="There are no products on the list" />}
       keyExtractor={(product) => product.id}
-      style={styles.list}
     />
   );
 }

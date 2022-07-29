@@ -1,5 +1,6 @@
-import LayoutStyle from './LayoutStyle';
 import colors from './colors';
-import globalStyles from './globalStyles';
+import common from './common';
+import margin from './margin';
+import typography from './typography';
 
-export { LayoutStyle, colors };
+export { colors, common, margin, typography };

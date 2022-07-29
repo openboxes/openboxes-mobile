@@ -1,6 +1,6 @@
 /* eslint-disable complexity */
 import React from 'react';
-import styles from './styles';
+import { typography, common, margin } from '../../assets/styles';
 import { connect } from 'react-redux';
 import { Text, View } from 'react-native';
 import showPopup from '../../components/Popup';
@@ -80,7 +80,7 @@ class Index extends React.Component<Props, State> {
 
   render() {
     return (
-      <View style={styles.screenContainer}>
+      <View style={[common.containerFlexColumn, common.flex1]}>
         <BarcodeSearchHeader
           placeholder={'Search Orders by Name'}
           resetSearch={() => null}
@@ -88,8 +88,8 @@ class Index extends React.Component<Props, State> {
           searchBox={false}
           onSearchTermSubmit={this.searchOrders}
         />
-        <Text style={styles.label}>{`Returned ${this.state.resultCount} results`}</Text>
-        <View style={styles.content}>
+        <Text style={[typography.label, margin.M1, margin.ML3]}>{`Returned ${this.state.resultCount} results`}</Text>
+        <View style={[common.containerFlexColumn, common.flex1]}>
           <OrdersList orders={this.state.allOrders} onOrderTapped={this.goToOrderDetailsScreen} />
         </View>
       </View>

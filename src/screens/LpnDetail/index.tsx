@@ -6,6 +6,7 @@ import { ContainerShipmentItem } from '../../data/container/ContainerShipmentIte
 import { fetchContainer, getContainer, updateContainerStatus } from '../../redux/actions/lpn';
 import { connect } from 'react-redux';
 import styles from './styles';
+import { margin, typography } from '../../assets/styles';
 import Button from '../../components/Button';
 import showPopup from '../../components/Popup';
 import PrintModal from '../../components/PrintModal';
@@ -149,7 +150,7 @@ class LpnDetail extends React.Component<Props, State> {
   render() {
     return (
       <ContentContainer>
-        <ContentHeader>
+        <ContentHeader style={margin.MB1}>
           <DetailsTable
             data={[
               { label: 'Name', value: this.state.container?.name },
@@ -159,7 +160,7 @@ class LpnDetail extends React.Component<Props, State> {
             ]}
           />
           <View>
-            <Text style={styles.label}>{'Status'}</Text>
+            <Text style={typography.label}>{'Status'}</Text>
             <SelectDropdown
               data={containerStatuses}
               defaultValue={this.state.container?.containerStatus?.id}
@@ -175,22 +176,13 @@ class LpnDetail extends React.Component<Props, State> {
           </View>
         </ContentHeader>
         <ContentBody>
-          <View style={styles.row}>
-            <Text style={styles.label}>{'Items'}</Text>
-          </View>
-          <View style={styles.row}>
-            <View style={styles.col100}>
-              <FlatList
-                data={this.state.container?.shipmentItems}
-                ListEmptyComponent={
-                  <EmptyView title="LPN Details" description="There are no items" isRefresh={false} />
-                }
-                renderItem={this.renderShipmentItems}
-                keyExtractor={(item) => item.id}
-                style={styles.list}
-              />
-            </View>
-          </View>
+          <Text style={typography.label}>{'Items'}</Text>
+          <FlatList
+            data={this.state.container?.shipmentItems}
+            ListEmptyComponent={<EmptyView title="LPN Details" description="There are no items" isRefresh={false} />}
+            renderItem={this.renderShipmentItems}
+            keyExtractor={(item) => item.id}
+          />
         </ContentBody>
         <ContentFooter>
           <Button title={'Print Barcode Label'} disabled={false} onPress={this.handleClick} />

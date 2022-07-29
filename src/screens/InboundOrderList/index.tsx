@@ -8,10 +8,9 @@ import showPopup from '../../components/Popup';
 import BarcodeSearchHeader from '../../components/BarcodeSearchHeader';
 import { RootState } from '../../redux/reducers';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import styles from './styles';
 import { Card } from 'react-native-paper';
 import EmptyView from '../../components/EmptyView';
-import { LayoutStyle } from '../../assets/styles';
+import { common, typography } from '../../assets/styles';
 import _ from 'lodash';
 import { Props as LabeledDataType } from '../../components/LabeledData/types';
 import DetailsTable from '../../components/DetailsTable';
@@ -74,7 +73,7 @@ const InboundOrderList = () => {
   };
 
   const renderListItem = ({ item, index }: any) => {
-    const itemStyles = { labelStyle: styles.label, valueStyle: styles.value };
+    const itemStyles = { labelStyle: typography.label, valueStyle: typography.value };
 
     const renderListItemDats: LabeledDataType[] = [
       { label: 'Identifier', value: item.shipmentNumber, ...itemStyles },
@@ -86,7 +85,7 @@ const InboundOrderList = () => {
     ];
 
     return (
-      <Card style={LayoutStyle.listItemContainer} key={index} onPress={() => navigateToInboundDetails(item)}>
+      <Card style={common.listItemContainer} key={index} onPress={() => navigateToInboundDetails(item)}>
         <Card.Content>
           <DetailsTable data={renderListItemDats} />
         </Card.Content>

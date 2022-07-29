@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { FlatList, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import styles from './styles';
+import { common } from '../../assets/styles';
 import { Card } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 import showPopup from '../../components/Popup';
@@ -11,7 +11,6 @@ import { RootState } from '../../redux/reducers';
 import BarcodeSearchHeader from '../../components/BarcodeSearchHeader';
 import _ from 'lodash';
 import EmptyView from '../../components/EmptyView';
-import { LayoutStyle } from '../../assets/styles';
 import DetailsTable from '../../components/DetailsTable';
 import { Props as LabeledDataType } from '../../components/LabeledData/types';
 
@@ -83,7 +82,7 @@ const ProductSummary = () => {
     ];
 
     return (
-      <Card key={index} style={LayoutStyle.listItemContainer} onPress={() => navigateToDetails(item)}>
+      <Card key={index} style={common.listItemContainer} onPress={() => navigateToDetails(item)}>
         <Card.Content>
           <DetailsTable data={renderListItemData} />
         </Card.Content>
@@ -92,7 +91,7 @@ const ProductSummary = () => {
   };
 
   return (
-    <View style={styles.mainContainer}>
+    <View style={[common.containerFlexColumn, common.flex1]}>
       <BarcodeSearchHeader
         autoSearch
         autoFocus

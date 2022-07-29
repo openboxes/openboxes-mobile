@@ -4,13 +4,12 @@ import { Alert, FlatList, ListRenderItemInfo } from 'react-native';
 import { connect } from 'react-redux';
 import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
 import { RootState } from '../../redux/reducers';
-import styles from '../OutboundStockDetails/styles';
 import { getShipment } from '../../redux/actions/packing';
 import OrderDetailsSection from './OrderDetailsSection';
 import EmptyView from '../../components/EmptyView';
 import { Shipment, Container } from '../../data/container/Shipment';
 import { Card } from 'react-native-paper';
-import { LayoutStyle } from '../../assets/styles';
+import { common } from '../../assets/styles';
 import _ from 'lodash';
 import InputBox from '../../components/InputBox';
 import showPopup from '../../components/Popup';
@@ -137,7 +136,7 @@ class OutboundLoadingDetails extends React.Component<Props, State> {
 
     return (
       <Card
-        style={LayoutStyle.listItemContainer}
+        style={common.listItemContainer}
         onPress={() => this.showLoadingLPNScreen(container.item, this.state.shipment)}
       >
         <Card.Content>
@@ -155,7 +154,7 @@ class OutboundLoadingDetails extends React.Component<Props, State> {
         </ContentHeader>
         <ContentBody>
           <InputBox
-            style={styles.scanSearch}
+            style={common.scanSearch}
             value={this.state.scannedContainer}
             disabled={false}
             editable={false}

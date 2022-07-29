@@ -5,7 +5,7 @@ import React, { Component } from 'react';
 import { DispatchProps, Props, State } from './types';
 import { View, Text, ToastAndroid } from 'react-native';
 import { RootState } from '../../redux/reducers';
-import styles from './styles';
+import { common, margin } from '../../assets/styles';
 import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
 import { connect } from 'react-redux';
 import { searchInternalLocations } from '../../redux/actions/locations';
@@ -154,7 +154,7 @@ class PutawayItem extends Component<Props, State> {
             editable={false}
           />
           <InputBox disabled label="Received Quantity" value={item.quantity.toString() ?? '0'} editable={false} />
-          <View style={{ marginTop: 10 }}>
+          <View style={margin.MT3}>
             <Text>Putaway Location</Text>
             <AsyncModalSelect
               placeholder="Default"
@@ -168,7 +168,7 @@ class PutawayItem extends Component<Props, State> {
               onSelect={(selectedLocation: any) => this.setState({ selectedLocation })}
             />
           </View>
-          <View style={styles.inputSpinner}>
+          <View style={common.containerCenter}>
             <InputSpinner title="Quantity to Pick" value={quantity} setValue={this.changeQuantity} />
           </View>
         </ContentBody>

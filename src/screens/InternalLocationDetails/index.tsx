@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { Text, TouchableOpacity } from 'react-native';
 import styles from './styles';
+import { margin } from '../../assets/styles';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import showPopup from '../../components/Popup';
@@ -144,7 +145,7 @@ const InternalLocationDetails = () => {
     ];
 
     return (
-      <TouchableOpacity key={index} style={styles.itemView} onPress={() => navigateToDetails(item)}>
+      <TouchableOpacity key={index} style={[[margin.MT1, margin.M3]]} onPress={() => navigateToDetails(item)}>
         <Card>
           <Card.Content>
             <DetailsTable data={availableItemsData} />
@@ -167,7 +168,7 @@ const InternalLocationDetails = () => {
         <ContentContainer>
           <ContentHeader fixed>
             <Text style={styles.boxHeading}>Details</Text>
-            <DetailsTable data={renderData} style={{ marginHorizontal: 10 }} />
+            <DetailsTable data={renderData} style={[margin.ML3, margin.MR3]} />
             <Text style={styles.boxHeading}>Available Items ({state.locationData.availableItems.length ?? '0'})</Text>
           </ContentHeader>
           <ContentBody>

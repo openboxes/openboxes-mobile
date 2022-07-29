@@ -6,14 +6,6 @@ export default StyleSheet.create({
     height: 15,
     width: 15
   },
-  from: {
-    flex: 1,
-    marginTop: 10
-  },
-  inputSpinner: {
-    flex: 1,
-    alignItems: 'center'
-  },
   datePickerContainer: {
     marginVertical: 5
   },

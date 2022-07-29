@@ -2,7 +2,7 @@
 import _ from 'lodash';
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import styles from './styles';
+import { common, margin } from '../../assets/styles';
 import { View, Text, ToastAndroid } from 'react-native';
 import InputBox from '../../components/InputBox';
 import Button from '../../components/Button';
@@ -153,7 +153,7 @@ const Transfer = () => {
           value={item?.quantityAvailableToPromise?.toString()}
           editable={false}
         />
-        <View style={styles.inputBin}>
+        <View style={margin.MT3}>
           <Text>Bin Location</Text>
           <AsyncModalSelect
             placeholder="Bin Location"
@@ -169,7 +169,7 @@ const Transfer = () => {
             }}
           />
         </View>
-        <View style={styles.inputSpinner}>
+        <View style={[common.containerCenter, margin.MT3]}>
           <InputSpinner title="Quantity to Transfer" value={quantity} setValue={setQuantity} />
         </View>
       </ContentBody>

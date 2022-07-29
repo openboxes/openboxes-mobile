@@ -8,7 +8,7 @@ import { connect } from 'react-redux';
 import { getCandidates } from '../../redux/actions/putaways';
 import EmptyView from '../../components/EmptyView';
 import { Card } from 'react-native-paper';
-import { LayoutStyle } from '../../assets/styles';
+import { common } from '../../assets/styles';
 import BarcodeSearchHeader from '../../components/BarcodeSearchHeader';
 import _ from 'lodash';
 
@@ -55,7 +55,7 @@ class PutawayCandidates extends Component<Props, State> {
   renderItem = (item: any) => {
     return (
       <Card
-        style={LayoutStyle.listItemContainer}
+        style={common.listItemContainer}
         onPress={() => {
           if (item.id) {
             Alert.alert('Item is already in a pending putaway');

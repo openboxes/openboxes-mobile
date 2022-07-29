@@ -4,6 +4,7 @@
 import React from 'react';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 import styles from './styles';
+import { margin } from '../../assets/styles';
 import PrintModal from '../../components/PrintModal';
 import Refresh from '../../components/Refresh';
 import { DispatchProps, Props, State } from './types';
@@ -110,7 +111,7 @@ class ProductDetails extends React.Component<Props, State> {
 
         return (<TouchableOpacity
             key={index}
-            style={styles.itemView}
+            style={[margin.M3, margin.MT1]}
             onPress={() => this.navigateToDetails(item)}>
             <Card>
                 <Card.Content>

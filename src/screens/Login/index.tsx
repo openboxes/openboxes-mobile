@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import styles from './styles';
+import { common, margin } from '../../assets/styles';
 import { useDispatch } from 'react-redux';
 import { login } from '../../redux/actions/auth';
 import showPopup from '../../components/Popup';
@@ -75,7 +76,7 @@ const Login = () => {
   };
 
   return (
-    <View style={styles.screenContainer}>
+    <View style={[common.containerFlexColumn, common.flex1]}>
       <View style={styles.inputContainer}>
         <TextInput mode="outlined" label={'Username'} placeholder="Username" onChangeText={onUsernameChange} />
         <TextInput
@@ -84,23 +85,12 @@ const Login = () => {
           label={'Password'}
           secureTextEntry={state.isSeePassword}
           right={<TextInput.Icon name={state.isSeePassword ? EYE_SHOW : EYE_HIDE} onPress={onPasswordClick} />}
-          style={{
-            marginTop: 8
-          }}
+          style={margin.MT2}
           onChangeText={onPasswordChange}
         />
-        <Button
-          title="Login"
-          style={{
-            marginTop: 8
-          }}
-          onPress={onLoginPress}
-        />
+        <Button title="Login" onPress={onLoginPress} />
         <Button
           title="Settings"
-          style={{
-            marginTop: 8
-          }}
           onPress={() => {
             NavigationService.navigate('Settings');
           }}
