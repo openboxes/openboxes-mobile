@@ -58,17 +58,17 @@ class OutboundStockDetails extends React.Component<Props, State> {
     this.setState({ scannedValue: value }, () => {
       if (value) {
         const matchingLotNumberOrProduct = this.findMatchingLotNumberOrProduct(value);
-        if (matchingLotNumberOrProduct) {
+        if (matchingLotNumberOrProduct.length === 1) {
           this.setState({ scannedValue: '' }, () => {
-            this.showOrderDetailsScreen(matchingLotNumberOrProduct);
+            this.showOrderDetailsScreen(matchingLotNumberOrProduct[0]);
           });
           return;
         }
 
         const matchingContainer = this.findMatchingContainer(value);
-        if (matchingContainer) {
+        if (matchingContainer.length === 1) {
           this.setState({ scannedValue: '' }, () => {
-            this.showLPNDetailsScreen(matchingContainer, this.state.shipment?.shipmentNumber);
+            this.showLPNDetailsScreen(matchingContainer[0], this.state.shipment?.shipmentNumber);
           });
           return;
         }
@@ -95,22 +95,26 @@ class OutboundStockDetails extends React.Component<Props, State> {
     }
   };
 
-  findMatchingLotNumberOrProduct = (input: string) => {
+  findMatchingLotNumberOrProduct = (input: string): ShipmentItems[] => {
     const searchTerm = input.toLowerCase();
-    return this.state.shipment?.shipmentItems?.find(
-      (item: ShipmentItems) =>
-        item.inventoryItem?.lotNumber?.toLowerCase().includes(searchTerm) ||
-        item.lotNumber?.toLowerCase().includes(searchTerm) ||
-        item.inventoryItem?.product?.productCode?.toLowerCase()?.includes(searchTerm)
+    return (
+      this.state.shipment?.shipmentItems?.filter(
+        (item: ShipmentItems) =>
+          item.inventoryItem?.lotNumber?.toLowerCase().includes(searchTerm) ||
+          item.lotNumber?.toLowerCase().includes(searchTerm) ||
+          item.inventoryItem?.product?.productCode?.toLowerCase()?.includes(searchTerm)
+      ) || []
     );
   };
 
-  findMatchingContainer = (input: string) => {
+  findMatchingContainer = (input: string): Container[] => {
     const searchTerm = input.toLowerCase();
-    return this.state.shipment?.availableContainers?.find(
-      (container: Container) =>
-        container.containerNumber?.toLowerCase()?.includes(searchTerm) ||
-        container?.name?.toLowerCase().includes(searchTerm)
+    return (
+      this.state.shipment?.availableContainers?.filter(
+        (container: Container) =>
+          container.containerNumber?.toLowerCase()?.includes(searchTerm) ||
+          container?.name?.toLowerCase().includes(searchTerm)
+      ) || []
     );
   };
 
