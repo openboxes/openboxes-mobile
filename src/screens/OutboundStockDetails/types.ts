@@ -1,12 +1,12 @@
 import { Shipment } from '../../data/container/Shipment';
-import { OutboundVM } from './OutboundVM';
 
 export interface State {
   error: string | null;
   shipment: Shipment | null;
-  shipmentData?: OutboundVM | null; // for packing details only | not required for loading details and load LPM
   scannedContainer?: string;
   scannedValue?: string;
+  matchingShipmentItemIds: string[];
+  matchingContainerIds: string[];
 }
 
 export interface OwnProps {
@@ -23,14 +23,17 @@ export interface StateProps {
 export interface DispatchProps {
   showScreenLoading: (message?: string) => void;
   hideScreenLoading: () => void;
-  getShipment: (
-    id: string,
-    callback: (data: any) => void
-  ) => void;
+  getShipment: (id: string, callback: (data: any) => void) => void;
 }
 
 export interface OutboundDetailOwnProps {
   containers: any;
+}
+
+export interface SectionData {
+  title: string;
+  id: string;
+  data: [];
 }
 
 export type Props = OwnProps & StateProps & DispatchProps;
