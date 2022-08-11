@@ -1,6 +1,5 @@
 import { DispatchProps, Props, State } from './types';
 import React from 'react';
-import { ScrollView, Text, View } from 'react-native';
 import { connect } from 'react-redux';
 import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
 import { RootState } from '../../redux/reducers';
@@ -13,6 +12,9 @@ import InputBox from '../../components/InputBox';
 import ShipmentItems from '../../data/inbound/ShipmentItems';
 import { Container } from '../../data/container/Shipment';
 import showPopup from '../../components/Popup';
+import DetailsTable from '../../components/DetailsTable';
+import { Props as LabeledDataType } from '../../components/LabeledData/types';
+import { ContentContainer, ContentHeader, ContentFooter, ContentBody } from '../../components/ContentLayout';
 
 // Shipment packing (Packing Order Details)
 class OutboundStockDetails extends React.Component<Props, State> {
@@ -128,45 +130,19 @@ class OutboundStockDetails extends React.Component<Props, State> {
   };
 
   render() {
+    const renderData: LabeledDataType[] = [
+      { label: 'Shipment Number', value: this.state.shipment?.shipmentNumber },
+      { label: 'Status', value: this.state.shipment?.displayStatus },
+      { label: 'Destination', value: this.state.shipment?.destination.name },
+      { label: 'Expected Shipping Date', value: this.state.shipment?.expectedShippingDate },
+      { label: 'Packing Location', value: this.state.shipment?.packingLocation, defaultValue: 'Unassigned' },
+      { label: 'Items Packed', value: this.state.shipment?.packingStatusDetails?.statusMessage }
+    ];
+
     return (
-      <>
-        <ScrollView style={styles.screenContainer}>
-          <View style={styles.contentContainer}>
-            <View style={styles.row}>
-              <View style={styles.col50}>
-                <Text style={styles.label}>Shipment Number</Text>
-                <Text style={styles.value}>{this.state.shipment?.shipmentNumber}</Text>
-              </View>
-              <View style={styles.col50}>
-                <Text style={styles.label}>Status</Text>
-                <Text style={styles.value}>{this.state.shipment?.displayStatus}</Text>
-              </View>
-            </View>
-            <View style={styles.row}>
-              <View style={styles.col50}>
-                <Text style={styles.label}>Destination</Text>
-                <Text style={styles.value}>{this.state.shipment?.destination.name}</Text>
-              </View>
-              <View style={styles.col50}>
-                <Text style={styles.label}>Expected Shipping Date</Text>
-                <Text style={styles.value}>{this.state.shipment?.expectedShippingDate}</Text>
-              </View>
-            </View>
-            <View style={styles.row}>
-              <View style={styles.col50}>
-                <Text style={styles.label}>Packing Location</Text>
-                <Text style={styles.value}>
-                  {this.state.shipment?.packingLocation ?? 'Unassigned'}
-                </Text>
-              </View>
-              <View style={styles.col50}>
-                <Text style={styles.label}>Items Packed</Text>
-                <Text style={styles.value}>
-                  {this.state.shipment?.packingStatusDetails?.statusMessage}
-                </Text>
-              </View>
-            </View>
-          </View>
+      <ContentContainer>
+        <ContentHeader>
+          <DetailsTable data={renderData} />
           <InputBox
             style={styles.scanSearch}
             value={this.state.scannedValue}
@@ -176,9 +152,11 @@ class OutboundStockDetails extends React.Component<Props, State> {
             onChange={this.onScan}
             onEndEdit={this.onScanEnd}
           />
+        </ContentHeader>
+        <ContentBody>
           <ContainerDetails item={this.state.shipmentData?.sectionData ?? []} />
-        </ScrollView>
-        <View style={styles.buttonBar}>
+        </ContentBody>
+        <ContentFooter fixed>
           <Button
             title={'Create LPN'}
             disabled={false}
@@ -189,8 +167,8 @@ class OutboundStockDetails extends React.Component<Props, State> {
               });
             }}
           />
-        </View>
-      </>
+        </ContentFooter>
+      </ContentContainer>
     );
   }
 }

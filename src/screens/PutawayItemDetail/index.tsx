@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { View, ScrollView } from 'react-native';
-import styles from './styles';
 import showPopup from '../../components/Popup';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import InputBox from '../../components/InputBox';
@@ -9,6 +7,7 @@ import { submitPutawayItem } from '../../redux/actions/putaways';
 import Button from '../../components/Button';
 import DetailsTable from "../../components/DetailsTable";
 import {Props as LabeledDataType} from "../../components/LabeledData/types";
+import { ContentContainer, ContentBody, ContentFooter } from '../../components/ContentLayout';
 
 const PutawayItemDetail = () => {
   const route = useRoute();
@@ -125,26 +124,25 @@ const PutawayItemDetail = () => {
   ];
 
   return (
-    <ScrollView>
-      <DetailsTable style={{ margin: 10 }} data={detailsData} />
-      <View style={styles.contentContainer}>
-        <View style={styles.from}>
-          <InputBox
-            label={'Scan Putaway Location'}
-            value={state.scannedPutawayLocation}
-            onChange={onChangeScannedPutawayLocation}
-            editable={false}
+    <ContentContainer>
+      <ContentBody>
+        <DetailsTable style={{ margin: 10 }} data={detailsData} />
+        <InputBox
+          label={'Scan Putaway Location'}
+          value={state.scannedPutawayLocation}
+          onChange={onChangeScannedPutawayLocation}
+          editable={false}
+          disabled={false}
+        />
+      </ContentBody>
+        <ContentFooter>
+          <Button
+            title="Confirm Putaway"
+            onPress={formSubmit}
             disabled={false}
           />
-        </View>
-      </View>
-      <Button
-        title="Confirm Putaway"
-        style={styles.buttonContainer}
-        onPress={formSubmit}
-        disabled={false}
-      />
-    </ScrollView>
+        </ContentFooter>
+    </ContentContainer>
   );
 };
 

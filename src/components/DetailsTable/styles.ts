@@ -4,16 +4,17 @@ export default StyleSheet.create({
   container: {
     display: 'flex',
     flexDirection: 'row',
-    flexWrap: 'wrap'
+    flexWrap: 'wrap',
+    justifyContent: 'space-between'
   }
 });
 
-const columnStyle = (columnNumber: number) => {
-  const width = 100 / columnNumber;
+const columnStyle = (columnNumber: number, gap: number) => {
+  const width = 100 / columnNumber - gap * columnNumber;
   return StyleSheet.create({
     column: {
       width: `${width}%`,
-      marginBottom: 10
+      marginBottom: 10,
     }
   });
 };

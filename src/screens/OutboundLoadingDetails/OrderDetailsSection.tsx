@@ -1,45 +1,25 @@
 import React from 'react';
-import { Text, View } from 'react-native';
-import styles from '../OutboundStockDetails/styles';
 import { Shipment } from '../../data/container/Shipment';
+import DetailsTable from '../../components/DetailsTable';
 
 interface Props {
   shipment: Shipment | null;
 }
 
 const OrderDetailsSection = (props: Props) => (
-  <View>
-    <View style={styles.row}>
-      <View style={styles.col50}>
-        <Text style={styles.label}>Shipment Number</Text>
-        <Text style={styles.value}>{props?.shipment?.shipmentNumber}</Text>
-      </View>
-      <View style={styles.col50}>
-        <Text style={styles.label}>Status</Text>
-        <Text style={styles.value}>{props?.shipment?.displayStatus} ({props?.shipment?.loadingStatusDetails?.statusMessage} containers)</Text>
-      </View>
-    </View>
-    <View style={styles.row}>
-      <View style={styles.col50}>
-        <Text style={styles.label}>Destination</Text>
-        <Text style={styles.value}>{props?.shipment?.destination.name}</Text>
-      </View>
-      <View style={styles.col50}>
-        <Text style={styles.label}>Expected Shipping Date</Text>
-        <Text style={styles.value}>{props?.shipment?.expectedShippingDate}</Text>
-      </View>
-    </View>
-    <View style={styles.row}>
-      <View style={styles.col50}>
-        <Text style={styles.label}>Loading Location</Text>
-        <Text style={styles.value}>{props?.shipment?.loadingLocation}</Text>
-      </View>
-      <View style={styles.col50}>
-        <Text style={styles.label}>Expected Delivery Date</Text>
-        <Text style={styles.value}>{props?.shipment?.expectedDeliveryDate}</Text>
-      </View>
-    </View>
-  </View>
-)
+  <DetailsTable
+    data={[
+      { label: 'Shipment Number', value: props?.shipment?.shipmentNumber },
+      {
+        label: 'Status',
+        value: `${props?.shipment?.displayStatus} (${props?.shipment?.loadingStatusDetails?.statusMessage} containers)`
+      },
+      { label: 'Destination', value: props?.shipment?.destination.name },
+      { label: 'Expected Shipping Date', value: props?.shipment?.expectedShippingDate },
+      { label: 'Loading Location', value: props?.shipment?.loadingLocation },
+      { label: 'Expected Delivery Date', value: props?.shipment?.expectedDeliveryDate }
+    ]}
+  />
+);
 
 export default OrderDetailsSection;

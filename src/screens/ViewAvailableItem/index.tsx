@@ -1,14 +1,16 @@
-/* eslint-disable react-native/no-inline-styles */
 import { useNavigation, useRoute } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { Image, View } from 'react-native';
+import { common } from '../../assets/styles';
 import styles from './styles';
 import { Card } from 'react-native-paper';
-import RenderData from '../../components/RenderData';
 import Button from '../../components/Button';
 import DefaultProductImage from '../../assets/images/default-product.png';
+import DetailsTable from '../../components/DetailsTable';
+import { Props as LabeledDataType } from '../../components/LabeledData/types';
+import { ContentContainer, ContentFooter, ContentBody } from '../../components/ContentLayout';
 
-const ViewAvailableItem = () => {
+const ViewAvailableItem: React.FC = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const [availableItems, setavailableItems] = useState(route?.params?.item);
@@ -34,32 +36,33 @@ const ViewAvailableItem = () => {
   const navigateToTransfer = () => {
     navigation.navigate('Transfer', { item: availableItems });
   };
+
+  const renderData: LabeledDataType[] = [
+    { label: 'Product Code', value: availableItems?.product.productCode },
+    { label: 'Product Name', value: availableItems?.product.name },
+    { label: 'Lot Number', value: availableItems?.inventoryItem?.lotNumber, defaultValue: 'Default' },
+    { label: 'Expiration Date', value: availableItems?.inventoryItem?.expirationDate, defaultValue: 'Never' },
+    { label: 'Location Name', value: availableItems?.binLocation?.name, defaultValue: 'Default' },
+    { label: 'Location Type', value: availableItems?.binLocation?.locationType?.name, defaultValue: 'Never' }
+  ];
+
   return (
-    <View style={styles.container}>
-      <Card style={styles.from}>
-        <Card.Content>
-          <View style={{ width: '100%', alignItems: 'center', flex: 0 }}>
-            <Image style={{ width: 150, height: 150, resizeMode: 'contain' }} source={source} />
-          </View>
-          <View style={styles.rowItem}>
-            <RenderData title={'Product Code'} subText={availableItems?.product.productCode} />
-            <RenderData title={'Product Name'} subText={availableItems?.product.name} />
-          </View>
-          <View style={styles.rowItem}>
-            <RenderData title={'Lot Number'} subText={availableItems?.inventoryItem?.lotNumber ?? 'Default'} />
-            <RenderData title={'Expiration Date'} subText={availableItems?.inventoryItem?.expirationDate ?? 'Never'} />
-          </View>
-          <View style={styles.rowItem}>
-            <RenderData title={'Location Name'} subText={availableItems?.binLocation?.name ?? 'Default'} />
-            <RenderData title={'Location Type'} subText={availableItems?.binLocation?.locationType?.name ?? 'Never'} />
-          </View>
-        </Card.Content>
-      </Card>
-      <View style={styles.button}>
-        <Button title={'Adjust Stock'} onPress={navigateToAdjustStock} />
-        <Button title={'Transfer'} onPress={navigateToTransfer} />
-      </View>
-    </View>
+    <ContentContainer>
+      <ContentBody>
+        <Card style={common.flex1}>
+          <Card.Content>
+            <View style={common.containerCenter}>
+              <Image style={styles.itemImage} source={source} />
+            </View>
+            <DetailsTable data={renderData} />
+          </Card.Content>
+        </Card>
+      </ContentBody>
+      <ContentFooter gap={5}>
+        <Button title={'Adjust Stock'} size={'default'} onPress={navigateToAdjustStock} />
+        <Button title={'Transfer'} size={'default'} onPress={navigateToTransfer} />
+      </ContentFooter>
+    </ContentContainer>
   );
 };
 export default ViewAvailableItem;

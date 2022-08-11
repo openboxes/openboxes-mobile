@@ -2,8 +2,8 @@
 import _ from 'lodash';
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import styles from './styles';
-import { ScrollView, View, Text, ToastAndroid } from 'react-native';
+import { common, margin } from '../../assets/styles';
+import { View, Text, ToastAndroid } from 'react-native';
 import InputBox from '../../components/InputBox';
 import Button from '../../components/Button';
 import { RootState } from '../../redux/reducers';
@@ -13,6 +13,7 @@ import showPopup from '../../components/Popup';
 import AsyncModalSelect from '../../components/AsyncModalSelect';
 import { searchInternalLocations } from '../../redux/actions/locations';
 import InputSpinner from '../../components/InputSpinner';
+import { ContentContainer, ContentFooter, ContentBody } from '../../components/ContentLayout';
 
 const Transfer = () => {
   const route = useRoute();
@@ -135,61 +136,54 @@ const Transfer = () => {
   };
 
   return (
-    <ScrollView>
-      <View style={styles.container}>
-        <View style={styles.from}>
-          <InputBox disabled editable={false} label={'Product Code'} value={item?.product?.productCode} />
-          <InputBox
-            disabled
-            editable={false}
-            label={'Lot Number'}
-            value={item?.inventoryItem?.lotNumber ?? 'Default'}
-          />
-          <InputBox
-            disabled
-            editable={false}
-            label={'Expiration Date'}
-            value={item?.inventoryItem?.expirationDate ?? 'Never'}
-          />
-          <InputBox disabled value={item?.binLocation?.name ?? 'Default'} label={'From'} editable={false} />
-          <InputBox
-            disabled
-            label={'Quantity Available to Transfer'}
-            value={item?.quantityAvailableToPromise?.toString()}
-            editable={false}
-          />
-          <View style={styles.inputBin}>
-            <Text>Bin Location</Text>
-            <AsyncModalSelect
-              placeholder="Bin Location"
-              label="Bin Location"
-              initValue={binToLocationData?.label || ''}
-              initialData={internalLocations}
-              searchAction={searchInternalLocations}
-              searchActionParams={{ 'parentLocation.id': location.id }}
-              onSelect={(selectedItem: any) => {
-                if (selectedItem) {
-                  setBinToLocationData(selectedItem);
-                }
-              }}
-            />
-          </View>
-          <View style={styles.inputSpinner}>
-            <InputSpinner title="Quantity to Transfer" value={quantity} setValue={setQuantity} />
-          </View>
-        </View>
-        <View style={styles.bottom}>
-          <Button
-            title="TRANSFER"
-            style={{
-              marginTop: 8
+    <ContentContainer>
+      <ContentBody>
+        <InputBox disabled editable={false} label={'Product Code'} value={item?.product?.productCode} />
+        <InputBox disabled editable={false} label={'Lot Number'} value={item?.inventoryItem?.lotNumber ?? 'Default'} />
+        <InputBox
+          disabled
+          editable={false}
+          label={'Expiration Date'}
+          value={item?.inventoryItem?.expirationDate ?? 'Never'}
+        />
+        <InputBox disabled value={item?.binLocation?.name ?? 'Default'} label={'From'} editable={false} />
+        <InputBox
+          disabled
+          label={'Quantity Available to Transfer'}
+          value={item?.quantityAvailableToPromise?.toString()}
+          editable={false}
+        />
+        <View style={margin.MT3}>
+          <Text>Bin Location</Text>
+          <AsyncModalSelect
+            placeholder="Bin Location"
+            label="Bin Location"
+            initValue={binToLocationData?.label || ''}
+            initialData={internalLocations}
+            searchAction={searchInternalLocations}
+            searchActionParams={{ 'parentLocation.id': location.id }}
+            onSelect={(selectedItem: any) => {
+              if (selectedItem) {
+                setBinToLocationData(selectedItem);
+              }
             }}
-            disabled={binToLocationData && quantity <= 0}
-            onPress={onTransfer}
           />
         </View>
-      </View>
-    </ScrollView>
+        <View style={[common.containerCenter, margin.MT3]}>
+          <InputSpinner title="Quantity to Transfer" value={quantity} setValue={setQuantity} />
+        </View>
+      </ContentBody>
+      <ContentFooter>
+        <Button
+          title="TRANSFER"
+          style={{
+            marginTop: 8
+          }}
+          disabled={binToLocationData && quantity <= 0}
+          onPress={onTransfer}
+        />
+      </ContentFooter>
+    </ContentContainer>
   );
 };
 

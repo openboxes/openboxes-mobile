@@ -1,23 +1,7 @@
 import { StyleSheet } from 'react-native';
 import Theme from '../../utils/Theme';
-import { ratio } from '../../constants';
 
 export default StyleSheet.create({
-  contentContainer: {
-    display: 'flex',
-    flex: 1,
-    flexDirection: 'column',
-    padding: 8
-  },
-  bottom: {
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: ratio.height * 100
-  },
-  list: {
-    width: '100%'
-  },
   listItemContainer: {
     display: 'flex',
     flexDirection: 'column',
@@ -25,68 +9,8 @@ export default StyleSheet.create({
     borderRadius: Theme.roundness,
     borderColor: Theme.colors.backdrop,
     borderWidth: 1,
-    margin: 0,
-    padding: 0,
-    marginTop: 5
-  },
-  listItemNameContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    flex: 0,
-    marginStart: 4
-  },
-  listItemNameLabel: {
-    fontSize: 12,
-    color: Theme.colors.placeholder
-  },
-  listItemName: {
-    fontSize: 16,
-    color: Theme.colors.text
-  },
-  listItemCategoryContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    flex: 0,
-    marginStart: 4,
-    marginTop: 4
-  },
-  listItemCategoryLabel: {
-    fontSize: 12,
-    color: Theme.colors.placeholder
-  },
-  listItemCategory: {
-    fontSize: 16,
-    color: Theme.colors.text
-  },
-  row: {
-    flexDirection: 'row',
-    borderColor: Theme.colors.background,
-    // borderBottomWidth: 1,
-    marginTop: 1,
-    padding: 2,
-    width: '100%'
-  },
-  col50: {
-    display: 'flex',
-    flexDirection: 'column',
-    flex: 0,
-    marginStart: 4,
-    width: '50%'
-  },
-  col100: {
-    display: 'flex',
-    flexDirection: 'column',
-    flex: 0,
-    marginStart: 4,
-    width: '95%'
-  },
-  label: {
-    fontSize: 12,
-    color: Theme.colors.placeholder
-  },
-  value: {
-    fontSize: 16,
-    color: Theme.colors.text
+    marginVertical: 5,
+    padding: 0
   },
   arrowDownIcon: {
     height: 15,

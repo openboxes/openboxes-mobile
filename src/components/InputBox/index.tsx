@@ -3,7 +3,7 @@ import styles from './styles';
 import { Image, View } from 'react-native';
 import SelectDropdown from 'react-native-select-dropdown';
 import { Props } from './types';
-import AutoComplete from '../AutoComplete/AutoComplete';
+import AutoComplete from '../AutoComplete';
 
 const InputBox = ({
   refs,

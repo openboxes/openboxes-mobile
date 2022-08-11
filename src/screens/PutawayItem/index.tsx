@@ -3,9 +3,9 @@
 import _ from 'lodash';
 import React, { Component } from 'react';
 import { DispatchProps, Props, State } from './types';
-import { View, Text, ToastAndroid, ScrollView } from 'react-native';
+import { View, Text, ToastAndroid } from 'react-native';
 import { RootState } from '../../redux/reducers';
-import styles from './styles';
+import { common, margin } from '../../assets/styles';
 import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
 import { connect } from 'react-redux';
 import { searchInternalLocations } from '../../redux/actions/locations';
@@ -15,6 +15,7 @@ import InputBox from '../../components/InputBox';
 import Button from '../../components/Button';
 import showPopup from '../../components/Popup';
 import AsyncModalSelect from '../../components/AsyncModalSelect';
+import { ContentContainer, ContentBody, ContentFooter } from '../../components/ContentLayout';
 
 class PutawayItem extends Component<Props, State> {
   constructor(props: Props) {
@@ -141,51 +142,44 @@ class PutawayItem extends Component<Props, State> {
     const { quantity, internalLocations, selectedLocation } = this.state;
 
     return (
-      <ScrollView keyboardShouldPersistTaps style={{ width: '100%', height: '100%' }}>
-        <View style={styles.container}>
-          <View style={styles.childContainer}>
-            <InputBox disabled label="Product Code" value={item['product.productCode']} editable={false} />
-            <InputBox disabled label="Product Name" value={item['product.name']} editable={false} />
-            <InputBox
-              disabled
-              label="Lot Number"
-              value={item['inventoryItem.lotNumber'] ?? 'Default'}
-              editable={false}
+      <ContentContainer>
+        <ContentBody>
+          <InputBox disabled label="Product Code" value={item['product.productCode']} editable={false} />
+          <InputBox disabled label="Product Name" value={item['product.name']} editable={false} />
+          <InputBox disabled label="Lot Number" value={item['inventoryItem.lotNumber'] ?? 'Default'} editable={false} />
+          <InputBox
+            disabled
+            label="Current Location"
+            value={item['currentLocation.name'] ?? 'Default'}
+            editable={false}
+          />
+          <InputBox disabled label="Received Quantity" value={item.quantity.toString() ?? '0'} editable={false} />
+          <View style={margin.MT3}>
+            <Text>Putaway Location</Text>
+            <AsyncModalSelect
+              placeholder="Default"
+              label="Default"
+              initValue={selectedLocation?.label || item['putawayLocation.name'] || ''}
+              initialData={internalLocations}
+              searchAction={searchInternalLocations}
+              searchActionParams={{
+                'parentLocation.id': this.props.currentLocation.id
+              }}
+              onSelect={(selectedLocation: any) => this.setState({ selectedLocation })}
             />
-            <InputBox
-              disabled
-              label="Current Location"
-              value={item['currentLocation.name'] ?? 'Default'}
-              editable={false}
-            />
-            <InputBox disabled label="Received Quantity" value={item.quantity.toString() ?? '0'} editable={false} />
-
-            <View style={styles.divider} />
-            <View>
-              <Text>Putaway Location</Text>
-              <AsyncModalSelect
-                placeholder="Default"
-                label="Default"
-                initValue={selectedLocation?.label || item['putawayLocation.name'] || ''}
-                initialData={internalLocations}
-                searchAction={searchInternalLocations}
-                searchActionParams={{
-                  'parentLocation.id': this.props.currentLocation.id
-                }}
-                onSelect={(selectedLocation: any) => this.setState({ selectedLocation })}
-              />
-            </View>
-            <View style={styles.inputSpinner}>
-              <InputSpinner title="Quantity to Pick" value={quantity} setValue={this.changeQuantity} />
-            </View>
           </View>
+          <View style={common.containerCenter}>
+            <InputSpinner title="Quantity to Pick" value={quantity} setValue={this.changeQuantity} />
+          </View>
+        </ContentBody>
+        <ContentFooter>
           <Button
             disabled={quantity > item.quantity || Number(quantity) <= 0}
             title="Create Putaway"
             onPress={this.create}
           />
-        </View>
-      </ScrollView>
+        </ContentFooter>
+      </ContentContainer>
     );
   }
 }

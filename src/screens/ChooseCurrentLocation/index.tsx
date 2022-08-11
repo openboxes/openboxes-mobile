@@ -1,9 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import styles from './styles';
 import Location from '../../data/location/Location';
 import _, { Dictionary } from 'lodash';
-import { ScrollView, View } from 'react-native';
+import { ScrollView } from 'react-native';
 import { List } from 'react-native-paper';
 import showPopup from '../../components/Popup';
 import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
@@ -133,33 +132,30 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
 
   render() {
     return (
-      <View style={styles.container}>
-        {/*<Header title="Choose Location" backButtonVisible={false} />*/}
-        <ScrollView style={styles.scrollView}>
-          <List.AccordionGroup>
-            {_.map(_.keys(this.state.orgNameAndLocationsDictionary), (orgName: string) => {
-              return (
-                <List.Accordion
-                  title={orgName}
-                  id={`orgName_${orgName}`}
-                  left={(props) => <List.Icon {...props} icon="office-building" />}
-                  key={`orgName_${orgName}`}
-                >
-                  {_.map(this.state.orgNameAndLocationsDictionary[orgName], (location) => {
-                    return (
-                      <List.Item
-                        title={location.name}
-                        key={`orgName_${orgName}_locationName_${location.name}`}
-                        onPress={() => this.setCurrentLocation(orgName, location)}
-                      />
-                    );
-                  })}
-                </List.Accordion>
-              );
-            })}
-          </List.AccordionGroup>
-        </ScrollView>
-      </View>
+      <ScrollView>
+        <List.AccordionGroup>
+          {_.map(_.keys(this.state.orgNameAndLocationsDictionary), (orgName: string) => {
+            return (
+              <List.Accordion
+                title={orgName}
+                id={`orgName_${orgName}`}
+                left={(props) => <List.Icon {...props} icon="office-building" />}
+                key={`orgName_${orgName}`}
+              >
+                {_.map(this.state.orgNameAndLocationsDictionary[orgName], (location) => {
+                  return (
+                    <List.Item
+                      title={location.name}
+                      key={`orgName_${orgName}_locationName_${location.name}`}
+                      onPress={() => this.setCurrentLocation(orgName, location)}
+                    />
+                  );
+                })}
+              </List.Accordion>
+            );
+          })}
+        </List.AccordionGroup>
+      </ScrollView>
     );
   }
 }

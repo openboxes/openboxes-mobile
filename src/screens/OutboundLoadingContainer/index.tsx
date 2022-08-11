@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { Alert, ScrollView, ToastAndroid, View } from 'react-native';
+import { ToastAndroid, View } from 'react-native';
 import { useDispatch } from 'react-redux';
-import styles from '../OutboundStockDetails/styles';
 import { updateContainerStatus } from '../../redux/actions/lpn';
 import OrderDetailsSection from '../OutboundLoadingDetails/OrderDetailsSection';
 import InputBox from '../../components/InputBox';
@@ -11,6 +10,7 @@ import TICK from '../../assets/images/tick.png';
 import SCAN from '../../assets/images/scan.jpg';
 import CLEAR from '../../assets/images/icon_clear.png';
 import Button from '../../components/Button';
+import { ContentContainer, ContentHeader, ContentBody, ContentFooter } from '../../components/ContentLayout';
 
 // LPN loading
 const OutboundLoadingContainer = () => {
@@ -120,9 +120,11 @@ const OutboundLoadingContainer = () => {
   };
 
   return (
-    <ScrollView style={styles.screenContainer}>
-      <View style={styles.contentContainer}>
+    <ContentContainer>
+      <ContentHeader>
         <OrderDetailsSection shipment={shipment} />
+      </ContentHeader>
+      <ContentBody>
         <View>
           <InputBox
             value={scannedLPN}
@@ -171,9 +173,11 @@ const OutboundLoadingContainer = () => {
             })
           }}
         />
+      </ContentBody>
+      <ContentFooter>
         <Button title="Load Container" onPress={() => loadContainer()} disabled={false} />
-      </View>
-    </ScrollView>
+      </ContentFooter>
+    </ContentContainer>
   )
 }
 

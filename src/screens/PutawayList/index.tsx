@@ -3,17 +3,19 @@ import _ from 'lodash';
 import { DispatchProps, Props, State } from './types';
 import React from 'react';
 import { getOrdersAction } from '../../redux/actions/orders';
-import { FlatList, ListRenderItemInfo, Text, View } from 'react-native';
+import { FlatList, ListRenderItemInfo } from 'react-native';
 import { connect } from 'react-redux';
 import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
-import styles from './styles';
 import PutAwayItems from '../../data/putaway/PutAwayItems';
 import { fetchPutAwayFromOrderAction } from '../../redux/actions/putaways';
 import PutAway from '../../data/putaway/PutAway';
 import EmptyView from '../../components/EmptyView';
 import { Card } from 'react-native-paper';
 import InputBox from '../../components/InputBox';
-import { LayoutStyle } from '../../assets/styles';
+import { common } from '../../assets/styles';
+import { Props as LabeledDataType } from '../../components/LabeledData/types';
+import DetailsTable from '../../components/DetailsTable';
+import { ContentContainer, ContentBody, ContentHeader } from '../../components/ContentLayout';
 
 class PutawayList extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -28,6 +30,7 @@ class PutawayList extends React.Component<Props, State> {
       showDetail: false,
       lpnFilter: ''
     };
+    this.renderItems = this.renderItems.bind(this);
   }
 
   componentDidMount() {
@@ -99,73 +102,56 @@ class PutawayList extends React.Component<Props, State> {
     });
   };
 
-  render() {
-    const { showList, putAwayList, putAwayListFiltered, lpnFilter } = this.state;
+  renderItems(listRenderItemInfo: ListRenderItemInfo<any>) {
+    const { putawayItem } = listRenderItemInfo.item;
+    const renderItemData: LabeledDataType[] = [
+      { label: 'Product Code', value: putawayItem?.['product.productCode'] },
+      { label: 'Lot Number', value: putawayItem?.['inventoryItem.lotNumber'], defaultValue: 'Default' },
+      { label: 'Current Location', value: putawayItem?.['currentLocation.name'], defaultValue: 'Default' },
+      { label: 'Putaway Location', value: putawayItem?.['putawayLocation.name'], defaultValue: 'Default' }
+    ];
 
     return (
-      <View style={styles.screenContainer}>
-        {showList ? (
-          <View style={styles.contentContainer}>
-            {putAwayList?.length ? (
-              <InputBox
-                style={styles.lpnFilter}
-                value={lpnFilter}
-                disabled={false}
-                editable={false}
-                label={'Scan Lot Number'}
-                onChange={this.onChangeLpnFilter}
-              />
-            ) : null}
+      <Card
+        style={common.listItemContainer}
+        onPress={() => this.goToPutawayItemDetailScreen(listRenderItemInfo.item, listRenderItemInfo.item?.putawayItem)}
+      >
+        <Card.Content>
+          <DetailsTable data={renderItemData} />
+        </Card.Content>
+      </Card>
+    );
+  }
+
+  render() {
+    const { showList, putAwayList, putAwayListFiltered, lpnFilter } = this.state;
+    return (
+      <ContentContainer>
+        <ContentHeader fixed>
+          {putAwayList?.length && (
+            <InputBox
+              style={common.scanSearch}
+              value={lpnFilter}
+              disabled={false}
+              editable={false}
+              label={'Scan Lot Number'}
+              onChange={this.onChangeLpnFilter}
+            />
+          )}
+        </ContentHeader>
+        <ContentBody>
+          {showList && (
             <FlatList
               data={putAwayListFiltered?.length ? putAwayListFiltered : putAwayList}
               ListEmptyComponent={
                 <EmptyView title="Putaway" description="There are no items to putaway" isRefresh={false} />
               }
-              renderItem={(listRenderItemInfo: ListRenderItemInfo<any>) => (
-                <Card
-                  style={LayoutStyle.listItemContainer}
-                  onPress={() =>
-                    this.goToPutawayItemDetailScreen(listRenderItemInfo.item, listRenderItemInfo.item?.putawayItem)
-                  }
-                >
-                  <Card.Content>
-                    <View style={styles.row}>
-                      <View style={styles.col50}>
-                        <Text style={styles.label}>Product Code</Text>
-                        <Text style={styles.value}>
-                          {listRenderItemInfo.item?.putawayItem?.['product.productCode']}
-                        </Text>
-                      </View>
-                      <View style={styles.col50}>
-                        <Text style={styles.label}>Lot Number</Text>
-                        <Text style={styles.value}>
-                          {listRenderItemInfo.item?.putawayItem?.['inventoryItem.lotNumber'] || 'Default'}
-                        </Text>
-                      </View>
-                    </View>
-                    <View style={styles.row}>
-                      <View style={styles.col50}>
-                        <Text style={styles.label}>Current Location</Text>
-                        <Text style={styles.value}>
-                          {listRenderItemInfo.item?.putawayItem?.['currentLocation.name']??'Default'}
-                        </Text>
-                      </View>
-                      <View style={styles.col50}>
-                        <Text style={styles.label}>Putaway Location</Text>
-                        <Text style={styles.value}>
-                          {listRenderItemInfo.item?.putawayItem?.['putawayLocation.name']??'Default'}
-                        </Text>
-                      </View>
-                    </View>
-                  </Card.Content>
-                </Card>
-              )}
+              renderItem={this.renderItems}
               keyExtractor={(item) => item.id}
-              style={styles.list}
             />
-          </View>
-        ) : null}
-      </View>
+          )}
+        </ContentBody>
+      </ContentContainer>
     );
   }
 }

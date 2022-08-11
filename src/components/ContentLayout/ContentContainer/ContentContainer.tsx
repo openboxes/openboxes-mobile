@@ -13,7 +13,7 @@ const ContentContainer: React.FC<Props> = (props) => {
   const body = _.find(arrayChildren, (child) => _.get(child, 'type.name') === ContentBody.name);
   const footer = _.find(arrayChildren, (child) => _.get(child, 'type.name') === ContentFooter.name);
   return (
-    <View {...otherProps} style={[style, styles.container]}>
+    <View {...otherProps} style={[styles.container, style]}>
       {header?.props?.fixed ? header : null}
           <ScrollView contentContainerStyle={styles.scrollContentContainer}>
             {header?.props?.fixed ? null : header}

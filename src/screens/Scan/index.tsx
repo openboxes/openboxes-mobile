@@ -2,11 +2,12 @@
 import React, { useEffect } from 'react';
 import { View } from 'react-native';
 import styles from './styles';
+import { common } from '../../assets/styles';
 import { useNavigation } from '@react-navigation/native';
 import Product from '../../data/product/Product';
 import onBarcodeScanned from '../../hooks/onBarcodeScanned';
 import EmptyView from '../../components/EmptyView';
-import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSearchHeader';
+import BarcodeSearchHeader from '../../components/BarcodeSearchHeader';
 import { searchBarcode } from '../../redux/actions/products';
 import showPopup from '../../components/Popup';
 import { useDispatch } from 'react-redux';
@@ -98,7 +99,7 @@ const Scan = () => {
   };
 
   return (
-    <View style={styles.screenContainer}>
+    <View style={[common.containerFlexColumn, common.flex1]}>
       <BarcodeSearchHeader
         autoSearch
         autoFocus

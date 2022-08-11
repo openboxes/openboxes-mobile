@@ -2,8 +2,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/jsx-sort-props */
 import React, { useEffect, useState } from 'react';
-import { ScrollView, Text, View, ToastAndroid } from 'react-native';
-import styles from './styles';
+import { Text, View, ToastAndroid } from 'react-native';
+import { common, typography, margin } from '../../assets/styles';
 import Button from '../../components/Button';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
@@ -11,6 +11,8 @@ import showPopup from '../../components/Popup';
 import { getShipment, submitShipmentDetails } from '../../redux/actions/packing';
 import AutoInputInternalLocation from '../../components/AutoInputInternalLocation';
 import InputSpinner from '../../components/InputSpinner';
+import { ContentFooter, ContentBody, ContentHeader, ContentContainer } from '../../components/ContentLayout';
+import DetailsTable from '../../components/DetailsTable';
 
 const ShipItemDetails = () => {
   const route = useRoute();
@@ -111,51 +113,35 @@ const ShipItemDetails = () => {
     });
   };
   return (
-    <ScrollView style={styles.contentContainer}>
-      <View style={styles.rowItem}>
-        <View style={styles.columnItem}>
-          <Text style={styles.label}>{'Container'}</Text>
-          <Text style={styles.value}>{item?.container?.name ?? 'Default'}</Text>
-        </View>
-        <View style={styles.columnItem}>
-          <Text style={styles.label}>{'Shipment Number'}</Text>
-          <Text style={styles.value}>{item.shipment.shipmentNumber}</Text>
-        </View>
-      </View>
-      <View style={styles.rowItem}>
-        <View style={styles.columnItem}>
-          <Text style={styles.label}>{'Product Code'}</Text>
-          <Text style={styles.value}>{item.inventoryItem.product.productCode}</Text>
-        </View>
-        <View style={styles.columnItem}>
-          <Text style={styles.label}>{'Product Name'}</Text>
-          <Text style={styles.value}>{item.inventoryItem.product.name}</Text>
-        </View>
-      </View>
-      <View style={styles.rowItem}>
-        <View style={styles.columnItem}>
-          <Text style={styles.label}>{'LOT Number'}</Text>
-          <Text style={styles.value}>{item.inventoryItem.lotNumber ?? 'Default'}</Text>
-        </View>
-        <View style={styles.columnItem}>
-          <Text style={styles.label}>{'Quantity to pack'}</Text>
-          <Text style={styles.value}>{item.quantityRemaining}</Text>
-        </View>
-      </View>
-      <View style={styles.textContainer}>
-        <Text style={styles.label}>{'Container'}</Text>
-        <AutoInputInternalLocation
-          label="AutoInputInternalContainer"
-          data={state.containerList ?? []}
-          selectedContainerItem={selectedContainerItem}
-          initValue={item.container?.name || ''}
-          selectedData={(selectedItem: any, index: number) => setSelectedContainerItem(selectedItem)}
+    <ContentContainer>
+      <ContentHeader>
+        <DetailsTable
+          data={[
+            { label: 'Container', value: item?.container?.name, defaultValue: 'Default' },
+            { label: 'Shipment Number', value: item.shipment.shipmentNumber },
+            { label: 'Product Code', value: item.inventoryItem.product.productCode },
+            { label: 'Product Name', value: item.inventoryItem.product.name },
+            { label: 'LOT Number', value: item.inventoryItem.lotNumber, defaultValue: 'Default' },
+            { label: 'Quantity to pack', value: item.quantityRemaining }
+          ]}
         />
-      </View>
-      <View style={styles.alignCenterContent}>
-        <InputSpinner title={'Quantity to Pick'} value={state.quantityPicked} setValue={quantityPickedChange} />
-      </View>
-      <View style={styles.bottom}>
+      </ContentHeader>
+      <ContentBody>
+        <View style={[common.containerFlexColumn, margin.M3]}>
+          <Text style={typography.label}>{'Container'}</Text>
+          <AutoInputInternalLocation
+            label="AutoInputInternalContainer"
+            data={state.containerList ?? []}
+            selectedContainerItem={selectedContainerItem}
+            initValue={item.container?.name || ''}
+            selectedData={setSelectedContainerItem}
+          />
+        </View>
+        <View style={common.containerCenter}>
+          <InputSpinner title={'Quantity to Pick'} value={state.quantityPicked} setValue={quantityPickedChange} />
+        </View>
+      </ContentBody>
+      <ContentFooter>
         <Button
           disabled={!(state.quantityPicked && state.quantityPicked > 0)}
           title="PACK ITEM"
@@ -163,8 +149,8 @@ const ShipItemDetails = () => {
             submitShipmentDetail(item?.id);
           }}
         />
-      </View>
-    </ScrollView>
+      </ContentFooter>
+    </ContentContainer>
   );
 };
 export default ShipItemDetails;

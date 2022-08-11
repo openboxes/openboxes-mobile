@@ -2,44 +2,23 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import styles from './styles';
+import { common, margin } from '../../assets/styles';
 import { useDispatch } from 'react-redux';
 import { login } from '../../redux/actions/auth';
 import showPopup from '../../components/Popup';
 import { TextInput } from 'react-native-paper';
 import Button from '../../components/Button';
 import * as NavigationService from '../../NavigationService';
+import { LoginState } from './types';
 
-import { StackNavigationProp } from '@react-navigation/stack';
-import { StackList } from '../../types/navigationTypes';
 // @ts-ignore
 import EYE_SHOW from '../../assets/images/eye_show.png';
 // @ts-ignore
 import EYE_HIDE from '../../assets/images/eye_hide.png';
 
-type ProfileScreenNavigationProp = StackNavigationProp<StackList, 'Login'>;
-
-interface OwnProps {
-  navigation: ProfileScreenNavigationProp;
-}
-
-interface StateProps {
-  //no-op
-}
-
-interface DispatchProps {
-  login: (data: any) => void;
-}
-
-type Props = OwnProps & StateProps & DispatchProps;
-
-interface State {
-  username: string;
-  password: string;
-}
-
 const Login = () => {
   const dispatch = useDispatch();
-  const [state, setState] = useState<any>({
+  const [state, setState] = useState<LoginState>({
     username: '',
     password: '',
     isSeePassword: true
@@ -97,7 +76,7 @@ const Login = () => {
   };
 
   return (
-    <View style={styles.screenContainer}>
+    <View style={[common.containerFlexColumn, common.flex1]}>
       <View style={styles.inputContainer}>
         <TextInput mode="outlined" label={'Username'} placeholder="Username" onChangeText={onUsernameChange} />
         <TextInput
@@ -106,23 +85,12 @@ const Login = () => {
           label={'Password'}
           secureTextEntry={state.isSeePassword}
           right={<TextInput.Icon name={state.isSeePassword ? EYE_SHOW : EYE_HIDE} onPress={onPasswordClick} />}
-          style={{
-            marginTop: 8
-          }}
+          style={margin.MT2}
           onChangeText={onPasswordChange}
         />
-        <Button
-          title="Login"
-          style={{
-            marginTop: 8
-          }}
-          onPress={onLoginPress}
-        />
+        <Button title="Login" onPress={onLoginPress} />
         <Button
           title="Settings"
-          style={{
-            marginTop: 8
-          }}
           onPress={() => {
             NavigationService.navigate('Settings');
           }}

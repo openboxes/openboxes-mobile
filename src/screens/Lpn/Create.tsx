@@ -1,16 +1,17 @@
 import React from 'react';
 import showPopup from '../../components/Popup';
 import { saveAndUpdateLpn } from '../../redux/actions/lpn';
-import { DispatchProps, Props } from './Types';
+import { DispatchProps, Props } from './types';
 import { connect } from 'react-redux';
-import { ScrollView, Text, ToastAndroid, View } from 'react-native';
+import { Text, ToastAndroid } from 'react-native';
 import { Order } from '../../data/order/Order';
-import styles from './styles';
+import { margin, typography } from '../../assets/styles';
 import InputBox from '../../components/InputBox';
 import Button from '../../components/Button';
 import { getShipmentOrigin } from '../../redux/actions/packing';
 import { RootState } from '../../redux/reducers';
 import AutoInputInternalLocation from '../../components/AutoInputInternalLocation';
+import { ContentContainer, ContentFooter, ContentBody } from '../../components/ContentLayout';
 
 export interface State {
   stockMovements: Order[] | null;
@@ -117,9 +118,9 @@ class CreateLpn extends React.Component<Props, State> {
 
   render() {
     return (
-      <ScrollView style={styles.container}>
-        <View style={styles.from}>
-          <Text style={styles.label}>Shipment Number</Text>
+      <ContentContainer style={margin.M5}>
+        <ContentBody>
+          <Text style={typography.label}>Shipment Number</Text>
           <AutoInputInternalLocation
             label="AutoInputInternalLocation"
             data={this.state.stockMovementList}
@@ -138,11 +139,11 @@ class CreateLpn extends React.Component<Props, State> {
             label={'Container Number'}
             onChange={this.onChangeContainerNumber}
           />
-        </View>
-        <View style={styles.bottom}>
+        </ContentBody>
+        <ContentFooter>
           <Button title="Submit" onPress={this.saveLpn} disabled={false} />
-        </View>
-      </ScrollView>
+        </ContentFooter>
+      </ContentContainer>
     );
   }
 }

@@ -1,17 +1,18 @@
-/* eslint-disable no-shadow */
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import styles from './styles';
-import { ScrollView, View, ToastAndroid } from 'react-native';
+import { common, margin } from '../../assets/styles';
+import { View, ToastAndroid } from 'react-native';
 import InputBox from '../../components/InputBox';
 import Button from '../../components/Button';
 import showPopup from '../../components/Popup';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import DropDown from 'react-native-paper-dropdown';
-import RenderData from '../../components/RenderData';
 import { RootState } from '../../redux/reducers';
 import { stockAdjustments } from '../../redux/actions/products';
 import InputSpinner from '../../components/InputSpinner';
+import DetailsTable from '../../components/DetailsTable';
+import { Props as LabeledDataType } from '../../components/LabeledData/types';
+import { ContentContainer, ContentFooter, ContentBody, ContentHeader } from '../../components/ContentLayout';
 
 const reasonCodes = [
   {
@@ -152,31 +153,24 @@ const AdjustStock = () => {
     dispatch(stockAdjustments(requestBody, callback));
   };
 
-  const RenderItem = (): JSX.Element => {
-    return (
-      <View style={styles.itemView}>
-        <View style={styles.rowItem}>
-          <RenderData title="Product Code" subText={item?.product.productCode} />
-          <RenderData title="Product Name" subText={item?.product.name} />
-        </View>
-        <View style={styles.rowItem}>
-          <RenderData title="Lot Number" subText={item?.inventoryItem.lotNumber ?? 'Default'} />
-          <RenderData title="Expiration Date" subText={item?.inventoryItem.expirationDate ?? 'Never'} />
-        </View>
-        <View style={styles.rowItem}>
-          <RenderData title="Bin Location" subText={item?.binLocation?.name ?? 'Default'} />
-          <RenderData title="Quantity Available" subText={item.quantityAvailableToPromise} />
-        </View>
-      </View>
-    );
-  };
+  const renderData: LabeledDataType[] = [
+    { label: 'Product Code', value: item?.product.productCode },
+    { label: 'Product Name', value: item?.product.name },
+    { label: 'Lot Number', value: item?.inventoryItem.lotNumber, defaultValue: 'Default' },
+    { label: 'Expiration Date', value: item?.inventoryItem.expirationDate, defaultValue: 'Never' },
+    { label: 'Bin Location', value: item?.binLocation?.name, defaultValue: 'Default' },
+    { label: 'Quantity Available', value: item.quantityAvailableToPromise }
+  ];
 
   return (
-    <ScrollView style={styles.container}>
-      <RenderItem />
-      <View style={styles.from}>
-        <InputSpinner title={'Quantity Adjusted'} value={quantityAdjusted} setValue={setQuantityAdjusted} />
-        <View style={styles.dropDownDivider} />
+    <ContentContainer>
+      <ContentHeader>
+        <DetailsTable data={renderData} />
+      </ContentHeader>
+      <ContentBody>
+        <View style={[common.containerCenter, margin.MB3]}>
+          <InputSpinner title={'Quantity Adjusted'} value={quantityAdjusted} setValue={setQuantityAdjusted} />
+        </View>
         <DropDown
           label="Reason Code"
           mode="outlined"
@@ -188,11 +182,11 @@ const AdjustStock = () => {
           onDismiss={() => setShowDropDown(false)}
         />
         <InputBox value={comments} disabled={false} editable={false} label="Comments" onChange={setComments} />
-      </View>
-      <View style={styles.bottom}>
+      </ContentBody>
+      <ContentFooter>
         <Button disabled={!comments || !reasonCode} title="Adjust Stock" onPress={onSave} />
-      </View>
-    </ScrollView>
+      </ContentFooter>
+    </ContentContainer>
   );
 };
 

@@ -1,7 +1,8 @@
 /* eslint-disable complexity */
 import React, { useEffect, useState } from 'react';
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Text, TouchableOpacity } from 'react-native';
 import styles from './styles';
+import { margin } from '../../assets/styles';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import showPopup from '../../components/Popup';
@@ -11,6 +12,9 @@ import { Card } from 'react-native-paper';
 import { RootState } from '../../redux/reducers';
 import Button from '../../components/Button';
 import PrintModal from '../../components/PrintModal';
+import DetailsTable from '../../components/DetailsTable';
+import { Props as LabeledDataType } from '../../components/LabeledData/types';
+import { ContentContainer, ContentFooter, ContentBody, ContentHeader } from '../../components/ContentLayout';
 
 const InternalLocationDetails = () => {
   const navigation = useNavigation();
@@ -71,14 +75,6 @@ const InternalLocationDetails = () => {
     dispatch(getInternalLocationDetails(id, location.id, actionLocationCallback));
   };
 
-  const RenderItem = ({ title, subTitle }: any) => {
-    return (
-      <View style={styles.columnItem}>
-        <Text style={styles.label}>{title}</Text>
-        <Text style={styles.value}>{subTitle}</Text>
-      </View>
-    );
-  };
   const navigateToDetails = (item: any) => {
     const stockItem = {
       product: {
@@ -138,51 +134,52 @@ const InternalLocationDetails = () => {
     setState({ ...state, visible: false });
   };
 
-  const renderListItem = (item: any, index: any) => (
-    <TouchableOpacity key={index} style={styles.itemView} onPress={() => navigateToDetails(item)}>
-      <Card>
-        <Card.Content>
-          <View style={styles.rowItem}>
-            <RenderItem title={'Product Code'} subTitle={item['product.productCode']} />
-            <RenderItem title={'Product Name'} subTitle={item['product.name']} />
-          </View>
-          <View style={styles.rowItem}>
-            <RenderItem title={'Lot Number'} subTitle={item['inventoryItem.lotNumber'] ?? 'Default'} />
-            <RenderItem title={'Lot Number'} subTitle={item['inventoryItem.expirationDate'] ?? 'Never'} />
-          </View>
-          <View style={styles.rowItem}>
-            <RenderItem title={'Bin Location'} subTitle={item['binLocation.name'] ?? 'Default'} />
-            <RenderItem title={'Quantity On Hand'} subTitle={item.quantityOnHand ?? 0} />
-          </View>
-        </Card.Content>
-      </Card>
-    </TouchableOpacity>
-  );
+  const renderListItem = (item: any, index: any) => {
+    const availableItemsData: LabeledDataType[] = [
+      { label: 'Product Code', value: item['product.productCode'] },
+      { label: 'Product Name', value: item['product.name'] },
+      { label: 'Lot Number', value: item['inventoryItem.lotNumber'], defaultValue: 'Default' },
+      { label: 'Lot Number', value: item['inventoryItem.expirationDate'], defaultValue: 'Never' },
+      { label: 'Bin Location', value: item['binLocation.name'], defaultValue: 'Default' },
+      { label: 'Quantity On Hand', value: item.quantityOnHand, defaultValue: '0' }
+    ];
+
+    return (
+      <TouchableOpacity key={index} style={[[margin.MT1, margin.M3]]} onPress={() => navigateToDetails(item)}>
+        <Card>
+          <Card.Content>
+            <DetailsTable data={availableItemsData} />
+          </Card.Content>
+        </Card>
+      </TouchableOpacity>
+    );
+  };
+
+  const renderData: LabeledDataType[] = [
+    { label: 'Bin Location Name', value: state.locationData?.name, defaultValue: '' },
+    { label: 'Location Type', value: state.locationData?.locationType.name, defaultValue: '' },
+    { label: 'Facility Name', value: state.locationData?.parentLocation?.name, defaultValue: '' },
+    { label: 'Zone Name', value: state.locationData?.zoneName, defaultValue: 'N/A' }
+  ];
+
   return (
-    <View style={styles.screenContainer}>
+    <>
       {state.locationData && (
-        <>
-          <View>
+        <ContentContainer>
+          <ContentHeader fixed>
             <Text style={styles.boxHeading}>Details</Text>
-            <View style={styles.rowItem}>
-              <RenderItem title={'Bin Location Name'} subTitle={state.locationData?.name ?? ''} />
-              <RenderItem title={'Location Type'} subTitle={state.locationData?.locationType.name ?? ''} />
-            </View>
-            <View style={styles.rowItem}>
-              <RenderItem title={'Facility Name'} subTitle={state.locationData?.parentLocation?.name ?? ''} />
-              <RenderItem title={'Zone Name'} subTitle={state.locationData?.zoneName ?? 'N/A'} />
-            </View>
+            <DetailsTable data={renderData} style={[margin.ML3, margin.MR3]} />
             <Text style={styles.boxHeading}>Available Items ({state.locationData.availableItems.length ?? '0'})</Text>
-          </View>
-          <ScrollView>
+          </ContentHeader>
+          <ContentBody>
             {state.locationData?.availableItems?.map((item: any, index: any) => {
               return renderListItem(item, index);
             })}
-            <View style={styles.bottom}>
-              <Button title={'Print Barcode Label'} onPress={handleClick} />
-            </View>
-          </ScrollView>
-        </>
+          </ContentBody>
+          <ContentFooter>
+            <Button title={'Print Barcode Label'} onPress={handleClick} />
+          </ContentFooter>
+        </ContentContainer>
       )}
       <PrintModal
         visible={state.visible}
@@ -191,7 +188,7 @@ const InternalLocationDetails = () => {
         product={state.locationDetails?.product}
         defaultBarcodeLabelUrl={state.locationDetails?.defaultBarcodeLabelUrl}
       />
-    </View>
+    </>
   );
 };
 

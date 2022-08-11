@@ -1,12 +1,12 @@
 import React from 'react';
 import { Image, Text, View } from 'react-native';
-import styles from './styles';
+import { common, typography } from '../../assets/styles';
 
 const Placeholder = () => {
   return (
-    <View style={styles.container}>
+    <View style={[common.containerCenter, common.flex1]}>
       <Image source={require('../../assets/images/picking.png')} />
-      <Text style={styles.text}>Coming soon...</Text>
+      <Text style={[typography.h1, typography.bold, typography.colorSecondary]}>Coming soon...</Text>
     </View>
   );
 };

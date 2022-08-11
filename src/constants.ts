@@ -1,10 +1,5 @@
 import { Dimensions, StatusBar } from 'react-native';
 
-export const colors = {
-  headerColor: '#003369',
-  disabledBgColor: '#cccccc'
-};
-
 export const device = {
   windowWidth: Dimensions.get('window').width,
   windowHeight: Dimensions.get('window').height,

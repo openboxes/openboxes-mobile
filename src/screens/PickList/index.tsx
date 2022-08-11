@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import styles from './styles';
+import { common } from '../../assets/styles';
 import { ListRenderItemInfo, View, ToastAndroid } from 'react-native';
 import { useDispatch } from 'react-redux';
 import showPopup from '../../components/Popup';
@@ -101,7 +101,7 @@ const PickOrderItem = ({ picklistItems, selectedPicklistItemIndex, successfulPic
   };
 
   return (
-    <View style={styles.screenContainer}>
+    <View style={[common.containerFlexColumn, common.flex1]}>
       <Carousel
         ref={carouselRef}
         scrollEnabled
