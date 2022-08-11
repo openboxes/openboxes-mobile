@@ -1,4 +1,5 @@
-import { DispatchProps, Props, State } from './types';
+import _ from 'lodash';
+import { DispatchProps, Props, State, SectionData } from './types';
 import React from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { connect } from 'react-redux';
@@ -6,7 +7,6 @@ import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
 import { RootState } from '../../redux/reducers';
 import styles from './styles';
 import { getShipment } from '../../redux/actions/packing';
-import OutboundVMMapper from './OutboubVmMapper';
 import ContainerDetails from './ContainerDetails';
 import Button from '../../components/Button';
 import InputBox from '../../components/InputBox';
@@ -21,9 +21,11 @@ class OutboundStockDetails extends React.Component<Props, State> {
     this.state = {
       error: null,
       shipment: null,
-      shipmentData: null,
-      scannedValue: ''
+      scannedValue: '',
+      matchingShipmentItemIds: [],
+      matchingContainerIds: []
     };
+    this.onScan = _.debounce(this.onScan, 500);
   }
 
   componentDidMount() {
@@ -36,6 +38,35 @@ class OutboundStockDetails extends React.Component<Props, State> {
     }
   }
 
+  get sectionData(): SectionData[] {
+    let containers = this.state.shipment?.containers ?? [];
+    if (containers.length === 0) {
+      return [];
+    }
+
+    if (this.state.matchingContainerIds.length > 0) {
+      containers = containers.filter(({ id: containerId }) => this.state.matchingContainerIds.includes(containerId));
+    }
+
+    return containers
+      .map((container) => {
+        let shipmentItems = container.shipmentItems ?? [];
+
+        if (this.state.matchingShipmentItemIds.length > 0) {
+          shipmentItems = shipmentItems.filter(({ id: shipmentItemId }) =>
+            this.state.matchingShipmentItemIds.includes(shipmentItemId)
+          );
+        }
+
+        return {
+          title: container.name ?? 'Unpacked Items',
+          id: container.id,
+          data: shipmentItems
+        };
+      })
+      .filter(({ data }) => data && data.length > 0);
+  }
+
   fetchShipment = () => {
     const { shipmentId } = this.props.route.params;
     this.props.navigation.setParams({ refetchShipment: false });
@@ -43,10 +74,7 @@ class OutboundStockDetails extends React.Component<Props, State> {
       if (!data || data?.error) {
         return Promise.resolve(null);
       } else {
-        this.setState({
-          shipment: data,
-          shipmentData: OutboundVMMapper(data)
-        });
+        this.setState({ shipment: data });
       }
       this.props.hideScreenLoading();
     };
@@ -54,63 +82,69 @@ class OutboundStockDetails extends React.Component<Props, State> {
     this.props.getShipment(shipmentId, actionCallback);
   };
 
-  onScan = (value: string) => {
-    this.setState({ scannedValue: value }, () => {
-      if (value) {
-        const matchingLotNumberOrProduct = this.findMatchingLotNumberOrProduct(value);
-        if (matchingLotNumberOrProduct) {
-          this.setState({ scannedValue: '' }, () => {
-            this.showOrderDetailsScreen(matchingLotNumberOrProduct);
-          });
-          return;
-        }
+  onScanValueChange = (value: string) => {
+    this.setState({ scannedValue: value });
+    this.onScan(value);
+  };
 
-        const matchingContainer = this.findMatchingContainer(value);
-        if (matchingContainer) {
-          this.setState({ scannedValue: '' }, () => {
-            this.showLPNDetailsScreen(matchingContainer, this.state.shipment?.shipmentNumber);
-          });
-          return;
-        }
-      }
+  onScan = (value: string) => {
+    if (!value) {
+      this.setState({ matchingShipmentItemIds: [], matchingContainerIds: [] });
+      return;
+    }
+
+    const matchingLotNumberOrProduct = this.findMatchingShipmentItem(value);
+    const matchingShipmentItemIds = matchingLotNumberOrProduct.map(({ id }) => id);
+    if (matchingShipmentItemIds.length === 1) {
+      this.setState({ scannedValue: '', matchingShipmentItemIds: [], matchingContainerIds: [] }, () => {
+        this.showOrderDetailsScreen(matchingLotNumberOrProduct[0]);
+      });
+      return;
+    } else if (matchingShipmentItemIds.length > 1) {
+      this.setState({ matchingShipmentItemIds, matchingContainerIds: [] });
+      return;
+    } else if (this.state.matchingShipmentItemIds.length > 0) {
+      this.setState({ matchingShipmentItemIds: [] });
+    }
+
+    const matchingContainer = this.findMatchingContainer(value);
+    const matchingContainerIds = matchingContainer.map(({ id }) => id);
+    if (matchingContainerIds.length === 1) {
+      this.setState({ scannedValue: '', matchingShipmentItemIds: [], matchingContainerIds: [] }, () => {
+        this.showLPNDetailsScreen(matchingContainer[0]);
+      });
+      return;
+    } else if (matchingContainerIds.length > 1) {
+      this.setState({ matchingContainerIds, matchingShipmentItemIds: [] });
+      return;
+    } else if (this.state.matchingContainerIds.length > 0) {
+      this.setState({ matchingContainerIds: [] });
+    }
+    showPopup({
+      message: `Unable to locate a product, item, or container with identifier: ${value}`
     });
   };
 
-  onScanEnd = (value: string) => {
-    if (value) {
-      const matchingLotNumberOrProduct = this.findMatchingLotNumberOrProduct(value);
-      if (matchingLotNumberOrProduct) {
-        this.showOrderDetailsScreen(matchingLotNumberOrProduct);
-        return;
-      }
-      const matchingContainer = this.findMatchingContainer(value);
-      if (matchingContainer) {
-        this.showLPNDetailsScreen(matchingContainer, this.state.shipment?.shipmentNumber);
-        return;
-      }
-      showPopup({
-        message: `Unable to locate a product, item, or container with identifier: ${value}`
-      });
-      this.setState({ scannedValue: '' });
-    }
-  };
-
-  findMatchingLotNumberOrProduct = (input: string) => {
+  findMatchingShipmentItem = (input: string): ShipmentItems[] => {
     const searchTerm = input.toLowerCase();
-    return this.state.shipment?.shipmentItems?.find(
-      (item: ShipmentItems) =>
-        item.inventoryItem?.lotNumber?.toLowerCase().includes(searchTerm) ||
-        item.lotNumber?.toLowerCase().includes(searchTerm) ||
-        item.inventoryItem?.product?.productCode?.toLowerCase()?.includes(searchTerm)
+    return (
+      this.state.shipment?.shipmentItems?.filter(
+        (item: ShipmentItems) =>
+          item.inventoryItem?.lotNumber?.toLowerCase().includes(searchTerm) ||
+          item.lotNumber?.toLowerCase().includes(searchTerm) ||
+          item.inventoryItem?.product?.productCode?.toLowerCase()?.includes(searchTerm)
+      ) || []
     );
   };
 
-  findMatchingContainer = (input: string) => {
+  findMatchingContainer = (input: string): Container[] => {
     const searchTerm = input.toLowerCase();
-    return this.state.shipment?.availableContainers?.find(
-      (container: Container) =>
-        container.containerNumber?.toLowerCase()?.includes(searchTerm) ||
-        container?.name?.toLowerCase().includes(searchTerm)
+    return (
+      this.state.shipment?.availableContainers?.filter(
+        (container: Container) =>
+          container.containerNumber?.toLowerCase()?.includes(searchTerm) ||
+          container?.name?.toLowerCase().includes(searchTerm)
+      ) || []
     );
   };
 
@@ -173,10 +207,9 @@ class OutboundStockDetails extends React.Component<Props, State> {
             disabled={false}
             editable={false}
             label={'Search'}
-            onChange={this.onScan}
-            onEndEdit={this.onScanEnd}
+            onChange={this.onScanValueChange}
           />
-          <ContainerDetails item={this.state.shipmentData?.sectionData ?? []} />
+          <ContainerDetails item={this.sectionData} />
         </ScrollView>
         <View style={styles.buttonBar}>
           <Button
