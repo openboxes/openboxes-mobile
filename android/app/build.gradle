@@ -147,6 +147,8 @@ android {
                 force 'androidx.coordinatorlayout:coordinatorlayout:1.1.0'
                 // core-ktx 1.6.0 is the latest version working with sdk 30
                 force 'androidx.core:core-ktx:1.6.0'
+                // material 1.4.0 is the latest version working with sdk 30
+                force 'com.google.android.material:material:1.4.0'
             }
         }
     }
