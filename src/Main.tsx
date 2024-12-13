@@ -53,6 +53,7 @@ import PackingLocationPage from './screens/PackingLocationPage';
 import OutboundLoadingList from './screens/OutboundLoadingList/OutboundLoadingList';
 import OutboundLoadingDetails from './screens/OutboundLoadingDetails';
 import OutboundLoadingContainer from './screens/OutboundLoadingContainer';
+import Theme from './utils/Theme';
 
 const Stack = createStackNavigator();
 export interface OwnProps {
@@ -133,7 +134,7 @@ class Main extends Component<Props, State> {
 
   render() {
     const { loggedIn } = this.props;
-    const initialRouteName = !loggedIn ? 'Login' : 'Drawer';
+    const initialRouteName = !loggedIn ? 'Login' : 'Choose Location';
     return (
       <Provider>
         <SafeAreaView style={{ flex: 1 }}>
@@ -151,7 +152,7 @@ class Main extends Component<Props, State> {
                 },
                 headerTintColor: '#ffffff',
                 headerStyle: {
-                  backgroundColor: colors.headerColor,
+                  backgroundColor: Theme.colors.primary,
                   height: appHeaderHeight
                 }
               })}

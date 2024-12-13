@@ -2,6 +2,7 @@ import React from 'react';
 import Spinner from 'react-native-input-spinner';
 import { StyleSheet, Text, View } from 'react-native';
 import { colors, device } from '../constants';
+import Theme from '../utils/Theme';
 
 const InputSpinner = ({ title, value, max, setValue }: any) => {
   return (
@@ -11,7 +12,7 @@ const InputSpinner = ({ title, value, max, setValue }: any) => {
           selectTextOnFocus
           showBorder
           step={1}
-          color={colors.headerColor}
+          color={Theme.colors.primary}
           max={max}
           skin={'square'}
           min={0}

@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
 import { colors } from '../../constants';
+import Theme from '../../utils/Theme';
 
 export default StyleSheet.create({
   label: {
@@ -15,7 +16,7 @@ export default StyleSheet.create({
     borderRadius: 16
   },
   disabled: {
-    backgroundColor: colors.disabledBgColor
+    backgroundColor: Theme.colors.disabled
   },
   size100: {
     width: '100%'
