@@ -3,14 +3,12 @@ import {
   GET_PRODUCTS_REQUEST_SUCCESS,
   PRINT_LABEL_REQUEST_SUCCESS
 } from '../actions/products';
-import Location from "../../data/location/Location";
-import {Session} from "../../data/auth/Session";
 
 export interface State {
   products: any;
-  currentBarcodeLabel: any,
-  printModalVisible: boolean
-  selectedProduct: any
+  currentBarcodeLabel: any;
+  printModalVisible: boolean;
+  selectedProduct: any;
 }
 
 const initialState: State = {
@@ -25,21 +23,21 @@ function reducer(state = initialState, action: any) {
     case GET_PRODUCTS_REQUEST_SUCCESS: {
       return {
         ...state,
-        products: [...action.payload],
+        products: [...action.payload]
       };
     }
     case GET_PRODUCT_BY_ID_REQUEST_SUCCESS: {
       return {
         ...state,
         printModalVisible: true,
-        selectedProduct: {...action.payload},
-        currentBarcodeLabel: {...action.payload.defaultBarcodeLabelUrl},
+        selectedProduct: { ...action.payload },
+        currentBarcodeLabel: { ...action.payload.defaultBarcodeLabelUrl }
       };
     }
     case PRINT_LABEL_REQUEST_SUCCESS: {
       return {
         ...state,
-        printModalVisible: false,
+        printModalVisible: false
       };
     }
 

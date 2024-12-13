@@ -1,4 +1,4 @@
-import {combineReducers} from 'redux';
+import { combineReducers } from 'redux';
 import mainReducer from './mainReducer';
 import productsReducer from './productsReducer';
 import putawayReducer from './putawayReducer';

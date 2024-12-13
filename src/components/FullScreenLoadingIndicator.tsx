@@ -14,9 +14,7 @@ export default function FullScreenLoadingIndicator(props: Props) {
         <View style={styles.modalChild}>
           <View style={styles.progressContainer}>
             <ActivityIndicator />
-            {props.message ? (
-              <Text style={styles.progressMessage}>{props.message}</Text>
-            ) : null}
+            {props.message ? <Text style={styles.progressMessage}>{props.message}</Text> : null}
           </View>
         </View>
       </Modal>

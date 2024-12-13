@@ -1,12 +1,12 @@
 export interface OwnProps {
   label: string;
-  initialData: any,
-  initValue: string,
-  searchAction: Function,
-  searchActionParams?: any,
-  placeholder?: string
-  onSelect?: Function,
-  getMoreData?: Function,
+  initialData: any;
+  initValue: string;
+  searchAction: Function;
+  searchActionParams?: any;
+  placeholder?: string;
+  onSelect?: Function;
+  getMoreData?: Function;
   showSelect?: boolean;
   value?: string | any;
   onChange?: (text: string) => void;

@@ -3,21 +3,22 @@ import { colors } from '../../constants';
 
 export default StyleSheet.create({
   label: {
-    color: 'white',
     fontSize: 15,
     fontWeight: '600'
   },
   button: {
     height: 45,
-    marginTop: 25,
-    backgroundColor: colors.headerColor,
     alignSelf: 'center',
     justifyContent: 'center',
     display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'column',
+    borderRadius: 16
   },
   disabled: {
     backgroundColor: colors.disabledBgColor
+  },
+  size100: {
+    width: '100%'
   },
   size80: {
     width: '80%'

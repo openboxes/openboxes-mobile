@@ -41,12 +41,8 @@ const onBarcodeScanned = () => {
 
   const onError = (data: any, query: any, callback: (data: any) => void) => {
     showPopup({
-      title:
-        data.errorMessage ??
-        `Failed to load search results with value = "${query}"`,
-      message:
-        data.errorMessage ??
-        `Failed to load search results with value = "${query}"`,
+      title: data.errorMessage ?? `Failed to load search results with value = "${query}"`,
+      message: data.errorMessage ?? `Failed to load search results with value = "${query}"`,
       positiveButton: {
         text: 'Retry',
         callback: callback

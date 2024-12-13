@@ -3,10 +3,7 @@ export const LISTENER = {
   BARCODE_SCAN: 'barcode_scan',
   ENUMERATED_SCANNER: 'enumerated_scanners'
 };
-export const FILTER_ACTIONS = [
-  'com.openboxes.android.ACTION',
-  'com.symbol.datawedge.api.RESULT_ACTION'
-];
+export const FILTER_ACTIONS = ['com.openboxes.android.ACTION', 'com.symbol.datawedge.api.RESULT_ACTION'];
 
 export const FILTER_CATEGORY = ['android.intent.category.DEFAULT'];
 
@@ -19,8 +16,7 @@ export const PROPERTY = {
   RESULT_INFO: 'RESULT_INFO',
   VERSION_INFO: 'com.symbol.datawedge.api.RESULT_GET_VERSION_INFO',
   DATAWEDGE: 'DATAWEDGE',
-  RESULT_ENUMERATED_SCANNER:
-    'com.symbol.datawedge.api.RESULT_ENUMERATE_SCANNERS',
+  RESULT_ENUMERATED_SCANNER: 'com.symbol.datawedge.api.RESULT_ENUMERATE_SCANNERS',
   ACTIVE_PROFILE: 'com.symbol.datawedge.api.RESULT_GET_ACTIVE_PROFILE'
 };
 
