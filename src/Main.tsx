@@ -136,7 +136,7 @@ class Main extends Component<Props, State> {
     const { loggedIn } = this.props;
     const initialRouteName = !loggedIn ? 'Login' : 'Choose Location';
     return (
-      <Provider>
+      <Provider theme={Theme}>
         <SafeAreaView style={{ flex: 1 }}>
           <FullScreenLoadingIndicator
             visible={this.props.fullScreenLoadingIndicator.visible}
