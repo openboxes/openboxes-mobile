@@ -23,7 +23,7 @@ import Location from './data/location/Location';
 import { Session } from './data/auth/Session';
 import { getSessionAction } from './redux/actions/main';
 import showPopup from './components/Popup';
-import { colors, appHeaderHeight } from './constants';
+import { appHeaderHeight } from './constants';
 import Scan from './screens/Scan';
 import PutawayList from './screens/PutawayList';
 import Settings from './screens/Settings';
@@ -53,6 +53,7 @@ import PackingLocationPage from './screens/PackingLocationPage';
 import OutboundLoadingList from './screens/OutboundLoadingList/OutboundLoadingList';
 import OutboundLoadingDetails from './screens/OutboundLoadingDetails';
 import OutboundLoadingContainer from './screens/OutboundLoadingContainer';
+import Theme from './utils/Theme';
 
 const Stack = createStackNavigator();
 export interface OwnProps {
@@ -100,8 +101,7 @@ class Main extends Component<Props, State> {
 
   shouldComponentUpdate(nextProps: Props) {
     return (
-      this.props.fullScreenLoadingIndicator.visible !==
-        nextProps.fullScreenLoadingIndicator.visible ||
+      this.props.fullScreenLoadingIndicator.visible !== nextProps.fullScreenLoadingIndicator.visible ||
       this.props.loggedIn !== nextProps.loggedIn ||
       this.props.currentLocation !== nextProps.currentLocation ||
       this.props.session !== nextProps.session
@@ -109,11 +109,7 @@ class Main extends Component<Props, State> {
   }
 
   componentDidUpdate() {
-    if (
-      this.props.loggedIn &&
-      this.props.currentLocation !== null &&
-      this.props.session === null
-    ) {
+    if (this.props.loggedIn && this.props.currentLocation !== null && this.props.session === null) {
       const actionCallback = (data: any) => {
         if (data?.error) {
           showPopup({
@@ -138,9 +134,9 @@ class Main extends Component<Props, State> {
 
   render() {
     const { loggedIn } = this.props;
-    const initialRouteName = !loggedIn ? 'Login' : 'Drawer';
+    const initialRouteName = !loggedIn ? 'Login' : 'Choose Location';
     return (
-      <Provider>
+      <Provider theme={Theme}>
         <SafeAreaView style={{ flex: 1 }}>
           <FullScreenLoadingIndicator
             visible={this.props.fullScreenLoadingIndicator.visible}
@@ -150,20 +146,24 @@ class Main extends Component<Props, State> {
             <Stack.Navigator
               initialRouteName={initialRouteName}
               screenOptions={({ route, navigation }) => ({
-                headerRight: () => (
-                  <OptionMenu route={route} navigation={navigation} />
-                ),
+                headerRight: () => <OptionMenu route={route} navigation={navigation} />,
                 headerTitleContainerStyle: {
                   width: '50%'
                 },
                 headerTintColor: '#ffffff',
                 headerStyle: {
-                  backgroundColor: colors.headerColor,
+                  backgroundColor: Theme.colors.primary,
                   height: appHeaderHeight
                 }
               })}
             >
-              <Stack.Screen name="Login" component={Login} />
+              <Stack.Screen
+                name="Login"
+                component={Login}
+                options={{
+                  headerShown: false
+                }}
+              />
               <Stack.Screen
                 name="Drawer"
                 component={DrawerNavigator}
@@ -176,52 +176,29 @@ class Main extends Component<Props, State> {
               <Stack.Screen name="ProductDetails" component={ProductDetails} />
               <Stack.Screen name="PickOrderItem" component={PickOrderItem} />
               <Stack.Screen name="Transfers" component={Transfers} />
-              <Stack.Screen
-                component={TransferDetails}
-                name="TransferDetails"
-              />
+              <Stack.Screen component={TransferDetails} name="TransferDetails" />
               <Stack.Screen name="Dashboard" component={Dashboard} />
               <Stack.Screen name="Scan" component={Scan} />
               <Stack.Screen name="Products" component={Products} />
               <Stack.Screen name="PutawayList" component={PutawayList} />
-              <Stack.Screen
-                name="PutawayCandidates"
-                component={PutawayCandidates}
-              />
+              <Stack.Screen name="PutawayCandidates" component={PutawayCandidates} />
               <Stack.Screen name="PutawayItem" component={PutawayItem} />
-              <Stack.Screen
-                name="PutawayItemDetail"
-                component={PutawayItemDetail}
-              />
+              <Stack.Screen name="PutawayItemDetail" component={PutawayItemDetail} />
               <Stack.Screen name="PutawayDetails" component={PutawayDetails} />
-              <Stack.Screen
-                name="InboundOrderList"
-                component={InboundOrderList}
-              />
+              <Stack.Screen name="InboundOrderList" component={InboundOrderList} />
               <Stack.Screen name="InboundDetails" component={InboundDetails} />
               <Stack.Screen name="Product Summary" component={ProductSummary} />
               <Stack.Screen name="CreateLpn" component={CreateLpn} />
               <Stack.Screen name="LpnDetail" component={LpnDetail} />
-              <Stack.Screen
-                name="InboundReceiveDetail"
-                component={InboundReceiveDetail}
-              />
+              <Stack.Screen name="InboundReceiveDetail" component={InboundReceiveDetail} />
               <Stack.Screen name="Settings" component={Settings} />
-              <Stack.Screen
-                name="OutboundStockList"
-                component={OutboundStockList}
-                options={{ title: 'Packing' }}
-              />
+              <Stack.Screen name="OutboundStockList" component={OutboundStockList} options={{ title: 'Packing' }} />
               <Stack.Screen
                 name="OutboundStockDetails"
                 component={OutboundStockDetails}
                 options={{ title: 'Packing' }}
               />
-              <Stack.Screen
-                name="OutboundLoadingList"
-                component={OutboundLoadingList}
-                options={{ title: 'Loading' }}
-              />
+              <Stack.Screen name="OutboundLoadingList" component={OutboundLoadingList} options={{ title: 'Loading' }} />
               <Stack.Screen
                 name="OutboundLoadingDetails"
                 component={OutboundLoadingDetails}
@@ -234,24 +211,10 @@ class Main extends Component<Props, State> {
               />
               <Stack.Screen name="AdjustStock" component={AdjustStock} />
               <Stack.Screen name="Transfer" component={Transfer} />
-              <Stack.Screen
-                name="ShipmentDetails"
-                component={ShipItemDetails}
-                options={{ title: 'Packing' }}
-              />
-              <Stack.Screen
-                name="InternalLocationDetail"
-                component={InternalLocationDetails}
-              />
-              <Stack.Screen
-                name="ViewAvailableItem"
-                component={ViewAvailableItem}
-              />
-              <Stack.Screen
-                name="Placeholder"
-                options={{ title: 'Work in progress' }}
-                component={Placeholder}
-              />
+              <Stack.Screen name="ShipmentDetails" component={ShipItemDetails} options={{ title: 'Packing' }} />
+              <Stack.Screen name="InternalLocationDetail" component={InternalLocationDetails} />
+              <Stack.Screen name="ViewAvailableItem" component={ViewAvailableItem} />
+              <Stack.Screen name="Placeholder" options={{ title: 'Work in progress' }} component={Placeholder} />
               <Stack.Screen
                 name="PackingLocationPage"
                 options={{ title: 'Packing Location' }}

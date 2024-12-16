@@ -16,6 +16,7 @@ import DropDown from 'react-native-paper-dropdown';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import DetailsTable from '../DetailsTable';
 import { Props } from './types';
+import Theme from '../../utils/Theme';
 
 // TODO: Refactor (pull from api, when shortage reason codes will be available)
 const SHORTAGE_REASON_CODES = [
@@ -163,7 +164,7 @@ const PickListItem: React.FC<Props> = ({ item, onPickItem }) => {
                             <FontAwesome5
                               name="exclamation-triangle"
                               size={10}
-                              color={colors.headerColor}
+                              color={Theme.colors.primary}
                               style={styles.infoButton}
                             />
                             &nbsp;Shortage

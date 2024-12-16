@@ -48,21 +48,22 @@ const ContainerDetails = ({ item }: any) => {
       renderSectionHeader={({ section: { data, title } }) => (
         <View style={styles.headerContainer}>
           <Text style={styles.headerTitle}>{title}</Text>
-          {data[0].container?.id &&
-          <>
-            <Text>{data[0]?.container?.status ?? ''}</Text>
-            <TouchableOpacity style={styles.infoButton}
-              onPress={() => {
-                navigation.navigate('LpnDetail', {
-                  id: data[0]?.container?.id,
-                  shipmentNumber: data[0]?.shipment?.shipmentNumber
-                });
-              }}
-            >
-              <FontAwesome5 name="chevron-right" size={24} color={colors.headerColor} />
-            </TouchableOpacity>
-          </>
-          }
+          {data[0].container?.id && (
+            <>
+              <Text>{data[0]?.container?.status ?? ''}</Text>
+              <TouchableOpacity
+                style={styles.infoButton}
+                onPress={() => {
+                  navigation.navigate('LpnDetail', {
+                    id: data[0]?.container?.id,
+                    shipmentNumber: data[0]?.shipment?.shipmentNumber
+                  });
+                }}
+              >
+                <FontAwesome5 name="chevron-right" size={24} />
+              </TouchableOpacity>
+            </>
+          )}
         </View>
       )}
       sections={item}

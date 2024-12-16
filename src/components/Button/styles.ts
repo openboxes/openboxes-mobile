@@ -1,23 +1,24 @@
 import { StyleSheet } from 'react-native';
-import { colors } from '../../constants';
+import Theme from '../../utils/Theme';
 
 export default StyleSheet.create({
   label: {
-    color: 'white',
     fontSize: 15,
     fontWeight: '600'
   },
   button: {
     height: 45,
-    marginTop: 25,
-    backgroundColor: colors.headerColor,
     alignSelf: 'center',
     justifyContent: 'center',
     display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'column',
+    borderRadius: 16
   },
   disabled: {
-    backgroundColor: colors.disabledBgColor
+    backgroundColor: Theme.colors.disabled
+  },
+  size100: {
+    width: '100%'
   },
   size80: {
     width: '80%'

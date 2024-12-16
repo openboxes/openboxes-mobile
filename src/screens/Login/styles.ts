@@ -4,14 +4,24 @@ const styles = StyleSheet.create({
   screenContainer: {
     display: 'flex',
     flexDirection: 'column',
-    flex: 1
-  },
-  inputContainer: {
-    display: 'flex',
-    flex: 1,
-    flexDirection: 'column',
     justifyContent: 'center',
-    paddingHorizontal: 10
+    flex: 1,
+    paddingHorizontal: 20
+  },
+  welcomeContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    marginBottom: 20
+  },
+  inputsContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    marginBottom: 20
+  },
+  buttonsContainer: {
+    display: 'flex',
+    flexDirection: 'column'
   }
 });
 

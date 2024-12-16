@@ -9,8 +9,12 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
 import showPopup from '../../components/Popup';
 import { getShipment, submitShipmentDetails } from '../../redux/actions/packing';
-import AutoInputInternalLocation from '../../components/AutoInputInternalLocation';
 import InputSpinner from '../../components/InputSpinner';
+import EditableModalSelect from '../../components/EditableModalSelect';
+import CLEAR from '../../assets/images/icon_clear.png';
+import SCAN from '../../assets/images/scan.jpg';
+import TICK from '../../assets/images/tick.png';
+import _ from 'lodash';
 
 const ShipItemDetails = () => {
   const route = useRoute();
@@ -23,7 +27,7 @@ const ShipItemDetails = () => {
     shipmentDetails: null,
     containerList: []
   });
-  const [selectedContainerItem, setSelectedContainerItem] = useState();
+  const [selectedContainerItem, setSelectedContainerItem] = useState<any>();
 
   useEffect(() => {
     getShipmentDetails(item.shipment.shipmentNumber);
@@ -52,7 +56,7 @@ const ShipItemDetails = () => {
               id: dataItem.id
             }))
           });
-          setSelectedContainerItem({ id: item?.container?.id || null });
+          setSelectedContainerItem({ id: item?.container?.id || null, name: item.container?.name || null });
         }
       }
     };
@@ -70,9 +74,25 @@ const ShipItemDetails = () => {
       return;
     }
 
+    if (selectedContainerItem?.id && !isContainerValid(selectedContainerItem?.id, state.containerList)) {
+      showPopup({
+        message: 'Scanned container is not valid. Please scan or select proper container.',
+        positiveButton: {
+          text: 'Ok'
+        }
+      });
+      return;
+    }
+
+    // find proper container id in case it was scanned
+    const container = _.find(
+      state.containerList,
+      c => c?.id === selectedContainerItem?.id || c?.name === selectedContainerItem?.id,
+    );
+
     const request = {
       action: 'PACK',
-      'container.id': selectedContainerItem?.id ?? '',
+      'container.id': container?.id ?? '',
       quantityToPack: state.quantityPicked
     };
 
@@ -102,6 +122,27 @@ const ShipItemDetails = () => {
       }
     };
     dispatch(submitShipmentDetails(id, request, callback));
+  };
+
+  const isContainerValid = (scannedContainerId?: string, containerList?: Array<any>) => {
+    if (!scannedContainerId && containerList?.length === 0) {
+      return true;
+    }
+
+    // compare against id and name because when manually scanned there won't be id, but container number
+    return _.find(containerList, c => c?.id === scannedContainerId || c?.name === scannedContainerId);
+  };
+
+  const getIcon = (scannedContainerId?: string, containerList?: Array<any>) => {
+    const isScannedPropertyValid = isContainerValid(scannedContainerId, containerList);
+
+    if ((!scannedContainerId && containerList?.length === 0) || isScannedPropertyValid) {
+      return TICK;
+    }
+    if (!scannedContainerId) {
+      return SCAN;
+    }
+    return CLEAR;
   };
 
   const quantityPickedChange = (query: string) => {
@@ -144,12 +185,28 @@ const ShipItemDetails = () => {
       </View>
       <View style={styles.textContainer}>
         <Text style={styles.label}>{'Container'}</Text>
-        <AutoInputInternalLocation
-          label="AutoInputInternalContainer"
-          data={state.containerList ?? []}
-          selectedContainerItem={selectedContainerItem}
-          initValue={item.container?.name || ''}
-          selectedData={(selectedItem: any, index: number) => setSelectedContainerItem(selectedItem)}
+        <EditableModalSelect
+          placeholder="Container"
+          label="Container"
+          initialData={state.containerList ?? []}
+          helperIcon={getIcon(selectedContainerItem?.id, state.containerList)}
+          onHelperIconClick={() => {
+            if (selectedContainerItem?.id && !isContainerValid(selectedContainerItem?.id, state.containerList)) {
+              setSelectedContainerItem({ id: null, name: null });
+              return;
+            }
+            showPopup({
+              message: `Scan a proper container.
+                \n\nTo validate container click on this field and scan a container or use select (click on magnifying glass icon)`,
+              positiveButton: {
+                text: 'Ok'
+              }
+            });
+          }}
+          initValue={selectedContainerItem?.name || ''}
+          searchAction={() => null}
+          searchActionParams={{}}
+          onSelect={(selectedItem: any, index: number) => setSelectedContainerItem(selectedItem)}
         />
       </View>
       <View style={styles.alignCenterContent}>

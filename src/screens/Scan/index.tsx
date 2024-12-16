@@ -108,7 +108,7 @@ const Scan = () => {
       />
       <View style={styles.countLabelAndIconContainer}>
         <EmptyView
-          uri={require('../../assets/images/logo.png')}
+          uri={require('../../assets/images/scanner.png')}
           title="Scan"
           description="Scan a barcode for a product code, internal location, or LPN to retrieve details "
           isRefresh={false}

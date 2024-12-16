@@ -3,7 +3,6 @@ import { Menu, TextInput } from 'react-native-paper';
 import React, { useState } from 'react';
 import { Props } from './types';
 import styles from './styles';
-import CLEAR from '../../assets/images/icon_clear.png';
 
 const AutoComplete = ({
   value,
@@ -28,9 +27,7 @@ const AutoComplete = ({
   const [filteredData, setFilteredData] = useState([]);
 
   const filterData = (text: string) => {
-    return data.filter(
-      (val: any) => val?.toLowerCase()?.indexOf(text?.toLowerCase()) > -1
-    );
+    return data.filter((val: any) => val?.toLowerCase()?.indexOf(text?.toLowerCase()) > -1);
   };
   return (
     <View style={[styles.container, containerStyle]}>

@@ -21,11 +21,7 @@ export class App extends Component {
   render() {
     return (
       <Provider store={store}>
-        <StatusBar
-          backgroundColor={colors.headerColor}
-          hidden={false}
-          barStyle="light-content"
-        />
+        <StatusBar hidden={false} barStyle="light-content" />
         <Main />
       </Provider>
     );

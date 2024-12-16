@@ -5,9 +5,11 @@ import styles from './styles';
 import { useDispatch } from 'react-redux';
 import { login } from '../../redux/actions/auth';
 import showPopup from '../../components/Popup';
-import { TextInput } from 'react-native-paper';
+import { Caption, TextInput } from 'react-native-paper';
 import Button from '../../components/Button';
 import * as NavigationService from '../../NavigationService';
+import { Image } from 'react-native';
+import { Headline } from 'react-native-paper';
 
 import { StackNavigationProp } from '@react-navigation/stack';
 import { StackList } from '../../types/navigationTypes';
@@ -98,10 +100,15 @@ const Login = () => {
 
   return (
     <View style={styles.screenContainer}>
-      <View style={styles.inputContainer}>
-        <TextInput mode="outlined" label={'Username'} placeholder="Username" onChangeText={onUsernameChange} />
+      <View style={styles.welcomeContainer}>
+        <Image source={require('../../assets/images/logo.png')} resizeMode={'cover'} />
+        <Headline style={{ fontWeight: 'bold' }}>Welcome Back!</Headline>
+        <Caption>Sign in to continue</Caption>
+      </View>
+      <View style={styles.inputsContainer}>
+        <TextInput mode="flat" label={'Username'} placeholder="Username" onChangeText={onUsernameChange} />
         <TextInput
-          mode="outlined"
+          mode="flat"
           placeholder="Password"
           label={'Password'}
           secureTextEntry={state.isSeePassword}
@@ -111,18 +118,13 @@ const Login = () => {
           }}
           onChangeText={onPasswordChange}
         />
-        <Button
-          title="Login"
-          style={{
-            marginTop: 8
-          }}
-          onPress={onLoginPress}
-        />
+      </View>
+      <View style={styles.buttonsContainer}>
+        <Button title="Login" size="100%" style={{ marginBottom: 8 }} onPress={onLoginPress} />
         <Button
           title="Settings"
-          style={{
-            marginTop: 8
-          }}
+          size="100%"
+          mode="text"
           onPress={() => {
             NavigationService.navigate('Settings');
           }}

@@ -19,10 +19,5 @@ export default StyleSheet.create({
   certificateText: {
     fontSize: 15,
     color: 'black'
-  },
-  imageStyle: {
-    width: 100,
-    height: 100,
-    marginVertical: 20
   }
 });

@@ -26,8 +26,7 @@ const useEventListener = () => {
     lastApiText: 'Messages from DataWedge will go here',
     checkBoxesDisabled: true,
     scanButtonVisible: false,
-    dwVersionText:
-      'Pre 6.3.  Please create and configure profile manually.  See the ReadMe for more details',
+    dwVersionText: 'Pre 6.3.  Please create and configure profile manually.  See the ReadMe for more details',
     activeProfileText: 'Requires DataWedge 6.3+',
     enumeratedScannersText: 'Requires DataWedge 6.3+',
     scans: [],
@@ -40,10 +39,7 @@ const useEventListener = () => {
       var commandResult =
         intent.RESULT +
         ' (' +
-        intent.COMMAND.substring(
-          intent.COMMAND.lastIndexOf('.') + 1,
-          intent.COMMAND.length
-        ) +
+        intent.COMMAND.substring(intent.COMMAND.lastIndexOf('.') + 1, intent.COMMAND.length) +
         ')'; // + JSON.stringify(intent.RESULT_INFO);
       commandReceived(commandResult.toLowerCase());
     }
@@ -102,8 +98,7 @@ const useEventListener = () => {
     //  Create a profile for our application
     sendCommand(PROFILE.CREATE_PROFILE, PROFILE.NAME);
 
-    state.dwVersionText =
-      '6.3.  Please configure profile manually.  See ReadMe for more details.';
+    state.dwVersionText = '6.3.  Please configure profile manually.  See ReadMe for more details.';
 
     //  Although we created the profile we can only configure it with DW 6.4.
     sendCommand(PROFILE.ACTIVE_PROFILE, '');
