@@ -10,7 +10,7 @@ const AppInfoScreen: FC = () => {
       <Text style={Styles.openboxTextStyle}>Openboxes</Text>
       <Text style={Styles.versionNumberText}>Version Number: {DeviceInfo.getVersion()}</Text>
       <Text style={Styles.versionNumberText}>Build Number: {BUILD_NUMBER || 'Development'}</Text>
-      <Image source={require('../../assets/images/logo.png')} resizeMode={'cover'} style={Styles.imageStyle} />
+      <Image source={require('../../assets/images/logo.png')} resizeMode={'cover'} />
       <Text style={Styles.certificateText}>2010-2022 Openboxes inc.</Text>
     </View>
   );

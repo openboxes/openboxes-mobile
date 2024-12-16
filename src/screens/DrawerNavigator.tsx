@@ -1,7 +1,5 @@
-/* eslint-disable react-native/no-inline-styles */
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import React from 'react';
-import { Image } from 'react-native';
 import CustomDrawerContent from '../components/CustomDrawerContent/CustomDrawerContent';
 import { appHeaderHeight } from '../constants';
 import Theme from '../utils/Theme';
@@ -23,18 +21,7 @@ const DrawerNavigator = () => {
           color: Theme.colors.surface
         },
         drawerActiveTintColor: Theme.colors.primary,
-        headerTintColor: '#ffffff',
-        headerRight: () => (
-          <Image
-            source={require('../assets/images/logo.png')}
-            style={{
-              resizeMode: 'stretch',
-              width: 40,
-              height: 30,
-              marginRight: 30
-            }}
-          />
-        )
+        headerTintColor: '#ffffff'
       }}
     >
       <Drawer.Screen

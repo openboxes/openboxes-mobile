@@ -8,11 +8,6 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 20
   },
-  loginLogo: {
-    width: 80,
-    height: 80,
-    marginBottom: 20
-  },
   welcomeContainer: {
     display: 'flex',
     flexDirection: 'column',

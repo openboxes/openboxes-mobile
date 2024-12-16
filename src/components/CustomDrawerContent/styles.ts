@@ -5,7 +5,7 @@ export const styles = StyleSheet.create({
     padding: 20,
     display: 'flex',
     flexDirection: 'row',
-    borderBottomWidth: 1,
+    borderBottomWidth: 0.5,
     borderBottomColor: '#ccc'
   },
   avatar: {
@@ -27,7 +27,7 @@ export const styles = StyleSheet.create({
   },
   logoutSection: {
     padding: 20,
-    borderTopWidth: 1,
+    borderTopWidth: 0.5,
     borderTopColor: '#ccc'
   }
 });

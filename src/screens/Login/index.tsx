@@ -101,7 +101,7 @@ const Login = () => {
   return (
     <View style={styles.screenContainer}>
       <View style={styles.welcomeContainer}>
-        <Image source={require('../../assets/images/logo.png')} resizeMode={'cover'} style={styles.loginLogo} />
+        <Image source={require('../../assets/images/logo.png')} resizeMode={'cover'} />
         <Headline style={{ fontWeight: 'bold' }}>Welcome Back!</Headline>
         <Caption>Sign in to continue</Caption>
       </View>
