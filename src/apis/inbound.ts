@@ -1,7 +1,7 @@
 import apiClient from '../utils/ApiClient';
 
 export function fetchInboundOrderList(id: string = '') {
-  return apiClient.get(`/shipments?destination.id=${id}`);
+  return apiClient.get(`/shipments?destination=${id}`);
 }
 
 export function fetchPartialReceiving(id: string = '') {
