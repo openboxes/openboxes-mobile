@@ -241,87 +241,83 @@ const InboundReceiveDetail = () => {
   return (
     <ScrollView keyboardShouldPersistTaps="always" style={styles.container}>
       <DetailsTable data={detailsData} />
-      {true && (
-        <>
-          <View style={styles.from}>
-            <AsyncModalSelect
-              placeholder="Receiving Location"
-              label="Receiving Location"
-              initValue={state.receiveLocation.label || ''}
-              initialData={state.internalLocation}
-              searchAction={searchInternalLocations}
-              searchActionParams={{ 'parentLocation.id': location.id }}
-              onSelect={(selectedItem: any) => {
-                if (selectedItem) {
-                  state.receiveLocation = selectedItem;
-                  setState({ ...state });
-                }
-              }}
-            />
-            <InputBox
-              value={state.lotNumber}
-              disabled={false}
-              editable={false}
-              label={'Lot Number'}
-              onChange={onChangeLotNumber}
-            />
-            <SelectDropdown
-              renderDropdownIcon={renderIcon}
-              data={['', 'APPROVED', 'RECALLED', 'ON_HOLD', 'QUARANTINED', 'EXPIRED', 'RESERVED', 'DAMAGED']}
-              dropdownStyle={{ justifyContent: 'flex-start' }}
-              defaultValue={lotStatusCode}
-              buttonTextStyle={styles.lotStatusSelectTextStyle}
-              buttonTextAfterSelection={(selectedItem) => selectedItem}
-              dropdownIconPosition={'right'}
-              defaultValueByIndex={0}
-              buttonStyle={styles.lotStatusSelectStyle}
-              rowTextForSelection={(item) => item}
-              onSelect={(selectedItem, index) => {
-                setLotStatusCode(index === 0 ? '' : selectedItem);
-              }}
-            />
-            <View style={styles.datePickerContainer}>
-              <DatePicker
-                style={styles.datePicker}
-                date={state.expirationDate}
-                mode="date"
-                placeholder="Expiration Date"
-                format="MM/DD/YYYY"
-                confirmBtnText="Confirm"
-                cancelBtnText="Cancel"
-                customStyles={styles.datePickerCustomStyle}
-                onDateChange={(date: any) => {
-                  setState({ ...state, expirationDate: date });
-                }}
-              />
-              {state.expirationDate ? (
-                <TouchableOpacity onPress={clearSelection}>
-                  <Image source={CLEAR} style={styles.imageIcon} />
-                </TouchableOpacity>
-              ) : null}
-            </View>
-            <View style={styles.inputSpinner}>
-              <InputSpinner title={'Quantity to Receive'} value={state.quantityToReceive} setValue={onChangeQuantity} />
-            </View>
-            <InputBox
-              value={state.comments}
-              disabled={false}
-              editable={false}
-              label={'Comments'}
-              onChange={onChangeComment}
-            />
-          </View>
-          <Radio
-            title={'Cancel remaining quantity for this item'}
-            setChecked={setCancelRemaining}
-            checked={cancelRemaining}
-            disabled={Number(state.quantityToReceive) >= Number(shipmentItem.quantityRemaining)}
+      <View style={styles.from}>
+        <AsyncModalSelect
+          placeholder="Receiving Location"
+          label="Receiving Location"
+          initValue={state.receiveLocation.label || ''}
+          initialData={state.internalLocation}
+          searchAction={searchInternalLocations}
+          searchActionParams={{ 'parentLocation.id': location.id }}
+          onSelect={(selectedItem: any) => {
+            if (selectedItem) {
+              state.receiveLocation = selectedItem;
+              setState({ ...state });
+            }
+          }}
+        />
+        <InputBox
+          value={state.lotNumber}
+          disabled={false}
+          editable={false}
+          label={'Lot Number'}
+          onChange={onChangeLotNumber}
+        />
+        <SelectDropdown
+          renderDropdownIcon={renderIcon}
+          data={['', 'APPROVED', 'RECALLED', 'ON_HOLD', 'QUARANTINED', 'EXPIRED', 'RESERVED', 'DAMAGED']}
+          dropdownStyle={{ justifyContent: 'flex-start' }}
+          defaultValue={lotStatusCode}
+          buttonTextStyle={styles.lotStatusSelectTextStyle}
+          buttonTextAfterSelection={(selectedItem) => selectedItem}
+          dropdownIconPosition={'right'}
+          defaultValueByIndex={0}
+          buttonStyle={styles.lotStatusSelectStyle}
+          rowTextForSelection={(item) => item}
+          onSelect={(selectedItem, index) => {
+            setLotStatusCode(index === 0 ? '' : selectedItem);
+          }}
+        />
+        <View style={styles.datePickerContainer}>
+          <DatePicker
+            style={styles.datePicker}
+            date={state.expirationDate}
+            mode="date"
+            placeholder="Expiration Date"
+            format="MM/DD/YYYY"
+            confirmBtnText="Confirm"
+            cancelBtnText="Cancel"
+            customStyles={styles.datePickerCustomStyle}
+            onDateChange={(date: any) => {
+              setState({ ...state, expirationDate: date });
+            }}
           />
-          <View style={styles.bottom}>
-            <Button title="Receive" disabled={false} onPress={onReceive} />
-          </View>
-        </>
-      )}
+          {state.expirationDate ? (
+            <TouchableOpacity onPress={clearSelection}>
+              <Image source={CLEAR} style={styles.imageIcon} />
+            </TouchableOpacity>
+          ) : null}
+        </View>
+        <View style={styles.inputSpinner}>
+          <InputSpinner title={'Quantity to Receive'} value={state.quantityToReceive} setValue={onChangeQuantity} />
+        </View>
+        <InputBox
+          value={state.comments}
+          disabled={false}
+          editable={false}
+          label={'Comments'}
+          onChange={onChangeComment}
+        />
+      </View>
+      <Radio
+        title={'Cancel remaining quantity for this item'}
+        setChecked={setCancelRemaining}
+        checked={cancelRemaining}
+        disabled={Number(state.quantityToReceive) >= Number(shipmentItem.quantityRemaining)}
+      />
+      <View style={styles.bottom}>
+        <Button title="Receive" disabled={false} onPress={onReceive} />
+      </View>
     </ScrollView>
   );
 };
