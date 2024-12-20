@@ -15,7 +15,7 @@ export function getShipment(id: string) {
 }
 
 export function getShipmentOrigin(id: string) {
-  return apiClient.get(`/shipments/?origin.id=${id}`);
+  return apiClient.get(`/shipments/?origin=${id}`);
 }
 export const getContainerDetails = (id: string) => {
   return apiClient.get(`/generic/container/${id}`);
