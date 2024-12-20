@@ -33,9 +33,10 @@ export function stockTransfersAction(data: any, callback?: (products: any) => vo
   };
 }
 
-export const getStockTransfers = (callback: (data: any) => void) => {
+export const getStockTransfers = (location: string, callback: (data: any) => void) => {
   return {
     type: FETCH_STOCK_TRANSFERS,
+    payload: { params: { location } },
     callback
   };
 };

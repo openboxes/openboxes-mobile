@@ -5,7 +5,7 @@ export function stockTransfers(data: any) {
 }
 
 export function getStockTransfers(data: any) {
-  return apiClient.get('/stockTransfers', data);
+  return apiClient.get('/stockTransfers/', data);
 }
 
 export function fetchStockTransferSummary(id: string) {

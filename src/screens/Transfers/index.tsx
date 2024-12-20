@@ -25,16 +25,26 @@ class Transfers extends React.Component<Props, State> {
   }
 
   _getTransfersList = () => {
-    const { getStockTransfers } = this.props;
+    const { getStockTransfers, currentLocation } = this.props;
+
+    if (!currentLocation || !currentLocation.id) {
+      showPopup({
+        title: 'Error',
+        message: 'Current location is not set. Please try again later.',
+        negativeButtonText: 'OK'
+      });
+      return;
+    }
+
     const callback = (data: any) => {
       if (data?.error) {
         showPopup({
           title: data.errorMessage ? 'Inbound order details' : null,
-          message: data.errorMessage ?? `Failed to load inbound order details value ${id}`,
+          message: data.errorMessage ?? `Failed to load inbound order details value ${currentLocation.id}`,
           positiveButton: {
             text: 'Retry',
             callback: () => {
-              getStockTransfers(callback, id);
+              getStockTransfers(currentLocation.id, callback);
             }
           },
           negativeButtonText: 'Cancel'
@@ -46,25 +56,24 @@ class Transfers extends React.Component<Props, State> {
             transfersList: data
           });
         } else {
-          const { currentLocation } = this.props;
+          const filteredList = data.filter((transferData) => transferData.status === 'APPROVED');
+
           this.setState({
             error: null,
-            transfersList: data.filter(
-              (transferData) =>
-                currentLocation?.id === transferData?.origin?.id && transferData.status.name === 'APPROVED'
-            )
+            transfersList: filteredList
           });
         }
       }
     };
-    getStockTransfers(callback);
+
+    getStockTransfers(currentLocation.id, callback);
   };
 
   onCallBackHandler = (data: undefined) => {
     const { transfersList } = this.state;
     this.setState({
       error: null,
-      transfersList: transfersList.filter((transferData) => data?.id !== transferData?.id)
+      transfersList: transfersList ? transfersList.filter((transferData) => data?.id !== transferData?.id) : []
     });
   };
 
@@ -80,48 +89,46 @@ class Transfers extends React.Component<Props, State> {
     return (
       <View style={styles.screenContainer}>
         {transfersList ? (
-          <View style={styles.contentContainer}>
-            <FlatList
-              data={transfersList}
-              ListEmptyComponent={<EmptyView title="Transfers" description="There are no items for Transfer" />}
-              renderItem={(item: ListRenderItemInfo<any>) => (
-                <Card style={LayoutStyle.listItemContainer} onPress={() => this.onStockTransfersTapped(item.item)}>
-                  <Card.Content>
-                    <View style={styles.row}>
-                      <View style={styles.col50}>
-                        <Text style={styles.label}>Identify</Text>
-                        <Text style={styles.value}>{item.item?.orderNumber}</Text>
-                      </View>
-                      <View style={styles.col50}>
-                        <Text style={styles.label}>Status</Text>
-                        <Text style={styles.value}>{item.item?.status.name}</Text>
-                      </View>
+          <FlatList
+            data={transfersList}
+            ListEmptyComponent={<EmptyView title="Transfers" description="There are no items for Transfer" />}
+            renderItem={(item: ListRenderItemInfo<any>) => (
+              <Card style={LayoutStyle.listItemContainer} onPress={() => this.onStockTransfersTapped(item.item)}>
+                <Card.Content>
+                  <View style={styles.row}>
+                    <View style={styles.col50}>
+                      <Text style={styles.label}>Identify</Text>
+                      <Text style={styles.value}>{item.item?.orderNumber}</Text>
                     </View>
+                    <View style={styles.col50}>
+                      <Text style={styles.label}>Status</Text>
+                      <Text style={styles.value}>{item.item?.status}</Text>
+                    </View>
+                  </View>
 
-                    <View style={styles.row}>
-                      <View style={styles.col50}>
-                        <Text style={styles.label}>Origin</Text>
-                        <Text style={styles.value}>{item.item?.origin?.name}</Text>
-                      </View>
-                      <View style={styles.col50}>
-                        <Text style={styles.label}>Destination</Text>
-                        <Text style={styles.value}>{item.item?.destination?.name}</Text>
-                      </View>
+                  <View style={styles.row}>
+                    <View style={styles.col50}>
+                      <Text style={styles.label}>Origin</Text>
+                      <Text style={styles.value}>{item.item?.origin}</Text>
                     </View>
+                    <View style={styles.col50}>
+                      <Text style={styles.label}>Destination</Text>
+                      <Text style={styles.value}>{item.item?.destination}</Text>
+                    </View>
+                  </View>
 
-                    <View style={styles.row}>
-                      <View style={styles.col50}>
-                        <Text style={styles.label}>Number of Items</Text>
-                        <Text style={styles.value}>{item.item?.orderItems?.length}</Text>
-                      </View>
+                  <View style={styles.row}>
+                    <View style={styles.col50}>
+                      <Text style={styles.label}>Number of Items</Text>
+                      <Text style={styles.value}>{item.item?.orderItemsCount}</Text>
                     </View>
-                  </Card.Content>
-                </Card>
-              )}
-              keyExtractor={(item) => item.id}
-              style={styles.list}
-            />
-          </View>
+                  </View>
+                </Card.Content>
+              </Card>
+            )}
+            keyExtractor={(item) => item.id}
+            style={styles.list}
+          />
         ) : null}
       </View>
     );
