@@ -12,8 +12,6 @@ export function fetchStockTransferSummary(id: string) {
   return apiClient.get(`/stockTransfers/${id}`);
 }
 
-export function completeStockTransfer(id: string) {
-  return apiClient.post(`/stockTransfers/${id}/status`, {
-    status: 'COMPLETED'
-  });
+export function completeStockTransfer(data: any) {
+  return apiClient.post(`/stockTransfers/${data.id}`, data);
 }

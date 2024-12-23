@@ -10,6 +10,7 @@ import {
 import { hideScreenLoading, showScreenLoading } from '../actions/main';
 import * as api from '../../apis';
 import * as Sentry from '@sentry/react-native';
+import { parseResponse } from '../../utils/utils';
 
 function* stockTransfers(action: any) {
   try {
@@ -45,11 +46,9 @@ function* getStockTransfers(action: any) {
 function* getStockTransfersSummary(action: any) {
   try {
     yield put(showScreenLoading('Loading...'));
-    const response = yield call(
-      api.fetchStockTransferSummary,
-      action.payload.id
-    );
-    yield action.callback(response.data);
+    const response = yield call(api.fetchStockTransferSummary, action.payload.id);
+    const parsedResponse = parseResponse(response.data);
+    yield action.callback(parsedResponse);
     yield put(hideScreenLoading());
   } catch (e) {
     Sentry.captureException('Error while stockTransfers details', e.message);
@@ -64,10 +63,7 @@ function* getStockTransfersSummary(action: any) {
 function* completeStockTransfer(action: any) {
   try {
     yield put(showScreenLoading('Please wait...'));
-    const response = yield call(
-      api.completeStockTransfer,
-      action.payload.id
-    );
+    const response = yield call(api.completeStockTransfer, action.payload);
     yield action.callback(response.data);
     yield put(hideScreenLoading());
   } catch (e) {

@@ -49,10 +49,13 @@ export function getStockTransfersSummary(id: string, callback: (data: any) => vo
   };
 }
 
-export const completeStockTransfer = (id: string, callback: (data: any) => void) => {
+export const completeStockTransfer = (stockTransfer: any, callback: (data: any) => void) => {
   return {
     type: POST_COMPLETE_STOCK_TRANSFER,
-    payload: { id },
+    payload: {
+      ...stockTransfer,
+      status: 'COMPLETED'
+    },
     callback
   };
 };

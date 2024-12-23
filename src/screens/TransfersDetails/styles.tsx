@@ -39,7 +39,7 @@ export default StyleSheet.create({
     alignSelf: 'center',
     justifyContent: 'center',
     height: 55,
-    bottom: 25,
+    bottom: 8,
     marginTop: 20
   }
 });
