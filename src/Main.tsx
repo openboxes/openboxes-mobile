@@ -147,10 +147,7 @@ class Main extends Component<Props, State> {
               initialRouteName={initialRouteName}
               screenOptions={({ route, navigation }) => ({
                 headerRight: () => <OptionMenu route={route} navigation={navigation} />,
-                headerTitleContainerStyle: {
-                  width: '50%'
-                },
-                headerTintColor: '#ffffff',
+                headerTintColor: Theme.colors.surface,
                 headerStyle: {
                   backgroundColor: Theme.colors.primary,
                   height: appHeaderHeight
@@ -176,7 +173,7 @@ class Main extends Component<Props, State> {
               <Stack.Screen name="ProductDetails" component={ProductDetails} />
               <Stack.Screen name="PickOrderItem" component={PickOrderItem} />
               <Stack.Screen name="Transfers" component={Transfers} />
-              <Stack.Screen component={TransferDetails} name="TransferDetails" />
+              <Stack.Screen name="TransferDetails" component={TransferDetails} />
               <Stack.Screen name="Dashboard" component={Dashboard} />
               <Stack.Screen name="Scan" component={Scan} />
               <Stack.Screen name="Products" component={Products} />
@@ -185,7 +182,13 @@ class Main extends Component<Props, State> {
               <Stack.Screen name="PutawayItem" component={PutawayItem} />
               <Stack.Screen name="PutawayItemDetail" component={PutawayItemDetail} />
               <Stack.Screen name="PutawayDetails" component={PutawayDetails} />
-              <Stack.Screen name="InboundOrderList" component={InboundOrderList} />
+              <Stack.Screen
+                name="InboundOrderList"
+                component={InboundOrderList}
+                options={{
+                  title: 'Receiving'
+                }}
+              />
               <Stack.Screen name="InboundDetails" component={InboundDetails} />
               <Stack.Screen name="Product Summary" component={ProductSummary} />
               <Stack.Screen name="CreateLpn" component={CreateLpn} />

@@ -13,4 +13,4 @@ export const ratio = {
   height: Dimensions.get('window').height / 776
 };
 
-export const appHeaderHeight = 55;
+export const appHeaderHeight = 56;
