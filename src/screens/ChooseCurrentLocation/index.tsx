@@ -10,13 +10,10 @@ import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
 import { getLocationsAction, setCurrentLocationAction } from '../../redux/actions/locations';
 
 const NO_ORGANIZATION_NAME = 'No organization';
+const NO_LOCATION_GROUP_NAME = 'NO_LOCATION_GROUP_PROVIDED';
 
 export interface OwnProps {
   navigation: any;
-}
-
-interface StateProps {
-  //no-op
 }
 
 interface DispatchProps {
@@ -26,7 +23,7 @@ interface DispatchProps {
   hideScreenLoading: () => void;
 }
 
-type Props = OwnProps & StateProps & DispatchProps;
+type Props = OwnProps & DispatchProps;
 
 interface State {
   orgNameAndLocationsDictionary: Dictionary<Location[]>;
@@ -56,9 +53,7 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
         });
       } else {
         const orgNameAndLocationsDictionary = this.getSortedOrgNameAndLocationsDictionary(data);
-        this.setState({
-          orgNameAndLocationsDictionary: orgNameAndLocationsDictionary
-        });
+        this.setState({ orgNameAndLocationsDictionary });
         this.props.hideScreenLoading();
       }
     };
@@ -66,38 +61,29 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
   };
 
   getSortedOrgNameAndLocationsDictionary = (locations: Location[]): Dictionary<Location[]> => {
-    let orgNameAndLocationsDictionary = _.groupBy(locations, (location: Location) => {
-      if (location.organizationName) {
-        return location.organizationName;
-      } else {
-        return NO_ORGANIZATION_NAME;
-      }
-    });
-    return _.keys(orgNameAndLocationsDictionary)
-      .sort((leftOrgName: string, rightOrgName: string) => {
-        if (leftOrgName === NO_ORGANIZATION_NAME && rightOrgName === NO_ORGANIZATION_NAME) {
-          return 0;
-        } else if (leftOrgName === NO_ORGANIZATION_NAME) {
-          return 1;
-        } else if (rightOrgName === NO_ORGANIZATION_NAME) {
-          return -1;
-        } else {
-          if (leftOrgName === rightOrgName) {
-            return 0;
-          } else if (leftOrgName > rightOrgName) {
-            return 1;
-          } else {
-            return -1;
-          }
-        }
-      })
-      .reduce(
-        (acc: {}, orgName: string) => ({
-          ...acc,
-          [orgName]: orgNameAndLocationsDictionary[orgName]
-        }),
-        {}
-      );
+    // Group locations by organization name or 'No organization' if no name is provided
+    const orgNameAndLocationsDictionary = _.groupBy(
+      locations,
+      (location: Location) => location.organizationName || NO_ORGANIZATION_NAME
+    );
+
+    // Sort the organization names alphabetically, with 'No organization' at the end
+    const sortedOrgNames = _.orderBy(
+      Object.keys(orgNameAndLocationsDictionary),
+      [(orgName) => (orgName === NO_ORGANIZATION_NAME ? Infinity : orgName)],
+      ['asc']
+    );
+
+    // Rebuild the dictionary with sorted keys
+    return _.reduce(
+      sortedOrgNames,
+      (acc: Dictionary<Location[]>, orgName: string) => {
+        const sortedLocations = _.orderBy(orgNameAndLocationsDictionary[orgName], ['name'], ['asc']);
+        acc[orgName] = sortedLocations;
+        return acc;
+      },
+      {}
+    );
   };
 
   setCurrentLocation = async (orgName: string, location: Location) => {
@@ -134,22 +120,29 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
   render() {
     return (
       <View style={styles.container}>
-        {/*<Header title="Choose Location" backButtonVisible={false} />*/}
         <ScrollView style={styles.scrollView}>
           <List.AccordionGroup>
             {_.map(_.keys(this.state.orgNameAndLocationsDictionary), (orgName: string) => {
               return (
                 <List.Accordion
                   title={orgName}
+                  description={`${this.state.orgNameAndLocationsDictionary[orgName].length} Location(s)`}
                   id={`orgName_${orgName}`}
-                  left={(props) => <List.Icon {...props} icon="office-building" />}
+                  left={(props) => (
+                    <View style={styles.iconContainer}>
+                      <List.Icon {...props} color="#fff" icon="office-building" />
+                    </View>
+                  )}
                   key={`orgName_${orgName}`}
                 >
                   {_.map(this.state.orgNameAndLocationsDictionary[orgName], (location) => {
                     return (
                       <List.Item
                         title={location.name}
+                        description={location.locationGroup?.name ?? NO_LOCATION_GROUP_NAME}
                         key={`orgName_${orgName}_locationName_${location.name}`}
+                        hasTVPreferredFocus={false}
+                        tvParallaxProperties={undefined}
                         onPress={() => this.setCurrentLocation(orgName, location)}
                       />
                     );
