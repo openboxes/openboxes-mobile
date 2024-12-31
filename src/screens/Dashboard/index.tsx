@@ -1,19 +1,11 @@
 import React from 'react';
-import {
-  FlatList,
-  Image,
-  ListRenderItemInfo,
-  Text,
-  TouchableOpacity,
-  View
-} from 'react-native';
-import styles from './styles';
-import { connect } from 'react-redux';
-import { DispatchProps, Props, State } from './Types';
-import { RootState } from '../../redux/reducers';
+import { FlatList, Image, ListRenderItemInfo, Text, TouchableOpacity, View } from 'react-native';
 import { Card } from 'react-native-paper';
-import dashboardData from './dashboardData';
 import EmptyView from '../../components/EmptyView';
+import { Props, State } from './Types';
+import dashboardData from './dashboardData';
+import styles from './styles';
+
 class Dashboard extends React.Component<Props, State> {
   renderItem = (item: any, index: any) => {
     return (
@@ -25,11 +17,7 @@ class Dashboard extends React.Component<Props, State> {
         }}
       >
         <Card style={styles.card}>
-          <Image
-            style={styles.cardImage}
-            resizeMode="contain"
-            source={item.icon}
-          />
+          <Image style={styles.cardImage} resizeMode="contain" source={item.icon} />
           <Text style={styles.cardLabel}>{item.screenName}</Text>
         </Card>
       </TouchableOpacity>
@@ -42,23 +30,13 @@ class Dashboard extends React.Component<Props, State> {
         <FlatList
           data={dashboardData}
           horizontal={false}
-          numColumns={3}
-          ListEmptyComponent={<EmptyView />}
-          renderItem={(item: ListRenderItemInfo<any>) =>
-            this.renderItem(item.item, item.index)
-          }
+          numColumns={2}
+          ListEmptyComponent={<EmptyView title={''} isRefresh={undefined} />}
+          renderItem={(item: ListRenderItemInfo<any>) => this.renderItem(item.item, item.index)}
         />
       </View>
     );
   }
 }
 
-const mapStateToProps = (state: RootState) => ({
-  //no-op
-});
-
-const mapDispatchToProps: DispatchProps = {
-  //no-op
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);
+export default Dashboard;
