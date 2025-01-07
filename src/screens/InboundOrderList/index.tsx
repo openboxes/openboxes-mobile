@@ -1,26 +1,24 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react-hooks/exhaustive-deps */
-import { FlatList, Text, View } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchInboundOrderList } from '../../redux/actions/inboundorder';
-import showPopup from '../../components/Popup';
-import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSearchHeader';
-import { RootState } from '../../redux/reducers';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import styles from './styles';
-import { Card } from 'react-native-paper';
-import EmptyView from '../../components/EmptyView';
-import { LayoutStyle } from '../../assets/styles';
 import _ from 'lodash';
+import React, { useEffect, useState } from 'react';
+import { FlatList, Text, View } from 'react-native';
+import { Card, Chip, Divider, Headline, Subheading } from 'react-native-paper';
+import { useDispatch, useSelector } from 'react-redux';
+import { LayoutStyle } from '../../assets/styles';
+import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSearchHeader';
+import EmptyView from '../../components/EmptyView';
+import showPopup from '../../components/Popup';
+import { fetchInboundOrderList } from '../../redux/actions/inboundorder';
+import { RootState } from '../../redux/reducers';
+import styles from './styles';
 
 const InboundOrderList = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation<any>();
   const route = useRoute<any>();
-  const location = useSelector((rootState: RootState) => {
-    return rootState.mainReducer.currentLocation;
-  });
+  const location = useSelector((rootState: RootState) => rootState.mainReducer.currentLocation);
 
   const [state, setState] = useState<any>({
     inboundOrders: [],
@@ -57,9 +55,9 @@ const InboundOrderList = () => {
         });
       } else {
         if (data && Object.keys(data).length !== 0) {
-          state.inboundOrders = data.filter((item: any) => {
-            return item.status === 'SHIPPED' || item.status === 'PARTIALLY_RECEIVED';
-          });
+          state.inboundOrders = data.filter(
+            (item: any) => item.status === 'SHIPPED' || item.status === 'PARTIALLY_RECEIVED'
+          );
         }
         setState({ ...state });
       }
@@ -84,20 +82,32 @@ const InboundOrderList = () => {
     return (
       <Card style={LayoutStyle.listItemContainer} key={index} onPress={() => navigateToInboundDetails(item)}>
         <Card.Content>
-          <View style={styles.rowItem}>
-            <RenderOrderData title={'Identifier'} subText={item.shipmentNumber} />
-            <RenderOrderData title={'Status'} subText={item.status} />
+          <View style={styles.headerRow}>
+            <View style={styles.dividedValues}>
+              <Text style={styles.value}>{item.shipmentNumber}</Text>
+              <Divider style={styles.dividerVertical} />
+              <Text style={styles.value}>{item.expectedDeliveryDate}</Text>
+            </View>
+            <Chip style={styles.chipWarning} textStyle={styles.chipWarningText}>
+              {item.status}
+            </Chip>
           </View>
+          <Divider style={styles.dividerHorizontal} />
+
+          <Subheading style={{ fontWeight: 'bold' }}> {item.name} </Subheading>
+          <View style={styles.additionalInfoRow}>
+            <Chip icon="package" style={styles.chipDefault} textStyle={styles.chipDefaultText}>
+              {`${item.shipmentItems.length} Items`}
+            </Chip>
+            <Chip icon="calendar" style={styles.chipDefault} textStyle={styles.chipDefaultText}>
+              {`Due: ${item.expectedDeliveryDate}`}
+            </Chip>
+          </View>
+          <Divider style={styles.dividerHorizontal} />
+
           <View style={styles.rowItem}>
             <RenderOrderData title={'Origin'} subText={item.origin.name} />
             <RenderOrderData title={'Destination'} subText={item.destination.name} />
-          </View>
-          <View style={styles.rowItem}>
-            <RenderOrderData title={'Description'} subText={item.name} />
-            <RenderOrderData
-              title={'Items Received'}
-              subText={item.receivedCount + ' / ' + item.shipmentItems.length}
-            />
           </View>
         </Card.Content>
       </Card>
@@ -138,7 +148,7 @@ const InboundOrderList = () => {
   };
 
   return (
-    <View style={{ flex: 1, zIndex: -1 }}>
+    <View style={styles.container}>
       <BarcodeSearchHeader
         autoSearch
         placeholder="Search by order number"

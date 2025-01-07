@@ -11,6 +11,10 @@ export default {
   },
   colors: {
     ...DefaultTheme.colors,
-    primary: '#0052CC'
+    primary: '#0052CC',
+    warning: '#FCFFC1',
+    danger: '#FF5630',
+    success: '#36B37E',
+    info: '#00B8D9'
   }
 };
