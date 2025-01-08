@@ -14,7 +14,7 @@ export default {
     primary: '#0052CC',
     warning: '#FCFFC1',
     danger: '#FF5630',
-    success: '#36B37E',
+    success: '#22bb33',
     info: '#00B8D9'
   }
 };

@@ -3,7 +3,6 @@ import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { SectionList, Text, View } from 'react-native';
 import { Card, Chip, Divider, Subheading } from 'react-native-paper';
-import Icon from 'react-native-vector-icons/FontAwesome5';
 import { LayoutStyle } from '../../assets/styles';
 import styles from './styles';
 import InboundDetailProps from './types';
@@ -84,10 +83,9 @@ const InboundOrderContainer = ({ data, shipmentId, shipmentData }: InboundDetail
       <Card key={index} style={LayoutStyle.listItemContainer} onPress={() => navigateToInboundOrderDetails(item)}>
         <Card.Content>
           <View style={styles.headerRow}>
-            <View style={styles.dividedValues}>
-              <Icon name="box" size={10} style={{ marginRight: 4 }} />
-              <Text style={styles.value}>{item['product.productCode']}</Text>
-            </View>
+            <Chip icon="package" style={styles.chipDefault} textStyle={styles.chipWarningText}>
+              {item['product.productCode']}
+            </Chip>
             <Chip style={[styles.chipDefault, styles.lastChild]} textStyle={styles.chipWarningText}>
               {itemStatus?.toUpperCase()}
             </Chip>

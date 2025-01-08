@@ -1,5 +1,4 @@
 import { StyleSheet } from 'react-native';
-import { colors, ratio } from '../../constants';
 import Theme from '../../utils/Theme';
 
 export default StyleSheet.create({
@@ -7,8 +6,42 @@ export default StyleSheet.create({
     display: 'flex',
     flexDirection: 'column',
     flex: 1,
-    paddingVertical: 10,
-    paddingHorizontal: 20
+    paddingVertical: 16,
+    paddingHorizontal: 16
+  },
+  dividerHorizontal: {
+    marginVertical: 8
+  },
+  dividerVertical: {
+    width: 1,
+    marginHorizontal: 8,
+    height: '50%'
+  },
+  chipWarning: {
+    height: 24,
+    justifyContent: 'center',
+    borderRadius: 4,
+    alignItems: 'center',
+    backgroundColor: Theme.colors.warning
+  },
+  chipWarningText: {
+    fontSize: 12,
+    color: Theme.colors.text
+  },
+  chipDefault: {
+    height: 24,
+    justifyContent: 'center',
+    borderRadius: 4,
+    alignItems: 'center',
+    marginRight: 8
+  },
+  chipDefaultText: {
+    fontSize: 12,
+    color: Theme.colors.text
+  },
+  inboundDetailsContainer: {
+    padding: 16,
+    backgroundColor: '#fff'
   },
   arrowDownIcon: {
     height: 15,
@@ -25,15 +58,15 @@ export default StyleSheet.create({
     marginTop: 10
   },
   from: {
-    flex: 1,
-    marginTop: 10
+    flex: 1
   },
   bottom: {
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    height: ratio.height * 100,
-    marginBottom: 10
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    backgroundColor: '#fff'
   },
   itemView: {
     marginTop: 5
@@ -42,16 +75,14 @@ export default StyleSheet.create({
     flexDirection: 'row',
     borderColor: Theme.colors.background,
     marginTop: 1,
-    padding: 2,
-    marginStart: 4,
     width: '100%',
-    alignItems: 'center'
+    alignItems: 'center',
+    justifyContent: 'space-between'
   },
   columnItem: {
     display: 'flex',
     flexDirection: 'column',
-    flex: 0,
-    width: '50%'
+    flex: 0
   },
   label: {
     fontSize: 11,
@@ -59,12 +90,7 @@ export default StyleSheet.create({
   },
   value: {
     fontSize: 12,
-    color: Theme.colors.text,
-    width: '90%'
-  },
-  inputSpinner: {
-    flex: 1,
-    alignItems: 'center'
+    color: Theme.colors.text
   },
   datePickerContainer: {
     marginVertical: 5
@@ -121,5 +147,21 @@ export default StyleSheet.create({
     textAlign: 'left',
     fontSize: 15,
     color: '#808080'
+  },
+  lastChild: {
+    marginRight: 0
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between'
+  },
+  dividedValues: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  additionalInfoRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between'
   }
 });
