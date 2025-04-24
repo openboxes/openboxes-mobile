@@ -2,9 +2,10 @@ import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
   listItemContainer: {
-    margin: 8,
-    padding: 5,
+    marginHorizontal: 16,
+    marginVertical: 12,
     justifyContent: 'center',
-    elevation: 8
+    borderRadius: 16,
+    elevation: 1
   }
 });

@@ -2,7 +2,7 @@ import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
   userInfoSection: {
-    padding: 20,
+    padding: 16,
     display: 'flex',
     flexDirection: 'row',
     borderBottomWidth: 0.5,

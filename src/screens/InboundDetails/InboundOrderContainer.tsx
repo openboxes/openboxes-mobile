@@ -1,10 +1,11 @@
-import React from 'react';
-import { SectionList, View, Text } from 'react-native';
+/* eslint-disable react-native/no-inline-styles */
 import { useNavigation } from '@react-navigation/native';
-import styles from './styles';
-import { Card } from 'react-native-paper';
-import InboundDetailProps from './types';
+import React from 'react';
+import { SectionList, Text, View } from 'react-native';
+import { Card, Chip, Divider, Subheading } from 'react-native-paper';
 import { LayoutStyle } from '../../assets/styles';
+import styles from './styles';
+import InboundDetailProps from './types';
 
 const InboundOrderContainer = ({ data, shipmentId, shipmentData }: InboundDetailProps) => {
   const navigation = useNavigation<any>();
@@ -28,31 +29,40 @@ const InboundOrderContainer = ({ data, shipmentId, shipmentData }: InboundDetail
 
   const renderShipmentItem = (): JSX.Element => {
     return (
-      <Card style={LayoutStyle.listItemContainer}>
-        <Card.Content>
-          <View style={styles.rowItem}>
-            <RenderData title={'Shipment Number'} subText={shipmentData?.shipmentNumber} />
-            <RenderData title={'Status'} subText={shipmentData?.status} />
+      <View>
+        <View style={{ padding: 16, backgroundColor: '#fff' }}>
+          <View style={styles.headerRow}>
+            <View style={styles.dividedValues}>
+              <Text style={styles.value}>{shipmentData.shipmentNumber}</Text>
+              <Divider style={styles.dividerVertical} />
+              <Text style={styles.value}>{shipmentData.expectedDeliveryDate}</Text>
+            </View>
+            <Chip style={styles.chipWarning} textStyle={styles.chipWarningText}>
+              {shipmentData.status}
+            </Chip>
           </View>
-          <View style={styles.rowItem}>
-            <RenderData title={'Origin'} subText={shipmentData?.origin.name} />
-            <RenderData title={'Destination'} subText={shipmentData?.destination.name} />
+          <Divider style={styles.dividerHorizontal} />
+
+          <Subheading style={{ fontWeight: 'bold' }}> {shipmentData.name} </Subheading>
+          <View style={styles.additionalInfoRow}>
+            <Chip icon="package" style={styles.chipDefault} textStyle={styles.chipDefaultText}>
+              {`${shipmentData.shipmentItems.length} Items`}
+            </Chip>
+            <Chip icon="calendar" style={styles.chipDefault} textStyle={styles.chipDefaultText}>
+              {`Due: ${shipmentData.expectedDeliveryDate}`}
+            </Chip>
           </View>
+          <Divider style={styles.dividerHorizontal} />
+
           <View style={styles.rowItem}>
-            <RenderData title={'Description'} subText={shipmentData?.name} />
-            <View>
-              <Text style={styles.label}>Items Received</Text>
-              <Text style={styles.value}>
-                {shipmentData.receivedCount} / {shipmentData?.shipmentItems.length}
-              </Text>
+            <View style={styles.rowItem}>
+              <RenderData title={'Origin'} subText={shipmentData.origin.name} />
+              <RenderData title={'Destination'} subText={shipmentData.destination.name} />
             </View>
           </View>
-          <View style={styles.rowItem}>
-            <RenderData title={'Expected Shipping Date'} subText={shipmentData?.expectedShippingDate} />
-            <RenderData title={'Expected Delivery Date'} subText={shipmentData?.expectedDeliveryDate} />
-          </View>
-        </Card.Content>
-      </Card>
+        </View>
+        <Divider />
+      </View>
     );
   };
 
@@ -67,23 +77,36 @@ const InboundOrderContainer = ({ data, shipmentId, shipmentData }: InboundDetail
   };
 
   const renderListItem = (item: any, index: any) => {
+    const itemStatus = getStatus(item.quantityRemaining);
+
     return (
       <Card key={index} style={LayoutStyle.listItemContainer} onPress={() => navigateToInboundOrderDetails(item)}>
         <Card.Content>
-          <View style={styles.rowItem}>
-            <RenderData title={'Product Code'} subText={item['product.productCode']} />
-            <RenderData title={'Product Name'} subText={item['product.name']} />
+          <View style={styles.headerRow}>
+            <Chip icon="package" style={styles.chipDefault} textStyle={styles.chipWarningText}>
+              {item['product.productCode']}
+            </Chip>
+            <Chip style={[styles.chipDefault, styles.lastChild]} textStyle={styles.chipWarningText}>
+              {itemStatus?.toUpperCase()}
+            </Chip>
           </View>
+          <Divider style={styles.dividerHorizontal} />
+
+          <Subheading> {item['product.name']} </Subheading>
+          <Divider style={styles.dividerHorizontal} />
+
           <View style={styles.rowItem}>
-            <RenderData title={'Quantity Shipped'} subText={item.quantityShipped} />
-            <RenderData title={'Quantity Received'} subText={item.quantityReceived} />
-          </View>
-          <View style={styles.rowItem}>
-            <RenderData
-              title={'Quantity Remaining'}
-              subText={item.quantityRemaining > 0 ? item.quantityRemaining : 0}
-            />
-            <RenderData title={'Status'} subText={getStatus(item.quantityRemaining)} />
+            <View style={styles.rowItem}>
+              <Chip icon="truck" style={styles.chipDefault} textStyle={styles.chipWarningText}>
+                {`Shipped: ${item.quantityShipped}`}
+              </Chip>
+              <Chip icon="thumb-up" style={styles.chipDefault} textStyle={styles.chipWarningText}>
+                {`Received: ${item.quantityReceived}`}
+              </Chip>
+              <Chip icon="database" style={[styles.chipDefault, styles.lastChild]} textStyle={styles.chipWarningText}>
+                {`Remaining: ${item.quantityRemaining > 0 ? item.quantityRemaining : 0}`}
+              </Chip>
+            </View>
           </View>
         </Card.Content>
       </Card>
@@ -93,8 +116,7 @@ const InboundOrderContainer = ({ data, shipmentId, shipmentData }: InboundDetail
   return (
     <SectionList
       ListHeaderComponent={renderShipmentItem}
-      renderItem={({ item, index, section }) => renderListItem(item, index)}
-      renderSectionHeader={({ section: { title } }) => <Text style={styles.headerTitle}>{title}</Text>}
+      renderItem={({ item, index }) => renderListItem(item, index)}
       sections={data}
       keyExtractor={(item, index) => item + index}
     />

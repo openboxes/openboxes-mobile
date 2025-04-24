@@ -2,33 +2,70 @@ import { StyleSheet } from 'react-native';
 import Theme from '../../utils/Theme';
 
 export default StyleSheet.create({
-  itemView: {
-    marginStart: 10,
-    marginEnd: 10,
-    marginTop: 5
+  container: {
+    flex: 1,
+    zIndex: -1
+  },
+  chipWarning: {
+    height: 24,
+    justifyContent: 'center',
+    borderRadius: 4,
+    alignItems: 'center',
+    backgroundColor: Theme.colors.warning
+  },
+  chipWarningText: {
+    fontSize: 12,
+    color: Theme.colors.text
+  },
+  chipDefault: {
+    height: 24,
+    justifyContent: 'center',
+    borderRadius: 4,
+    alignItems: 'center',
+    marginRight: 8
+  },
+  chipDefaultText: {
+    fontSize: 12,
+    color: Theme.colors.text
+  },
+  dividerHorizontal: {
+    marginVertical: 8
+  },
+  dividerVertical: {
+    width: 1,
+    marginHorizontal: 8,
+    height: '50%'
+  },
+  additionalInfoRow: {
+    flexDirection: 'row',
+    marginTop: 8
   },
   rowItem: {
     flexDirection: 'row',
     borderColor: Theme.colors.background,
-    marginTop: 1,
-    //padding: 2,
-    //marginStart: 4,
     width: '100%',
-    alignItems: 'center'
+    alignItems: 'center',
+    justifyContent: 'space-between'
   },
   columnItem: {
-    display: 'flex',
     flexDirection: 'column',
-    flex: 0,
-    width: '50%'
+    flex: 0
   },
   label: {
-    fontSize: 11,
+    fontSize: 10,
     color: Theme.colors.placeholder
   },
   value: {
     fontSize: 12,
-    color: Theme.colors.text,
-    width: '90%'
+    color: Theme.colors.text
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between'
+  },
+  dividedValues: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center'
   }
 });

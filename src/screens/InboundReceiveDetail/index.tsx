@@ -1,22 +1,24 @@
+/* eslint-disable react-native/no-inline-styles */
+import { useNavigation, useRoute } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import styles from './styles';
 import { Image, ScrollView, TouchableOpacity, View } from 'react-native';
 import DatePicker from 'react-native-datepicker';
-import InputBox from '../../components/InputBox';
+import { Caption, Chip, Divider, Subheading, Text } from 'react-native-paper';
+import SelectDropdown from 'react-native-select-dropdown';
+import Icon from 'react-native-vector-icons/FontAwesome5';
+import { useDispatch, useSelector } from 'react-redux';
+import CLEAR from '../../assets/images/icon_clear.png';
+import AsyncModalSelect from '../../components/AsyncModalSelect';
 import Button from '../../components/Button';
+import InputBox from '../../components/InputBox';
+import InputSpinner from '../../components/InputSpinner';
 import showPopup from '../../components/Popup';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import Radio from '../../components/Radio';
 import { submitPartialReceiving } from '../../redux/actions/inboundorder';
 import { searchInternalLocations } from '../../redux/actions/locations';
 import { RootState } from '../../redux/reducers';
-import AsyncModalSelect from '../../components/AsyncModalSelect';
-import InputSpinner from '../../components/InputSpinner';
-import Radio from '../../components/Radio';
-import CLEAR from '../../assets/images/icon_clear.png';
-import SelectDropdown from 'react-native-select-dropdown';
-import { Props as LabeledDataType } from '../../components/LabeledData/types';
-import DetailsTable from '../../components/DetailsTable';
+import Theme from '../../utils/Theme';
+import styles from './styles';
 
 const renderIcon = () => {
   return <Image style={styles.arrowDownIcon} source={require('../../assets/images/arrow-down.png')} />;
@@ -175,17 +177,6 @@ const InboundReceiveDetail = () => {
     }
   };
 
-  const detailsData: LabeledDataType[] = [
-    { label: 'Shipment Number', value: shipmentData?.shipmentNumber },
-    { label: 'Description', value: shipmentData?.name },
-    { label: 'Product Code', value: shipmentItem['product.productCode'] },
-    { label: 'Name', value: shipmentItem['product.name'] },
-    { label: 'Lot / Serial Number', value: shipmentItem.lotNumber, defaultValue: 'Default' },
-    { label: 'Expiration Date', value: shipmentItem.expirationDate, defaultValue: 'Never' },
-    { label: 'Quantity Shipped', value: shipmentItem.quantityShipped },
-    { label: 'Quantity Received', value: shipmentItem.quantityReceived }
-  ];
-
   const getInternalLocation = (id: string = '') => {
     const callback = (data: any) => {
       if (data?.error) {
@@ -239,84 +230,128 @@ const InboundReceiveDetail = () => {
   };
 
   return (
-    <ScrollView keyboardShouldPersistTaps="always" style={styles.container}>
-      <DetailsTable data={detailsData} />
-      <View style={styles.from}>
-        <AsyncModalSelect
-          placeholder="Receiving Location"
-          label="Receiving Location"
-          initValue={state.receiveLocation.label || ''}
-          initialData={state.internalLocation}
-          searchAction={searchInternalLocations}
-          searchActionParams={{ 'parentLocation.id': location.id }}
-          onSelect={(selectedItem: any) => {
-            if (selectedItem) {
-              state.receiveLocation = selectedItem;
-              setState({ ...state });
-            }
-          }}
-        />
-        <InputBox
-          value={state.lotNumber}
-          disabled={false}
-          editable={false}
-          label={'Lot Number'}
-          onChange={onChangeLotNumber}
-        />
-        <SelectDropdown
-          renderDropdownIcon={renderIcon}
-          data={['', 'APPROVED', 'RECALLED', 'ON_HOLD', 'QUARANTINED', 'EXPIRED', 'RESERVED', 'DAMAGED']}
-          dropdownStyle={{ justifyContent: 'flex-start' }}
-          defaultValue={lotStatusCode}
-          buttonTextStyle={styles.lotStatusSelectTextStyle}
-          buttonTextAfterSelection={(selectedItem) => selectedItem}
-          dropdownIconPosition={'right'}
-          defaultValueByIndex={0}
-          buttonStyle={styles.lotStatusSelectStyle}
-          rowTextForSelection={(item) => item}
-          onSelect={(selectedItem, index) => {
-            setLotStatusCode(index === 0 ? '' : selectedItem);
-          }}
-        />
-        <View style={styles.datePickerContainer}>
-          <DatePicker
-            style={styles.datePicker}
-            date={state.expirationDate}
-            mode="date"
-            placeholder="Expiration Date"
-            format="MM/DD/YYYY"
-            confirmBtnText="Confirm"
-            cancelBtnText="Cancel"
-            customStyles={styles.datePickerCustomStyle}
-            onDateChange={(date: any) => {
-              setState({ ...state, expirationDate: date });
+    <ScrollView keyboardShouldPersistTaps="always">
+      <View style={styles.inboundDetailsContainer}>
+        <View style={styles.headerRow}>
+          <Chip icon="package" style={styles.chipDefault} textStyle={styles.chipWarningText}>
+            {shipmentItem['product.productCode']}
+          </Chip>
+          <Chip icon="calendar" style={[styles.chipDefault, styles.lastChild]} textStyle={styles.chipWarningText}>
+            {`Expiration Date: ${shipmentItem?.expirationDate || 'Never'}`}
+          </Chip>
+        </View>
+        <Divider style={styles.dividerHorizontal} />
+
+        <Subheading style={{ fontWeight: 'bold' }}> {shipmentItem['product.name']} </Subheading>
+        <Caption> {shipmentData?.name} </Caption>
+        <Divider style={styles.dividerHorizontal} />
+
+        <View style={styles.additionalInfoRow}>
+          <View style={styles.columnItem}>
+            <Text style={styles.label}>{'Shipment Number'}</Text>
+            <Text style={styles.value}>{shipmentData?.shipmentNumber || ''}</Text>
+          </View>
+          <View style={styles.columnItem}>
+            <Text style={styles.label}>{'Lot / Serial Number'}</Text>
+            <Text style={styles.value}>{shipmentItem?.lotNumber || 'Default'}</Text>
+          </View>
+        </View>
+        <Divider style={styles.dividerHorizontal} />
+
+        <View style={styles.rowItem}>
+          <View style={styles.rowItem}>
+            <Chip icon="truck" style={styles.chipDefault} textStyle={styles.chipWarningText}>
+              {`Shipped: ${shipmentItem.quantityShipped}`}
+            </Chip>
+            <Chip icon="thumb-up" style={styles.chipDefault} textStyle={styles.chipWarningText}>
+              {`Received: ${shipmentItem.quantityReceived}`}
+            </Chip>
+            <Chip icon="database" style={[styles.chipDefault, styles.lastChild]} textStyle={styles.chipWarningText}>
+              {`Remaining: ${shipmentItem.quantityRemaining > 0 ? shipmentItem.quantityRemaining : 0}`}
+            </Chip>
+          </View>
+        </View>
+      </View>
+      <Divider />
+      <View style={styles.container}>
+        <View style={styles.from}>
+          <View style={styles.itemView}>
+            <InputSpinner title={'Quantity to Receive'} value={state.quantityToReceive} setValue={onChangeQuantity} />
+          </View>
+          <Radio
+            title={'Cancel remaining quantity for this item'}
+            setChecked={setCancelRemaining}
+            checked={cancelRemaining}
+            disabled={Number(state.quantityToReceive) >= Number(shipmentItem.quantityRemaining)}
+          />
+          <AsyncModalSelect
+            placeholder="Receiving Location"
+            label="Receiving Location"
+            initValue={state.receiveLocation.label || ''}
+            initialData={state.internalLocation}
+            searchAction={searchInternalLocations}
+            searchActionParams={{ 'parentLocation.id': location.id }}
+            onSelect={(selectedItem: any) => {
+              if (selectedItem) {
+                state.receiveLocation = selectedItem;
+                setState({ ...state });
+              }
             }}
           />
-          {state.expirationDate ? (
-            <TouchableOpacity onPress={clearSelection}>
-              <Image source={CLEAR} style={styles.imageIcon} />
-            </TouchableOpacity>
-          ) : null}
+          <InputBox
+            value={state.lotNumber}
+            disabled={false}
+            editable={false}
+            label={'Lot Number'}
+            onChange={onChangeLotNumber}
+          />
+          <SelectDropdown
+            renderDropdownIcon={renderIcon}
+            data={['', 'APPROVED', 'RECALLED', 'ON_HOLD', 'QUARANTINED', 'EXPIRED', 'RESERVED', 'DAMAGED']}
+            dropdownStyle={{ justifyContent: 'flex-start' }}
+            defaultValue={lotStatusCode}
+            buttonTextStyle={styles.lotStatusSelectTextStyle}
+            buttonTextAfterSelection={(selectedItem) => selectedItem}
+            dropdownIconPosition={'right'}
+            defaultValueByIndex={0}
+            buttonStyle={styles.lotStatusSelectStyle}
+            rowTextForSelection={(item) => item}
+            onSelect={(selectedItem, index) => {
+              setLotStatusCode(index === 0 ? '' : selectedItem);
+            }}
+          />
+          <View style={styles.datePickerContainer}>
+            <DatePicker
+              style={styles.datePicker}
+              date={state.expirationDate}
+              mode="date"
+              placeholder="Expiration Date"
+              format="MM/DD/YYYY"
+              confirmBtnText="Confirm"
+              cancelBtnText="Cancel"
+              customStyles={styles.datePickerCustomStyle}
+              onDateChange={(date: any) => {
+                setState({ ...state, expirationDate: date });
+              }}
+            />
+            {state.expirationDate ? (
+              <TouchableOpacity onPress={clearSelection}>
+                <Image source={CLEAR} style={styles.imageIcon} />
+              </TouchableOpacity>
+            ) : null}
+          </View>
+          <InputBox
+            value={state.comments}
+            disabled={false}
+            editable={false}
+            label={'Comments'}
+            onChange={onChangeComment}
+          />
         </View>
-        <View style={styles.inputSpinner}>
-          <InputSpinner title={'Quantity to Receive'} value={state.quantityToReceive} setValue={onChangeQuantity} />
-        </View>
-        <InputBox
-          value={state.comments}
-          disabled={false}
-          editable={false}
-          label={'Comments'}
-          onChange={onChangeComment}
-        />
       </View>
-      <Radio
-        title={'Cancel remaining quantity for this item'}
-        setChecked={setCancelRemaining}
-        checked={cancelRemaining}
-        disabled={Number(state.quantityToReceive) >= Number(shipmentItem.quantityRemaining)}
-      />
+      <Divider />
       <View style={styles.bottom}>
-        <Button title="Receive" disabled={false} onPress={onReceive} />
+        <Button size="100%" title="Receive" disabled={false} onPress={onReceive} />
       </View>
     </ScrollView>
   );

@@ -1,32 +1,30 @@
 import { StyleSheet } from 'react-native';
-import Theme from '../../utils/Theme';
 
 export default StyleSheet.create({
   screenContainer: {
     display: 'flex',
     flexDirection: 'column',
-    flex: 1
+    flex: 1,
+    padding: 8
   },
   cardContainer: {
     height: 150,
     borderRadius: 5,
     flex: 1,
     backgroundColor: 'white',
-    margin: 5
+    margin: 1
   },
   cardLabel: {
     flex: 1,
     fontWeight: 'bold',
-    fontSize: 14,
-    marginTop: 5,
-    marginBottom: 3,
+    fontSize: 16,
     textAlign: 'center',
     textAlignVertical: 'center'
   },
   cardImage: {
     flex: 2,
-    height: 100,
-    width: 100,
+    height: 80,
+    width: 80,
     alignSelf: 'center'
   },
   card: {

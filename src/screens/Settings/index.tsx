@@ -1,13 +1,14 @@
-import React, { FC, useEffect, useState } from 'react';
-import { View, TextInput, Text } from 'react-native';
-import { Props } from './types';
+import React, { useEffect, useState } from 'react';
+import { View, Text } from 'react-native';
+import { TextInput } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { environment } from '../../utils/Environment';
 import * as NavigationService from '../../NavigationService';
 import ApiClient from '../../utils/ApiClient';
 import Button from '../../components/Button';
+import styles from './styles';
 
-const Settings: FC<Props> = ({}) => {
+const Settings = () => {
   const [value, setValue] = useState('');
 
   useEffect(() => {
@@ -24,18 +25,19 @@ const Settings: FC<Props> = ({}) => {
   };
 
   return (
-    <View style={{ flex: 1, padding: 10 }}>
-      <View style={{ width: '100%', marginBottom: 50 }}>
-        <Text>URL</Text>
-        <TextInput
-          style={{ borderWidth: 1, paddingHorizontal: 10, marginTop: 5 }}
-          value={value}
-          onChangeText={(text) => {
-            setValue(text);
-          }}
-        />
-      </View>
-      <Button disabled={false} title="Go" onPress={handlePress} />
+    <View style={styles.card}>
+      <Text>Here, you can enter the server URL, which will serve as the backend for the mobile app.</Text>
+      <TextInput
+        style={styles.input}
+        mode="outlined"
+        label="Server URL"
+        placeholder="http://localhost:8080/"
+        value={value}
+        onChangeText={(text) => {
+          setValue(text);
+        }}
+      />
+      <Button size="100%" title="Confirm" onPress={handlePress} />
     </View>
   );
 };

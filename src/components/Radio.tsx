@@ -28,7 +28,6 @@ const Radio = ({ title, checked, setChecked, disabled }: any) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: 15,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start'
@@ -40,8 +39,8 @@ const styles = StyleSheet.create({
     flex: 1
   },
   titleText: (disabled: any) => ({
-    fontSize: 16,
-    fontWeight: 'bold',
+    fontSize: 14,
+    fontWeight: 'semibold',
     color: disabled ? 'grey' : 'black'
   })
 });

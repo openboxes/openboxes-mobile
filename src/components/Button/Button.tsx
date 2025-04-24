@@ -4,7 +4,7 @@ import { Props } from './types';
 import styles from './styles';
 
 const Button: React.FC<Props> = (props) => {
-  const { style, onPress, disabled, mode = 'contained', title, size = '80%' } = props;
+  const { style, color, onPress, disabled, mode = 'contained', title, size = '80%' } = props;
   const buttonSizeStyle = () => {
     switch (size) {
       case '50%':
@@ -24,6 +24,7 @@ const Button: React.FC<Props> = (props) => {
       style={[style, buttonSizeStyle(), styles.button, disabled && styles.disabled]}
       labelStyle={styles.label}
       disabled={disabled}
+      color={color}
       onPress={onPress}
     >
       {title}

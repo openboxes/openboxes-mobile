@@ -2,9 +2,20 @@ import React, { useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { Searchbar } from 'react-native-paper';
 import styles from './styles';
-import { Props } from './types';
+import { View } from 'react-native';
+import Theme from '../../utils/Theme';
 
-const BarcodeSearchHeader = (props: Props) => {
+interface OwnProps {
+  subtitle?: string | null;
+  placeholder?: string;
+  searchBox: boolean;
+  onSearchTermSubmit: (query: string) => void;
+  resetSearch?: () => void;
+  autoSearch: boolean | false;
+  autoFocus?: boolean | false;
+}
+
+const BarcodeSearchHeader: React.FC<OwnProps> = (props) => {
   const [searchTerm, setSearchTerm] = useState<string>('');
 
   const navigation = useNavigation<any>();
@@ -31,15 +42,17 @@ const BarcodeSearchHeader = (props: Props) => {
   };
 
   return (
-    <Searchbar
-      theme={{}}
-      placeholder={props.placeholder ? props.placeholder : 'Search by barcode'}
-      value={searchTerm}
-      style={styles.searchBar}
-      autoFocus={props.autoFocus}
-      onSubmitEditing={onSearchTermSubmit}
-      onChangeText={setSearchTerm}
-    />
+    <View style={styles.container}>
+      <Searchbar
+        theme={{}}
+        placeholder={props.placeholder ? props.placeholder : 'Search...'}
+        value={searchTerm}
+        style={styles.searchBar}
+        autoFocus={props.autoFocus}
+        onSubmitEditing={onSearchTermSubmit}
+        onChangeText={setSearchTerm}
+      />
+    </View>
   );
 };
 

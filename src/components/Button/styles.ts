@@ -7,7 +7,6 @@ export default StyleSheet.create({
     fontWeight: '600'
   },
   button: {
-    height: 45,
     alignSelf: 'center',
     justifyContent: 'center',
     display: 'flex',
