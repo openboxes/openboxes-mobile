@@ -2,9 +2,9 @@ import apiClient from '../utils/ApiClient';
 
 export function fetchPutAwayFromOrder(q: string) {
   if (q !== null && q !== '') {
-    return apiClient.get(`/listPutaways?q=${q}`);
+    return apiClient.get(`/mobile/putaways?q=${q}`);
   } else {
-    return apiClient.get('/listPutaways');
+    return apiClient.get('/mobile/putaways');
   }
 }
 
