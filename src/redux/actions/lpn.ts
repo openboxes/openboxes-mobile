@@ -6,6 +6,7 @@ export const GET_CONTAINER_DETAIL = 'GET_CONTAINER_DETAIL';
 export const GET_CONTAINER_DETAIL_RESPONSE_SUCCESS = 'GET_CONTAINER_DETAIL_RESPONSE_SUCCESS';
 export const GET_CONTAINER_STATUS_DETAIL = 'GET_CONTAINER_STATUS_DETAIL';
 export const GET_CONTAINER_STATUS_DETAIL_RESPONSE_SUCCESS = 'GET_CONTAINER_STATUS_DETAIL_RESPONSE_SUCCESS';
+export const GET_ALL_CONTAINTERS = 'GET_ALL_CONTAINTERS';
 
 export function saveAndUpdateLpn(requestBody: any, callback: (data: any) => void) {
   return {
@@ -29,6 +30,13 @@ export function getContainer(id: string, callback: (data: any) => void) {
     payload: { id },
     callback
   };
+}
+
+export function getAllContainers(callback: (data: any) => void) {
+  return {
+    type: GET_ALL_CONTAINTERS,
+    callback
+  }
 }
 
 export function updateContainerStatus(id: string, requestBody: any, callback: (data: any) => void) {

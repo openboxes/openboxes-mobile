@@ -8,6 +8,10 @@ export function fetchContainer(id: string) {
   return apiClient.get('/generic/container/' + id);
 }
 
+export function getAllContainers() {
+  return apiClient.get(`/containers`);
+}
+
 export function getContainerDetail(id: string) {
   return apiClient.get(`/containers/${id}/details`);
 }

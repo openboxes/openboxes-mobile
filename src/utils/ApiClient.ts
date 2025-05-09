@@ -41,7 +41,6 @@ class _ApiClient {
   handleApiFailure = async (error: AxiosError) => {
     let message = error.response?.data?.errorMessage;
     const code = error.response?.status;
-    console.log('ERROR :: ', error);
     switch (code) {
       case 401:
         store.dispatch(hideScreenLoading());

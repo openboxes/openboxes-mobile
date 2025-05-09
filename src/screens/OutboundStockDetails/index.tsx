@@ -17,6 +17,8 @@ import ContainerDetails from './ContainerDetails';
 import styles from './styles';
 import { DispatchProps, Props, SectionData, State } from './types';
 
+const UNPACKED_ITEMS_TITLE = 'Unpacked Items';
+
 // Shipment packing (Packing Order Details)
 class OutboundStockDetails extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -32,7 +34,10 @@ class OutboundStockDetails extends React.Component<Props, State> {
   }
 
   componentDidMount() {
-    this.fetchShipment();
+    const { shipment } = this.props.route.params;
+    if (shipment) {
+      this.setState({ shipment });
+    }
   }
 
   componentDidUpdate() {
@@ -51,27 +56,35 @@ class OutboundStockDetails extends React.Component<Props, State> {
       containers = containers.filter(({ id: containerId }) => this.state.matchingContainerIds.includes(containerId));
     }
 
-    return containers
-      .map((container) => {
-        let shipmentItems = container.shipmentItems ?? [];
 
-        if (this.state.matchingShipmentItemIds.length > 0) {
-          shipmentItems = shipmentItems.filter(({ id: shipmentItemId }) =>
-            this.state.matchingShipmentItemIds.includes(shipmentItemId)
-          );
-        }
+    let sections = containers
+    .map((container) => {
+      let shipmentItems = container.shipmentItems ?? [];
 
-        return {
-          title: container.name ?? 'Unpacked Items',
-          id: container.id,
-          data: shipmentItems
-        };
-      })
-      .filter(({ data }) => data && data.length > 0);
+      if (this.state.matchingShipmentItemIds.length > 0) {
+        shipmentItems = shipmentItems.filter(({ id: shipmentItemId }) =>
+          this.state.matchingShipmentItemIds.includes(shipmentItemId)
+        );
+      }
+
+      return {
+        title: container.name ?? UNPACKED_ITEMS_TITLE,
+        id: container.id,
+        data: shipmentItems,
+        shipmentNumber: this.state.shipment?.shipmentNumber,
+        status: container.status
+      };
+    })
+    .filter(({ data }) => data && data.length > 0);
+    
+    const unpacked = sections?.find(s => s.title === UNPACKED_ITEMS_TITLE);
+    const others = sections.filter(s => s.title !== UNPACKED_ITEMS_TITLE).sort((a, b) => a.title.localeCompare(b.title));
+
+    return unpacked ? [unpacked, ...others] : others;
   }
 
   fetchShipment = () => {
-    const { shipmentId } = this.props.route.params;
+    const { shipment, shipmentId } = this.props.route.params;
     this.props.navigation.setParams({ refetchShipment: false });
     const actionCallback = (data: any) => {
       if (!data || data?.error) {
@@ -82,7 +95,7 @@ class OutboundStockDetails extends React.Component<Props, State> {
       this.props.hideScreenLoading();
     };
     this.props.showScreenLoading('Loading..');
-    this.props.getShipment(shipmentId, actionCallback);
+    this.props.getShipment(shipment ? shipment.id : shipmentId, actionCallback);
   };
 
   onScanValueChange = (value: string) => {
@@ -166,7 +179,7 @@ class OutboundStockDetails extends React.Component<Props, State> {
 
   render() {
     const { shipment } = this.state;
-
+    
     return (
       <>
         <ScrollView style={styles.screenContainer}>
@@ -197,7 +210,7 @@ class OutboundStockDetails extends React.Component<Props, State> {
 
               <View style={styles.columnItem}>
                 <Text style={styles.label}>Loading Location</Text>
-                <Text style={styles.value}>{shipment?.packingStatusDetails?.statusMessage ?? HYPHEN}</Text>
+                <Text style={styles.value}>{shipment?.loadingLocation ?? HYPHEN}</Text>
               </View>
             </View>
           </View>

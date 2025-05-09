@@ -8,6 +8,7 @@ import {
   SAVE_OR_UPDATE_LPN,
   GET_CONTAINER_STATUS_DETAIL,
   GET_CONTAINER_STATUS_DETAIL_RESPONSE_SUCCESS,
+  GET_ALL_CONTAINTERS,
 } from '../actions/lpn';
 import {handleError} from './error';
 
@@ -34,7 +35,6 @@ function* saveAndUpdateLpn(action: any) {
 function* fetchContainer(action: any) {
   try {
     const response = yield call(api.fetchContainer, action.payload.id);
-    console.log(response);
     yield put({
       type: FETCH_CONTAINER_DETAIL_RESPONSE_SUCCESS,
       payload: response.data,
@@ -56,6 +56,18 @@ function* getContainerDetail(action: any) {
       payload: response.data,
     });
     yield action.callback(response.data);
+  } catch (e) {
+    yield action.callback({
+      error: true,
+      errorMessage: e.message,
+    });
+  }
+}
+
+function* getAllContainers(action: any) {
+  try {
+    const response = yield call(api.getAllContainers);
+    yield action.callback(response.data || []);
   } catch (e) {
     yield action.callback({
       error: true,
@@ -89,4 +101,5 @@ export default function* watcher() {
   yield takeLatest(FETCH_CONTAINER_DETAIL, fetchContainer);
   yield takeLatest(GET_CONTAINER_DETAIL, getContainerDetail);
   yield takeLatest(GET_CONTAINER_STATUS_DETAIL, updateContainerStatus);
+  yield takeLatest(GET_ALL_CONTAINTERS, getAllContainers);
 }

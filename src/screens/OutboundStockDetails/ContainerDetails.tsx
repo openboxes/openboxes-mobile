@@ -5,7 +5,6 @@ import { SectionList, Text, TouchableOpacity, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Card } from 'react-native-paper';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import { colors } from '../../constants';
 
 const ContainerDetails = ({ item }: any) => {
   const navigation = useNavigation<any>();
@@ -19,13 +18,13 @@ const ContainerDetails = ({ item }: any) => {
     );
   };
 
-  const navigateToOutboundOrderDetails = (item: any) => {
-    navigation.navigate('ShipmentDetails', { item: item });
+  const navigateToOutboundOrderDetails = (item: any, section: any) => {
+    navigation.navigate('ShipmentDetails', { item: item, section: section });
   };
 
-  const renderListItem = (item: any, index: any) => {
+  const renderListItem = (item: any, index: any, section: any) => {
     return (
-      <TouchableOpacity key={index} style={styles.itemView} onPress={() => navigateToOutboundOrderDetails(item)}>
+      <TouchableOpacity key={index} style={styles.itemView} onPress={() => navigateToOutboundOrderDetails(item, section)}>
         <Card>
           <Card.Content>
             <View style={styles.rowItem}>
@@ -44,19 +43,21 @@ const ContainerDetails = ({ item }: any) => {
 
   return (
     <SectionList
-      renderItem={({ item, index }) => renderListItem(item, index)}
-      renderSectionHeader={({ section: { data, title } }) => (
+      renderItem={({ item, index, section }) => renderListItem(item, index, section)}
+      renderSectionHeader={({ section: { data, title, status } }) => (
         <View style={styles.headerContainer}>
           <Text style={styles.headerTitle}>{title}</Text>
           {data[0].container?.id && (
             <>
-              <Text>{data[0]?.container?.status ?? ''}</Text>
+              <Text>{status ?? ''}</Text>
               <TouchableOpacity
                 style={styles.infoButton}
                 onPress={() => {
                   navigation.navigate('LpnDetail', {
                     id: data[0]?.container?.id,
-                    shipmentNumber: data[0]?.shipment?.shipmentNumber
+                    shipmentNumber: data[0]?.shipment?.shipmentNumber,
+                    status: status,
+                    shipmentId: data[0]?.shipment?.id
                   });
                 }}
               >

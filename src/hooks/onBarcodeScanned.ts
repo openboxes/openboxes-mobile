@@ -15,7 +15,6 @@ const onBarcodeScanned = () => {
   useEffect(() => {
     if (barcodeData && Object.keys(barcodeData).length !== 0) {
       onBarCodeScan(barcodeData.data);
-      console.log('onBarCodeScan');
     }
   }, [barcodeData]);
 
@@ -73,7 +72,6 @@ const onBarcodeScanned = () => {
   };
 
   const onSuccess = (data: any, query: any) => {
-    console.log('Success');
     setState({
       ...state,
       searchProductCode: {

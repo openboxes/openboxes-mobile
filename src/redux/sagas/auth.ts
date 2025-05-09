@@ -29,7 +29,6 @@ function* getSession() {
     });
     yield put(hideScreenLoading());
   } catch (e) {
-    console.log('function* auth', e.response);
     yield put(hideScreenLoading());
   }
 }
@@ -45,7 +44,6 @@ function* login(action: any) {
     yield NavigationService.navigate('Drawer');
     yield put(hideScreenLoading());
   } catch (e) {
-    console.log('function* auth', e.response);
     yield put(hideScreenLoading());
     if (e.response) {
       console.debug('e.response status:' + e.response.status);
@@ -85,10 +83,8 @@ function* logout(action: any) {
     yield NavigationService.navigate('Login');
     yield put(hideScreenLoading());
   } catch (e) {
-    console.log('function* auth', e.response);
     yield put(hideScreenLoading());
     if (e.response) {
-      console.debug('e.response status:' + e.response.status);
       if (e.response.status === 401) {
         showPopup({
           message: 'Invalid Username and Password',

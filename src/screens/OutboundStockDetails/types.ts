@@ -34,6 +34,7 @@ export interface SectionData {
   title: string;
   id: string;
   data: [];
+  shipmentNumber: string;
 }
 
 export type Props = OwnProps & StateProps & DispatchProps;

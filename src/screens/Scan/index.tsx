@@ -23,7 +23,6 @@ const Scan = () => {
   }, [barcodeData]);
 
   const onSuccess = (data: any, query: any) => {
-    console.log('global search result', data.type, data);
     if (data.type === 'Product') {
       navigateToProduct(data.data);
     } else if (data.type === 'InventoryItem') {
@@ -59,7 +58,6 @@ const Scan = () => {
     }
   };
   const navigateToAvailableItem = (availableItem: AvailableItem | undefined) => {
-    console.log('navigate to available item ', availableItem);
     if (availableItem) {
       // @ts-ignore
       navigation.navigate('ViewAvailableItem', {

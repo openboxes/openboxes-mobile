@@ -13,9 +13,7 @@ class LoggerImpl implements Logger {
     this.tag = tag;
   }
 
-  i(message: string): void {
-    console.log(`tag = ${this.tag}, message = ${message}`);
-  }
+  i(message: string): void {}
 
   d(message: string): void;
   d(message: string, error: Error): void;

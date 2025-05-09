@@ -63,7 +63,7 @@ class OutboundStockList extends React.Component<Props, State> {
 
   showShipmentReadyToPackScreen = (shipment: any) => {
     this.props.navigation.navigate('OutboundStockDetails', {
-      shipmentId: shipment.id
+      shipment: shipment
     });
   };
 
@@ -197,7 +197,7 @@ class OutboundStockList extends React.Component<Props, State> {
 
                     <View style={styles.columnItem}>
                       <Text style={styles.label}>Loading Location</Text>
-                      <Text style={styles.value}>{shipment.item.packingStatusDetails?.statusMessage ?? HYPHEN}</Text>
+                      <Text style={styles.value}>{shipment.item.loadingLocation ?? HYPHEN}</Text>
                     </View>
                   </View>
                 </Card.Content>

@@ -15,12 +15,14 @@ import CLEAR from '../../assets/images/icon_clear.png';
 import SCAN from '../../assets/images/scan.jpg';
 import TICK from '../../assets/images/tick.png';
 import _ from 'lodash';
+import { getAllContainers } from '../../redux/actions/lpn';
 
 const ShipItemDetails = () => {
   const route = useRoute();
   const dispatch = useDispatch();
   const navigation = useNavigation<any>();
   const { item }: any = route.params;
+  const { section }: any = route.params;
   const [state, setState] = useState<any>({
     error: '',
     quantityPicked: 0,
@@ -30,8 +32,15 @@ const ShipItemDetails = () => {
   const [selectedContainerItem, setSelectedContainerItem] = useState<any>();
 
   useEffect(() => {
-    getShipmentDetails(item.shipment.shipmentNumber);
+    getShipmentDetails(item.shipment.id);
+    dispatch(getAllContainers(containers => {
+      setState(prev => ({
+        ...prev,
+        containerList: containers.map(c => ({ id: c.id, name: c.name }))
+      }));
+    }));
   }, []);
+
   const getShipmentDetails = (id: string) => {
     const callback = (data: any) => {
       if (data?.error) {
@@ -116,7 +125,7 @@ const ShipItemDetails = () => {
           ToastAndroid.BOTTOM
         );
         navigation.navigate('OutboundStockDetails', {
-          shipmentId: item.shipment.id,
+          shipment: item.shipment,
           refetchShipment: true
         });
       }
@@ -160,7 +169,7 @@ const ShipItemDetails = () => {
         </View>
         <View style={styles.columnItem}>
           <Text style={styles.label}>{'Shipment Number'}</Text>
-          <Text style={styles.value}>{item.shipment.shipmentNumber}</Text>
+          <Text style={styles.value}>{section?.shipmentNumber}</Text>
         </View>
       </View>
       <View style={styles.rowItem}>
@@ -180,7 +189,7 @@ const ShipItemDetails = () => {
         </View>
         <View style={styles.columnItem}>
           <Text style={styles.label}>{'Quantity to pack'}</Text>
-          <Text style={styles.value}>{item.quantityRemaining}</Text>
+          <Text style={styles.value}>{item.quantity}</Text>
         </View>
       </View>
       <View style={styles.textContainer}>
@@ -214,7 +223,7 @@ const ShipItemDetails = () => {
       </View>
       <View style={styles.bottom}>
         <Button
-          disabled={!(state.quantityPicked && state.quantityPicked > 0)}
+          disabled={!(state.quantityPicked && state.quantityPicked > 0 && selectedContainerItem)}
           title="PACK ITEM"
           onPress={() => {
             submitShipmentDetail(item?.id);

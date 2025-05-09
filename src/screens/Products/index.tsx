@@ -274,8 +274,6 @@ class Products extends React.Component<Props, State> {
   };
 
   onSearchTermSubmit = (query: string) => {
-    // handleBarcodeScan(barcodeNo);
-    console.log('this.state :', this.state.allProducts);
     if (!query) {
       this.setState({
         searchByProductCode: {

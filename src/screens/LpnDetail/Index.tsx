@@ -86,9 +86,13 @@ class LpnDetail extends React.Component<Props, State> {
           negativeButtonText: 'Cancel'
         });
       } else {
-        const { id } = this.props.route.params;
+        const { id, shipmentId } = this.props.route.params;
         data.product = { id };
         this.setState({ containerDetails: data, visible: openModal });
+        this.props.navigation.navigate('OutboundStockDetails', {
+          refetchShipment: true,
+          shipmentId: shipmentId
+        });
       }
     };
     this.props.getContainer(id, actionCallback);
@@ -149,10 +153,10 @@ class LpnDetail extends React.Component<Props, State> {
           </View>
           <View style={styles.row} />
             <View style={styles.col100}>
-              <Text style={styles.label}>{'Status'}</Text>
+              <Text style={styles.label}>Status</Text>
               <SelectDropdown
                 data={containerStatuses}
-                defaultValue={this.state.container?.containerStatus?.id}
+                defaultValue={this.props.route.params.status}
                 renderDropdownIcon={renderIcon}
                 buttonStyle={styles.select}
                 buttonTextAfterSelection={(selectedItem, index) => selectedItem}

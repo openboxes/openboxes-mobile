@@ -12,12 +12,12 @@ import showPopup from '../Popup';
 function PrintModal(props: Props) {
   const [label, setLabel] = useState<any>('1');
   const handleClick = () => {
-    const { printLabelAction, defaultBarcodeLabelUrl, product, type } = props;
+    const { printLabelAction, defaultBarcodeLabelUrl, product, type } = props; 
     printLabelAction(
       {
         productId: product.id,
         type: type,
-        barcodeId: defaultBarcodeLabelUrl.id
+        barcodeId: defaultBarcodeLabelUrl?.id
       },
       printLabelActionCallback
     );
