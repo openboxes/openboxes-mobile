@@ -19,6 +19,7 @@ export interface LoadingStatusDetails {
 export interface Container {
   id: string;
   name: string;
+  type: string;
   containerNumber: string;
   containerType: any;
   status: string;
@@ -42,6 +43,7 @@ export interface Shipment {
   packingStatusDetails: PackingStatusDetails;
 
   loadingLocation: string;
+  loadingLocationNumber: string,
   loadingStatus: string;
   loadingStatusDetails: LoadingStatusDetails;
 

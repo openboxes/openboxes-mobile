@@ -9,11 +9,12 @@ import { getShipmentsReadyToBePacked } from '../../redux/actions/packing';
 import { Shipment } from '../../data/container/Shipment';
 import showPopup from '../../components/Popup';
 import EmptyView from '../../components/EmptyView';
-import { Card } from 'react-native-paper';
+import { Card, Chip, Divider, Subheading } from 'react-native-paper';
 import { LayoutStyle } from '../../assets/styles';
 import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSearchHeader';
 import _ from 'lodash';
 import { Container } from '../../data/container/Container';
+import { HYPHEN } from '../../constants';
 
 // List of shipments ready for loading
 class OutboundLoadingList extends React.Component<Props, State> {
@@ -82,12 +83,12 @@ class OutboundLoadingList extends React.Component<Props, State> {
     if (searchTerm) {
       // Find exact match by LPN
       const exactShipmentByLPN = _.find(this.state.shipments, (shipment: Shipment) => _.find(
-        shipment?.availableContainers,
+        shipment?.containers,
         (container: Container) => container.containerNumber === searchTerm
       ));
 
       if (exactShipmentByLPN) {
-        const exactContainer = _.find(exactShipmentByLPN?.availableContainers, (container: Container) =>
+        const exactContainer = _.find(exactShipmentByLPN?.containers, (container: Container) =>
           container.containerNumber === searchTerm);
 
         this.resetFiltering();
@@ -100,8 +101,8 @@ class OutboundLoadingList extends React.Component<Props, State> {
         const matchingShipmentNumber = shipment?.shipmentNumber?.toLowerCase()?.includes(searchTerm.toLowerCase());
 
         const matchingLoadingLocation =
-          shipment?.loadingStatusDetails?.loadingLocation?.locationNumber?.toLowerCase()?.includes(searchTerm.toLowerCase()) ||
-          shipment?.loadingStatusDetails?.loadingLocation?.name?.toLowerCase()?.includes(searchTerm.toLowerCase());
+          shipment?.loadingLocationNumber?.toLowerCase()?.includes(searchTerm.toLowerCase()) ||
+          shipment?.loadingLocation?.toLowerCase()?.includes(searchTerm.toLowerCase());
 
         return matchingShipmentNumber || matchingLoadingLocation;
       });
@@ -153,36 +154,34 @@ class OutboundLoadingList extends React.Component<Props, State> {
                 onPress={() => this.showLoadingDetailsScreen(shipment.item)}
               >
                 <Card.Content>
-                  <View style={styles.row}>
-                    <View style={styles.col50}>
-                      <Text style={styles.label}>Shipment Number</Text>
+                  <View style={styles.headerRow}>
+                    <View style={styles.dividedValues}>
                       <Text style={styles.value}>{shipment.item.shipmentNumber}</Text>
                     </View>
-                    <View style={styles.col50}>
-                      <Text style={styles.label}>Status</Text>
-                      <Text style={styles.value}>
-                        {shipment.item.displayStatus} ({shipment.item.loadingStatusDetails.statusMessage} containers)
-                      </Text>
-                    </View>
+                    <Chip style={styles.chipWarning} textStyle={styles.chipWarningText}>
+                      {shipment.item.status}
+                    </Chip>
                   </View>
-                  <View style={styles.row}>
-                    <View style={styles.col50}>
-                      <Text style={styles.label}>Destination</Text>
-                      <Text style={styles.value}>{shipment.item.destination.name}</Text>
-                    </View>
-                    <View style={styles.col50}>
-                      <Text style={styles.label}>Expected Shipping Date</Text>
-                      <Text style={styles.value}>{shipment.item.expectedShippingDate}</Text>
-                    </View>
+                  <Divider style={styles.dividerHorizontal} />
+
+                  <Subheading style={styles.subheading}>
+                    {`Destination: ${shipment.item?.destination?.name}`}
+                  </Subheading>
+                  <View style={styles.additionalInfoRow}>
+                    <Chip icon="calendar" style={styles.chipDefault} textStyle={styles.chipDefaultText}>
+                      {`Expected Shipping: ${shipment.item.expectedShippingDate}`}
+                    </Chip>
                   </View>
-                  <View style={styles.row}>
-                    <View style={styles.col50}>
+                  <Divider style={styles.dividerHorizontal} />
+
+                  <View style={styles.rowItem}>
+                    <View style={styles.columnItem}>
                       <Text style={styles.label}>Loading Location</Text>
-                      <Text style={styles.value}>{shipment.item.loadingLocation}</Text>
+                      <Text style={styles.value}>{shipment.item.loadingLocation ?? HYPHEN}</Text>
                     </View>
-                    <View style={styles.col50}>
+                    <View style={styles.columnItem}>
                       <Text style={styles.label}>Expected Delivery Date</Text>
-                      <Text style={styles.value}>{shipment.item.expectedDeliveryDate}</Text>
+                      <Text style={styles.value}>{shipment.item.expectedDeliveryDate ?? HYPHEN}</Text>
                     </View>
                   </View>
                 </Card.Content>

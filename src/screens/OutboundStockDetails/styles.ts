@@ -26,6 +26,11 @@ export default StyleSheet.create({
     alignItems: 'center',
     marginBottom: 8
   },
+  dividedValues: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
   identifierContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -64,8 +69,7 @@ export default StyleSheet.create({
     borderRadius: 4,
     alignItems: 'center',
     marginRight: 8,
-    paddingHorizontal: 8,
-    backgroundColor: Theme.colors.background
+    paddingHorizontal: 8
   },
   chipDefaultText: {
     fontSize: 12,
@@ -85,9 +89,8 @@ export default StyleSheet.create({
     paddingHorizontal: 2
   },
   label: {
-    fontSize: 12,
-    color: Theme.colors.placeholder,
-    marginBottom: 2
+    fontSize: 10,
+    color: Theme.colors.placeholder
   },
   value: {
     fontSize: 12,
@@ -129,5 +132,8 @@ export default StyleSheet.create({
     marginLeft: 10,
     alignItems: 'center',
     justifyContent: 'center'
+  },
+  loadButton: {
+    marginTop: 10
   }
 });

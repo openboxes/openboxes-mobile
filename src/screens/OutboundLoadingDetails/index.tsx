@@ -1,6 +1,6 @@
 import { DispatchProps, Props, State } from '../OutboundStockDetails/types';
 import React from 'react';
-import {Alert, FlatList, ListRenderItemInfo, Text, View} from 'react-native';
+import {Alert, ScrollView, SectionList, Text, View, TouchableOpacity } from 'react-native';
 import { connect } from 'react-redux';
 import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
 import { RootState } from '../../redux/reducers';
@@ -10,10 +10,10 @@ import OrderDetailsSection from "./OrderDetailsSection";
 import EmptyView from "../../components/EmptyView";
 import { Shipment, Container } from "../../data/container/Shipment";
 import {Card} from "react-native-paper";
-import {LayoutStyle} from "../../assets/styles";
 import _ from "lodash";
 import InputBox from "../../components/InputBox";
 import showPopup from "../../components/Popup";
+import { HYPHEN } from '../../constants';
 
 // Shipment loading
 class OutboundLoadingDetails extends React.Component<Props, State> {
@@ -37,10 +37,13 @@ class OutboundLoadingDetails extends React.Component<Props, State> {
   }
 
   actionCallback = (data: any) => {
+    const allContainers = data?.containers?.filter(c => c.id !== null) || [];
+    const loadedContainers = data?.containers?.filter(c => c.status === 'LOADED') || [];
+    
     if (!data || data?.error) {
       return Promise.resolve(null);
     } else {
-      if (data?.loadedContainerCount === data?.totalContainerCount) {
+      if (allContainers.length > 0 && loadedContainers.length === allContainers.length) {
         Alert.alert(
           'All containers are loaded', // title
           'What do you want to do now?', // message
@@ -83,7 +86,7 @@ class OutboundLoadingDetails extends React.Component<Props, State> {
   };
 
   findMatchingContainer = (searchTerm: string) => {
-    return _.find(this.state.shipment?.availableContainers, (container: Container) => (
+    return _.find(this.state.shipment?.containers, (container: Container) => (
       container?.name?.toLowerCase() === searchTerm?.toLowerCase() ||
       container?.containerNumber?.toLowerCase() === searchTerm?.toLowerCase()
     ));
@@ -116,9 +119,37 @@ class OutboundLoadingDetails extends React.Component<Props, State> {
     }
   }
 
+  renderListItem = (item: Container, index: number, section: any) => {
+    return (
+      <TouchableOpacity key={index} style={styles.itemView} onPress={() => this.showLoadingLPNScreen(item, this.state.shipment, true)}>
+        <Card>
+          <Card.Content>
+            <View style={styles.rowItem}>
+            {this.RenderData({ title: 'Container Name', subText: item.name ?? HYPHEN })}
+            {this.RenderData({ title: 'Container Number', subText: item.containerNumber ?? HYPHEN })}
+            </View>
+            <View style={styles.rowItem}>
+            {this.RenderData({ title: 'Container Type', subText: item.type ?? HYPHEN })}
+            {this.RenderData({ title: 'Container Status', subText: item.status ?? HYPHEN })}
+            </View>
+          </Card.Content>
+        </Card>
+      </TouchableOpacity>
+    );
+  }
+
+  RenderData = ({ title, subText }: { title: string; subText: string }) => {
+    return (
+      <View style={styles.columnItem}>
+        <Text style={styles.label}>{title}</Text>
+        <Text style={styles.value}>{subText}</Text>
+      </View>
+    );
+  }
+  
   render() {
     return (
-      <View style={styles.screenContainer}>
+      <ScrollView style={styles.screenContainer}>
         <View style={styles.contentContainer}>
           <OrderDetailsSection shipment={this.state.shipment} />
           <InputBox
@@ -130,45 +161,27 @@ class OutboundLoadingDetails extends React.Component<Props, State> {
             onChange={this.onContainerScan}
             onEndEdit={this.onContainerScanEnd}
           />
-          <FlatList
-            data={this.state.shipment?.availableContainers}
+          <SectionList
+            sections={(this.state.shipment?.containers
+              ?.filter(c => c.id !== null)
+              ?.sort((a, b) => (a.name ?? '').localeCompare(b.name ?? '')) || []
+          ).map(container => ({
+              title: container.name ?? HYPHEN,
+              data: [container]
+            }))}    
+            renderItem={({ item, index, section }) => this.renderListItem(item, index, section)}
+            renderSectionHeader={( { section } ) => (
+              <View style={styles.headerContainer}>
+                <Text style={styles.headerTitle}>{section.title}</Text>
+              </View>
+            )}
             ListEmptyComponent={
               <EmptyView title="Loading" description="There are no containers available" isRefresh={false} />
             }
-            renderItem={(container: ListRenderItemInfo<Container>) => (
-              <Card
-                style={LayoutStyle.listItemContainer}
-                onPress={() => this.showLoadingLPNScreen(container.item, this.state.shipment)}
-              >
-                <Card.Content>
-                  <View style={styles.row}>
-                    <View style={styles.col50}>
-                      <Text style={styles.label}>Container Name</Text>
-                      <Text style={styles.value}>{container.item?.name}</Text>
-                    </View>
-                    <View style={styles.col50}>
-                      <Text style={styles.label}>Container Number</Text>
-                      <Text style={styles.value}>{container.item?.containerNumber}</Text>
-                    </View>
-                  </View>
-                  <View style={styles.row}>
-                    <View style={styles.col50}>
-                      <Text style={styles.label}>Container Type</Text>
-                      <Text style={styles.value}>{container.item?.containerType?.name}</Text>
-                    </View>
-                    <View style={styles.col50}>
-                      <Text style={styles.label}>Container Status</Text>
-                      <Text style={styles.value}>{container.item?.status}</Text>
-                    </View>
-                  </View>
-                </Card.Content>
-              </Card>
-            )}
-            keyExtractor={(item) => item.id}
-            style={styles.list}
-          />
+            keyExtractor={(item, index) => item.id || index.toString()}
+        />
         </View>
-      </View>
+      </ScrollView>
     );
   }
 }

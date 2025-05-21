@@ -1,45 +1,53 @@
 import React from 'react';
 import { Text, View } from 'react-native';
+import { Chip, Divider, Subheading } from 'react-native-paper';
 import styles from '../OutboundStockDetails/styles';
 import { Shipment } from '../../data/container/Shipment';
+import { HYPHEN } from '../../constants';
 
 interface Props {
   shipment: Shipment | null;
 }
 
-const OrderDetailsSection = (props: Props) => (
-  <View>
-    <View style={styles.row}>
-      <View style={styles.col50}>
-        <Text style={styles.label}>Shipment Number</Text>
-        <Text style={styles.value}>{props?.shipment?.shipmentNumber}</Text>
+const OrderDetailsSection = ({ shipment }: Props) => {
+  if (!shipment) return null;
+
+  return (
+    <View style={styles.contentContainer}>
+      <View style={styles.headerRow}>
+        <View style={styles.identifierContainer}>
+          <Text style={styles.value}>{shipment.shipmentNumber ?? HYPHEN}</Text>
+        </View>
+        <Chip style={styles.chipWarning} textStyle={styles.chipWarningText}>
+          {shipment.status ?? HYPHEN}
+        </Chip>
       </View>
-      <View style={styles.col50}>
-        <Text style={styles.label}>Status</Text>
-        <Text style={styles.value}>{props?.shipment?.displayStatus} ({props?.shipment?.loadingStatusDetails?.statusMessage} containers)</Text>
+
+      <Divider style={styles.contentDivider} />
+
+      <Subheading style={styles.destinationSubheading}>
+        Destination: {shipment.destination?.name ?? HYPHEN}
+      </Subheading>
+
+      <View style={styles.additionalInfoRow}>
+        <Chip icon="calendar" style={styles.chipDefault} textStyle={styles.chipDefaultText}>
+          Expected Shipping: {shipment.expectedShippingDate ?? HYPHEN}
+        </Chip>
+      </View>
+
+      <View style={styles.rowItem}>
+        <View style={styles.columnItem}>
+          <Text style={styles.label}>Loading Location</Text>
+          <Text style={styles.value}>{shipment.loadingLocation ?? HYPHEN}</Text>
+        </View>
+
+        <View style={styles.columnItem}>
+          <Text style={styles.label}>Expected Delivery Date</Text>
+          <Text style={styles.value}>{shipment.expectedDeliveryDate ?? HYPHEN}</Text>
+        </View>
       </View>
     </View>
-    <View style={styles.row}>
-      <View style={styles.col50}>
-        <Text style={styles.label}>Destination</Text>
-        <Text style={styles.value}>{props?.shipment?.destination.name}</Text>
-      </View>
-      <View style={styles.col50}>
-        <Text style={styles.label}>Expected Shipping Date</Text>
-        <Text style={styles.value}>{props?.shipment?.expectedShippingDate}</Text>
-      </View>
-    </View>
-    <View style={styles.row}>
-      <View style={styles.col50}>
-        <Text style={styles.label}>Loading Location</Text>
-        <Text style={styles.value}>{props?.shipment?.loadingLocation}</Text>
-      </View>
-      <View style={styles.col50}>
-        <Text style={styles.label}>Expected Delivery Date</Text>
-        <Text style={styles.value}>{props?.shipment?.expectedDeliveryDate}</Text>
-      </View>
-    </View>
-  </View>
-)
+  );
+};
 
 export default OrderDetailsSection;

@@ -20,7 +20,7 @@ const OutboundLoadingContainer = () => {
   const navigation = useNavigation<any>();
 
   const [scannedLPN, setScannedLPN] = useState<string>(scanned ? (container?.containerNumber ?? '') : '');
-  const [scannedLoadingLocation, setScannedLoadingLocation] = useState<string>('');
+  const [scannedLoadingLocation, setScannedLoadingLocation] = useState<string>(shipment?.loadingLocationNumber ?? '');
 
   const getIcon = (property: string, scannedValue: string) => {
     if (!property || (property && property === scannedValue)) {
@@ -47,11 +47,9 @@ const OutboundLoadingContainer = () => {
       let errorTitle = '';
       let errorMessage = '';
 
-      const loadingLocationNumber = shipment?.loadingStatusDetails?.loadingLocation?.locationNumber;
+      const loadingLocationNumber = shipment?.loadingLocationNumber;
       const scannedLPNValid = isPropertyValid(container?.containerNumber, scannedLPN);
-      const scannedLoadingLocationValid = isPropertyValid(
-        shipment?.loadingStatusDetails?.loadingLocation?.locationNumber, scannedLoadingLocation,
-      );
+      const scannedLoadingLocationValid = isPropertyValid(shipment?.loadingLocationNumber, scannedLoadingLocation);
 
       if (!scannedLPNValid) {
         errorTitle = 'LPN Container Number is invalid';
@@ -127,7 +125,7 @@ const OutboundLoadingContainer = () => {
           <InputBox
             value={scannedLPN}
             placeholder={container?.containerNumber || 'LPN\'s Container Number'}
-            label={container?.containerNumber || 'LPN\'s Container Number'}
+            label={'LPN\'s Container Number'}
             disabled={false}
             onEndEdit={(value: any) => setScannedLPN(value)}
             onChange={(value: any) => setScannedLPN(value)}
@@ -149,29 +147,34 @@ const OutboundLoadingContainer = () => {
         </View>
         <InputBox
           value={scannedLoadingLocation}
-          placeholder={shipment?.loadingStatusDetails?.loadingLocation?.locationNumber || 'Loading Location'}
-          label={shipment?.loadingStatusDetails?.loadingLocation?.locationNumber || 'Loading Location'}
+          placeholder={shipment?.loadingLocationNumber || 'Loading Location'}
+          label={'Loading Location'}
           disabled={false}
           onEndEdit={(value: any) => setScannedLoadingLocation(value)}
           onChange={(value: any) => setScannedLoadingLocation(value)}
           editable
-          icon={getIcon(shipment?.loadingStatusDetails?.loadingLocation?.locationNumber, scannedLoadingLocation)}
+          icon={getIcon(shipment?.loadingLocationNumber, scannedLoadingLocation)}
           onIconClick={() => {
             if (scannedLoadingLocation && !isPropertyValid(
-              shipment?.loadingStatusDetails?.loadingLocation?.locationNumber, scannedLoadingLocation
+              shipment?.loadingLocationNumber, scannedLoadingLocation
             )) {
               setScannedLoadingLocation('')
               return;
             }
             showPopup({
-              message: `Scan Loading Location Number. Expected: ${shipment?.loadingStatusDetails?.loadingLocation?.locationNumber || 'DEFAULT (empty)'}.\n\nTo validate Loading Location Number click on this field and scan Loading Location Number.`,
+              message: `Scan Loading Location Number. Expected: ${shipment?.loadingLocationNumber || 'DEFAULT (empty)'}.\n\nTo validate Loading Location Number click on this field and scan Loading Location Number.`,
               positiveButton: {
                 text: 'Ok',
               },
             })
           }}
         />
-        <Button title="Load Container" onPress={() => loadContainer()} disabled={false} />
+        <Button 
+          title="Load Container" 
+          onPress={() => loadContainer()} 
+          disabled={false}
+          style={styles.loadButton} 
+          />
       </View>
     </ScrollView>
   )
