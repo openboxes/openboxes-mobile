@@ -203,7 +203,6 @@ function* stockAdjustments(action: any) {
       payload: response
     });
     yield action.callback(response);
-    yield put(hideScreenLoading());
   } catch (e) {
     yield put(hideScreenLoading());
     yield action.callback({

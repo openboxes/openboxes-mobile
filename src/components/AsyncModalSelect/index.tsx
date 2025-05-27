@@ -62,6 +62,7 @@ const AsyncModalSelect = ({
       <ModalSelector
         accessible
         initValue=""
+        cancelText="Cancel"
         supportedOrientations={['landscape']}
         optionContainerStyle={styles.container}
         optionTextStyle={styles.option}

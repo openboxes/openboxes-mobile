@@ -7,7 +7,6 @@ import {
 } from '../actions/transfers';
 import { hideScreenLoading, showScreenLoading } from '../actions/main';
 import * as api from '../../apis';
-import * as NavigationService from '../../NavigationService';
 import * as Sentry from '@sentry/react-native';
 
 function* updateStockTransfer(action: any) {
@@ -22,7 +21,6 @@ function* updateStockTransfer(action: any) {
       payload: response
     });
     yield action.callback(response.data);
-    yield put(hideScreenLoading());
   } catch (e) {
     yield put(hideScreenLoading());
     yield action.callback({

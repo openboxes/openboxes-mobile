@@ -15,6 +15,7 @@ import { updateStockTransfer } from '../../redux/actions/transfers';
 import { RootState } from '../../redux/reducers';
 import Theme from '../../utils/Theme';
 import styles from './styles';
+import { hideScreenLoading } from '../../redux/actions/main';
 
 const Transfer = () => {
   const route = useRoute();
@@ -98,15 +99,15 @@ const Transfer = () => {
       status: 'COMPLETED',
       stockTransferNumber: '',
       description: '',
-      'origin.id': location.id,
-      'destination.id': location.id,
+      'origin': location.id,
+      'destination': location.id,
       stockTransferItems: [
         {
-          'product.id': item.product.id,
-          'inventoryItem.id': item['inventoryItem.id'],
-          'location.id': location.id,
-          'originBinLocation.id': item?.binLocation?.id,
-          'destinationBinLocation.id': binToLocationData.id,
+          'productId': item.product.id,
+          'inventoryItemId': item['inventoryItem.id'],
+          'locationId': location.id,
+          'originBinLocationId': item?.binLocation?.id,
+          'destinationBinLocationId': binToLocationData.id,
           quantity: quantity
         }
       ]
@@ -126,12 +127,15 @@ const Transfer = () => {
           negativeButtonText: 'Cancel'
         });
       } else {
-        const product = { id: item.product.id };
+        const product = { id: item.product.productCode };
         ToastAndroid.show('Transferred item successfully!', ToastAndroid.SHORT);
-        navigation.navigate('ProductDetails', {
-          product,
-          refetchProduct: true
-        });
+        setTimeout(() => {
+          dispatch(hideScreenLoading());
+          navigation.navigate('ProductDetails', {
+            product,
+            refetchProduct: true
+          });
+        }, 1000);
       }
     };
 
