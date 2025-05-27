@@ -157,8 +157,8 @@ class ProductDetails extends React.Component<Props, State> {
         <View style={styles.contentContainer}>
           <View style={styles.header}>
             <View style={styles.headerRow}>
-              <Chip style={styles.chipDefault} textStyle={styles.chipText}>
-                {`Code: ${vm.productCode}`}
+              <Chip icon="barcode" style={styles.chipDefault} textStyle={styles.chipText}>
+                {vm.productCode}
               </Chip>
             </View>
             <Divider style={styles.contentDivider} />
