@@ -2,21 +2,18 @@ import { StyleSheet } from 'react-native';
 import Theme from '../../utils/Theme';
 
 export default StyleSheet.create({
-  screenContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    flex: 1
-  },
   contentContainer: {
     display: 'flex',
-    flex: 1,
     flexDirection: 'column',
-    padding: 10,
-    backgroundColor: Theme.colors.surface
+    backgroundColor: Theme.colors.surface,
+    padding: Theme.spacing.large
+  },
+  formContainer: {
+    padding: Theme.spacing.large
   },
   buttonBar: {
-    padding: 8,
-    borderTopWidth: 1,
+    paddingHorizontal: Theme.spacing.large,
+    paddingVertical: Theme.spacing.small,
     borderTopColor: Theme.colors.backdrop,
     backgroundColor: Theme.colors.surface
   },
@@ -24,7 +21,7 @@ export default StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8
+    marginBottom: Theme.spacing.small / 2
   },
   dividedValues: {
     flexDirection: 'row',
@@ -37,18 +34,18 @@ export default StyleSheet.create({
     flexShrink: 1
   },
   contentDivider: {
-    marginVertical: 8
+    marginVertical: Theme.spacing.small / 2
   },
   destinationSubheading: {
     fontWeight: 'bold',
     fontSize: 16,
-    marginVertical: 8,
+    marginVertical: Theme.spacing.small / 2,
     color: Theme.colors.text
   },
   additionalInfoRow: {
     flexDirection: 'row',
-    marginTop: 8,
-    marginBottom: 8,
+    marginTop: Theme.spacing.small / 2,
+    marginBottom: Theme.spacing.small / 2,
     alignItems: 'center'
   },
   chipWarning: {
@@ -84,9 +81,7 @@ export default StyleSheet.create({
   },
   columnItem: {
     display: 'flex',
-    flexDirection: 'column',
-    width: '48%',
-    paddingHorizontal: 2
+    flexDirection: 'column'
   },
   label: {
     fontSize: 10,
@@ -98,7 +93,6 @@ export default StyleSheet.create({
     flexShrink: 1
   },
   scanSearch: {
-    marginHorizontal: 8,
     marginVertical: 12,
     backgroundColor: Theme.colors.surface
   },
@@ -113,12 +107,8 @@ export default StyleSheet.create({
     marginTop: 10,
     marginBottom: 5,
     paddingVertical: 10,
-    paddingHorizontal: 10,
     justifyContent: 'space-between',
-    alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: Theme.colors.divider,
-    backgroundColor: Theme.colors.background
+    alignItems: 'center'
   },
   headerTitle: {
     fontWeight: 'bold',
@@ -135,5 +125,8 @@ export default StyleSheet.create({
   },
   loadButton: {
     marginTop: 10
-  }
+  },
+  caption: { fontSize: 12, color: Theme.colors.text },
+  subheading: { fontWeight: 'bold', fontSize: 16 },
+  cardContainer: { backgroundColor: Theme.colors.background }
 });

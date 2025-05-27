@@ -5,8 +5,8 @@ import { Image, ScrollView, TouchableOpacity, View } from 'react-native';
 import DatePicker from 'react-native-datepicker';
 import { Caption, Chip, Divider, Subheading, Text } from 'react-native-paper';
 import SelectDropdown from 'react-native-select-dropdown';
-import Icon from 'react-native-vector-icons/FontAwesome5';
 import { useDispatch, useSelector } from 'react-redux';
+
 import CLEAR from '../../assets/images/icon_clear.png';
 import AsyncModalSelect from '../../components/AsyncModalSelect';
 import Button from '../../components/Button';
@@ -233,7 +233,7 @@ const InboundReceiveDetail = () => {
     <ScrollView keyboardShouldPersistTaps="always">
       <View style={styles.inboundDetailsContainer}>
         <View style={styles.headerRow}>
-          <Chip icon="package" style={styles.chipDefault} textStyle={styles.chipWarningText}>
+          <Chip icon="barcode" style={styles.chipDefault} textStyle={styles.chipWarningText}>
             {shipmentItem['product.productCode']}
           </Chip>
           <Chip icon="calendar" style={[styles.chipDefault, styles.lastChild]} textStyle={styles.chipWarningText}>
@@ -259,17 +259,26 @@ const InboundReceiveDetail = () => {
         <Divider style={styles.dividerHorizontal} />
 
         <View style={styles.rowItem}>
-          <View style={styles.rowItem}>
-            <Chip icon="truck" style={styles.chipDefault} textStyle={styles.chipWarningText}>
-              {`Shipped: ${shipmentItem.quantityShipped}`}
-            </Chip>
-            <Chip icon="thumb-up" style={styles.chipDefault} textStyle={styles.chipWarningText}>
-              {`Received: ${shipmentItem.quantityReceived}`}
-            </Chip>
-            <Chip icon="database" style={[styles.chipDefault, styles.lastChild]} textStyle={styles.chipWarningText}>
-              {`Remaining: ${shipmentItem.quantityRemaining > 0 ? shipmentItem.quantityRemaining : 0}`}
-            </Chip>
-          </View>
+          <Chip icon="truck" style={{ ...styles.chipDefault, flex: 1 }} textStyle={styles.chipWarningText}>
+            {`Shipped: ${shipmentItem.quantityShipped}`}
+          </Chip>
+          <Chip
+            icon="database"
+            style={{ ...styles.chipDefault, ...styles.lastChild, flex: 1 }}
+            textStyle={styles.chipWarningText}
+          >
+            {`Remaining: ${shipmentItem.quantityRemaining > 0 ? shipmentItem.quantityRemaining : 0}`}
+          </Chip>
+        </View>
+
+        <View style={styles.rowItem}>
+          <Chip
+            icon="thumb-up"
+            style={{ ...styles.chipDefault, ...styles.lastChild, flex: 1, marginTop: Theme.spacing.small }}
+            textStyle={styles.chipWarningText}
+          >
+            {`Received: ${shipmentItem.quantityReceived}`}
+          </Chip>
         </View>
       </View>
       <Divider />

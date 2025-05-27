@@ -15,7 +15,14 @@ export const ratio = {
 
 export const HYPHEN = '-';
 
+export const DEFAULT_DATE_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric'
+};
+
 export const appConfig = {
   DEFAULT_DEBOUNCE_TIME: 500,
-  APP_HEADER_HEIGHT: 56
+  APP_HEADER_HEIGHT: 56,
+  LOCALE: 'en-US'
 };

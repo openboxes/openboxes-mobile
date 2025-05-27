@@ -26,6 +26,7 @@ export default StyleSheet.create({
     height: 48
   },
   cardLabel: {
-    ...Theme.fonts.regular
+    color: Theme.colors.primary,
+    fontWeight: '600'
   }
 });

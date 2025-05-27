@@ -28,27 +28,31 @@ export default StyleSheet.create({
   list: {
     width: '100%'
   },
-  row: {
+  headerRow: {
     flexDirection: 'row',
-    borderColor: Theme.colors.onBackground,
-    marginTop: 1,
-    padding: 2,
+    justifyContent: 'space-between',
+    alignItems: 'center',
     width: '100%'
   },
-  col50: {
-    display: 'flex',
-    flexDirection: 'column',
-    flex: 0,
-    marginStart: 4,
-    width: '50%'
+  chipDefault: {
+    height: 28,
+    justifyContent: 'center',
+    borderRadius: Theme.spacing.small,
+    alignItems: 'center',
+    marginRight: Theme.spacing.small,
+    backgroundColor: Theme.colors.background
   },
-  label: {
+  chipText: {
     fontSize: 12,
-    color: Theme.colors.placeholder
-  },
-  value: {
-    fontSize: 14,
-    marginTop: 5,
     color: Theme.colors.text
-  }
+  },
+  additionalInfoRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 8,
+    alignItems: 'center',
+    flexWrap: 'wrap'
+  },
+  caption: { fontSize: 12, color: Theme.colors.text },
+  subheading: { fontWeight: 'bold', fontSize: 16 }
 });

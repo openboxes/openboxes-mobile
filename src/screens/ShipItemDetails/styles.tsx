@@ -3,10 +3,6 @@ import Theme from '../../utils/Theme';
 import { ratio } from '../../constants';
 
 export default StyleSheet.create({
-  contentContainer: {
-    padding: 16,
-    flex: 0
-  },
   label: {
     fontSize: 12,
     color: Theme.colors.placeholder,
@@ -54,21 +50,51 @@ export default StyleSheet.create({
   containerField: {
     padding: 10
   },
-  bottom: {
-    alignSelf: 'center',
-    justifyContent: 'center',
-    height: ratio.height * 100,
-    marginBottom: 20
+  button: {
+    marginTop: Theme.spacing.medium
   },
   textContainer: {
     flexDirection: 'column',
     borderColor: Theme.colors.background,
-    marginTop: 1,
-    padding: 2,
     width: '100%',
     alignItems: 'center'
   },
   alignCenterContent: {
     alignItems: 'center'
+  },
+  infoContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    backgroundColor: Theme.colors.surface,
+    padding: Theme.spacing.medium
+  },
+  chipDefault: {
+    height: 28,
+    justifyContent: 'center',
+    borderRadius: Theme.spacing.small,
+    alignItems: 'center',
+    marginRight: Theme.spacing.small,
+    backgroundColor: Theme.colors.background
+  },
+  chipText: {
+    fontSize: 12,
+    color: Theme.colors.text
+  },
+  additionalInfoRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 8,
+    alignItems: 'center',
+    flexWrap: 'wrap'
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  caption: { fontSize: 12, color: Theme.colors.text },
+  subheading: { fontWeight: 'bold', fontSize: 16 },
+  formContainer: {
+    padding: Theme.spacing.large
   }
 });

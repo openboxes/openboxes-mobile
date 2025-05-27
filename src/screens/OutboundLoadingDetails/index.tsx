@@ -1,18 +1,18 @@
 import { DispatchProps, Props, State } from '../OutboundStockDetails/types';
 import React from 'react';
-import {Alert, ScrollView, SectionList, Text, View, TouchableOpacity } from 'react-native';
+import { Alert, ScrollView, SectionList, Text, View, TouchableOpacity } from 'react-native';
 import { connect } from 'react-redux';
 import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
 import { RootState } from '../../redux/reducers';
 import styles from '../OutboundStockDetails/styles';
 import { getShipment } from '../../redux/actions/packing';
-import OrderDetailsSection from "./OrderDetailsSection";
-import EmptyView from "../../components/EmptyView";
-import { Shipment, Container } from "../../data/container/Shipment";
-import {Card} from "react-native-paper";
-import _ from "lodash";
-import InputBox from "../../components/InputBox";
-import showPopup from "../../components/Popup";
+import OrderDetailsSection from './OrderDetailsSection';
+import EmptyView from '../../components/EmptyView';
+import { Shipment, Container } from '../../data/container/Shipment';
+import { Card, Divider } from 'react-native-paper';
+import _ from 'lodash';
+import InputBox from '../../components/InputBox';
+import showPopup from '../../components/Popup';
 import { HYPHEN } from '../../constants';
 
 // Shipment loading
@@ -22,7 +22,7 @@ class OutboundLoadingDetails extends React.Component<Props, State> {
     this.state = {
       error: null,
       shipment: null,
-      scannedContainer: '',
+      scannedContainer: ''
     };
   }
 
@@ -37,9 +37,9 @@ class OutboundLoadingDetails extends React.Component<Props, State> {
   }
 
   actionCallback = (data: any) => {
-    const allContainers = data?.containers?.filter(c => c.id !== null) || [];
-    const loadedContainers = data?.containers?.filter(c => c.status === 'LOADED') || [];
-    
+    const allContainers = data?.containers?.filter((c) => c.id !== null) || [];
+    const loadedContainers = data?.containers?.filter((c) => c.status === 'LOADED') || [];
+
     if (!data || data?.error) {
       return Promise.resolve(null);
     } else {
@@ -48,17 +48,19 @@ class OutboundLoadingDetails extends React.Component<Props, State> {
           'All containers are loaded', // title
           'What do you want to do now?', // message
           [
-            { // button list
+            {
+              // button list
               text: 'See the details',
               onPress: () => null
             },
             {
               text: 'Go to the loading list',
               onPress: () => this.props.navigation.navigate('OutboundLoadingList')
-            }],
+            }
+          ],
           {
             cancelable: false
-          },
+          }
         );
       }
 
@@ -86,24 +88,29 @@ class OutboundLoadingDetails extends React.Component<Props, State> {
   };
 
   findMatchingContainer = (searchTerm: string) => {
-    return _.find(this.state.shipment?.containers, (container: Container) => (
-      container?.name?.toLowerCase() === searchTerm?.toLowerCase() ||
-      container?.containerNumber?.toLowerCase() === searchTerm?.toLowerCase()
-    ));
-  }
+    return _.find(
+      this.state.shipment?.containers,
+      (container: Container) =>
+        container?.name?.toLowerCase() === searchTerm?.toLowerCase() ||
+        container?.containerNumber?.toLowerCase() === searchTerm?.toLowerCase()
+    );
+  };
 
   onContainerScan = (value: string) => {
     this.setState({ scannedContainer: value }, () => {
       if (value) {
         const matchingContainer = this.findMatchingContainer(value);
         if (matchingContainer) {
-          this.setState({
-            scannedContainer: '' // reset scan value before redirecting
-          }, () => this.showLoadingLPNScreen(matchingContainer, this.state.shipment, true));
+          this.setState(
+            {
+              scannedContainer: '' // reset scan value before redirecting
+            },
+            () => this.showLoadingLPNScreen(matchingContainer, this.state.shipment, true)
+          );
         }
       }
     });
-  }
+  };
 
   onContainerScanEnd = (value: string) => {
     if (value) {
@@ -112,31 +119,35 @@ class OutboundLoadingDetails extends React.Component<Props, State> {
         this.showLoadingLPNScreen(matchingContainer, this.state.shipment, true);
       } else {
         showPopup({
-          message: `The LPN: ${value} is not for this order`,
+          message: `The LPN: ${value} is not for this order`
         });
         this.setState({ scannedContainer: '' });
       }
     }
-  }
+  };
 
   renderListItem = (item: Container, index: number, section: any) => {
     return (
-      <TouchableOpacity key={index} style={styles.itemView} onPress={() => this.showLoadingLPNScreen(item, this.state.shipment, true)}>
+      <TouchableOpacity
+        key={index}
+        style={styles.itemView}
+        onPress={() => this.showLoadingLPNScreen(item, this.state.shipment, true)}
+      >
         <Card>
           <Card.Content>
             <View style={styles.rowItem}>
-            {this.RenderData({ title: 'Container Name', subText: item.name ?? HYPHEN })}
-            {this.RenderData({ title: 'Container Number', subText: item.containerNumber ?? HYPHEN })}
+              {this.RenderData({ title: 'Container Name', subText: item.name ?? HYPHEN })}
+              {this.RenderData({ title: 'Container Number', subText: item.containerNumber ?? HYPHEN })}
             </View>
             <View style={styles.rowItem}>
-            {this.RenderData({ title: 'Container Type', subText: item.type ?? HYPHEN })}
-            {this.RenderData({ title: 'Container Status', subText: item.status ?? HYPHEN })}
+              {this.RenderData({ title: 'Container Type', subText: item.type ?? HYPHEN })}
+              {this.RenderData({ title: 'Container Status', subText: item.status ?? HYPHEN })}
             </View>
           </Card.Content>
         </Card>
       </TouchableOpacity>
     );
-  }
+  };
 
   RenderData = ({ title, subText }: { title: string; subText: string }) => {
     return (
@@ -145,13 +156,15 @@ class OutboundLoadingDetails extends React.Component<Props, State> {
         <Text style={styles.value}>{subText}</Text>
       </View>
     );
-  }
-  
+  };
+
   render() {
     return (
-      <ScrollView style={styles.screenContainer}>
-        <View style={styles.contentContainer}>
-          <OrderDetailsSection shipment={this.state.shipment} />
+      <>
+        <OrderDetailsSection shipment={this.state.shipment} />
+        <Divider />
+
+        <View style={styles.formContainer}>
           <InputBox
             style={styles.scanSearch}
             value={this.state.scannedContainer}
@@ -162,15 +175,16 @@ class OutboundLoadingDetails extends React.Component<Props, State> {
             onEndEdit={this.onContainerScanEnd}
           />
           <SectionList
-            sections={(this.state.shipment?.containers
-              ?.filter(c => c.id !== null)
-              ?.sort((a, b) => (a.name ?? '').localeCompare(b.name ?? '')) || []
-          ).map(container => ({
+            sections={(
+              this.state.shipment?.containers
+                ?.filter((c) => c.id !== null)
+                ?.sort((a, b) => (a.name ?? '').localeCompare(b.name ?? '')) || []
+            ).map((container) => ({
               title: container.name ?? HYPHEN,
               data: [container]
-            }))}    
+            }))}
             renderItem={({ item, index, section }) => this.renderListItem(item, index, section)}
-            renderSectionHeader={( { section } ) => (
+            renderSectionHeader={({ section }) => (
               <View style={styles.headerContainer}>
                 <Text style={styles.headerTitle}>{section.title}</Text>
               </View>
@@ -179,9 +193,9 @@ class OutboundLoadingDetails extends React.Component<Props, State> {
               <EmptyView title="Loading" description="There are no containers available" isRefresh={false} />
             }
             keyExtractor={(item, index) => item.id || index.toString()}
-        />
+          />
         </View>
-      </ScrollView>
+      </>
     );
   }
 }

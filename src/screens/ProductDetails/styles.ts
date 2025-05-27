@@ -118,8 +118,7 @@ export default StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 4,
     alignItems: 'center',
-    marginRight: 8,
-    backgroundColor: Theme.colors.background
+    marginRight: 8
   },
   chipText: {
     fontSize: 12,
@@ -151,5 +150,7 @@ export default StyleSheet.create({
   },
   printButton: {
     marginVertical: Theme.spacing.small
-  }
+  },
+  cardContainer: { backgroundColor: Theme.colors.background },
+  subheading: { fontWeight: 'bold', fontSize: 16 }
 });

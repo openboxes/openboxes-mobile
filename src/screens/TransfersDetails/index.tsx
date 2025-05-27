@@ -1,15 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import { FlatList, Text, View, ListRenderItemInfo, ToastAndroid } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import styles from './styles';
-import { Card } from 'react-native-paper';
+import React, { useEffect, useState } from 'react';
+import { FlatList, ListRenderItemInfo, Text, ToastAndroid, View } from 'react-native';
+import { Caption, Card, Chip, Divider, Subheading } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
-import showPopup from '../../components/Popup';
-import { getStockTransfersSummary, completeStockTransfer } from '../../redux/actions/transfers';
-import EmptyView from '../../components/EmptyView';
-import Button from '../../components/Button';
+
 import { LayoutStyle } from '../../assets/styles';
+import Button from '../../components/Button';
+import EmptyView from '../../components/EmptyView';
+import showPopup from '../../components/Popup';
 import { HYPHEN } from '../../constants';
+import { completeStockTransfer, getStockTransfersSummary } from '../../redux/actions/transfers';
+import Theme from '../../utils/Theme';
+import styles from './styles';
 
 const TransferDetails = () => {
   const route = useRoute();
@@ -70,38 +72,31 @@ const TransferDetails = () => {
     dispatch(completeStockTransfer(stockTransfer, callback));
   };
 
-  const RenderData = ({ title, subText }: any): JSX.Element => {
+  const renderTransferDetails = (): Element => {
     return (
-      <View style={styles.columnItem}>
-        <Text style={styles.label}>{title}</Text>
-        <Text style={styles.value}>{subText ? subText : HYPHEN}</Text>
-      </View>
-    );
-  };
+      <>
+        <View style={styles.headerRow}>
+          <Chip icon="identifier" style={styles.chipDefault} textStyle={styles.chipText}>
+            {transferDetail?.stockTransferNumber}
+          </Chip>
+          <Chip style={styles.chipDefault} textStyle={styles.chipText}>
+            {transferDetail?.status}
+          </Chip>
+        </View>
+        <Divider style={{ marginVertical: Theme.spacing.medium }} />
 
-  const renderTransferItem = (): JSX.Element => {
-    return (
-      <Card style={LayoutStyle.listItemContainer}>
-        <Card.Content>
-          <View style={styles.rowItem}>
-            <RenderData title={'Order Number'} subText={transferDetail?.stockTransferNumber} />
-            <RenderData title={'Status'} subText={transferDetail?.status} />
-          </View>
-          <View style={styles.rowItem}>
-            <RenderData title={'Origin'} subText={transferDetail?.['origin.name']} />
-            <RenderData title={'Destination'} subText={transferDetail?.['destination.name']} />
-          </View>
+        <Subheading style={styles.subheading}>{`Description: ${transferDetail?.description ?? HYPHEN}`}</Subheading>
+        <Caption style={styles.caption}>{`Created on: ${transferDetail?.dateCreated}`}</Caption>
 
-          <View style={styles.rowItem}>
-            <RenderData title={'Description'} subText={transferDetail?.description} />
-            <RenderData title={'Number of Items'} subText={transferDetail?.stockTransferItems?.length} />
-          </View>
-
-          <View style={styles.rowItem}>
-            <RenderData title={'Created Date'} subText={transferDetail?.dateCreated} />
-          </View>
-        </Card.Content>
-      </Card>
+        <View style={styles.additionalInfoRow}>
+          <Chip icon="truck" style={styles.chipDefault} textStyle={styles.chipText}>
+            {transferDetail?.origin?.name}
+          </Chip>
+          <Chip icon="map-marker-check" style={styles.chipDefault} textStyle={styles.chipText}>
+            {transferDetail?.destination?.name}
+          </Chip>
+        </View>
+      </>
     );
   };
 
@@ -109,21 +104,37 @@ const TransferDetails = () => {
     return (
       <Card key={index} style={LayoutStyle.listItemContainer}>
         <Card.Content>
-          <View style={styles.rowItem}>
-            <RenderData title={'Product Code'} subText={item?.product?.productCode} />
-            <RenderData title={'Product Name'} subText={item?.product?.name} />
+          <View style={styles.headerRow}>
+            <Chip icon="barcode" style={styles.chipDefault} textStyle={styles.chipText}>
+              {item?.product?.productCode}
+            </Chip>
+            <Chip style={styles.chipDefault} textStyle={styles.chipText}>
+              {item.status}
+            </Chip>
           </View>
-          <View style={styles.rowItem}>
-            <RenderData title={'Origin Bin Location'} subText={item?.originBinLocation?.name} />
-            <RenderData title={'Destination Bin Location'} subText={item?.destinationBinLocation?.name} />
-          </View>
-          <View style={styles.rowItem}>
-            <RenderData title={'Quantity'} subText={item.quantity} />
-            <RenderData title={'Quantity OnHand'} subText={item.quantityOnHand} />
-          </View>
+          <Divider style={styles.dividerHorizontal} />
 
-          <View style={styles.rowItem}>
-            <RenderData title={'Status'} subText={item.status} />
+          <Subheading style={styles.subheading}> {item?.product?.name} </Subheading>
+          <View style={styles.additionalInfoRow}>
+            <Chip icon="package" style={styles.chipDefault} textStyle={styles.chipText}>
+              {`Quantity: ${item.quantity}`}
+            </Chip>
+            <Chip icon="package-variant" style={styles.chipDefault} textStyle={styles.chipText}>
+              {`On Hand: ${item.quantityOnHand}`}
+            </Chip>
+          </View>
+          <Divider style={styles.dividerHorizontal} />
+
+          <View style={styles.headerRow}>
+            <View>
+              <Text style={styles.label}>Origin Bin Location</Text>
+              <Text style={styles.value}>{item?.originBinLocation?.name ?? HYPHEN}</Text>
+            </View>
+
+            <View>
+              <Text style={styles.label}>Destination Bin Location</Text>
+              <Text style={styles.value}>{item?.destinationBinLocation?.name ?? HYPHEN}</Text>
+            </View>
           </View>
         </Card.Content>
       </Card>
@@ -132,7 +143,8 @@ const TransferDetails = () => {
 
   return (
     <View style={styles.mainContainer}>
-      {renderTransferItem()}
+      <View style={styles.detailsContainer}>{renderTransferDetails()}</View>
+      <Divider />
 
       {transferDetail?.stockTransferItems?.length > 0 ? (
         <FlatList
@@ -144,6 +156,7 @@ const TransferDetails = () => {
         />
       ) : null}
 
+      <Divider />
       <View style={styles.bottom}>
         <Button title="Complete Transfer" onPress={() => completeTransfers(transferDetail)} />
       </View>

@@ -1,21 +1,24 @@
 /* eslint-disable complexity */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/jsx-sort-props */
-import React, { useEffect, useState } from 'react';
-import { ScrollView, Text, View, ToastAndroid } from 'react-native';
-import styles from './styles';
-import Button from '../../components/Button';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import _ from 'lodash';
+import React, { useEffect, useState } from 'react';
+import { ScrollView, Text, ToastAndroid, View } from 'react-native';
+import { Caption, Chip, Divider, Subheading } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
-import showPopup from '../../components/Popup';
-import { getShipment, submitShipmentDetails } from '../../redux/actions/packing';
-import InputSpinner from '../../components/InputSpinner';
-import EditableModalSelect from '../../components/EditableModalSelect';
 import CLEAR from '../../assets/images/icon_clear.png';
 import SCAN from '../../assets/images/scan.jpg';
 import TICK from '../../assets/images/tick.png';
-import _ from 'lodash';
+import Button from '../../components/Button';
+import EditableModalSelect from '../../components/EditableModalSelect';
+import InputSpinner from '../../components/InputSpinner';
+import showPopup from '../../components/Popup';
+import { HYPHEN } from '../../constants';
 import { getAllContainers } from '../../redux/actions/lpn';
+import { getShipment, submitShipmentDetails } from '../../redux/actions/packing';
+import Theme from '../../utils/Theme';
+import styles from './styles';
 
 const ShipItemDetails = () => {
   const route = useRoute();
@@ -33,12 +36,14 @@ const ShipItemDetails = () => {
 
   useEffect(() => {
     getShipmentDetails(item.shipment.id);
-    dispatch(getAllContainers(containers => {
-      setState(prev => ({
-        ...prev,
-        containerList: containers.map(c => ({ id: c.id, name: c.name }))
-      }));
-    }));
+    dispatch(
+      getAllContainers((containers) => {
+        setState((prev) => ({
+          ...prev,
+          containerList: containers.map((c) => ({ id: c.id, name: c.name }))
+        }));
+      })
+    );
   }, []);
 
   const getShipmentDetails = (id: string) => {
@@ -96,7 +101,7 @@ const ShipItemDetails = () => {
     // find proper container id in case it was scanned
     const container = _.find(
       state.containerList,
-      c => c?.id === selectedContainerItem?.id || c?.name === selectedContainerItem?.id,
+      (c) => c?.id === selectedContainerItem?.id || c?.name === selectedContainerItem?.id
     );
 
     const request = {
@@ -139,7 +144,7 @@ const ShipItemDetails = () => {
     }
 
     // compare against id and name because when manually scanned there won't be id, but container number
-    return _.find(containerList, c => c?.id === scannedContainerId || c?.name === scannedContainerId);
+    return _.find(containerList, (c) => c?.id === scannedContainerId || c?.name === scannedContainerId);
   };
 
   const getIcon = (scannedContainerId?: string, containerList?: Array<any>) => {
@@ -161,70 +166,64 @@ const ShipItemDetails = () => {
     });
   };
   return (
-    <ScrollView style={styles.contentContainer}>
-      <View style={styles.rowItem}>
-        <View style={styles.columnItem}>
+    <ScrollView>
+      <View style={styles.infoContainer}>
+        <View style={styles.headerRow}>
+          <Chip icon="identifier" style={styles.chipDefault} textStyle={styles.chipText}>
+            {`Shipment Number: ${section?.shipmentNumber ?? HYPHEN}`}
+          </Chip>
+        </View>
+        <Divider style={{ marginVertical: Theme.spacing.medium }} />
+
+        <Subheading
+          style={styles.subheading}
+        >{`${item.inventoryItem.product.productCode} - ${item.inventoryItem.product.name}`}</Subheading>
+        <Caption style={styles.caption}>{`Lot Number: ${item.inventoryItem.lotNumber ?? 'Default'}`}</Caption>
+
+        <View style={styles.additionalInfoRow}>
+          <Chip icon="package" style={styles.chipDefault} textStyle={styles.chipText}>
+            {`Quantity To Pack: ${item.quantity ?? HYPHEN}`}
+          </Chip>
+          <Chip icon="pin" style={styles.chipDefault} textStyle={styles.chipText}>{`Container: ${
+            item?.container?.name ?? 'Default'
+          }`}</Chip>
+        </View>
+      </View>
+      <Divider />
+
+      <View style={styles.formContainer}>
+        <View style={styles.textContainer}>
           <Text style={styles.label}>{'Container'}</Text>
-          <Text style={styles.value}>{item?.container?.name ?? 'Default'}</Text>
-        </View>
-        <View style={styles.columnItem}>
-          <Text style={styles.label}>{'Shipment Number'}</Text>
-          <Text style={styles.value}>{section?.shipmentNumber}</Text>
-        </View>
-      </View>
-      <View style={styles.rowItem}>
-        <View style={styles.columnItem}>
-          <Text style={styles.label}>{'Product Code'}</Text>
-          <Text style={styles.value}>{item.inventoryItem.product.productCode}</Text>
-        </View>
-        <View style={styles.columnItem}>
-          <Text style={styles.label}>{'Product Name'}</Text>
-          <Text style={styles.value}>{item.inventoryItem.product.name}</Text>
-        </View>
-      </View>
-      <View style={styles.rowItem}>
-        <View style={styles.columnItem}>
-          <Text style={styles.label}>{'LOT Number'}</Text>
-          <Text style={styles.value}>{item.inventoryItem.lotNumber ?? 'Default'}</Text>
-        </View>
-        <View style={styles.columnItem}>
-          <Text style={styles.label}>{'Quantity to pack'}</Text>
-          <Text style={styles.value}>{item.quantity}</Text>
-        </View>
-      </View>
-      <View style={styles.textContainer}>
-        <Text style={styles.label}>{'Container'}</Text>
-        <EditableModalSelect
-          placeholder="Container"
-          label="Container"
-          initialData={state.containerList ?? []}
-          helperIcon={getIcon(selectedContainerItem?.id, state.containerList)}
-          onHelperIconClick={() => {
-            if (selectedContainerItem?.id && !isContainerValid(selectedContainerItem?.id, state.containerList)) {
-              setSelectedContainerItem({ id: null, name: null });
-              return;
-            }
-            showPopup({
-              message: `Scan a proper container.
-                \n\nTo validate container click on this field and scan a container or use select (click on magnifying glass icon)`,
-              positiveButton: {
-                text: 'Ok'
+          <EditableModalSelect
+            placeholder="Container"
+            label="Container"
+            initialData={state.containerList ?? []}
+            helperIcon={getIcon(selectedContainerItem?.id, state.containerList)}
+            onHelperIconClick={() => {
+              if (selectedContainerItem?.id && !isContainerValid(selectedContainerItem?.id, state.containerList)) {
+                setSelectedContainerItem({ id: null, name: null });
+                return;
               }
-            });
-          }}
-          initValue={selectedContainerItem?.name || ''}
-          searchAction={() => null}
-          searchActionParams={{}}
-          onSelect={(selectedItem: any, index: number) => setSelectedContainerItem(selectedItem)}
-        />
-      </View>
-      <View style={styles.alignCenterContent}>
+              showPopup({
+                message: `Scan a proper container.
+                \n\nTo validate container click on this field and scan a container or use select (click on magnifying glass icon)`,
+                positiveButton: {
+                  text: 'Ok'
+                }
+              });
+            }}
+            initValue={selectedContainerItem?.name || ''}
+            searchAction={() => null}
+            searchActionParams={{}}
+            onSelect={(selectedItem: any) => setSelectedContainerItem(selectedItem)}
+          />
+        </View>
         <InputSpinner title={'Quantity to Pick'} value={state.quantityPicked} setValue={quantityPickedChange} />
-      </View>
-      <View style={styles.bottom}>
         <Button
           disabled={!(state.quantityPicked && state.quantityPicked > 0 && selectedContainerItem)}
           title="PACK ITEM"
+          style={styles.button}
+          size="100%"
           onPress={() => {
             submitShipmentDetail(item?.id);
           }}

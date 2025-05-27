@@ -3,7 +3,10 @@ import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { SectionList, Text, View } from 'react-native';
 import { Card, Chip, Divider, Subheading } from 'react-native-paper';
+
 import { LayoutStyle } from '../../assets/styles';
+import { appConfig, DEFAULT_DATE_FORMAT_OPTIONS } from '../../constants';
+import { parseDateToISODate } from '../../utils/utils';
 import styles from './styles';
 import InboundDetailProps from './types';
 
@@ -28,6 +31,11 @@ const InboundOrderContainer = ({ data, shipmentId, shipmentData }: InboundDetail
   };
 
   const renderShipmentItem = (): JSX.Element => {
+    const dueDate = parseDateToISODate(shipmentData.expectedDeliveryDate);
+    const formattedDueDate = dueDate
+      ? dueDate.toLocaleDateString(appConfig.LOCALE, DEFAULT_DATE_FORMAT_OPTIONS)
+      : 'Invalid date';
+
     return (
       <View>
         <View style={{ padding: 16, backgroundColor: '#fff' }}>
@@ -35,7 +43,7 @@ const InboundOrderContainer = ({ data, shipmentId, shipmentData }: InboundDetail
             <View style={styles.dividedValues}>
               <Text style={styles.value}>{shipmentData.shipmentNumber}</Text>
               <Divider style={styles.dividerVertical} />
-              <Text style={styles.value}>{shipmentData.expectedDeliveryDate}</Text>
+              <Text style={styles.value}>{formattedDueDate}</Text>
             </View>
             <Chip style={styles.chipWarning} textStyle={styles.chipWarningText}>
               {shipmentData.status}
@@ -49,7 +57,7 @@ const InboundOrderContainer = ({ data, shipmentId, shipmentData }: InboundDetail
               {`${shipmentData.shipmentItems.length} Items`}
             </Chip>
             <Chip icon="calendar" style={styles.chipDefault} textStyle={styles.chipDefaultText}>
-              {`Due: ${shipmentData.expectedDeliveryDate}`}
+              {`Due: ${formattedDueDate}`}
             </Chip>
           </View>
           <Divider style={styles.dividerHorizontal} />
@@ -83,7 +91,7 @@ const InboundOrderContainer = ({ data, shipmentId, shipmentData }: InboundDetail
       <Card key={index} style={LayoutStyle.listItemContainer} onPress={() => navigateToInboundOrderDetails(item)}>
         <Card.Content>
           <View style={styles.headerRow}>
-            <Chip icon="package" style={styles.chipDefault} textStyle={styles.chipWarningText}>
+            <Chip icon="barcode" style={styles.chipDefault} textStyle={styles.chipWarningText}>
               {item['product.productCode']}
             </Chip>
             <Chip style={[styles.chipDefault, styles.lastChild]} textStyle={styles.chipWarningText}>
@@ -96,17 +104,26 @@ const InboundOrderContainer = ({ data, shipmentId, shipmentData }: InboundDetail
           <Divider style={styles.dividerHorizontal} />
 
           <View style={styles.rowItem}>
-            <View style={styles.rowItem}>
-              <Chip icon="truck" style={styles.chipDefault} textStyle={styles.chipWarningText}>
-                {`Shipped: ${item.quantityShipped}`}
-              </Chip>
-              <Chip icon="thumb-up" style={styles.chipDefault} textStyle={styles.chipWarningText}>
-                {`Received: ${item.quantityReceived}`}
-              </Chip>
-              <Chip icon="database" style={[styles.chipDefault, styles.lastChild]} textStyle={styles.chipWarningText}>
-                {`Remaining: ${item.quantityRemaining > 0 ? item.quantityRemaining : 0}`}
-              </Chip>
-            </View>
+            <Chip icon="truck" style={{ ...styles.chipDefault, flex: 1 }} textStyle={styles.chipWarningText}>
+              {`Shipped: ${item.quantityShipped}`}
+            </Chip>
+            <Chip
+              icon="database"
+              style={{ ...styles.chipDefault, ...styles.lastChild, flex: 1 }}
+              textStyle={styles.chipWarningText}
+            >
+              {`Remaining: ${item.quantityRemaining > 0 ? item.quantityRemaining : 0}`}
+            </Chip>
+          </View>
+
+          <View style={styles.rowItem}>
+            <Chip
+              icon="thumb-up"
+              style={{ ...styles.chipDefault, ...styles.lastChild, flex: 1 }}
+              textStyle={styles.chipWarningText}
+            >
+              {`Received: ${item.quantityReceived}`}
+            </Chip>
           </View>
         </Card.Content>
       </Card>

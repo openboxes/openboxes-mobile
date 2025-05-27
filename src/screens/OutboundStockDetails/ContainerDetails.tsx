@@ -1,22 +1,14 @@
-/* eslint-disable no-shadow */
-import React from 'react';
-import styles from './styles';
-import { SectionList, Text, TouchableOpacity, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { Card } from 'react-native-paper';
+import React from 'react';
+import { SectionList, Text, TouchableOpacity, View } from 'react-native';
+import { Caption, Card, Chip, Subheading } from 'react-native-paper';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+
+import { HYPHEN } from '../../constants';
+import styles from './styles';
 
 const ContainerDetails = ({ item }: any) => {
   const navigation = useNavigation<any>();
-
-  const RenderData = ({ title, subText }: any): JSX.Element => {
-    return (
-      <View style={styles.columnItem}>
-        <Text style={styles.label}>{title}</Text>
-        <Text style={styles.value}>{subText}</Text>
-      </View>
-    );
-  };
 
   const navigateToOutboundOrderDetails = (item: any, section: any) => {
     navigation.navigate('ShipmentDetails', { item: item, section: section });
@@ -24,16 +16,22 @@ const ContainerDetails = ({ item }: any) => {
 
   const renderListItem = (item: any, index: any, section: any) => {
     return (
-      <TouchableOpacity key={index} style={styles.itemView} onPress={() => navigateToOutboundOrderDetails(item, section)}>
-        <Card>
+      <TouchableOpacity
+        key={index}
+        style={styles.itemView}
+        onPress={() => navigateToOutboundOrderDetails(item, section)}
+      >
+        <Card style={styles.cardContainer}>
           <Card.Content>
-            <View style={styles.rowItem}>
-              <RenderData title={'Product Code'} subText={item.inventoryItem.product?.productCode} />
-              <RenderData title={'Product Name'} subText={item.inventoryItem.product?.name} />
-            </View>
-            <View style={styles.rowItem}>
-              <RenderData title={'Lot Number'} subText={item.inventoryItem.lotNumber ?? 'Default'} />
-              <RenderData title={'Quantity to Pack'} subText={item.quantity} />
+            <Subheading style={styles.subheading}>
+              {`${item.inventoryItem.product?.productCode} - ${item.inventoryItem.product?.name}`}
+            </Subheading>
+            <Caption style={styles.caption}>{`Lot Number: ${item?.inventoryItem?.lotNumber ?? 'Default'}`}</Caption>
+
+            <View style={styles.additionalInfoRow}>
+              <Chip icon="package" style={styles.chipDefault} textStyle={styles.chipDefaultText}>
+                {`Quantity To Pack: ${item.quantity ?? HYPHEN}`}
+              </Chip>
             </View>
           </Card.Content>
         </Card>

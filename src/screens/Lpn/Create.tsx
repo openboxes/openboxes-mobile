@@ -124,7 +124,7 @@ class CreateLpn extends React.Component<Props, State> {
             label="AutoInputInternalLocation"
             data={this.state.stockMovementList}
             initValue={this.state.stockMovements}
-            selectedData={(selectedItem: any, index: number) => {
+            selectedData={(selectedItem: any) => {
               this.setState({
                 stockMovement: selectedItem.name,
                 stockMovementId: selectedItem?.id
@@ -140,7 +140,7 @@ class CreateLpn extends React.Component<Props, State> {
           />
         </View>
         <View style={styles.bottom}>
-          <Button title="Submit" onPress={this.saveLpn} disabled={false} />
+          <Button title="Submit" size="100%" onPress={this.saveLpn} disabled={false} />
         </View>
       </ScrollView>
     );

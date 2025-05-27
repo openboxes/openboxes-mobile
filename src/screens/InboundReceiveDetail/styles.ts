@@ -33,7 +33,7 @@ export default StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 4,
     alignItems: 'center',
-    marginRight: 8
+    marginRight: Theme.spacing.small
   },
   chipDefaultText: {
     fontSize: 12,
@@ -64,8 +64,8 @@ export default StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 16,
-    paddingHorizontal: 16,
+    paddingVertical: Theme.spacing.small,
+    paddingHorizontal: Theme.spacing.medium,
     backgroundColor: '#fff'
   },
   itemView: {

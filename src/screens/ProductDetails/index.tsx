@@ -111,7 +111,7 @@ class ProductDetails extends React.Component<Props, State> {
 
   renderListItem = (item: any, index: any) => (
     <TouchableOpacity key={index} style={styles.itemView} onPress={() => this.navigateToDetails(item)}>
-      <Card>
+      <Card style={styles.cardContainer}>
         <Card.Content>
           <View style={styles.headerRow}>
             <Chip icon="pin" style={styles.chipDefault} textStyle={styles.chipText}>
@@ -120,7 +120,7 @@ class ProductDetails extends React.Component<Props, State> {
           </View>
           <Divider style={styles.contentDivider} />
 
-          <Subheading> {`Lot Number: ${item?.lotNumber || 'Default'}`} </Subheading>
+          <Subheading style={styles.subheading}> {`Lot Number: ${item?.lotNumber || 'Default'}`} </Subheading>
           <View style={styles.additionalInfoRow}>
             {item.quantityOnHand ? (
               <Chip icon="package-variant" style={styles.chipDefault} textStyle={styles.chipText}>
@@ -189,18 +189,20 @@ class ProductDetails extends React.Component<Props, State> {
               {[
                 { label: 'Product Code', value: vm.productCode || HYPHEN },
                 { label: 'Category', value: vm.category.name || HYPHEN },
-                { label: 'Product Type', value: vm.productType.name || HYPHEN },
+                { label: 'Product Type', value: vm.productType.name || 'Default' },
                 { label: 'Price Per Unit', value: String(vm.pricePerUnit) || HYPHEN }
               ].map((item) => (
                 <RowDetail key={item.label} label={item.label} value={item.value} />
               ))}
             </SectionCard>
 
-            <SectionCard title="Available Items">
-              {filteredItems.map((item, index) => {
-                return this.renderListItem(item, index);
-              })}
-            </SectionCard>
+            {filteredItems.length > 0 ? (
+              <SectionCard title="Available Items">
+                {filteredItems.map((item, index) => {
+                  return this.renderListItem(item, index);
+                })}
+              </SectionCard>
+            ) : null}
             <Button style={styles.printButton} title={'Print Barcode Label'} size="100%" onPress={this.handleClick} />
           </ScrollView>
         </View>

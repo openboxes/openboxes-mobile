@@ -78,15 +78,15 @@ const ProductSummary = () => {
       <Card key={index} style={LayoutStyle.listItemContainer} onPress={() => navigateToDetails(item)}>
         <Card.Content>
           <View style={styles.headerRow}>
-            <Chip style={styles.chipDefault} textStyle={styles.chipText}>
-              {`Code: ${item.productCode}`}
+            <Chip icon="barcode" style={styles.chipDefault} textStyle={styles.chipText}>
+              {item.productCode}
             </Chip>
           </View>
           <Divider style={styles.contentDivider} />
 
           <Subheading style={styles.subheading}> {item.productName} </Subheading>
           <View style={styles.additionalInfoRow}>
-            <Chip icon="package" style={styles.chipDefault} textStyle={styles.chipText}>
+            <Chip icon="package-variant" style={styles.chipDefault} textStyle={styles.chipText}>
               {`Quantity On Hand: ${item.quantityOnHand}`}
             </Chip>
           </View>

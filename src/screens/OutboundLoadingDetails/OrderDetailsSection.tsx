@@ -1,16 +1,15 @@
 import React from 'react';
 import { Text, View } from 'react-native';
 import { Chip, Divider, Subheading } from 'react-native-paper';
-import styles from '../OutboundStockDetails/styles';
-import { Shipment } from '../../data/container/Shipment';
+
 import { HYPHEN } from '../../constants';
+import { Shipment } from '../../data/container/Shipment';
+import styles from '../OutboundStockDetails/styles';
 
-interface Props {
-  shipment: Shipment | null;
-}
-
-const OrderDetailsSection = ({ shipment }: Props) => {
-  if (!shipment) return null;
+const OrderDetailsSection = ({ shipment }: { shipment: Shipment | null }) => {
+  if (!shipment) {
+    return null;
+  }
 
   return (
     <View style={styles.contentContainer}>
@@ -25,9 +24,7 @@ const OrderDetailsSection = ({ shipment }: Props) => {
 
       <Divider style={styles.contentDivider} />
 
-      <Subheading style={styles.destinationSubheading}>
-        Destination: {shipment.destination?.name ?? HYPHEN}
-      </Subheading>
+      <Subheading style={styles.destinationSubheading}>Destination: {shipment.destination?.name ?? HYPHEN}</Subheading>
 
       <View style={styles.additionalInfoRow}>
         <Chip icon="calendar" style={styles.chipDefault} textStyle={styles.chipDefaultText}>

@@ -57,7 +57,7 @@ const dashboardData = [
     navigationScreenName: 'CreateLpn'
   },
   {
-    screenName: 'Pending Transfers',
+    screenName: 'Transfers',
     icon: IconPendingTransfers,
     navigationScreenName: 'Transfers'
   },

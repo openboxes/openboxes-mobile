@@ -146,13 +146,13 @@ const Transfer = () => {
             {`Bin Location (From): ${item?.binLocation?.name ?? 'Default'}`}
           </Chip>
           <Chip icon="calendar" style={styles.chipDefault} textStyle={styles.chipText}>
-            {`Expiry Date: ${item?.inventoryItem?.expirationDate ?? 'Never'}`}
+            {`Expiry Date: ${item?.expirationDate ?? 'Never'}`}
           </Chip>
         </View>
         <Divider style={{ marginVertical: Theme.spacing.medium }} />
 
         <Subheading style={styles.subheading}>{`${item?.product.productCode} - ${item?.product.name}`}</Subheading>
-        <Caption style={styles.caption}>{`Lot Number: ${item?.inventoryItem?.lotNumber ?? 'Default'}`}</Caption>
+        <Caption style={styles.caption}>{`Lot Number: ${item?.lotNumber ?? 'Default'}`}</Caption>
 
         <View style={styles.additionalInfoRow}>
           <Chip icon="package" style={styles.chipDefault} textStyle={styles.chipText}>

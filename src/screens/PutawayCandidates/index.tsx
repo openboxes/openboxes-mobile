@@ -77,7 +77,7 @@ class PutawayCandidates extends Component<Props, State> {
           <Subheading style={styles.destinationSubheading}>
             {`${item['product.productCode']} - ${item['product.name']}`}
           </Subheading>
-          <Caption style={styles.caption}> {`Lot Number: ${item?.inventoryItem?.lotNumber ?? 'Default'}`}</Caption>
+          <Caption style={styles.caption}> {`Lot Number: ${item?.['inventoryItem.lotNumber'] ?? 'Default'}`}</Caption>
 
           <View style={styles.additionalInfoRow}>
             <Chip icon="calendar" style={styles.chipDefault} textStyle={styles.chipDefaultText}>

@@ -1,16 +1,19 @@
-import { DispatchProps, Props, State } from './types';
 import React from 'react';
-import { getOrdersAction } from '../../redux/actions/orders';
-import { FlatList, ListRenderItemInfo, Text, View } from 'react-native';
+import { FlatList, ListRenderItemInfo, View } from 'react-native';
+import { Caption, Card, Chip, Divider, Subheading } from 'react-native-paper';
 import { connect } from 'react-redux';
-import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
-import { RootState } from '../../redux/reducers';
-import styles from './styles';
-import EmptyView from '../../components/EmptyView';
-import { getStockTransfers } from '../../redux/actions/transfers';
-import showPopup from '../../components/Popup';
-import { Card } from 'react-native-paper';
+
 import { LayoutStyle } from '../../assets/styles';
+import EmptyView from '../../components/EmptyView';
+import showPopup from '../../components/Popup';
+import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
+import { getOrdersAction } from '../../redux/actions/orders';
+import { getStockTransfers } from '../../redux/actions/transfers';
+import { RootState } from '../../redux/reducers';
+import Theme from '../../utils/Theme';
+import styles from './styles';
+import { DispatchProps, Props, State } from './types';
+import { appConfig, DEFAULT_DATE_FORMAT_OPTIONS } from '../../constants';
 
 class Transfers extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -56,7 +59,9 @@ class Transfers extends React.Component<Props, State> {
             transfersList: data
           });
         } else {
-          const filteredList = data.filter((transferData) => transferData.status === 'APPROVED');
+          const filteredList = data.filter(
+            (transferData) => transferData.status === 'APPROVED' || transferData.status === 'PENDING'
+          );
 
           this.setState({
             error: null,
@@ -86,46 +91,49 @@ class Transfers extends React.Component<Props, State> {
 
   render() {
     const { transfersList } = this.state;
+
     return (
       <View style={styles.screenContainer}>
         {transfersList ? (
           <FlatList
             data={transfersList}
             ListEmptyComponent={<EmptyView title="Transfers" description="There are no items for Transfer" />}
-            renderItem={(item: ListRenderItemInfo<any>) => (
-              <Card style={LayoutStyle.listItemContainer} onPress={() => this.onStockTransfersTapped(item.item)}>
-                <Card.Content>
-                  <View style={styles.row}>
-                    <View style={styles.col50}>
-                      <Text style={styles.label}>Identify</Text>
-                      <Text style={styles.value}>{item.item?.orderNumber}</Text>
-                    </View>
-                    <View style={styles.col50}>
-                      <Text style={styles.label}>Status</Text>
-                      <Text style={styles.value}>{item.item?.status}</Text>
-                    </View>
-                  </View>
+            renderItem={(item: ListRenderItemInfo<any>) => {
+              const formattedDate = new Date(item.item?.dateCreated).toLocaleDateString(
+                appConfig.LOCALE,
+                DEFAULT_DATE_FORMAT_OPTIONS
+              );
 
-                  <View style={styles.row}>
-                    <View style={styles.col50}>
-                      <Text style={styles.label}>Origin</Text>
-                      <Text style={styles.value}>{item.item?.origin}</Text>
+              return (
+                <Card style={LayoutStyle.listItemContainer} onPress={() => this.onStockTransfersTapped(item.item)}>
+                  <Card.Content>
+                    <View style={styles.headerRow}>
+                      <Chip icon="identifier" style={styles.chipDefault} textStyle={styles.chipText}>
+                        {item.item?.orderNumber}
+                      </Chip>
+                      <Chip style={styles.chipDefault} textStyle={styles.chipText}>
+                        {item.item?.status}
+                      </Chip>
                     </View>
-                    <View style={styles.col50}>
-                      <Text style={styles.label}>Destination</Text>
-                      <Text style={styles.value}>{item.item?.destination}</Text>
-                    </View>
-                  </View>
+                    <Divider style={{ marginVertical: Theme.spacing.medium }} />
 
-                  <View style={styles.row}>
-                    <View style={styles.col50}>
-                      <Text style={styles.label}>Number of Items</Text>
-                      <Text style={styles.value}>{item.item?.orderItemsCount}</Text>
+                    <Subheading
+                      style={styles.subheading}
+                    >{`Number of Items: ${item.item?.orderItemsCount}`}</Subheading>
+                    <Caption style={styles.caption}>{`Created on: ${formattedDate}`}</Caption>
+
+                    <View style={styles.additionalInfoRow}>
+                      <Chip icon="truck" style={styles.chipDefault} textStyle={styles.chipText}>
+                        {item.item?.origin}
+                      </Chip>
+                      <Chip icon="map-marker-check" style={styles.chipDefault} textStyle={styles.chipText}>
+                        {item.item?.destination}
+                      </Chip>
                     </View>
-                  </View>
-                </Card.Content>
-              </Card>
-            )}
+                  </Card.Content>
+                </Card>
+              );
+            }}
             keyExtractor={(item) => item.id}
             style={styles.list}
           />

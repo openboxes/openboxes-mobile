@@ -3,7 +3,8 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { Image, View } from 'react-native';
 import { Caption, Card, Chip, Divider, Subheading } from 'react-native-paper';
-import DefaultProductImage from '../../assets/images/default-product.png';
+
+import DefaultProductIcon from '../../assets/images/icon_default_product.svg';
 import Button from '../../components/Button';
 import Theme from '../../utils/Theme';
 import styles from './styles';
@@ -29,7 +30,7 @@ const ViewAvailableItem = () => {
     });
   };
 
-  const source = route?.params?.imageUrl ? { uri: route?.params?.imageUrl } : DefaultProductImage;
+  const source = route?.params?.imageUrl && { uri: route?.params?.imageUrl };
 
   const navigateToTransfer = () => {
     navigation.navigate('Transfer', { item: availableItems });
@@ -40,12 +41,16 @@ const ViewAvailableItem = () => {
       <Card>
         <Card.Content>
           <View style={styles.headerRow}>
-            <Image
-              style={{ width: 36, height: 36, resizeMode: 'contain', marginRight: Theme.spacing.medium }}
-              source={source}
-            />
+            {source ? (
+              <Image
+                style={{ width: 36, height: 36, resizeMode: 'contain', marginRight: Theme.spacing.medium }}
+                source={source}
+              />
+            ) : (
+              <DefaultProductIcon />
+            )}
             <Chip icon="calendar" style={styles.chipDefault} textStyle={styles.chipText}>
-              {`Expiration Date: ${availableItems?.inventoryItem?.expirationDate ?? 'Never'}`}
+              {`Expiration Date: ${availableItems?.expirationDate ?? 'Never'}`}
             </Chip>
           </View>
           <Divider style={{ marginVertical: Theme.spacing.medium }} />
@@ -54,15 +59,18 @@ const ViewAvailableItem = () => {
             {`${availableItems?.product.productCode} - ${availableItems?.product.name}`}
           </Subheading>
           <Caption style={{ fontSize: 12, color: Theme.colors.text }}>
-            {`Lot Number: ${availableItems?.inventoryItem?.lotNumber ?? 'Default'}`}
+            {`Lot Number: ${availableItems?.lotNumber ?? 'Default'}`}
           </Caption>
 
           <View style={styles.additionalInfoRow}>
-            <Chip icon="package" style={styles.chipDefault} textStyle={styles.chipText}>
+            <Chip icon="pin" style={styles.chipDefault} textStyle={styles.chipText}>
               {`Location Name: ${availableItems?.binLocation?.name ?? 'Default'}`}
             </Chip>
+          </View>
+
+          <View style={styles.additionalInfoRow}>
             <Chip icon="package" style={styles.chipDefault} textStyle={styles.chipText}>
-              {`Location Type: ${availableItems?.binLocation?.locationType?.name ?? 'Never'}`}
+              {`Location Type: ${availableItems?.binLocation?.locationType?.name ?? 'Default'}`}
             </Chip>
           </View>
 

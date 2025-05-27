@@ -10,7 +10,7 @@ export default StyleSheet.create({
   rowItem: {
     flexDirection: 'row',
     borderColor: Theme.colors.background,
-    marginTop: 1,
+    marginTop: 4,
     width: '100%',
     alignItems: 'center',
     justifyContent: 'space-between'

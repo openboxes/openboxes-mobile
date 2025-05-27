@@ -26,7 +26,7 @@ class Index extends React.Component<Props, State> {
   }
 
   componentDidUpdate() {
-    if (this.props.route.params.refetchOrders) {
+    if (this.props?.route?.params?.refetchOrders) {
       this.searchOrders(null);
     }
   }

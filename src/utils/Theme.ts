@@ -11,7 +11,7 @@ export default {
   },
   colors: {
     ...DefaultTheme.colors,
-    primary: '#0052CC',
+    primary: '#20345c',
     warning: '#FCFFC1',
     danger: '#FF5630',
     success: '#22bb33',

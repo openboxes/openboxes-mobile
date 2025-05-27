@@ -19,7 +19,6 @@ import { DispatchProps, Props, SectionData, State } from './types';
 
 const UNPACKED_ITEMS_TITLE = 'Unpacked Items';
 
-// Shipment packing (Packing Order Details)
 class OutboundStockDetails extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
@@ -56,29 +55,30 @@ class OutboundStockDetails extends React.Component<Props, State> {
       containers = containers.filter(({ id: containerId }) => this.state.matchingContainerIds.includes(containerId));
     }
 
-
     let sections = containers
-    .map((container) => {
-      let shipmentItems = container.shipmentItems ?? [];
+      .map((container) => {
+        let shipmentItems = container.shipmentItems ?? [];
 
-      if (this.state.matchingShipmentItemIds.length > 0) {
-        shipmentItems = shipmentItems.filter(({ id: shipmentItemId }) =>
-          this.state.matchingShipmentItemIds.includes(shipmentItemId)
-        );
-      }
+        if (this.state.matchingShipmentItemIds.length > 0) {
+          shipmentItems = shipmentItems.filter(({ id: shipmentItemId }) =>
+            this.state.matchingShipmentItemIds.includes(shipmentItemId)
+          );
+        }
 
-      return {
-        title: container.name ?? UNPACKED_ITEMS_TITLE,
-        id: container.id,
-        data: shipmentItems,
-        shipmentNumber: this.state.shipment?.shipmentNumber,
-        status: container.status
-      };
-    })
-    .filter(({ data }) => data && data.length > 0);
-    
-    const unpacked = sections?.find(s => s.title === UNPACKED_ITEMS_TITLE);
-    const others = sections.filter(s => s.title !== UNPACKED_ITEMS_TITLE).sort((a, b) => a.title.localeCompare(b.title));
+        return {
+          title: container.name ? `Container Name: ${container.name}` : `Unpacked Items (${shipmentItems.length})`,
+          id: container.id,
+          data: shipmentItems,
+          shipmentNumber: this.state.shipment?.shipmentNumber,
+          status: container.status
+        };
+      })
+      .filter(({ data }) => data && data.length > 0);
+
+    const unpacked = sections?.find((s) => s.title === UNPACKED_ITEMS_TITLE);
+    const others = sections
+      .filter((s) => s.title !== UNPACKED_ITEMS_TITLE)
+      .sort((a, b) => a.title.localeCompare(b.title));
 
     return unpacked ? [unpacked, ...others] : others;
   }
@@ -179,7 +179,7 @@ class OutboundStockDetails extends React.Component<Props, State> {
 
   render() {
     const { shipment } = this.state;
-    
+
     return (
       <>
         <ScrollView style={styles.screenContainer}>
@@ -215,19 +215,24 @@ class OutboundStockDetails extends React.Component<Props, State> {
             </View>
           </View>
           <Divider />
-          <InputBox
-            style={styles.scanSearch}
-            value={this.state.scannedValue}
-            disabled={false}
-            editable={false}
-            label={'Search'}
-            onChange={this.onScanValueChange}
-          />
-          <ContainerDetails item={this.sectionData} />
+          <View style={styles.contentContainer}>
+            <InputBox
+              style={styles.scanSearch}
+              value={this.state.scannedValue}
+              disabled={false}
+              editable={false}
+              label="Search"
+              placeholder="Enter a lot number, item, or container"
+              onChange={this.onScanValueChange}
+            />
+            <ContainerDetails item={this.sectionData} />
+          </View>
         </ScrollView>
+        <Divider />
         <View style={styles.buttonBar}>
           <Button
             title={'Create LPN'}
+            size="100%"
             disabled={false}
             onPress={() => {
               this.props.navigation.navigate('CreateLpn', {

@@ -13,33 +13,57 @@ export default StyleSheet.create({
   },
   rowItem: {
     flexDirection: 'row',
-    borderColor: Theme.colors.background,
-    marginTop: 1,
-    padding: 2,
-    marginStart: 4,
-    width: '100%',
     alignItems: 'center'
   },
-  columnItem: {
-    display: 'flex',
-    flexDirection: 'column',
-    flex: 0,
-    width: '50%'
-  },
+
   label: {
     fontSize: 12,
     color: Theme.colors.placeholder
   },
   value: {
-    fontSize: 16,
-    color: Theme.colors.text,
-    width: '90%'
+    fontSize: 14,
+    color: Theme.colors.text
   },
   bottom: {
     alignSelf: 'center',
     justifyContent: 'center',
-    height: 55,
-    bottom: 8,
-    marginTop: 20
+    width: '100%',
+    backgroundColor: Theme.colors.surface,
+    paddingVertical: Theme.spacing.small,
+    paddingHorizontal: Theme.spacing.large
+  },
+  detailsContainer: {
+    backgroundColor: Theme.colors.surface,
+    padding: Theme.spacing.large
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%'
+  },
+  chipDefault: {
+    height: 28,
+    justifyContent: 'center',
+    borderRadius: Theme.spacing.small,
+    alignItems: 'center',
+    marginRight: Theme.spacing.small,
+    backgroundColor: Theme.colors.background
+  },
+  chipText: {
+    fontSize: 12,
+    color: Theme.colors.text
+  },
+  additionalInfoRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 8,
+    alignItems: 'center',
+    flexWrap: 'wrap'
+  },
+  caption: { fontSize: 12, color: Theme.colors.text },
+  subheading: { fontWeight: 'bold', fontSize: 16 },
+  dividerHorizontal: {
+    marginVertical: 8
   }
 });
