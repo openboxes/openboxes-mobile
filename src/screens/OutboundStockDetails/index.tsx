@@ -148,7 +148,8 @@ class OutboundStockDetails extends React.Component<Props, State> {
         (item: ShipmentItems) =>
           item.inventoryItem?.lotNumber?.toLowerCase().includes(searchTerm) ||
           item.lotNumber?.toLowerCase().includes(searchTerm) ||
-          item.inventoryItem?.product?.productCode?.toLowerCase()?.includes(searchTerm)
+          item.inventoryItem?.product?.productCode?.toLowerCase()?.includes(searchTerm) ||
+          item.inventoryItem?.product?.name?.toLowerCase()?.includes(searchTerm)
       ) || []
     );
   };
@@ -156,7 +157,7 @@ class OutboundStockDetails extends React.Component<Props, State> {
   findMatchingContainer = (input: string): Container[] => {
     const searchTerm = input.toLowerCase();
     return (
-      this.state.shipment?.availableContainers?.filter(
+      this.state.shipment?.containers?.filter(
         (container: Container) =>
           container.containerNumber?.toLowerCase()?.includes(searchTerm) ||
           container?.name?.toLowerCase().includes(searchTerm)
