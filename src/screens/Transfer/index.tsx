@@ -99,15 +99,15 @@ const Transfer = () => {
       status: 'COMPLETED',
       stockTransferNumber: '',
       description: '',
-      'origin': location.id,
-      'destination': location.id,
+      'origin.id': location.id,
+      'destination.id': location.id,
       stockTransferItems: [
         {
-          'productId': item.product.id,
-          'inventoryItemId': item['inventoryItem.id'],
-          'locationId': location.id,
-          'originBinLocationId': item?.binLocation?.id,
-          'destinationBinLocationId': binToLocationData.id,
+          product: { id: item.product.id },
+          inventoryItem: { id: item['inventoryItem.id'] },
+          location: { id: location.id },
+          originBinLocation: { id: item?.binLocation?.id },
+          destinationBinLocation: { id: binToLocationData.id },
           quantity: quantity
         }
       ]
@@ -129,13 +129,10 @@ const Transfer = () => {
       } else {
         const product = { id: item.product.productCode };
         ToastAndroid.show('Transferred item successfully!', ToastAndroid.SHORT);
-        setTimeout(() => {
-          dispatch(hideScreenLoading());
-          navigation.navigate('ProductDetails', {
-            product,
-            refetchProduct: true
-          });
-        }, 1000);
+        navigation.navigate('ProductDetails', {
+          product,
+          refetchProduct: true
+        });
       }
     };
 

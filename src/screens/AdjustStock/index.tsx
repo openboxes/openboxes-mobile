@@ -148,15 +148,11 @@ const AdjustStock = () => {
       } else {
         if (data && Object.keys(data).length !== 0) {
           ToastAndroid.show('Stock adjustment saved successfully', ToastAndroid.SHORT);
-          setTimeout(() => {
-            dispatch(hideScreenLoading());
-            navigation.navigate('ProductDetails', {
-              product: item.product,
-              refetchProduct: true
-            });
-
-            route?.params?.onSelect(data?.data[0]);
-          }, 1000);
+          navigation.navigate('ProductDetails', {
+            product: item.product,
+            refetchProduct: true
+          });
+          route?.params?.onSelect(data?.data[0]);
         }
       }
     };
