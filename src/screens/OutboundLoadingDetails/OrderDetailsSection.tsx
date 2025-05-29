@@ -4,12 +4,16 @@ import { Chip, Divider, Subheading } from 'react-native-paper';
 
 import { HYPHEN } from '../../constants';
 import { Shipment } from '../../data/container/Shipment';
+import { parseDateToISODate, parseFromISODateToLocaleString } from '../../utils/utils';
 import styles from '../OutboundStockDetails/styles';
 
 const OrderDetailsSection = ({ shipment }: { shipment: Shipment | null }) => {
   if (!shipment) {
     return null;
   }
+
+  const parsedExpectedShippingDate = parseDateToISODate(shipment?.expectedShippingDate || '');
+  const formattedExpectedShippingDate = parseFromISODateToLocaleString(parsedExpectedShippingDate);
 
   return (
     <View style={styles.contentContainer}>
@@ -28,7 +32,7 @@ const OrderDetailsSection = ({ shipment }: { shipment: Shipment | null }) => {
 
       <View style={styles.additionalInfoRow}>
         <Chip icon="calendar" style={styles.chipDefault} textStyle={styles.chipDefaultText}>
-          Expected Shipping: {shipment.expectedShippingDate ?? HYPHEN}
+          Expected Shipping: {formattedExpectedShippingDate}
         </Chip>
       </View>
 

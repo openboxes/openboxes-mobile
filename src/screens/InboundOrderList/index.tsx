@@ -11,10 +11,9 @@ import { LayoutStyle } from '../../assets/styles';
 import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSearchHeader';
 import EmptyView from '../../components/EmptyView';
 import showPopup from '../../components/Popup';
-import { appConfig, DEFAULT_DATE_FORMAT_OPTIONS } from '../../constants';
 import { fetchInboundOrderList } from '../../redux/actions/inboundorder';
 import { RootState } from '../../redux/reducers';
-import { parseDateToISODate } from '../../utils/utils';
+import { parseDateToISODate, parseFromISODateToLocaleString } from '../../utils/utils';
 import styles from './styles';
 
 const InboundOrderList = () => {
@@ -82,10 +81,8 @@ const InboundOrderList = () => {
   };
 
   const RenderListItem = ({ item, index }: any): JSX.Element => {
-    const dueDate = parseDateToISODate(item.expectedDeliveryDate);
-    const formattedDueDate = dueDate
-      ? dueDate.toLocaleDateString(appConfig.LOCALE, DEFAULT_DATE_FORMAT_OPTIONS)
-      : 'Invalid date';
+    const dueDate = parseDateToISODate(item?.expectedDeliveryDate || '');
+    const formattedDueDate = parseFromISODateToLocaleString(dueDate);
 
     return (
       <Card style={LayoutStyle.listItemContainer} key={index} onPress={() => navigateToInboundDetails(item)}>

@@ -5,8 +5,7 @@ import { SectionList, Text, View } from 'react-native';
 import { Card, Chip, Divider, Subheading } from 'react-native-paper';
 
 import { LayoutStyle } from '../../assets/styles';
-import { appConfig, DEFAULT_DATE_FORMAT_OPTIONS } from '../../constants';
-import { parseDateToISODate } from '../../utils/utils';
+import { parseDateToISODate, parseFromISODateToLocaleString } from '../../utils/utils';
 import styles from './styles';
 import InboundDetailProps from './types';
 
@@ -31,10 +30,8 @@ const InboundOrderContainer = ({ data, shipmentId, shipmentData }: InboundDetail
   };
 
   const renderShipmentItem = (): JSX.Element => {
-    const dueDate = parseDateToISODate(shipmentData.expectedDeliveryDate);
-    const formattedDueDate = dueDate
-      ? dueDate.toLocaleDateString(appConfig.LOCALE, DEFAULT_DATE_FORMAT_OPTIONS)
-      : 'Invalid date';
+    const dueDate = parseDateToISODate(shipmentData?.expectedDeliveryDate || '');
+    const formattedDueDate = parseFromISODateToLocaleString(dueDate);
 
     return (
       <View>

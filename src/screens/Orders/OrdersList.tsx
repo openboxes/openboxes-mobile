@@ -7,6 +7,7 @@ import EmptyView from '../../components/EmptyView';
 import { HYPHEN } from '../../constants';
 import { Order } from '../../data/order/Order';
 import Theme from '../../utils/Theme';
+import { parseDateToISODate, parseFromISODateToLocaleString } from '../../utils/utils';
 
 export interface Props {
   orders: Order[] | null;
@@ -26,6 +27,9 @@ export default function OrdersList(props: Props) {
 }
 
 function renderOrder(order: Order, onOrderTapped: () => void): ReactElement {
+  const parsedExpectedShippingDate = parseDateToISODate(order?.expectedShippingDate || '');
+  const formattedExpectedShippingDate = parseFromISODateToLocaleString(parsedExpectedShippingDate);
+
   return (
     <Card style={LayoutStyle.listItemContainer} onPress={() => onOrderTapped()}>
       <Card.Content>
@@ -42,7 +46,7 @@ function renderOrder(order: Order, onOrderTapped: () => void): ReactElement {
         <Subheading style={styles.subheading}> {`Destination: ${order.destination?.name}`} </Subheading>
         <View style={styles.additionalInfoRow}>
           <Chip icon="calendar" style={styles.chipDefault} textStyle={styles.chipDefaultText}>
-            {`Expected Shipping: ${order.expectedShippingDate}`}
+            {`Expected Shipping: ${formattedExpectedShippingDate}`}
           </Chip>
         </View>
         <Divider style={styles.dividerHorizontal} />

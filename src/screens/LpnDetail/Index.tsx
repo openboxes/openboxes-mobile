@@ -1,17 +1,18 @@
 import React from 'react';
-import { DispatchProps, Props } from './Types';
-import { Container } from '../../data/container/Container';
-import { FlatList, ListRenderItemInfo, ScrollView, Text, Image, TouchableOpacity, View } from 'react-native';
-import { ContainerShipmentItem } from '../../data/container/ContainerShipmentItem';
-import { fetchContainer, getContainer, updateContainerStatus } from '../../redux/actions/lpn';
+import { FlatList, Image, ListRenderItemInfo, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Caption, Card, Chip, Divider, Subheading } from 'react-native-paper';
+import SelectDropdown from 'react-native-select-dropdown';
 import { connect } from 'react-redux';
-import styles from './styles';
 import Button from '../../components/Button';
+import EmptyView from '../../components/EmptyView';
 import showPopup from '../../components/Popup';
 import PrintModal from '../../components/PrintModal';
-import EmptyView from '../../components/EmptyView';
-import SelectDropdown from 'react-native-select-dropdown';
-import { Card } from 'react-native-paper';
+import { HYPHEN } from '../../constants';
+import { Container } from '../../data/container/Container';
+import { ContainerShipmentItem } from '../../data/container/ContainerShipmentItem';
+import { fetchContainer, getContainer, updateContainerStatus } from '../../redux/actions/lpn';
+import styles from './styles';
+import { DispatchProps, Props } from './Types';
 
 const containerStatuses = ['OPEN', 'PACKING', 'PACKED', 'LOADING', 'LOADED', 'MISSING'];
 
@@ -130,97 +131,90 @@ class LpnDetail extends React.Component<Props, State> {
   render() {
     return (
       <ScrollView style={styles.contentContainer}>
-        <View>
-          <View style={styles.row}>
-            <View style={styles.col50}>
-              <Text style={styles.label}>Name</Text>
-              <Text style={styles.value}>{this.state.container?.name}</Text>
-            </View>
-            <View style={styles.col50}>
-              <Text style={styles.label}>Container Number</Text>
-              <Text style={styles.value}>{this.state.container?.containerNumber}</Text>
-            </View>
+        <View style={styles.lpnDetailsContainer}>
+          <View style={styles.headerRow}>
+            <Chip icon="barcode" style={styles.chipDefault} textStyle={styles.chipText}>
+              {`Container Number: ${this.state.container?.containerNumber || HYPHEN}`}
+            </Chip>
+            <Chip icon="package" style={styles.chipDefault} textStyle={styles.chipText}>
+              {`Number of Items: ${this.state.container?.shipmentItems?.length ?? HYPHEN}`}
+            </Chip>
           </View>
-          <View style={styles.row}>
-            <View style={styles.col50}>
-              <Text style={styles.label}>Container Type</Text>
-              <Text style={styles.value}>{this.state.container?.containerType?.name}</Text>
-            </View>
-            <View style={styles.col50}>
-              <Text style={styles.label}>Number of Items</Text>
-              <Text style={styles.value}>{this.state.container?.shipmentItems?.length}</Text>
-            </View>
+
+          <Divider style={styles.contentDivider} />
+
+          <Subheading style={styles.subheading}>
+            {`Container Name: ${this.state.container?.containerNumber}`}
+          </Subheading>
+          <Caption style={styles.caption}> {`Container Type: ${this.state.container?.containerType?.name}`} </Caption>
+
+          <View style={styles.additionalInfoRow}>
+            <Chip icon="package" style={styles.chipDefault} textStyle={styles.chipText}>
+              {`Number of Items: ${this.state.container?.shipmentItems?.length ?? HYPHEN}`}
+            </Chip>
           </View>
-          <View style={styles.row} />
-            <View style={styles.col100}>
-              <Text style={styles.label}>Status</Text>
-              <SelectDropdown
-                data={containerStatuses}
-                defaultValue={this.props.route.params.status}
-                renderDropdownIcon={renderIcon}
-                buttonStyle={styles.select}
-                buttonTextAfterSelection={(selectedItem, index) => selectedItem}
-                rowTextForSelection={(item, index) => item}
-                onSelect={(selectedItem, index) => {
-                  const { id } = this.props.route.params;
-                  this.updateContainerStatus(id, selectedItem);
-                }}
-              />
-            </View>
-          </View>
-          <View style={styles.row}>
-            <View style={styles.col100}>
-              <Text style={styles.label}>{'Items'}</Text>
-            </View>
-          </View>
-          <View style={styles.row}>
-            <View style={styles.col100}>
-              <FlatList
-                data={this.state.container?.shipmentItems}
-                ListEmptyComponent={<EmptyView title="LPN Details" description="There are no items" isRefresh={false} />}
-                renderItem={(shipmentItem: ListRenderItemInfo<ContainerShipmentItem>) => (
-                  <TouchableOpacity style={styles.listItemContainer} onPress={() => this.onTapped(shipmentItem)}>
-                    <Card >
-                      <Card.Content>
-                        <View style={styles.row}>
-                          <View style={styles.col50}>
-                            <Text style={styles.label}>Product Code</Text>
-                            <Text style={styles.value}>{shipmentItem.item?.inventoryItem?.product?.productCode}</Text>
-                          </View>
-                          <View style={styles.col50}>
-                            <Text style={styles.label}>Product</Text>
-                            <Text style={styles.value}>{shipmentItem.item?.inventoryItem?.product?.name}</Text>
-                          </View>
-                        </View>
-                        <View style={styles.row}>
-                          <View style={styles.col50}>
-                            <Text style={styles.label}>Shipment Number</Text>
-                            <Text style={styles.value}>{shipmentItem.item.shipment.shipmentNumber}</Text>
-                          </View>
-                          <View style={styles.col50}>
-                            <Text style={styles.label}>Quantity</Text>
-                            <Text style={styles.value}>{shipmentItem.item.quantity}</Text>
-                          </View>
-                        </View>
-                      </Card.Content>
-                    </Card>
-                  </TouchableOpacity>
-                )}
-                keyExtractor={(item) => item.id}
-                style={styles.list}
-              />
-            </View>
-          </View>
-          <View style={styles.bottom}>
-            <Button title={'Print Barcode Label'} disabled={false} onPress={this.handleClick} />
-          </View>
-          <PrintModal
-            visible={this.state.visible}
-            closeModal={this.closeModal}
-            type={'containers'}
-            product={this.state.containerDetails?.product}
-            defaultBarcodeLabelUrl={this.state.containerDetails?.defaultBarcodeLabelUrl}
+        </View>
+        <Divider />
+        <View style={styles.containerDetails}>
+          <Text style={styles.label}>Status</Text>
+          <SelectDropdown
+            data={containerStatuses}
+            defaultValue={this.props.route.params.status}
+            renderDropdownIcon={renderIcon}
+            buttonStyle={styles.select}
+            buttonTextAfterSelection={(selectedItem) => selectedItem}
+            rowTextForSelection={(item) => item}
+            onSelect={(selectedItem) => {
+              const { id } = this.props.route.params;
+              this.updateContainerStatus(id, selectedItem);
+            }}
           />
+          <FlatList
+            data={this.state.container?.shipmentItems}
+            ListEmptyComponent={<EmptyView title="LPN Details" description="There are no items" isRefresh={false} />}
+            renderItem={(shipmentItem: ListRenderItemInfo<ContainerShipmentItem>) => (
+              <TouchableOpacity style={styles.listItemContainer} onPress={() => this.onTapped(shipmentItem)}>
+                <Card>
+                  <Card.Content>
+                    <View style={styles.row}>
+                      <View style={styles.col50}>
+                        <Text style={styles.label}>Product Code</Text>
+                        <Text style={styles.value}>{shipmentItem.item?.inventoryItem?.product?.productCode}</Text>
+                      </View>
+                      <View style={styles.col50}>
+                        <Text style={styles.label}>Product</Text>
+                        <Text style={styles.value}>{shipmentItem.item?.inventoryItem?.product?.name}</Text>
+                      </View>
+                    </View>
+                    <View style={styles.row}>
+                      <View style={styles.col50}>
+                        <Text style={styles.label}>Shipment Number</Text>
+                        <Text style={styles.value}>{shipmentItem.item.shipment.shipmentNumber}</Text>
+                      </View>
+                      <View style={styles.col50}>
+                        <Text style={styles.label}>Quantity</Text>
+                        <Text style={styles.value}>{shipmentItem.item.quantity}</Text>
+                      </View>
+                    </View>
+                  </Card.Content>
+                </Card>
+              </TouchableOpacity>
+            )}
+            keyExtractor={(item) => item.id}
+            style={styles.list}
+          />
+          <View style={styles.bottom}>
+            <Button size="100%" title={'Print Barcode Label'} disabled={false} onPress={this.handleClick} />
+          </View>
+        </View>
+
+        <PrintModal
+          visible={this.state.visible}
+          closeModal={this.closeModal}
+          type={'containers'}
+          product={this.state.containerDetails?.product}
+          defaultBarcodeLabelUrl={this.state.containerDetails?.defaultBarcodeLabelUrl}
+        />
       </ScrollView>
     );
   }

@@ -1,13 +1,12 @@
 import { StyleSheet } from 'react-native';
-import Theme from '../../utils/Theme';
 import { ratio } from '../../constants';
+import Theme from '../../utils/Theme';
 
 export default StyleSheet.create({
   contentContainer: {
     display: 'flex',
     flex: 1,
-    flexDirection: 'column',
-    padding: 8
+    flexDirection: 'column'
   },
   bottom: {
     width: '100%',
@@ -101,5 +100,43 @@ export default StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 5,
     marginTop: 10
+  },
+  lpnDetailsContainer: {
+    padding: Theme.spacing.large,
+    backgroundColor: Theme.colors.surface
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: Theme.spacing.small / 2
+  },
+  chipDefault: {
+    height: 24,
+    justifyContent: 'center',
+    borderRadius: 4,
+    alignItems: 'center',
+    marginRight: 8,
+    backgroundColor: Theme.colors.background
+  },
+  chipText: {
+    fontSize: 12,
+    color: Theme.colors.text
+  },
+  contentDivider: {
+    marginVertical: Theme.spacing.small
+  },
+  caption: { fontSize: 12, color: Theme.colors.text },
+  subheading: { fontWeight: 'bold', fontSize: 16 },
+  additionalInfoRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: Theme.spacing.small,
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    marginBottom: Theme.spacing.large
+  },
+  containerDetails: {
+    padding: Theme.spacing.large
   }
 });

@@ -11,9 +11,10 @@ import PickList from '../../data/picklist/PickList';
 import { PicklistItem } from '../../data/picklist/PicklistItem';
 import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
 import { getPickListAction } from '../../redux/actions/orders';
-import styles from './styles';
+import { parseDateToISODate, parseFromISODateToLocaleString } from '../../utils/utils';
 import PickOrderItem from '../PickList';
 import { orderDetailsVMMapper } from './OrderDetailsVMMapper';
+import styles from './styles';
 import { Props } from './types';
 
 const OrderDetails: React.FC<Props> = (props) => {
@@ -102,6 +103,9 @@ const OrderDetails: React.FC<Props> = (props) => {
     packingLocation
   } = orderDetailsVMMapper(props.route?.params);
 
+  const parsedExpectedShippingDate = parseDateToISODate(expectedShippingDate);
+  const formattedExpectedShippingDate = parseFromISODateToLocaleString(parsedExpectedShippingDate);
+
   const statusMessage = _.get(pickList, 'statusMessage', '0');
 
   return (
@@ -123,7 +127,7 @@ const OrderDetails: React.FC<Props> = (props) => {
 
         <View style={styles.additionalInfoRow}>
           <Chip icon="calendar" style={styles.chipDefault} textStyle={styles.chipDefaultText}>
-            {`Expected Shipping: ${expectedShippingDate}`}
+            {`Expected Shipping: ${formattedExpectedShippingDate}`}
           </Chip>
         </View>
       </ContentHeader>

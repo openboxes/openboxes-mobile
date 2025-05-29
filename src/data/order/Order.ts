@@ -9,8 +9,8 @@ export interface Order {
   description?: string | null;
   identifier?: string | null;
   statusCode?: string | null;
-  requestedDeliveryDate?: Date | null;
-  expectedShippingDate?: Date | null;
+  requestedDeliveryDate?: string;
+  expectedShippingDate?: string;
   origin: Location | null;
   destination: Location | null;
   picklist: PicklistItem | null;

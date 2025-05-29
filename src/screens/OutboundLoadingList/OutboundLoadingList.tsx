@@ -1,20 +1,22 @@
-import { DispatchProps, Props, State } from '../OutboundStockList/types';
+import _ from 'lodash';
 import React from 'react';
-import { View, FlatList, ListRenderItemInfo, Text } from 'react-native';
-import { connect } from 'react-redux';
-import { showScreenLoading, hideScreenLoading } from '../../redux/actions/main';
-import { RootState } from '../../redux/reducers';
-import styles from '../OutboundStockList/styles';
-import { getShipmentsReadyToBePacked } from '../../redux/actions/packing';
-import { Shipment } from '../../data/container/Shipment';
-import showPopup from '../../components/Popup';
-import EmptyView from '../../components/EmptyView';
+import { FlatList, ListRenderItemInfo, Text, View } from 'react-native';
 import { Card, Chip, Divider, Subheading } from 'react-native-paper';
+import { connect } from 'react-redux';
+
 import { LayoutStyle } from '../../assets/styles';
 import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSearchHeader';
-import _ from 'lodash';
-import { Container } from '../../data/container/Container';
+import EmptyView from '../../components/EmptyView';
+import showPopup from '../../components/Popup';
 import { HYPHEN } from '../../constants';
+import { Container } from '../../data/container/Container';
+import { Shipment } from '../../data/container/Shipment';
+import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
+import { getShipmentsReadyToBePacked } from '../../redux/actions/packing';
+import { RootState } from '../../redux/reducers';
+import { parseDateToISODate, parseFromISODateToLocaleString } from '../../utils/utils';
+import styles from '../OutboundStockList/styles';
+import { DispatchProps, Props, State } from '../OutboundStockList/types';
 
 // List of shipments ready for loading
 class OutboundLoadingList extends React.Component<Props, State> {
@@ -82,14 +84,15 @@ class OutboundLoadingList extends React.Component<Props, State> {
   filterShipments = (searchTerm: string) => {
     if (searchTerm) {
       // Find exact match by LPN
-      const exactShipmentByLPN = _.find(this.state.shipments, (shipment: Shipment) => _.find(
-        shipment?.containers,
-        (container: Container) => container.containerNumber === searchTerm
-      ));
+      const exactShipmentByLPN = _.find(this.state.shipments, (shipment: Shipment) =>
+        _.find(shipment?.containers, (container: Container) => container.containerNumber === searchTerm)
+      );
 
       if (exactShipmentByLPN) {
-        const exactContainer = _.find(exactShipmentByLPN?.containers, (container: Container) =>
-          container.containerNumber === searchTerm);
+        const exactContainer = _.find(
+          exactShipmentByLPN?.containers,
+          (container: Container) => container.containerNumber === searchTerm
+        );
 
         this.resetFiltering();
         this.showLoadingLPNScreen(exactShipmentByLPN, exactContainer);
@@ -148,45 +151,50 @@ class OutboundLoadingList extends React.Component<Props, State> {
             ListEmptyComponent={
               <EmptyView title="Loading" description=" There are no items to load" isRefresh={false} />
             }
-            renderItem={(shipment: ListRenderItemInfo<Shipment>) => (
-              <Card
-                style={LayoutStyle.listItemContainer}
-                onPress={() => this.showLoadingDetailsScreen(shipment.item)}
-              >
-                <Card.Content>
-                  <View style={styles.headerRow}>
-                    <View style={styles.dividedValues}>
-                      <Text style={styles.value}>{shipment.item.shipmentNumber}</Text>
-                    </View>
-                    <Chip style={styles.chipWarning} textStyle={styles.chipWarningText}>
-                      {shipment.item.status}
-                    </Chip>
-                  </View>
-                  <Divider style={styles.dividerHorizontal} />
+            renderItem={(shipment: ListRenderItemInfo<Shipment>) => {
+              const parsedExpectedShippingDate = parseDateToISODate(shipment?.item?.expectedShippingDate || '');
+              const formattedExpectedShippingDate = parseFromISODateToLocaleString(parsedExpectedShippingDate);
 
-                  <Subheading style={styles.subheading}>
-                    {`Destination: ${shipment.item?.destination?.name}`}
-                  </Subheading>
-                  <View style={styles.additionalInfoRow}>
-                    <Chip icon="calendar" style={styles.chipDefault} textStyle={styles.chipDefaultText}>
-                      {`Expected Shipping: ${shipment.item.expectedShippingDate}`}
-                    </Chip>
-                  </View>
-                  <Divider style={styles.dividerHorizontal} />
+              return (
+                <Card
+                  style={LayoutStyle.listItemContainer}
+                  onPress={() => this.showLoadingDetailsScreen(shipment.item)}
+                >
+                  <Card.Content>
+                    <View style={styles.headerRow}>
+                      <View style={styles.dividedValues}>
+                        <Text style={styles.value}>{shipment.item.shipmentNumber}</Text>
+                      </View>
+                      <Chip style={styles.chipWarning} textStyle={styles.chipWarningText}>
+                        {shipment.item.status}
+                      </Chip>
+                    </View>
+                    <Divider style={styles.dividerHorizontal} />
 
-                  <View style={styles.rowItem}>
-                    <View style={styles.columnItem}>
-                      <Text style={styles.label}>Loading Location</Text>
-                      <Text style={styles.value}>{shipment.item.loadingLocation ?? HYPHEN}</Text>
+                    <Subheading style={styles.subheading}>
+                      {`Destination: ${shipment.item?.destination?.name}`}
+                    </Subheading>
+                    <View style={styles.additionalInfoRow}>
+                      <Chip icon="calendar" style={styles.chipDefault} textStyle={styles.chipDefaultText}>
+                        {`Expected Shipping: ${formattedExpectedShippingDate}`}
+                      </Chip>
                     </View>
-                    <View style={styles.columnItem}>
-                      <Text style={styles.label}>Expected Delivery Date</Text>
-                      <Text style={styles.value}>{shipment.item.expectedDeliveryDate ?? HYPHEN}</Text>
+                    <Divider style={styles.dividerHorizontal} />
+
+                    <View style={styles.rowItem}>
+                      <View style={styles.columnItem}>
+                        <Text style={styles.label}>Loading Location</Text>
+                        <Text style={styles.value}>{shipment.item.loadingLocation ?? HYPHEN}</Text>
+                      </View>
+                      <View style={styles.columnItem}>
+                        <Text style={styles.label}>Expected Delivery Date</Text>
+                        <Text style={styles.value}>{shipment.item.expectedDeliveryDate ?? HYPHEN}</Text>
+                      </View>
                     </View>
-                  </View>
-                </Card.Content>
-              </Card>
-            )}
+                  </Card.Content>
+                </Card>
+              );
+            }}
             keyExtractor={(item) => item.id}
             style={styles.list}
           />

@@ -13,6 +13,7 @@ import ShipmentItems from '../../data/inbound/ShipmentItems';
 import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
 import { getShipment } from '../../redux/actions/packing';
 import { RootState } from '../../redux/reducers';
+import { parseDateToISODate, parseFromISODateToLocaleString } from '../../utils/utils';
 import ContainerDetails from './ContainerDetails';
 import styles from './styles';
 import { DispatchProps, Props, SectionData, State } from './types';
@@ -180,9 +181,12 @@ class OutboundStockDetails extends React.Component<Props, State> {
   render() {
     const { shipment } = this.state;
 
+    const parsedExpectedShippingDate = parseDateToISODate(shipment?.expectedShippingDate || '');
+    const formattedExpectedShippingDate = parseFromISODateToLocaleString(parsedExpectedShippingDate);
+
     return (
       <>
-        <ScrollView style={styles.screenContainer}>
+        <ScrollView>
           <View style={styles.contentContainer}>
             <View style={styles.headerRow}>
               <View style={styles.identifierContainer}>
@@ -198,7 +202,7 @@ class OutboundStockDetails extends React.Component<Props, State> {
 
             <View style={styles.additionalInfoRow}>
               <Chip icon="calendar" style={styles.chipDefault} textStyle={styles.chipDefaultText}>
-                {`Expected Shipping: ${shipment?.expectedShippingDate}`}
+                {`Expected Shipping: ${formattedExpectedShippingDate}`}
               </Chip>
             </View>
 

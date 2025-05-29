@@ -15,6 +15,7 @@ import ShipmentItems from '../../data/inbound/ShipmentItems';
 import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
 import { getShipmentsReadyToBePacked } from '../../redux/actions/packing';
 import { RootState } from '../../redux/reducers';
+import { parseDateToISODate, parseFromISODateToLocaleString } from '../../utils/utils';
 import styles from './styles';
 import { DispatchProps, Props, State } from './types';
 
@@ -163,46 +164,51 @@ class OutboundStockList extends React.Component<Props, State> {
             ListEmptyComponent={
               <EmptyView title="Packing" description=" There are no items to pack" isRefresh={false} />
             }
-            renderItem={(shipment: ListRenderItemInfo<Shipment>) => (
-              <Card
-                style={LayoutStyle.listItemContainer}
-                onPress={() => this.showShipmentReadyToPackScreen(shipment.item)}
-              >
-                <Card.Content>
-                  <View style={styles.headerRow}>
-                    <View style={styles.dividedValues}>
-                      <Text style={styles.value}>{shipment.item.shipmentNumber}</Text>
-                    </View>
-                    <Chip style={styles.chipWarning} textStyle={styles.chipWarningText}>
-                      {shipment.item.status}
-                    </Chip>
-                  </View>
-                  <Divider style={styles.dividerHorizontal} />
+            renderItem={(shipment: ListRenderItemInfo<Shipment>) => {
+              const parsedExpectedShippingDate = parseDateToISODate(shipment.item?.expectedShippingDate || '');
+              const formattedExpectedShippingDate = parseFromISODateToLocaleString(parsedExpectedShippingDate);
 
-                  <Subheading style={styles.subheading}>
-                    {`Destination: ${shipment.item?.destination?.name}`}
-                  </Subheading>
-                  <View style={styles.additionalInfoRow}>
-                    <Chip icon="calendar" style={styles.chipDefault} textStyle={styles.chipDefaultText}>
-                      {`Expected Shipping: ${shipment.item.expectedShippingDate}`}
-                    </Chip>
-                  </View>
-                  <Divider style={styles.dividerHorizontal} />
-
-                  <View style={styles.rowItem}>
-                    <View style={styles.columnItem}>
-                      <Text style={styles.label}>Packing Location</Text>
-                      <Text style={styles.value}>{shipment.item.packingLocation ?? HYPHEN}</Text>
+              return (
+                <Card
+                  style={LayoutStyle.listItemContainer}
+                  onPress={() => this.showShipmentReadyToPackScreen(shipment.item)}
+                >
+                  <Card.Content>
+                    <View style={styles.headerRow}>
+                      <View style={styles.dividedValues}>
+                        <Text style={styles.value}>{shipment.item.shipmentNumber}</Text>
+                      </View>
+                      <Chip style={styles.chipWarning} textStyle={styles.chipWarningText}>
+                        {shipment.item.status}
+                      </Chip>
                     </View>
+                    <Divider style={styles.dividerHorizontal} />
 
-                    <View style={styles.columnItem}>
-                      <Text style={styles.label}>Loading Location</Text>
-                      <Text style={styles.value}>{shipment.item.loadingLocation ?? HYPHEN}</Text>
+                    <Subheading style={styles.subheading}>
+                      {`Destination: ${shipment.item?.destination?.name}`}
+                    </Subheading>
+                    <View style={styles.additionalInfoRow}>
+                      <Chip icon="calendar" style={styles.chipDefault} textStyle={styles.chipDefaultText}>
+                        {`Expected Shipping: ${formattedExpectedShippingDate}`}
+                      </Chip>
                     </View>
-                  </View>
-                </Card.Content>
-              </Card>
-            )}
+                    <Divider style={styles.dividerHorizontal} />
+
+                    <View style={styles.rowItem}>
+                      <View style={styles.columnItem}>
+                        <Text style={styles.label}>Packing Location</Text>
+                        <Text style={styles.value}>{shipment.item.packingLocation ?? HYPHEN}</Text>
+                      </View>
+
+                      <View style={styles.columnItem}>
+                        <Text style={styles.label}>Loading Location</Text>
+                        <Text style={styles.value}>{shipment.item.loadingLocation ?? HYPHEN}</Text>
+                      </View>
+                    </View>
+                  </Card.Content>
+                </Card>
+              );
+            }}
             keyExtractor={(item) => item.id}
             style={styles.list}
           />
