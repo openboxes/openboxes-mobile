@@ -122,10 +122,10 @@ const AdjustStock = () => {
       'product.id': item.product.id,
       'inventoryItem': item?.['inventoryItem.id'] ?? '',
       'binLocation': item?.binLocation?.id ?? '',
-      quantityAvailable: item.quantityAvailable,
+      currentQuantity: item.quantityAvailable,
       reasonCode: reasonCode ?? 'CORRECTION',
-      quantityAdjusted: quantityAdjusted,
-      comments: comments
+      newQuantity: quantityAdjusted,
+      comment: comments
     };
 
     submitStockAdjustments(request);
