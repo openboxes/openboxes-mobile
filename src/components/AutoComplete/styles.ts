@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import Theme from '../../utils/Theme';
 
 export default StyleSheet.create({
   autoCompleteView: {
@@ -12,9 +13,6 @@ export default StyleSheet.create({
     borderColor: 'grey'
   },
   input: {
-    flex: 1,
-    marginTop: 5,
-    height: 40,
     borderColor: 'grey'
   },
   menuItem: {
@@ -26,10 +24,10 @@ export default StyleSheet.create({
   },
   imageIcon: {
     position: 'absolute',
-    end: 10,
+    end: Theme.spacing.medium,
     width: 30,
     height: 30,
-    bottom: -7,
+    bottom: 12,
     padding: 10,
     justifyContent: 'center',
     alignItems: 'center',

@@ -20,7 +20,7 @@ export default StyleSheet.create({
   chipWarning: {
     height: 24,
     justifyContent: 'center',
-    borderRadius: 4,
+    borderRadius: Theme.roundness,
     alignItems: 'center',
     backgroundColor: Theme.colors.warning
   },
@@ -31,7 +31,7 @@ export default StyleSheet.create({
   chipDefault: {
     height: 24,
     justifyContent: 'center',
-    borderRadius: 4,
+    borderRadius: Theme.roundness,
     alignItems: 'center',
     marginRight: Theme.spacing.small
   },
@@ -44,8 +44,9 @@ export default StyleSheet.create({
     backgroundColor: '#fff'
   },
   arrowDownIcon: {
-    height: 15,
-    width: 15
+    height: 12,
+    width: 12,
+    marginRight: Theme.spacing.medium
   },
   select: {
     width: '100%',
@@ -54,7 +55,7 @@ export default StyleSheet.create({
     alignSelf: 'center',
     borderColor: 'grey',
     backgroundColor: 'white',
-    borderRadius: 5,
+    borderRadius: Theme.roundness,
     marginTop: 10
   },
   from: {
@@ -98,10 +99,15 @@ export default StyleSheet.create({
   datePicker: {
     width: '100%',
     flex: 1,
-    marginTop: 10,
-    height: 40
+    height: 55,
+    justifyContent: 'center',
+    marginBottom: Theme.spacing.small
   },
   datePickerCustomStyle: {
+    dateTouchBody: {
+      width: '100%',
+      height: '100%'
+    },
     dateIcon: {
       display: 'none'
     },
@@ -115,20 +121,21 @@ export default StyleSheet.create({
       fontSize: 16
     },
     dateInput: {
+      height: '100%',
       alignItems: 'flex-start',
       justifyContent: 'center',
       textAlign: 'left',
       borderColor: 'grey',
       borderWidth: 1,
-      borderRadius: 5
+      borderRadius: Theme.roundness
     }
   },
   imageIcon: {
     position: 'absolute',
-    end: 10,
+    end: Theme.spacing.medium,
     width: 30,
     height: 30,
-    bottom: 5,
+    bottom: 20,
     padding: 10,
     justifyContent: 'center',
     alignItems: 'center',
@@ -137,11 +144,11 @@ export default StyleSheet.create({
   lotStatusSelectStyle: {
     width: '100%',
     borderWidth: 1,
-    height: 42,
+    height: 55,
     alignSelf: 'center',
-    borderColor: '#909090',
-    borderRadius: 5,
-    marginTop: 10
+    borderColor: Theme.colors.backdrop,
+    borderRadius: Theme.roundness,
+    marginBottom: Theme.spacing.small
   },
   lotStatusSelectTextStyle: {
     textAlign: 'left',

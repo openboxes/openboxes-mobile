@@ -1,5 +1,6 @@
 import { StyleSheet } from 'react-native';
 import { device } from '../../constants';
+import Theme from '../../utils/Theme';
 
 export default StyleSheet.create({
   mainContainer: {
@@ -32,17 +33,18 @@ export default StyleSheet.create({
   textInput: {
     borderWidth: 1,
     borderColor: 'grey',
+    width: device.windowWidth - 32,
+    height: 55,
     padding: 10,
-    height: 40,
-    width: device.windowWidth - 40,
-    borderRadius: 4
+    marginBottom: Theme.spacing.small,
+    borderRadius: Theme.roundness
   },
   imageIcon: {
     position: 'absolute',
-    end: 10,
+    end: Theme.spacing.medium,
     width: 30,
     height: 30,
-    bottom: 5,
+    bottom: 20,
     padding: 10,
     justifyContent: 'center',
     alignItems: 'center',

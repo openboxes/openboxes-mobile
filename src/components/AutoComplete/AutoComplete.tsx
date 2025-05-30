@@ -40,6 +40,7 @@ const AutoComplete = ({
         mode={'outlined'}
         ref={refs}
         placeholder={placeholder}
+        multiline={false}
         disabled={edit || false}
         keyboardType={keyboard || 'default'}
         onBlur={() => setMenuVisible(false)}

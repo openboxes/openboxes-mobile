@@ -309,6 +309,7 @@ const InboundReceiveDetail = () => {
           />
           <InputBox
             value={state.lotNumber}
+            style={{ marginBottom: Theme.spacing.small }}
             disabled={false}
             editable={false}
             label={'Lot Number'}
@@ -317,7 +318,6 @@ const InboundReceiveDetail = () => {
           <SelectDropdown
             renderDropdownIcon={renderIcon}
             data={['', 'APPROVED', 'RECALLED', 'ON_HOLD', 'QUARANTINED', 'EXPIRED', 'RESERVED', 'DAMAGED']}
-            dropdownStyle={{ justifyContent: 'flex-start' }}
             defaultValue={lotStatusCode}
             buttonTextStyle={styles.lotStatusSelectTextStyle}
             buttonTextAfterSelection={(selectedItem) => selectedItem}

@@ -143,7 +143,7 @@ const Transfer = () => {
       <View style={styles.infoContainer}>
         <View style={styles.headerRow}>
           <Chip icon="pin" style={styles.chipDefault} textStyle={styles.chipText}>
-            {`Bin Location (From): ${item?.binLocation?.name ?? 'Default'}`}
+            {`Bin (From): ${item?.binLocation?.name ?? 'Default'}`}
           </Chip>
           <Chip icon="calendar" style={styles.chipDefault} textStyle={styles.chipText}>
             {`Expiry Date: ${item?.expirationDate ?? 'Never'}`}

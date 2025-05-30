@@ -191,7 +191,14 @@ const AdjustStock = () => {
           list={reasonCodes}
           onDismiss={() => setShowDropDown(false)}
         />
-        <InputBox value={comments} disabled={false} editable={false} label="Comments" onChange={setComments} />
+        <InputBox
+          value={comments}
+          style={{ marginTop: Theme.spacing.large }}
+          disabled={false}
+          editable={false}
+          label="Comments"
+          onChange={setComments}
+        />
         <Button
           style={styles.button}
           disabled={!comments || !reasonCode}

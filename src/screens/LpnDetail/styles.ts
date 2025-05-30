@@ -88,17 +88,18 @@ export default StyleSheet.create({
     color: Theme.colors.text
   },
   arrowDownIcon: {
-    height: 15,
-    width: 15
+    height: 12,
+    width: 12,
+    marginRight: Theme.spacing.medium
   },
   select: {
     width: '100%',
     borderWidth: 1,
-    height: 40,
+    height: 55,
     alignSelf: 'center',
     borderColor: 'grey',
     backgroundColor: 'white',
-    borderRadius: 5,
+    borderRadius: Theme.roundness,
     marginTop: 10
   },
   lpnDetailsContainer: {

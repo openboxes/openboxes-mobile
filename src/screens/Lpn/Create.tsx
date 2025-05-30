@@ -12,6 +12,7 @@ import { getShipmentOrigin } from '../../redux/actions/packing';
 import { RootState } from '../../redux/reducers';
 import styles from './styles';
 import { DispatchProps, Props } from './Types';
+import Theme from '../../utils/Theme';
 
 export interface State {
   stockMovements: Order[] | null;
@@ -132,7 +133,13 @@ class CreateLpn extends React.Component<Props, State> {
               });
             }}
           />
-          <InputBox value={this.state.name} editable={false} label={'Name'} onChange={this.onChangeName} />
+          <InputBox
+            value={this.state.name}
+            style={{ marginBottom: Theme.spacing.small }}
+            editable={false}
+            label={'Name'}
+            onChange={this.onChangeName}
+          />
           <InputBox
             value={this.state.containerNumber}
             editable={false}

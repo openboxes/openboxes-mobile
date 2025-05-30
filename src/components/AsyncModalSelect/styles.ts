@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import Theme from '../../utils/Theme';
 
 export default StyleSheet.create({
   mainContainer: {
@@ -36,16 +37,17 @@ export default StyleSheet.create({
   textInput: {
     borderWidth: 1,
     borderColor: 'grey',
-    padding: 10,
-    height: 40,
-    borderRadius: 4
+    padding: Theme.spacing.medium,
+    height: 55,
+    borderRadius: Theme.roundness,
+    marginBottom: Theme.spacing.small
   },
   imageIcon: {
     position: 'absolute',
-    end: 10,
+    end: Theme.spacing.medium,
     width: 30,
     height: 30,
-    bottom: 5,
+    bottom: 20,
     padding: 10,
     justifyContent: 'center',
     alignItems: 'center',

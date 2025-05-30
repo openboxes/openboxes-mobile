@@ -13,18 +13,13 @@ const InputBox = ({
   icon,
   onIconClick,
   showSelect,
-  disabled,
+  disabled = false,
   onChange,
   editable = true,
   onEndEdit,
   style,
   data
 }: Props) => {
-  const [edit, setEdit] = useState(disabled);
-  const onEdit = () => {
-    setEdit(!edit);
-  };
-
   const renderIcon = () => {
     return <Image style={styles.arrowDownIcon} source={require('../../assets/images/arrow-down.png')} />;
   };
@@ -34,14 +29,14 @@ const InputBox = ({
       <View style={styles.row}>
         <AutoComplete
           data={data}
-          edit={edit}
+          edit={disabled}
           refs={refs}
           label={label}
           placeholder={placeholder}
           icon={icon}
           menuStyle={{ backgroundColor: 'white' }}
           value={value}
-          disabled={edit || false}
+          disabled={false}
           inputStyle={style}
           onEndEdit={(e) => {
             if (onEndEdit) {

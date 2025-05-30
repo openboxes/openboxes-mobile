@@ -44,7 +44,7 @@ export default StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    height: ratio.height * 100
+    marginTop: Theme.spacing.small
   },
   button: {
     width: '80%',
