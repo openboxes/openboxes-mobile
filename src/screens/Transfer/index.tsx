@@ -15,6 +15,7 @@ import { updateStockTransfer } from '../../redux/actions/transfers';
 import { RootState } from '../../redux/reducers';
 import Theme from '../../utils/Theme';
 import styles from './styles';
+import { hideScreenLoading } from '../../redux/actions/main';
 
 const Transfer = () => {
   const route = useRoute();
@@ -102,11 +103,11 @@ const Transfer = () => {
       'destination.id': location.id,
       stockTransferItems: [
         {
-          'product.id': item.product.id,
-          'inventoryItem.id': item['inventoryItem.id'],
-          'location.id': location.id,
-          'originBinLocation.id': item?.binLocation?.id,
-          'destinationBinLocation.id': binToLocationData.id,
+          product: { id: item.product.id },
+          inventoryItem: { id: item['inventoryItem.id'] },
+          location: { id: location.id },
+          originBinLocation: { id: item?.binLocation?.id },
+          destinationBinLocation: { id: binToLocationData.id },
           quantity: quantity
         }
       ]
@@ -126,7 +127,7 @@ const Transfer = () => {
           negativeButtonText: 'Cancel'
         });
       } else {
-        const product = { id: item.product.id };
+        const product = { id: item.product.productCode };
         ToastAndroid.show('Transferred item successfully!', ToastAndroid.SHORT);
         navigation.navigate('ProductDetails', {
           product,

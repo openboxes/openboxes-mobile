@@ -14,6 +14,7 @@ import { stockAdjustments } from '../../redux/actions/products';
 import { RootState } from '../../redux/reducers';
 import Theme from '../../utils/Theme';
 import styles from './styles';
+import { hideScreenLoading } from '../../redux/actions/main';
 
 const reasonCodes = [
   {
@@ -119,13 +120,14 @@ const AdjustStock = () => {
     const request = {
       'location.id': location.id,
       'product.id': item.product.id,
-      'inventoryItem.id': item?.['inventoryItem.id'] ?? '',
-      'binLocation.id': item?.binLocation?.id ?? '',
-      quantityAvailable: item.quantityAvailable,
+      'inventoryItem': item?.['inventoryItem.id'] ?? '',
+      'binLocation': item?.binLocation?.id ?? '',
+      currentQuantity: item.quantityAvailable,
       reasonCode: reasonCode ?? 'CORRECTION',
-      quantityAdjusted: quantityAdjusted,
-      comments: comments
+      newQuantity: quantityAdjusted,
+      comment: comments
     };
+
     submitStockAdjustments(request);
   };
 
@@ -146,7 +148,10 @@ const AdjustStock = () => {
       } else {
         if (data && Object.keys(data).length !== 0) {
           ToastAndroid.show('Stock adjustment saved successfully', ToastAndroid.SHORT);
-          navigation.goBack();
+          navigation.navigate('ProductDetails', {
+            product: item.product,
+            refetchProduct: true
+          });
           route?.params?.onSelect(data?.data[0]);
         }
       }
