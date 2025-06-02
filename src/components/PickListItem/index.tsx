@@ -32,8 +32,8 @@ const PickListItem: React.FC<Props> = ({ item, onPickItem }) => {
   const [shortageReasonCode, setShortageReasonCode] = useState<string | undefined>(
     item.shortageReasonCode || undefined
   );
-  const [scannedLotNumber, setScannedLotNumber] = useState<string>('');
-  const [scannedBinLocation, setScannedBinLocation] = useState<string>('');
+  const [scannedLotNumber, setScannedLotNumber] = useState<string>(item?.lotNumber || '');
+  const [scannedBinLocation, setScannedBinLocation] = useState<string>(item['binLocation.name'] || '');
 
   const isPropertyValid = (itemValue?: string, value?: string | null) => {
     if (!itemValue && !value) {
@@ -82,8 +82,8 @@ const PickListItem: React.FC<Props> = ({ item, onPickItem }) => {
             <InputBox
               editable
               value={scannedLotNumber}
-              placeholder={item.lotNumber || 'Lot Number'}
-              label={item.lotNumber || 'Lot Number'}
+              placeholder={'Enter lot number'}
+              label={'Lot Number'}
               disabled={false}
               icon={getIcon(scannedLotNumber, item.lotNumber)}
               onEndEdit={setScannedLotNumber}
@@ -117,20 +117,20 @@ const PickListItem: React.FC<Props> = ({ item, onPickItem }) => {
             <InputBox
               editable
               value={scannedBinLocation}
-              placeholder={item['binLocation.locationNumber'] || 'Default'}
-              label={item['binLocation.locationNumber'] || 'Bin Location'}
+              placeholder={'Default'}
+              label={'Bin Location'}
               disabled={false}
-              icon={getIcon(scannedBinLocation, item['binLocation.locationNumber'])}
+              icon={getIcon(scannedBinLocation, item['binLocation.name'])}
               onEndEdit={setScannedBinLocation}
               onChange={setScannedBinLocation}
               onIconClick={() => {
-                if (scannedBinLocation && !isPropertyValid(scannedBinLocation, item['binLocation.locationNumber'])) {
+                if (scannedBinLocation && !isPropertyValid(scannedBinLocation, item['binLocation.name'])) {
                   setScannedBinLocation('');
                   return;
                 }
                 showPopup({
                   message: `Scan bin location. Expected: ${
-                    item['binLocation.locationNumber'] || 'DEFAULT (empty)'
+                    item['binLocation.name'] || 'DEFAULT (empty)'
                   }.\n\nTo validate bin location click on this field and scan bin location.`,
                   positiveButton: {
                     text: 'Ok'
