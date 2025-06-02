@@ -153,15 +153,8 @@ export default StyleSheet.create({
   },
   cardContainer: { backgroundColor: Theme.colors.background },
   subheading: { fontWeight: 'bold', fontSize: 16 },
-  refreshContainer: {
-    alignItems: 'flex-end'
-  },
   refreshButton: {
-    marginLeft: 8,
-    paddingVertical: 4,
-    paddingHorizontal: 8,
-    flexDirection: 'row',
-    alignItems: 'center'
+    marginTop: Theme.spacing.large
   },
   refreshMessage: {
     fontSize: 12,

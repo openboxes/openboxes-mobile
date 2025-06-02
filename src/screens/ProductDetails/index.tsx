@@ -160,18 +160,6 @@ class ProductDetails extends React.Component<Props, State> {
               <Chip icon="barcode" style={styles.chipDefault} textStyle={styles.chipText}>
                 {vm.productCode}
               </Chip>
-
-              <View style={styles.refreshContainer}>
-                <TouchableOpacity onPress={this.getProduct} style={styles.refreshButton}>
-                  <Chip icon="refresh" style={styles.chipDefault} textStyle={styles.chipText}>
-                    Refresh
-                  </Chip>
-                </TouchableOpacity>
-
-                <Paragraph style={styles.refreshMessage}>
-                  Refresh if you see old stock
-                </Paragraph>
-              </View>
             </View>
 
             <Divider style={styles.contentDivider} />
@@ -183,6 +171,13 @@ class ProductDetails extends React.Component<Props, State> {
                 {`Items Available: ${filteredItems.length}`}
               </Chip>
             </View>
+
+            <Button
+              style={styles.refreshButton}
+              size="100%"
+              title="Refresh (Get Latest Stock)"
+              onPress={this.getProduct}
+            />
           </View>
           <Divider />
           <ScrollView style={styles.detailsSection}>
