@@ -54,12 +54,12 @@ function renderOrder(order: Order, onOrderTapped: () => void): ReactElement {
         <View style={styles.rowItem}>
           <View style={styles.columnItem}>
             <Text style={styles.label}>Packing Location</Text>
-            <Text style={styles.value}>{order.packingLocation ?? HYPHEN}</Text>
+            <Text style={styles.value}>{order.packingLocation?.name ?? HYPHEN}</Text>
           </View>
 
           <View style={styles.columnItem}>
             <Text style={styles.label}>Loading Location</Text>
-            <Text style={styles.value}>{order.loadingLocation ?? HYPHEN}</Text>
+            <Text style={styles.value}>{order.loadingLocation?.name ?? HYPHEN}</Text>
           </View>
         </View>
       </Card.Content>
