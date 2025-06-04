@@ -19,5 +19,9 @@ export default StyleSheet.create({
   certificateText: {
     fontSize: 15,
     color: 'black'
+  },
+  logo: {
+    width: 120,
+    height: 120
   }
 });

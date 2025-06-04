@@ -136,29 +136,6 @@ yarn ios
 <string>Your New App Name</string>
 ```
 
-## Changing App Name
-
-### Android
-
-1. Navigate to `android/app/src/main/res/values/strings.xml`
-2. Update the `app_name` value:
-
-```xml
-<resources>
-    <string name="app_name">openboxes_mobile_o</string>
-</resources>
-```
-
-### iOS
-
-1. Open `ios/openboxes_mobile_o/Info.plist`
-2. Update the `CFBundleDisplayName` value:
-
-```xml
-<key>CFBundleDisplayName</key>
-<string>Your New App Name</string>
-```
-
 ## Changing App Icon
 
 ### Step 1: Prepare Your Master Icon
@@ -184,7 +161,7 @@ yarn ios
 
 #### Icon Requirements
 
-After generating icons with AppIcon.co, you'll need these sizes in their respective directories under `android/app/src/main/res/`. All icon files must be named `ic_launcher_foreground.png` and placed in their respective directories:
+After generating icons with AppIcon.co, you'll need these sizes in their respective directories under `android/app/src/main/res/`. All icon files must be named `ic_launcher_foreground.png` .
 
 | Directory        | Size    | Purpose                        |
 | ---------------- | ------- | ------------------------------ |

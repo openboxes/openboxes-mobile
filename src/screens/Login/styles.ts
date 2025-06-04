@@ -22,6 +22,10 @@ const styles = StyleSheet.create({
   buttonsContainer: {
     display: 'flex',
     flexDirection: 'column'
+  },
+  logo: {
+    width: 120,
+    height: 120
   }
 });
 

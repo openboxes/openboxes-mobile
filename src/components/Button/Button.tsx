@@ -1,7 +1,8 @@
 import React from 'react';
 import { Button as PaperButton } from 'react-native-paper';
-import { Props } from './types';
+
 import styles from './styles';
+import { Props } from './types';
 
 const Button: React.FC<Props> = (props) => {
   const { style, color, onPress, disabled, mode = 'contained', title, size = '80%' } = props;
@@ -22,6 +23,7 @@ const Button: React.FC<Props> = (props) => {
       compact
       mode={mode}
       style={[style, buttonSizeStyle(), styles.button, disabled && styles.disabled]}
+      contentStyle={styles.buttonContent}
       labelStyle={styles.label}
       disabled={disabled}
       color={color}
