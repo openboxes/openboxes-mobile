@@ -113,98 +113,134 @@ yarn ios
 
 [**Sentry**](https://sentry.io/organizations/openboxes/projects/openboxes-mobile) - for error logging
 
-## Changing App Name
+## App Customization via Branding
 
-### Android
+This project uses a branding system to allow easy customization of app assets (icons, logos, splash screens) and configurations (like the app display name) for different project builds (e.g., "vipr", "default", etc.).
 
-1. Navigate to `android/app/src/main/res/values/strings.xml`
-2. Update the `app_name` value:
+### Core Concept
 
-```xml
-<resources>
-    <string name="app_name">openboxes_mobile_o</string>
-</resources>
-```
+You will place all custom assets for a specific brand into a dedicated folder within the `branding/` directory. A script will then copy these assets to the correct locations in the application before you build.
 
-### iOS
+### Step 1: Prepare Your Brand Assets
 
-1. Open `ios/openboxes_mobile_o/Info.plist`
-2. Update the `CFBundleDisplayName` value:
+For each brand you want to create (e.g., "vipr"), you'll need to prepare several assets:
 
-```xml
-<key>CFBundleDisplayName</key>
-<string>Your New App Name</string>
-```
+1.  **Master Source Icon (named `splash.png`):**
 
-## Changing App Icon
+    - Create a **1024x1024 PNG image**. This will be your primary master source icon.
+    - **Name this file `splash.png`**.
+    - Place this `splash.png` file directly into your brand's directory (e.g., `branding/vipr/splash.png`).
+    - This `splash.png` will be:
+      - Uploaded to the icon generator (see next point).
+      - Used by the branding script as the source for the application's actual splash screen.
+    - **Requirements for this `splash.png` (master source icon):**
+      - Format: PNG
+      - Size: 1024x1024 pixels
+      - Background: Transparent or solid (consider Android adaptive icon needs if using transparency for the foreground layer).
+      - Quality: High resolution, clean design.
+    - _Note: Using a large 1024x1024 image as the direct source for all splash screen densities (as the script currently does) might increase app size. For optimization, you might later consider providing density-specific splash images or using Android's newer splash screen APIs._
 
-### Step 1: Prepare Your Master Icon
+2.  **Generate Platform-Specific App Icons & Initial Store Icons:**
 
-**Create a 1024x1024 PNG image** of your app icon. This will be your master icon from which all other sizes will be generated.
+    - Go to an icon generator like [https://www.appicon.co/](https://www.appicon.co/).
+    - Upload your **`splash.png`** (the 1024x1024 master source icon you prepared in the previous point).
+    - Select both **iOS** (for future use) and **Android** platforms.
+    - Click **Generate** and download the generated zip file (e.g., `AppIcons.zip`).
+    - **Crucial Step:** Ensure your brand's main directory exists (e.g., `branding/vipr/`).
+    - **Extract the entire contents of the downloaded zip file directly into your specific brand's directory** (e.g., into `branding/vipr/`).
+      - This will typically create `android/` (containing `mipmap-*` folders with `ic_launcher.png` files) and `ios/Assets.xcassets/` subfolders within your brand directory.
+      - The extracted files will also include high-resolution images intended for store listings, such as `appstore.png` (1024x1024) and `playstore.png` (512x512), usually at the root of the extracted content or in a clearly identifiable location.
 
-**Requirements:**
+3.  **Other Brand Assets:**
+    - **In-App Logo (`logo.png`):**
+      - This is the logo used internally within the application (e.g., on login screen).
+      - Prepare a `logo.png` file.
+      - Place this directly inside your brand's directory (e.g., `branding/vipr/logo.png`).
+      - The branding script will copy this file to replace `src/assets/images/logo.png` in your project.
+    - **Configuration File (`settings.json`):**
+      - A JSON file to define brand-specific settings. Place this directly inside your brand's directory (e.g., `branding/vipr/settings.json`).
+      - It should contain the app's display name:
+        ```json
+        // Example: branding/vipr/settings.json
+        {
+          "app_name": "VIPR"
+        }
+        ```
+      - _Note: If your app name contains special XML characters (`&`, `<`, `>`, `"`, `'`) and you are relying on `sed` (the script's primary method), ensure they are XML-escaped in this file (e.g., `My App &amp; Co.`)._
 
-- Format: PNG
-- Size: 1024x1024 pixels
-- Background: Transparent or solid (depending on your design)
-- Quality: High resolution, clean design
+### Step 2: Verify Your Brand's Directory Structure
 
-### Step 2: Generate Icon Sizes
+After preparing and placing all assets, your brand's directory (e.g., `branding/vipr/`) should look similar to this.
 
-1. Go to [https://www.appicon.co/](https://www.appicon.co/)
-2. Upload your 1024x1024 PNG image
-3. Select both **iOS** and **Android** platforms
-4. Click **Generate** to create all required sizes
-5. Download the generated zip file
+| Path within `branding/<brand_name>/`     | Description                                                                                                       | Used by Script? |
+| :--------------------------------------- | :---------------------------------------------------------------------------------------------------------------- | :-------------- |
+| `android/mipmap-mdpi/ic_launcher.png`    | Android MDPI launcher icon (from AppIcon.co output)                                                               | **Yes**         |
+| `android/mipmap-hdpi/ic_launcher.png`    | Android HDPI launcher icon (from AppIcon.co output)                                                               | **Yes**         |
+| `android/mipmap-xhdpi/ic_launcher.png`   | Android XHDPI launcher icon (from AppIcon.co output)                                                              | **Yes**         |
+| `android/mipmap-xxhdpi/ic_launcher.png`  | Android XXHDPI launcher icon (from AppIcon.co output)                                                             | **Yes**         |
+| `android/mipmap-xxxhdpi/ic_launcher.png` | Android XXXHDPI launcher icon (from AppIcon.co output)                                                            | **Yes**         |
+| `Assets.xcassets/`                       | iOS icons and assets (from AppIcon.co output)                                                                     | No (Future)     |
+| `appstore.png`                           | 1024x1024 icon for iOS App Store submission (typically renamed from AppIcon.co output like `iTunesArtwork.png`)   | No (Manual)     |
+| `logo.png`                               | In-app logo, replaces `src/assets/images/logo.png`                                                                | **Yes**         |
+| `playstore.png`                          | 512x512 icon for Google Play Store submission (typically renamed from AppIcon.co output like `PlayStoreIcon.png`) | No (Manual)     |
+| `settings.json`                          | Configuration file (e.g., for `app_name`)                                                                         | **Yes**         |
+| `splash.png`                             | 1024x1024 master source icon, also used as the source for Android splash screens                                  | **Yes**         |
 
-### Android
+**Important Notes on Asset Usage by the Current Script:**
 
-#### Icon Requirements
+- The `apply_branding.sh` script currently processes the files marked "Yes" in the table above for Android customization and shared assets.
+- Files like `Assets.xcassets/`, `appstore.png`, and `playstore.png` are included in the branding kit for completeness, potential future script enhancements (e.g., iOS support), or manual store submission processes.
 
-After generating icons with AppIcon.co, you'll need these sizes in their respective directories under `android/app/src/main/res/`. All icon files must be named `ic_launcher_foreground.png` .
+**Android Icon Naming:**
 
-| Directory        | Size    | Purpose                        |
-| ---------------- | ------- | ------------------------------ |
-| `mipmap-mdpi`    | 48x48   | Medium density                 |
-| `mipmap-hdpi`    | 72x72   | High density                   |
-| `mipmap-xhdpi`   | 96x96   | Extra high density             |
-| `mipmap-xxhdpi`  | 144x144 | Extra extra high density       |
-| `mipmap-xxxhdpi` | 192x192 | Extra extra extra high density |
+- The source files in your `branding/<brand_name>/android/mipmap-*/` directories (from AppIcon.co) **must be named `ic_launcher.png`**.
+- The branding script will automatically copy these and rename them to `ic_launcher_foreground.png` in the application's `android/app/src/main/res/mipmap-*/` directories. This `ic_launcher_foreground.png` is typically used for the foreground layer of Android Adaptive Icons.
+- The script also copies `branding/<brand_name>/splash.png` (your 1024x1024 master) to `android/app/src/main/res/mipmap-*/logo_splash.png` for each density.
 
-#### How to Add Android Icons
+### Step 3: Apply the Branding
 
-1. **Extract the downloaded zip** from AppIcon.co
-2. **Navigate to the Android folder** in the extracted files
-3. **Copy the mipmap folders** from the extracted Android folder into `android/app/src/main/res/` in your project
-4. **Copy and rename the icons:**
+1.  Open your terminal in the project root directory.
+2.  Run the npm script corresponding to your desired brand. For example, to apply the "vipr" branding:
+    ```bash
+    npm run branding:vipr
+    ```
+    This command executes the `scripts/apply_branding.sh vipr` script, which handles:
+    - Copying the Android launcher icons (renaming to `ic_launcher_foreground.png`).
+    - Copying the splash screen (from `branding/<brand_name>/splash.png`, renaming to `logo_splash.png` for Android).
+    - Copying the in-app logo to `src/assets/images/logo.png`.
+    - Updating the Android app display name in `strings.xml` using the `app_name` from your brand's `settings.json`.
 
-```bash
-   # Navigate to Android res directory
-   cd android/app/src/main/res/
+### Step 4: Clean, Build, and Run Your Application
 
-   # Copy ic_launcher to ic_launcher_foreground in each directory
-  cp mipmap-mdpi/ic_launcher.png mipmap-mdpi/ic_launcher_foreground.png
-  cp mipmap-hdpi/ic_launcher.png mipmap-hdpi/ic_launcher_foreground.png
-  cp mipmap-xhdpi/ic_launcher.png mipmap-xhdpi/ic_launcher_foreground.png
-  cp mipmap-xxhdpi/ic_launcher.png mipmap-xxhdpi/ic_launcher_foreground.png
-  cp mipmap-xxxhdpi/ic_launcher.png mipmap-xxxhdpi/ic_launcher_foreground.png
+After applying the branding, follow these steps to see the changes:
 
-  # Copy ic_launcher to logo_splash in each directory
-  cp mipmap-mdpi/ic_launcher.png mipmap-mdpi/logo_splash.png
-  cp mipmap-hdpi/ic_launcher.png mipmap-hdpi/logo_splash.png
-  cp mipmap-xhdpi/ic_launcher.png mipmap-xhdpi/logo_splash.png
-  cp mipmap-xxhdpi/ic_launcher.png mipmap-xxhdpi/logo_splash.png
-  cp mipmap-xxxhdpi/ic_launcher.png mipmap-xxxhdpi/logo_splash.png
-```
+1.  **Clean the Android project (Recommended):**
+    This helps ensure old cached resources are removed.
 
-5. **Clean the project**:
+    ```bash
+    cd android && ./gradlew clean && cd ..
+    ```
 
-```bash
-cd android && ./gradlew clean && cd ..
-```
+2.  **Start the Metro Bundler (in one terminal):**
+    The Metro bundler is responsible for packaging your JavaScript code and assets. It needs to be running for development.
+    Open a new terminal window/tab in your project root and run:
 
-6. **Rebuild and run**:
+    ```bash
+    npx react-native start
+    ```
 
-```bash
-npm run android && npx react-native run-android
-```
+    Keep this terminal window open.
+
+3.  **Run the Application (in another terminal):**
+    With the Metro bundler running in one terminal, open a _separate_ terminal window/tab in your project root. Then, run the command to build and install the app on your Android emulator or device. You can use your project's standard command to run on Android (assuming it's defined in your `package.json`):
+
+    ```bash
+    npm run android
+    ```
+
+4.  **Verify Changes:**
+    The application should build and install on your device/emulator.
+    - **Launcher Icon & Name:** Check your device's app drawer for the new icon and app name.
+    - **Splash Screen:** The new splash screen should appear when the app launches. (Note: Splash screen changes sometimes require a full uninstall and reinstall of the app if cached heavily by the OS or a splash screen library).
+    - **In-App Logo:** The new logo should appear where it's used within the app.
+    - The Metro bundler will automatically reload the JavaScript and assets. If you have an existing app instance running, it should refresh to reflect the new in-app logo. For launcher icon and app name changes, a fresh install (which running the app typically does) is usually required.
