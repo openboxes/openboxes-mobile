@@ -1,43 +1,17 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, { useState } from 'react';
-import { View } from 'react-native';
-import styles from './styles';
+import { Image, View } from 'react-native';
+import { TextInput } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
-import { login } from '../../redux/actions/auth';
-import showPopup from '../../components/Popup';
-import { Caption, TextInput } from 'react-native-paper';
+
+import EyeIcon from '../../assets/images/icon_eye.svg';
+import EyeSlashIcon from '../../assets/images/icon_eye_slash.svg';
 import Button from '../../components/Button';
+import showPopup from '../../components/Popup';
 import * as NavigationService from '../../NavigationService';
-import { Image } from 'react-native';
-import { Headline } from 'react-native-paper';
-
-import { StackNavigationProp } from '@react-navigation/stack';
-import { StackList } from '../../types/navigationTypes';
-// @ts-ignore
-import EYE_SHOW from '../../assets/images/eye_show.png';
-// @ts-ignore
-import EYE_HIDE from '../../assets/images/eye_hide.png';
-
-type ProfileScreenNavigationProp = StackNavigationProp<StackList, 'Login'>;
-
-interface OwnProps {
-  navigation: ProfileScreenNavigationProp;
-}
-
-interface StateProps {
-  //no-op
-}
-
-interface DispatchProps {
-  login: (data: any) => void;
-}
-
-type Props = OwnProps & StateProps & DispatchProps;
-
-interface State {
-  username: string;
-  password: string;
-}
+import { login } from '../../redux/actions/auth';
+import Theme from '../../utils/Theme';
+import styles from './styles';
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -101,9 +75,7 @@ const Login = () => {
   return (
     <View style={styles.screenContainer}>
       <View style={styles.welcomeContainer}>
-        <Image source={require('../../assets/images/logo.png')} resizeMode={'cover'} />
-        <Headline style={{ fontWeight: 'bold' }}>Welcome Back!</Headline>
-        <Caption>Sign in to continue</Caption>
+        <Image source={require('../../assets/images/logo.png')} style={styles.logo} resizeMode="contain" />
       </View>
       <View style={styles.inputsContainer}>
         <TextInput mode="flat" label={'Username'} placeholder="Username" onChangeText={onUsernameChange} />
@@ -112,9 +84,16 @@ const Login = () => {
           placeholder="Password"
           label={'Password'}
           secureTextEntry={state.isSeePassword}
-          right={<TextInput.Icon name={state.isSeePassword ? EYE_SHOW : EYE_HIDE} onPress={onPasswordClick} />}
+          right={
+            <TextInput.Icon
+              icon={() =>
+                state.isSeePassword ? <EyeIcon width={24} height={24} /> : <EyeSlashIcon width={24} height={24} />
+              }
+              onPress={onPasswordClick}
+            />
+          }
           style={{
-            marginTop: 8
+            marginTop: Theme.spacing.small
           }}
           onChangeText={onPasswordChange}
         />

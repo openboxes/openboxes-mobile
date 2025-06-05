@@ -11,7 +11,10 @@ export default StyleSheet.create({
     justifyContent: 'center',
     display: 'flex',
     flexDirection: 'column',
-    borderRadius: 16
+    borderRadius: Theme.roundness
+  },
+  buttonContent: {
+    height: 48
   },
   disabled: {
     backgroundColor: Theme.colors.disabled
