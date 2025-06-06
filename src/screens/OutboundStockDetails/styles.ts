@@ -5,11 +5,11 @@ export default StyleSheet.create({
   contentContainer: {
     display: 'flex',
     flexDirection: 'column',
-    backgroundColor: Theme.colors.surface,
-    padding: Theme.spacing.large
+    padding: Theme.spacing.medium
   },
   formContainer: {
-    padding: Theme.spacing.large
+    padding: Theme.spacing.medium,
+    flex: 1
   },
   buttonBar: {
     paddingHorizontal: Theme.spacing.large,
@@ -128,5 +128,14 @@ export default StyleSheet.create({
   },
   caption: { fontSize: 12, color: Theme.colors.text },
   subheading: { fontWeight: 'bold', fontSize: 16 },
-  cardContainer: { backgroundColor: Theme.colors.background }
+  cardContainer: { backgroundColor: Theme.colors.background },
+  lastChild: {
+    marginRight: 0
+  },
+  dividerHorizontal: {
+    marginVertical: Theme.spacing.small
+  },
+  flex1: {
+    flex: 1
+  }
 });

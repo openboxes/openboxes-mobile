@@ -1,9 +1,13 @@
 import { StyleSheet } from 'react-native';
+import Theme from '../../../utils/Theme';
 
 export default StyleSheet.create({
   container: {
     display: 'flex',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    backgroundColor: Theme.colors.surface,
+    paddingVertical: Theme.spacing.small,
+    paddingHorizontal: Theme.spacing.medium
   },
   directionRow: {
     flexDirection: 'row'

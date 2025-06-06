@@ -3,6 +3,7 @@ import { View } from 'react-native';
 import { Props } from './types';
 import styles, { gapStyle } from './styles';
 import AddPropsToChildren from '../../../utils/AddPropsToChildren';
+import { Divider } from 'react-native-paper';
 
 const ContentFooter: React.FC<Props> = (props) => {
   const { children, direction = 'row', gap = 0, ...otherProps } = props;
@@ -25,9 +26,12 @@ const ContentFooter: React.FC<Props> = (props) => {
   });
 
   return (
-    <View style={[styles.container, gapStyleContainer, directionStyle]} {...otherProps}>
-      {childrenWithProps}
-    </View>
+    <>
+      <Divider />
+      <View style={[styles.container, gapStyleContainer, directionStyle]} {...otherProps}>
+        {childrenWithProps}
+      </View>
+    </>
   );
 };
 

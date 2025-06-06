@@ -16,7 +16,7 @@ const OrderDetailsSection = ({ shipment }: { shipment: Shipment | null }) => {
   const formattedExpectedShippingDate = parseFromISODateToLocaleString(parsedExpectedShippingDate);
 
   return (
-    <View style={styles.contentContainer}>
+    <View>
       <View style={styles.headerRow}>
         <View style={styles.identifierContainer}>
           <Text style={styles.value}>{shipment.shipmentNumber ?? HYPHEN}</Text>

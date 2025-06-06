@@ -143,6 +143,7 @@ const OrderDetails: React.FC<Props> = (props) => {
       <ContentFooter fixed>
         <Button
           title="Move to Packing"
+          size="100%"
           onPress={() =>
             props.navigation.navigate('PackingLocationPage', {
               orderId,

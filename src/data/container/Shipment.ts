@@ -23,6 +23,7 @@ export interface Container {
   containerNumber: string;
   containerType: any;
   status: string;
+  shipmentItems?: ShipmentItems[];
 }
 
 export interface Shipment {

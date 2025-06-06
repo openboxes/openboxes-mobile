@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import React from 'react';
 import { ScrollView, View } from 'react-native';
+import { Divider } from 'react-native-paper';
 
 import { ContentBody, ContentFooter, ContentHeader } from '../index';
 import styles from './styles';
@@ -22,6 +23,7 @@ const ContentContainer: React.FC<Props> = (props) => {
         {body}
         {footer?.props?.fixed ? null : footer}
       </ScrollView>
+      <Divider />
       {footer?.props?.fixed ? footer : null}
     </View>
   );

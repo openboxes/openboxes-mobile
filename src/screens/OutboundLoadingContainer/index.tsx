@@ -1,16 +1,19 @@
+import { useNavigation, useRoute } from '@react-navigation/native';
 import React, { useState } from 'react';
-import { Alert, ScrollView, ToastAndroid, View } from 'react-native';
+import { ScrollView, ToastAndroid, View } from 'react-native';
+import { Divider } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
-import styles from '../OutboundStockDetails/styles';
-import { updateContainerStatus } from '../../redux/actions/lpn';
-import OrderDetailsSection from '../OutboundLoadingDetails/OrderDetailsSection';
+
+import CLEAR from '../../assets/images/icon_clear.png';
+import SCAN from '../../assets/images/scan.jpg';
+import TICK from '../../assets/images/tick.png';
+import Button from '../../components/Button';
 import InputBox from '../../components/InputBox';
 import showPopup from '../../components/Popup';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import TICK from '../../assets/images/tick.png';
-import SCAN from '../../assets/images/scan.jpg';
-import CLEAR from '../../assets/images/icon_clear.png';
-import Button from '../../components/Button';
+import { updateContainerStatus } from '../../redux/actions/lpn';
+import Theme from '../../utils/Theme';
+import OrderDetailsSection from '../OutboundLoadingDetails/OrderDetailsSection';
+import styles from '../OutboundStockDetails/styles';
 
 // LPN loading
 const OutboundLoadingContainer = () => {
@@ -19,7 +22,7 @@ const OutboundLoadingContainer = () => {
   const { container, scanned, shipment }: any = route.params;
   const navigation = useNavigation<any>();
 
-  const [scannedLPN, setScannedLPN] = useState<string>(scanned ? (container?.containerNumber ?? '') : '');
+  const [scannedLPN, setScannedLPN] = useState<string>(scanned ? container?.containerNumber ?? '' : '');
   const [scannedLoadingLocation, setScannedLoadingLocation] = useState<string>(shipment?.loadingLocationNumber ?? '');
 
   const getIcon = (property: string, scannedValue: string) => {
@@ -64,7 +67,7 @@ const OutboundLoadingContainer = () => {
       if (errorTitle != '') {
         showPopup({
           title: errorTitle,
-          message: errorMessage,
+          message: errorMessage
         });
         return Promise.resolve(null);
       }
@@ -77,7 +80,7 @@ const OutboundLoadingContainer = () => {
         };
       } else {
         payload = {
-          status: 'LOADED',
+          status: 'LOADED'
         };
       }
 
@@ -85,7 +88,7 @@ const OutboundLoadingContainer = () => {
         if (data?.error) {
           showPopup({
             title: data.errorMessage ? 'Failed to load container' : null,
-            message: data.errorMessage || 'Failed to load container',
+            message: data.errorMessage || 'Failed to load container'
           });
           return;
         }
@@ -98,53 +101,50 @@ const OutboundLoadingContainer = () => {
         });
       };
 
-      dispatch(
-        updateContainerStatus(
-          container?.id as string,
-          payload,
-          actionCallback,
-        )
-      );
+      dispatch(updateContainerStatus(container?.id as string, payload, actionCallback));
     } catch (e) {
       const title = e.message ? 'Failed load container' : null;
-      const message = e.message  || 'Failed load container';
+      const message = e.message || 'Failed load container';
       showPopup({
         title: title,
         message: message,
-        negativeButtonText: 'Cancel',
+        negativeButtonText: 'Cancel'
       });
       return Promise.resolve(null);
     }
   };
 
   return (
-    <ScrollView style={styles.screenContainer}>
-      <View style={styles.contentContainer}>
+    <ScrollView>
+      <View style={[styles.contentContainer, { backgroundColor: Theme.colors.surface }]}>
         <OrderDetailsSection shipment={shipment} />
-        <View>
-          <InputBox
-            value={scannedLPN}
-            placeholder={container?.containerNumber || 'LPN\'s Container Number'}
-            label={'LPN\'s Container Number'}
-            disabled={false}
-            onEndEdit={(value: any) => setScannedLPN(value)}
-            onChange={(value: any) => setScannedLPN(value)}
-            editable
-            icon={getIcon(container?.containerNumber, scannedLPN)}
-            onIconClick={() => {
-              if (scannedLPN && !isPropertyValid(container?.containerNumber, scannedLPN)) {
-                setScannedLPN('')
-                return;
+      </View>
+      <Divider />
+      <View style={styles.contentContainer}>
+        <InputBox
+          value={scannedLPN}
+          placeholder={container?.containerNumber || "LPN's Container Number"}
+          label={"LPN's Container Number"}
+          disabled={false}
+          onEndEdit={(value: any) => setScannedLPN(value)}
+          onChange={(value: any) => setScannedLPN(value)}
+          editable
+          icon={getIcon(container?.containerNumber, scannedLPN)}
+          onIconClick={() => {
+            if (scannedLPN && !isPropertyValid(container?.containerNumber, scannedLPN)) {
+              setScannedLPN('');
+              return;
+            }
+            showPopup({
+              message: `Scan LPN's container number. Expected: ${
+                container?.containerNumber || 'DEFAULT (empty)'
+              }.\n\nTo validate LPN's container number click on this field and scan LPN's container number.`,
+              positiveButton: {
+                text: 'Ok'
               }
-              showPopup({
-                message: `Scan LPN's container number. Expected: ${container?.containerNumber || 'DEFAULT (empty)'}.\n\nTo validate LPN's container number click on this field and scan LPN's container number.`,
-                positiveButton: {
-                  text: 'Ok',
-                },
-              })
-            }}
-          />
-        </View>
+            });
+          }}
+        />
         <InputBox
           value={scannedLoadingLocation}
           placeholder={shipment?.loadingLocationNumber || 'Loading Location'}
@@ -155,29 +155,30 @@ const OutboundLoadingContainer = () => {
           editable
           icon={getIcon(shipment?.loadingLocationNumber, scannedLoadingLocation)}
           onIconClick={() => {
-            if (scannedLoadingLocation && !isPropertyValid(
-              shipment?.loadingLocationNumber, scannedLoadingLocation
-            )) {
-              setScannedLoadingLocation('')
+            if (scannedLoadingLocation && !isPropertyValid(shipment?.loadingLocationNumber, scannedLoadingLocation)) {
+              setScannedLoadingLocation('');
               return;
             }
             showPopup({
-              message: `Scan Loading Location Number. Expected: ${shipment?.loadingLocationNumber || 'DEFAULT (empty)'}.\n\nTo validate Loading Location Number click on this field and scan Loading Location Number.`,
+              message: `Scan Loading Location Number. Expected: ${
+                shipment?.loadingLocationNumber || 'DEFAULT (empty)'
+              }.\n\nTo validate Loading Location Number click on this field and scan Loading Location Number.`,
               positiveButton: {
-                text: 'Ok',
-              },
-            })
+                text: 'Ok'
+              }
+            });
           }}
         />
-        <Button 
-          title="Load Container" 
-          onPress={() => loadContainer()} 
+        <Button
+          title="Load Container"
+          size="100%"
+          onPress={() => loadContainer()}
           disabled={false}
-          style={styles.loadButton} 
-          />
+          style={styles.loadButton}
+        />
       </View>
     </ScrollView>
-  )
-}
+  );
+};
 
 export default OutboundLoadingContainer;

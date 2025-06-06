@@ -1,19 +1,20 @@
-import { DispatchProps, Props, State } from '../OutboundStockDetails/types';
-import React from 'react';
-import { Alert, ScrollView, SectionList, Text, View, TouchableOpacity } from 'react-native';
-import { connect } from 'react-redux';
-import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
-import { RootState } from '../../redux/reducers';
-import styles from '../OutboundStockDetails/styles';
-import { getShipment } from '../../redux/actions/packing';
-import OrderDetailsSection from './OrderDetailsSection';
-import EmptyView from '../../components/EmptyView';
-import { Shipment, Container } from '../../data/container/Shipment';
-import { Card, Divider } from 'react-native-paper';
 import _ from 'lodash';
+import React from 'react';
+import { Alert, SectionList, Text, TouchableOpacity, View } from 'react-native';
+import { Card, Chip, Divider, Subheading } from 'react-native-paper';
+import { connect } from 'react-redux';
+import EmptyView from '../../components/EmptyView';
 import InputBox from '../../components/InputBox';
 import showPopup from '../../components/Popup';
 import { HYPHEN } from '../../constants';
+import { Container, Shipment } from '../../data/container/Shipment';
+import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
+import { getShipment } from '../../redux/actions/packing';
+import { RootState } from '../../redux/reducers';
+import Theme from '../../utils/Theme';
+import styles from '../OutboundStockDetails/styles';
+import { DispatchProps, Props, State } from '../OutboundStockDetails/types';
+import OrderDetailsSection from './OrderDetailsSection';
 
 // Shipment loading
 class OutboundLoadingDetails extends React.Component<Props, State> {
@@ -126,22 +127,43 @@ class OutboundLoadingDetails extends React.Component<Props, State> {
     }
   };
 
-  renderListItem = (item: Container, index: number, section: any) => {
+  renderListItem = (item: Container) => {
     return (
       <TouchableOpacity
-        key={index}
         style={styles.itemView}
         onPress={() => this.showLoadingLPNScreen(item, this.state.shipment, true)}
       >
         <Card>
           <Card.Content>
-            <View style={styles.rowItem}>
-              {this.RenderData({ title: 'Container Name', subText: item.name ?? HYPHEN })}
-              {this.RenderData({ title: 'Container Number', subText: item.containerNumber ?? HYPHEN })}
+            <View style={styles.headerRow}>
+              <Chip icon="barcode" style={styles.chipDefault} textStyle={styles.chipWarningText}>
+                {item.containerNumber ?? HYPHEN}
+              </Chip>
+              <Chip style={[styles.chipDefault, styles.lastChild]} textStyle={styles.chipWarningText}>
+                {item.status ?? HYPHEN}
+              </Chip>
             </View>
+
+            <Divider style={styles.dividerHorizontal} />
+
+            <Subheading style={styles.subheading}> {`Container Name: ${item.name}`} </Subheading>
+
             <View style={styles.rowItem}>
-              {this.RenderData({ title: 'Container Type', subText: item.type ?? HYPHEN })}
-              {this.RenderData({ title: 'Container Status', subText: item.status ?? HYPHEN })}
+              <Chip
+                icon="package"
+                style={{ ...styles.chipDefault, ...styles.flex1 }}
+                textStyle={styles.chipWarningText}
+              >
+                {`Type: ${item.type ?? HYPHEN}`}
+              </Chip>
+
+              <Chip
+                icon="truck"
+                style={{ ...styles.chipDefault, ...styles.lastChild, ...styles.flex1 }}
+                textStyle={styles.chipWarningText}
+              >
+                {`Items Shipped: ${item.shipmentItems?.length ?? 0}`}
+              </Chip>
             </View>
           </Card.Content>
         </Card>
@@ -149,19 +171,13 @@ class OutboundLoadingDetails extends React.Component<Props, State> {
     );
   };
 
-  RenderData = ({ title, subText }: { title: string; subText: string }) => {
-    return (
-      <View style={styles.columnItem}>
-        <Text style={styles.label}>{title}</Text>
-        <Text style={styles.value}>{subText}</Text>
-      </View>
-    );
-  };
-
   render() {
     return (
       <>
-        <OrderDetailsSection shipment={this.state.shipment} />
+        <View style={[styles.contentContainer, { backgroundColor: Theme.colors.surface }]}>
+          <OrderDetailsSection shipment={this.state.shipment} />
+        </View>
+
         <Divider />
 
         <View style={styles.formContainer}>
@@ -183,10 +199,10 @@ class OutboundLoadingDetails extends React.Component<Props, State> {
               title: container.name ?? HYPHEN,
               data: [container]
             }))}
-            renderItem={({ item, index, section }) => this.renderListItem(item, index, section)}
+            renderItem={({ item }) => this.renderListItem(item)}
             renderSectionHeader={({ section }) => (
               <View style={styles.headerContainer}>
-                <Text style={styles.headerTitle}>{section.title}</Text>
+                <Text style={styles.headerTitle}>{`Container Name: ${section.title}`}</Text>
               </View>
             )}
             ListEmptyComponent={
