@@ -47,7 +47,7 @@ const InboundReceiveDetail = () => {
   const [lotStatusCode, setLotStatusCode] = useState<string>('');
 
   useEffect(() => {
-    createTempBin(shipmentData?.id);
+    createReceivingBinLocation(shipmentData?.id);
   }, []);
   
   useEffect(() => {
@@ -137,7 +137,7 @@ const InboundReceiveDetail = () => {
     );
   };
 
-  const createTempBin = (id: string) => {
+  const createReceivingBinLocation = (id: string) => {
     const callback = (data: any) => {
       if (data?.error) {
         showPopup({

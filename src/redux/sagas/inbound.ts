@@ -6,8 +6,8 @@ import {
   FETCH_PARTIAL_RECEIVING_REQUEST,
   SUBMIT_PARTIAL_RECEIVING_REQUEST,
   SUBMIT_PARTIAL_RECEIVING_SUCCESS,
-  CREATE_TEMP_RECEIVING_BIN_SUCCESS,
-  CREATE_TEMP_RECEIVING_BIN_REQUEST
+  CREATE_RECEIVING_BIN_LOCATION_SUCCESS,
+  CREATE_RECEIVING_BIN_LOCATION_REQUEST
 } from '../actions/inboundorder';
 import { hideScreenLoading, showScreenLoading } from '../actions/main';
 import * as api from '../../apis';
@@ -63,15 +63,15 @@ function* submitPartialReceiving(action: any) {
   }
 }
 
-function* createTemporaryReceivingBin(action: any) {
+function* createReceivingBinLocation(action: any) {
   try {
     yield put(showScreenLoading('Please wait..'));
     const response: any = yield call(
-      api.createTemporaryReceivingBin,
+      api.createReceivingBinLocation,
       action.payload.id,
     );
     yield put({
-      type: CREATE_TEMP_RECEIVING_BIN_SUCCESS,
+      type: CREATE_RECEIVING_BIN_LOCATION_SUCCESS,
       payload: response.data
     });
     if (action.callback) yield action.callback(response);
@@ -105,5 +105,5 @@ export default function* watcher() {
   yield takeLatest(FETCH_INBOUND_ORDER_LIST_REQUEST, fetchInboundOrderList);
   yield takeLatest(FETCH_PARTIAL_RECEIVING_REQUEST, fetchPartialReceiving);
   yield takeLatest(SUBMIT_PARTIAL_RECEIVING_REQUEST, submitPartialReceiving);
-  yield takeLatest(CREATE_TEMP_RECEIVING_BIN_REQUEST, createTemporaryReceivingBin)
+  yield takeLatest(CREATE_RECEIVING_BIN_LOCATION_REQUEST, createReceivingBinLocation)
 }
