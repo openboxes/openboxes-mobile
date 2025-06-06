@@ -8,7 +8,7 @@
     "ios": "react-native run-ios --simulator='iPhone 16'",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "pod": "yarn postinstall && cd ios && pod",
-    "postinstall": "find node_modules -type f -name '*.podspec' -exec sed -i '' 's|https://boostorg\\.jfrog\\.io/artifactory/main/|https://archives.boost.io/|g' {} +",
+    "postinstall": "find node_modules -type f -name '*.podspec' -exec sed -i 's|https://boostorg\\.jfrog\\.io/artifactory/main/|https://archives.boost.io/|g' {} +",
     "start": "NODE_OPTIONS='--openssl-legacy-provider' npx react-native start --verbose",
     "test": "jest"
   },
