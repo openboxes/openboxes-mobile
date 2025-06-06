@@ -27,7 +27,7 @@ const PickOrderItem = ({ picklistItems, selectedPicklistItemIndex, successfulPic
       const scannedBinLocationValid = isPropertyValid(itemToSave, 'binLocation.name', 'scannedBinLocation');
 
       if (!scannedLotNumberValid || !scannedBinLocationValid) {
-        errorTitle = 'Lot number and bin location are invalid';
+        errorTitle = 'Lot number or bin location is invalid';
         errorMessage = 'Scan proper lot number and bin location';
       }
 
