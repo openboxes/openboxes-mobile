@@ -34,7 +34,7 @@ export function submitPartialReceiving(id: any, body: any, callback?: (data: any
   };
 }
 
-export function createTemporaryReceivingBin(id: any, callback?: (data: any) => void) {
+export function createReceivingBin(id: any, callback?: (data: any) => void) {
   return {
     type: CREATE_RECEIVING_BIN_LOCATION_REQUEST,
     payload: { id },

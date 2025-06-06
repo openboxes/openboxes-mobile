@@ -14,7 +14,7 @@ import InputBox from '../../components/InputBox';
 import InputSpinner from '../../components/InputSpinner';
 import showPopup from '../../components/Popup';
 import Radio from '../../components/Radio';
-import { submitPartialReceiving, createTemporaryReceivingBin } from '../../redux/actions/inboundorder';
+import { submitPartialReceiving, createReceivingBin } from '../../redux/actions/inboundorder';
 import { searchInternalLocations } from '../../redux/actions/locations';
 import { RootState } from '../../redux/reducers';
 import Theme from '../../utils/Theme';
@@ -98,7 +98,9 @@ const InboundReceiveDetail = () => {
               receiptItemId: '',
               shipmentItemId: shipmentItem.shipmentItemId,
               'container.id': shipmentItem['container.id'] ?? '',
-              'product': shipmentItem['product.id'] ?? '',
+              'product': {
+                id: shipmentItem['product.id'] ?? ''
+              },
               'binLocation': state.receiveLocation?.id ?? '',
               lotNumber: state.lotNumber,
               expirationDate: state.expirationDate,
@@ -142,11 +144,11 @@ const InboundReceiveDetail = () => {
       if (data?.error) {
         showPopup({
           title: data.message ? 'Inbound order details' : null,
-          message: data.errorMessage ?? `Failed to create temporary receiving bin ${id}`,
+          message: data.errorMessage ?? `Failed to create receiving bin ${id}`,
           positiveButton: {
             text: 'Retry',
             callback: () => {
-              dispatch(createTemporaryReceivingBin(id, callback));
+              dispatch(createReceivingBin(id, callback));
             }
           },
           negativeButtonText: 'Cancel'
@@ -172,7 +174,7 @@ const InboundReceiveDetail = () => {
         }
       }
     }
-    dispatch(createTemporaryReceivingBin(id, callback));
+    dispatch(createReceivingBin(id, callback));
   }
 
   const submitReceiving = (id: string, requestBody: any) => {
