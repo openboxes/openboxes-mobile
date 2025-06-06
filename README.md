@@ -17,25 +17,25 @@ Openboxes mobile app built using React Native.
 
 **Step 2:** Go to the cloned repo and open in terminal.
 
-**Step 3:** Install the dependencies with `$ npm i or yarn install`
+**Step 3:** Install the dependencies with `yarn install`
 
-**Step 4:** Run the npm script to install the cocoapods `$ npm run pod install`
+**Step 4:** Run the npm script to install the cocoapods `yarn pod install`
 
 ## 🕵️ How to Run the Project
 
-1. Install dependencies
-   ```bash
-   yarn install
-   ```
 1. Run and build for either OS. (Replace `npm` with `npx` if you don't have these packages installed globally, [reference](https://www.freecodecamp.org/news/npm-vs-npx-whats-the-difference/.))
    - Run iOS app
+     1. Start metro terminal in a separate window
      ```bash
-     npx react-native run-ios
+     yarn start
+     ```
+     2. Compile code and launch a simulator
+     ```bash
      yarn ios
      ```
-     To run in a specific simulators, run
+     3. To run in a specific simulator, run
      ```bash
-     npx react-native run-ios --simulator="iPhone 11 Pro (14.4)"
+     yarn ios --simulator="iPhone 16 Pro"
      ```
    - Run Android app
      - Start Genymotion or Native emulator

@@ -4,13 +4,13 @@ import productsReducer from './productsReducer';
 import putawayReducer from './putawayReducer';
 import locationsReducer from './locationsReducer';
 
-const rootRducer = combineReducers({
+const rootReducer = combineReducers({
   mainReducer,
   productsReducer,
   putawayReducer,
   locationsReducer
 });
 
-export type RootState = ReturnType<typeof rootRducer>;
+export type RootState = ReturnType<typeof rootReducer>;
 
-export default rootRducer;
+export default rootReducer;

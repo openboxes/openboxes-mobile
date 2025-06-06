@@ -1,7 +1,7 @@
 require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
-platform :ios, '11.0'
+platform :ios, '15.0'
 
 target 'openboxes_mobile_o' do
   config = use_native_modules!
@@ -12,10 +12,6 @@ target 'openboxes_mobile_o' do
     :hermes_enabled => false
   )
 
-  pod 'RNSentry', :path => '../node_modules/@sentry/react-native'
-
-  pod 'react-native-config', :path => '../node_modules/react-native-config'
-
   target 'openboxes_mobile_oTests' do
     inherit! :complete
     # Pods for testing
@@ -25,10 +21,75 @@ target 'openboxes_mobile_o' do
   #
   # Note that if you have use_frameworks! enabled, Flipper will not work and
   # you should disable the next line.
-  use_flipper!()
+  use_flipper!({
+    #
+    # Flipper-Glog before 0.5 can't build against iOS SDK 13.4+.
+    #
+    # https://github.com/facebook/react-native/issues/29203
+    # https://github.com/facebook/react-native/issues/32291
+    # https://github.com/google/glog/issues/544
+    # https://github.com/google/glog/pull/646
+    #
+    # (Fixed in or around react-native 0.68.)
+    #
+    'Flipper-Glog' => '0.5.0.4'
+  })
 
   post_install do |installer|
     react_native_post_install(installer)
+
+    #
+    # This magical incantation fixes several issues with modern Xcode releases.
+    #
+    # At the very least, it addresses the following problems:
+    # - Prevents RCT-Folly from (re)defining `typedef uint8_t clockid_t`
+    #
+    # RN 0.73.4 and later (may) no longer require this workaround.
+    #
+    # https://github.com/facebook/react-native/issues/34997
+    # https://github.com/microsoft/react-native-macos/issues/2015
+    #
     __apply_Xcode_12_5_M1_post_install_workaround(installer)
+
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+
+        #
+        # Prevent RCT-Folly from breaking the build with this compiler warning:
+        #   `no template named 'unary_function' in namespace 'std'; did you mean '__unary_function'?`
+        # https://github.com/facebook/react-native/issues/37748
+        #
+        if target.name == 'RCT-Folly'
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)', '_LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION']
+        end
+
+        #
+        # Prevent Yoga from breaking the build with this compiler warning:
+        #   `error: use of bitwise '|' with boolean operands`
+        # https://stackoverflow.com/questions/75897834/use-of-bitwise-with-boolean-operands-xcode-14-3-fails-builds-using-react-n
+        #
+        if target.name == 'Yoga'
+          config.build_settings['OTHER_CPLUSPLUSFLAGS'] ||= ['$(inherited)', '-Wno-error=bitwise-instead-of-logical']
+        end
+      end
+    end
+
+    #
+    # Patch a Flipper header file to add an import statement required for later Xcodes.
+    #
+    # https://github.com/facebook/react-native/issues/43335#issuecomment-1980285308
+    # Looks like Facebook fixed this in a (much) later version of Flipper than what we use.
+    # https://github.com/facebook/flipper/commit/b3dcdb87f930dbbc9dbacb53ad60996e0111e7d8
+    #
+    flipper_transport_path = "#{installer.sandbox.root}/Headers/Private/Flipper/FlipperTransportTypes.h"
+    if File.exist?(flipper_transport_path)
+      puts "Checking Flipper FlipperTransportTypes.h for compatibility with Xcode 15.3+ ..."
+      content = File.read(flipper_transport_path)
+      unless content.include?('#include <functional>')
+        content.gsub!('#include <string>', "#include <functional>\n#include <string>")
+        File.write(flipper_transport_path, content)
+        puts "... added `#include <functional>` to FlipperTransportTypes.h"
+      end
+    end
   end
 end
