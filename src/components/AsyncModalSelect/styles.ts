@@ -40,7 +40,8 @@ export default StyleSheet.create({
     padding: Theme.spacing.medium,
     height: 55,
     borderRadius: Theme.roundness,
-    marginBottom: Theme.spacing.small
+    marginBottom: Theme.spacing.small,
+    color: 'black'
   },
   imageIcon: {
     position: 'absolute',

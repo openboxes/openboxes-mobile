@@ -14,7 +14,7 @@ import InputBox from '../../components/InputBox';
 import InputSpinner from '../../components/InputSpinner';
 import showPopup from '../../components/Popup';
 import Radio from '../../components/Radio';
-import { submitPartialReceiving } from '../../redux/actions/inboundorder';
+import { submitPartialReceiving, createTemporaryReceivingBin } from '../../redux/actions/inboundorder';
 import { searchInternalLocations } from '../../redux/actions/locations';
 import { RootState } from '../../redux/reducers';
 import Theme from '../../utils/Theme';
@@ -36,7 +36,7 @@ const InboundReceiveDetail = () => {
     internalLocation: [],
     receiveLocation: {
       id: shipmentItem['binLocation.id'],
-      label: shipmentItem['binLocation.name']
+      name: shipmentItem['binLocation.name']
     },
     lotNumber: shipmentItem.lotNumber,
     expirationDate: shipmentItem.expirationDate,
@@ -45,6 +45,11 @@ const InboundReceiveDetail = () => {
     error: null
   });
   const [lotStatusCode, setLotStatusCode] = useState<string>('');
+
+  useEffect(() => {
+    createTempBin(shipmentData?.id);
+  }, []);
+  
   useEffect(() => {
     getInternalLocation(location.id);
   }, [shipmentItem]);
@@ -93,8 +98,8 @@ const InboundReceiveDetail = () => {
               receiptItemId: '',
               shipmentItemId: shipmentItem.shipmentItemId,
               'container.id': shipmentItem['container.id'] ?? '',
-              'product.id': shipmentItem['product.id'] ?? '',
-              'binLocation.id': state.receiveLocation?.id ?? '',
+              'product': shipmentItem['product.id'] ?? '',
+              'binLocation': state.receiveLocation?.id ?? '',
               lotNumber: state.lotNumber,
               expirationDate: state.expirationDate,
               recipient: '',
@@ -131,6 +136,44 @@ const InboundReceiveDetail = () => {
       cancelRemaining && Number(quantityToReceive) >= Number(shipmentItem.quantityRemaining) ? false : cancelRemaining
     );
   };
+
+  const createTempBin = (id: string) => {
+    const callback = (data: any) => {
+      if (data?.error) {
+        showPopup({
+          title: data.message ? 'Inbound order details' : null,
+          message: data.errorMessage ?? `Failed to create temporary receiving bin ${id}`,
+          positiveButton: {
+            text: 'Retry',
+            callback: () => {
+              dispatch(createTemporaryReceivingBin(id, callback));
+            }
+          },
+          negativeButtonText: 'Cancel'
+        });
+      } else {
+        if (data && Object.keys(data).length !== 0) {
+          const newReceivingBin = {
+            id: data.data.id,
+            name: data.data.name
+          }
+
+          const updatedLocations = [...state.internalLocation];
+          const alreadyExists = updatedLocations.find(loc => loc.id === newReceivingBin.id);
+          if (!alreadyExists) {
+            updatedLocations.push(newReceivingBin);
+          }
+
+          setState(prev => ({
+            ...prev,
+            internalLocation: updatedLocations,
+            receiveLocation: newReceivingBin
+          }));
+        }
+      }
+    }
+    dispatch(createTemporaryReceivingBin(id, callback));
+  }
 
   const submitReceiving = (id: string, requestBody: any) => {
     const callback = (data: any) => {
@@ -211,9 +254,17 @@ const InboundReceiveDetail = () => {
             };
             locationList.push(locationData);
           });
-          state.internalLocation = locationList;
+
+          setState(prev => {
+            const existing = locationList.find(loc => loc.id === prev.receiveLocation?.id);
+          
+            return {
+              ...prev,
+              internalLocation: locationList,
+              receiveLocation: existing ?? locationList[0] ?? { id: null, name: null }
+            };
+          });
         }
-        setState({ ...state });
       }
     };
     dispatch(
@@ -294,9 +345,10 @@ const InboundReceiveDetail = () => {
             disabled={Number(state.quantityToReceive) >= Number(shipmentItem.quantityRemaining)}
           />
           <AsyncModalSelect
+            key={state.receiveLocation?.id}
             placeholder="Receiving Location"
             label="Receiving Location"
-            initValue={state.receiveLocation.label || ''}
+            initValue={state.receiveLocation?.name || ''}
             initialData={state.internalLocation}
             searchAction={searchInternalLocations}
             searchActionParams={{ 'parentLocation.id': location.id }}
@@ -315,9 +367,10 @@ const InboundReceiveDetail = () => {
             label={'Lot Number'}
             onChange={onChangeLotNumber}
           />
+          
           <SelectDropdown
             renderDropdownIcon={renderIcon}
-            data={['', 'APPROVED', 'RECALLED', 'ON_HOLD', 'QUARANTINED', 'EXPIRED', 'RESERVED', 'DAMAGED']}
+            data={['Select lot status', 'APPROVED', 'RECALLED', 'ON_HOLD', 'QUARANTINED', 'EXPIRED', 'RESERVED', 'DAMAGED']}
             defaultValue={lotStatusCode}
             buttonTextStyle={styles.lotStatusSelectTextStyle}
             buttonTextAfterSelection={(selectedItem) => selectedItem}

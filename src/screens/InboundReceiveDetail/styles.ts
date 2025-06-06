@@ -153,7 +153,7 @@ export default StyleSheet.create({
   lotStatusSelectTextStyle: {
     textAlign: 'left',
     fontSize: 15,
-    color: '#808080'
+    color: '#000000'
   },
   lastChild: {
     marginRight: 0

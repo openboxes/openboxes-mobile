@@ -5,7 +5,9 @@ import {
   FETCH_PARTIAL_RECEIVING_SUCCESS,
   FETCH_PARTIAL_RECEIVING_REQUEST,
   SUBMIT_PARTIAL_RECEIVING_REQUEST,
-  SUBMIT_PARTIAL_RECEIVING_SUCCESS
+  SUBMIT_PARTIAL_RECEIVING_SUCCESS,
+  CREATE_TEMP_RECEIVING_BIN_SUCCESS,
+  CREATE_TEMP_RECEIVING_BIN_REQUEST
 } from '../actions/inboundorder';
 import { hideScreenLoading, showScreenLoading } from '../actions/main';
 import * as api from '../../apis';
@@ -61,6 +63,25 @@ function* submitPartialReceiving(action: any) {
   }
 }
 
+function* createTemporaryReceivingBin(action: any) {
+  try {
+    yield put(showScreenLoading('Please wait..'));
+    const response: any = yield call(
+      api.createTemporaryReceivingBin,
+      action.payload.id,
+    );
+    yield put({
+      type: CREATE_TEMP_RECEIVING_BIN_SUCCESS,
+      payload: response.data
+    });
+    if (action.callback) yield action.callback(response);
+    yield put(hideScreenLoading());
+  } catch (e) {
+    Alert.alert(e.message);
+    yield put(hideScreenLoading());
+  }
+}
+
 function* fetchPartialReceiving(action: any) {
   try {
     yield put(showScreenLoading('Please wait...'));
@@ -84,4 +105,5 @@ export default function* watcher() {
   yield takeLatest(FETCH_INBOUND_ORDER_LIST_REQUEST, fetchInboundOrderList);
   yield takeLatest(FETCH_PARTIAL_RECEIVING_REQUEST, fetchPartialReceiving);
   yield takeLatest(SUBMIT_PARTIAL_RECEIVING_REQUEST, submitPartialReceiving);
+  yield takeLatest(CREATE_TEMP_RECEIVING_BIN_REQUEST, createTemporaryReceivingBin)
 }

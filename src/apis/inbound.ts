@@ -11,3 +11,7 @@ export function fetchPartialReceiving(id: string = '') {
 export function submitPartialReceiving(id: string, requestBody: any) {
   return apiClient.post(`/partialReceiving/${id}`, requestBody);
 }
+
+export function createTemporaryReceivingBin(id: string) {
+  return apiClient.post(`/partialReceiving/${id}/createTempBin`, {});
+}
