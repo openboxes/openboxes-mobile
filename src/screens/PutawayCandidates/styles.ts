@@ -50,5 +50,8 @@ export default StyleSheet.create({
   },
   caption: {
     fontSize: 12
-  }
+  },
+  refreshButton: {
+    marginTop: Theme.spacing.large
+  },
 });

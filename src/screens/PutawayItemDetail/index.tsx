@@ -88,7 +88,7 @@ const PutawayItemDetail = () => {
           positiveButton: {
             text: 'ok',
             callback: () => {
-              navigation.navigate('Dashboard');
+              navigation.navigate('PutawayCandidates');
             }
           }
         });
@@ -139,8 +139,10 @@ const PutawayItemDetail = () => {
       </View>
       <Divider />
       <View style={styles.contentContainer}>
+        <Text style={styles.scanPutawayLabel}>Scan Putaway Location</Text>
         <InputBox
-          label={'Scan Putaway Location'}
+          placeholder="Default"
+          label="Default"
           value={state.scannedPutawayLocation}
           onChange={onChangeScannedPutawayLocation}
           editable={false}

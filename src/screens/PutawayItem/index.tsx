@@ -43,8 +43,10 @@ class PutawayItem extends Component<Props, State> {
                 '',
                 {
                   'parentLocation.id': this.props.currentLocation.id,
+                  locationTypeCode: 'BIN_LOCATION',
                   max: '25',
-                  offset: '0'
+                  offset: '0',
+
                 },
                 callback
               );
@@ -67,6 +69,7 @@ class PutawayItem extends Component<Props, State> {
       '',
       {
         'parentLocation.id': this.props.currentLocation.id,
+        locationTypeCode: 'BIN_LOCATION',
         max: 25,
         offset: 0
       },

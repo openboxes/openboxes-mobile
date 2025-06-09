@@ -12,6 +12,7 @@ import { getCandidates } from '../../redux/actions/putaways';
 import { RootState } from '../../redux/reducers';
 import styles from './styles';
 import { DispatchProps, Props, State } from './types';
+import Button from '../../components/Button';
 
 class PutawayCandidates extends Component<Props, State> {
   constructor(props: Props) {
@@ -24,25 +25,22 @@ class PutawayCandidates extends Component<Props, State> {
     };
   }
 
-  UNSAFE_componentWillMount() {
+  componentDidMount() {
     this.getScreenData();
   }
 
-  componentDidUpdate() {
-    if (this.props.route.params && this.props.route.params.forceRefresh) {
-      this.getScreenData();
-      this.props.navigation.setParams({ forceRefresh: false });
-    }
-
-    if (!this.state.refreshing) {
-      const { candidates } = this.props;
-      let putawayCandidates = candidates.filter((candidate: any) => candidate.putawayStatus === 'READY');
-      putawayCandidates = putawayCandidates.sort((a: any, b: any) =>
-        a['currentLocation.name'].toLowerCase().localeCompare(b['currentLocation.name'].toLowerCase())
-      );
-      if (putawayCandidates.length !== this.state.putawayCandidates.length) {
-        this.setState({ putawayCandidates });
-      }
+  componentDidUpdate(prevProps: Props) {
+    if (prevProps.candidates !== this.props.candidates) {
+      const putawayCandidates = this.props.candidates
+        .filter((candidate: any) => candidate.putawayStatus === 'READY')
+        .sort((a: any, b: any) =>
+          a['currentLocation.name'].toLowerCase().localeCompare(b['currentLocation.name'].toLowerCase())
+        );
+    
+      this.setState({
+        refreshing: false,
+        putawayCandidates,
+      });
     }
   }
 
@@ -50,7 +48,6 @@ class PutawayCandidates extends Component<Props, State> {
     this.setState({ refreshing: true });
     const { currentLocation } = this.props;
     await this.props.getCandidates(currentLocation.id);
-    this.setState({ refreshing: false });
   };
 
   renderItem = (item: any) => {
@@ -140,10 +137,16 @@ class PutawayCandidates extends Component<Props, State> {
       <SafeAreaView style={styles.container}>
         <BarcodeSearchHeader
           autoSearch
-          placeholder="Search by LPN or current location"
+          placeholder="Search by lot number or current location"
           resetSearch={this.resetFiltering}
           searchBox={false}
           onSearchTermSubmit={this.filterPutawayCandidates}
+        />
+        <Button
+          style={styles.refreshButton}
+          size="90%"
+          title="Refresh (Get Latest Data)"
+          onPress={this.getScreenData}
         />
         {putawayCandidates.length ? (
           <FlatList

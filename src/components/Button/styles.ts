@@ -22,6 +22,9 @@ export default StyleSheet.create({
   size100: {
     width: '100%'
   },
+  size90: {
+    width: '90%'
+  },
   size80: {
     width: '80%'
   },

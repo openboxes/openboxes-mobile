@@ -43,6 +43,7 @@ function* fetchPutAwayFromOrder(action: any) {
 
 function* submitPutawayItem(action: any) {
   try {
+    yield put(showScreenLoading('Please wait..'));
     const response: PostPutAwayItemApiResponse = yield call(
       api.submitPutawayItem,
       action.payload.id,
@@ -53,7 +54,9 @@ function* submitPutawayItem(action: any) {
       payload: response
     });
     yield action.callback(response);
+    yield put(hideScreenLoading());
   } catch (error) {
+    yield put(hideScreenLoading());
     if (error.code != 401) {
       yield action.callback({
         error: true,

@@ -12,6 +12,8 @@ const Button: React.FC<Props> = (props) => {
         return styles.size50;
       case '80%':
         return styles.size80;
+      case '90%':
+        return styles.size90;
       case '100%':
         return styles.size100;
       default:

@@ -68,5 +68,10 @@ export default StyleSheet.create({
   additionalInfoRow: {
     flexDirection: 'row',
     justifyContent: 'space-between'
+  },
+  scanPutawayLabel: {
+    fontSize: 14,
+    color: Theme.colors.placeholder,
+    marginBottom: 10
   }
 });
