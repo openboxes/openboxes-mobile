@@ -186,13 +186,11 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
       );
     }
 
-    const sortedAvailableLocations = this.getSortedOrgNameAndLocationsDictionary(availableLocations);
-
     return (
       <View>
         <ScrollView style={styles.scrollView}>
           {groupLocationEntries
-            ? this.renderGroupedLocations(sortedAvailableLocations)
+            ? this.renderGroupedLocations(this.getSortedOrgNameAndLocationsDictionary(availableLocations))
             : this.renderAllLocations(availableLocations)}
         </ScrollView>
       </View>
