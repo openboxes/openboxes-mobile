@@ -3,6 +3,8 @@ import React from 'react';
 import { View } from 'react-native';
 import { Button, Caption, Paragraph } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
+
+import * as NavigationService from '../../NavigationService';
 import { logout } from '../../redux/actions/auth';
 import { RootState } from '../../redux/reducers';
 import Theme from '../../utils/Theme';
@@ -32,7 +34,22 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
       </View>
 
       <View style={styles.logoutSection}>
-        <Button icon="logout" mode="contained" color={Theme.colors.primary} onPress={handleLogout}>
+        <Button
+          icon="cog"
+          mode="outlined"
+          onPress={() => {
+            NavigationService.navigate('Settings');
+          }}
+        >
+          Settings
+        </Button>
+        <Button
+          icon="logout"
+          mode="contained"
+          color={Theme.colors.primary}
+          style={styles.logoutButton}
+          onPress={handleLogout}
+        >
           Logout
         </Button>
       </View>
