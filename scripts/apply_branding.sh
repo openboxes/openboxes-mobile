@@ -3,6 +3,17 @@
 # Exit on error
 set -e
 
+# Detect sed version for in-place editing portability (GNU vs BSD)
+SED_INPLACE_CMD="sed -i"
+# The --version flag is a GNU extension. On BSD sed (macOS), this command will fail.
+# We redirect stdout and stderr to /dev/null to suppress output.
+if ! sed --version >/dev/null 2>&1; then
+    # This is likely BSD sed, which requires an argument for the -i flag.
+    # An empty string '' tells it to edit in-place without a backup file.
+    SED_INPLACE_CMD="sed -i ''"
+    echo "Info: Detected BSD-style sed. Using 'sed -i ''' for in-place edits."
+fi
+
 # --- Argument: Project Name ---
 PROJECT_NAME="$1"
 if [ -z "${PROJECT_NAME}" ]; then
@@ -36,7 +47,7 @@ SETTINGS_FILE="${PROJECT_BRANDING_DIR}/settings.json"
 GENERAL_APP_NAME=""
 
 if [ -f "${SETTINGS_FILE}" ]; then
-    if command -v jq &>/dev/null; then # Corrected space
+    if command -v jq &>/dev/null; then
         GENERAL_APP_NAME=$(jq -r '.app_name' "${SETTINGS_FILE}")
         if [ -z "${GENERAL_APP_NAME}" ] || [ "${GENERAL_APP_NAME}" == "null" ]; then
             echo "  'app_name' not found or empty in ${SETTINGS_FILE}."
@@ -101,17 +112,16 @@ elif [ ! -f "${ANDROID_STRINGS_FILE}" ]; then
     echo "  Warning: Android strings.xml not found: ${ANDROID_STRINGS_FILE}"
 else
     echo "  Setting Android app_name to: '${GENERAL_APP_NAME}'"
-    if command -v sed &>/dev/null; then # Corrected space
+    if command -v sed &>/dev/null; then
         echo "    Using 'sed'. Ensure app_name in settings.json is XML-escaped if needed."
-        # Modified sed command for in-place edit without backup.
-        # Note: `sed -i` without a suffix works for GNU sed.
-        # For BSD sed (like on macOS), you might need `sed -i '' ...` if issues arise.
-        if sed -i "s#\(<string name=\"app_name\">\)[^<]*\(</string>\)#\1${GENERAL_APP_NAME}\2#g" "${ANDROID_STRINGS_FILE}"; then
+        # Use the portable command stored in our variable.
+        # The variable is not quoted to allow for word splitting by the shell.
+        if ${SED_INPLACE_CMD} "s#\(<string name=\"app_name\">\)[^<]*\(</string>\)#\1${GENERAL_APP_NAME}\2#g" "${ANDROID_STRINGS_FILE}"; then
             echo "      Updated Android app_name via sed."
         else
             echo "      Error: sed command failed for Android strings.xml."
         fi
-    elif command -v xmlstarlet &>/dev/null; then # Corrected space
+    elif command -v xmlstarlet &>/dev/null; then
         echo "    Using 'xmlstarlet'."
         if xmlstarlet ed -L -u "/resources/string[@name='app_name']" -v "${GENERAL_APP_NAME}" "${ANDROID_STRINGS_FILE}"; then
             echo "      Updated Android app_name via xmlstarlet."
