@@ -4,7 +4,7 @@ import Theme from '../../utils/Theme';
 export default StyleSheet.create({
   contentHeader: {
     backgroundColor: Theme.colors.surface,
-    padding: 16
+    padding: Theme.spacing.large
   },
   headerRow: {
     flexDirection: 'row',

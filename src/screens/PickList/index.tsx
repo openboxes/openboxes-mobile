@@ -1,6 +1,8 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ListRenderItemInfo, ToastAndroid, View } from 'react-native';
-import Carousel from 'react-native-snap-carousel';
+import { Divider, Text } from 'react-native-paper';
+import Carousel, { Pagination } from 'react-native-snap-carousel';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useDispatch } from 'react-redux';
 
 import PickListItem from '../../components/PickListItem';
@@ -8,14 +10,20 @@ import showPopup from '../../components/Popup';
 import { device } from '../../constants';
 import { PicklistItem } from '../../data/picklist/PicklistItem';
 import { submitPickListItem } from '../../redux/actions/orders';
+import Theme from '../../utils/Theme';
 import styles from './styles';
 
 const PickOrderItem = ({ picklistItems, selectedPicklistItemIndex, successfulPickCallback }: any) => {
+  const [activeIndex, setActiveIndex] = useState(selectedPicklistItemIndex || 0);
   const dispatch = useDispatch();
   const carouselRef = useRef<Carousel<any>>(null);
 
   useEffect(() => {
-    carouselRef.current?.snapToItem(selectedPicklistItemIndex);
+    if (carouselRef.current) {
+      const newIndex = selectedPicklistItemIndex || 0;
+      carouselRef.current.snapToItem(newIndex);
+      setActiveIndex(newIndex);
+    }
   }, [picklistItems, selectedPicklistItemIndex]);
 
   const formSubmit = (itemToSave: any) => {
@@ -93,25 +101,62 @@ const PickOrderItem = ({ picklistItems, selectedPicklistItemIndex, successfulPic
     return item[property] === item[scannedProperty];
   };
 
+  const renderCarouselItem = ({ item }: ListRenderItemInfo<PicklistItem>) => {
+    return <PickListItem item={item} onPickItem={formSubmit} />;
+  };
+
   return (
-    <View style={styles.screenContainer}>
-      <Carousel
-        ref={carouselRef}
-        scrollEnabled
-        useScrollView
-        lockScrollWhileSnapping
-        firstItem={selectedPicklistItemIndex ? selectedPicklistItemIndex : 0}
-        itemWidth={device.windowWidth - 20}
-        data={picklistItems}
-        sliderWidth={device.windowWidth}
-        key={selectedPicklistItemIndex}
-        sliderHeight={device.windowHeight}
-        pointerEvents={'none'}
-        renderItem={({ item }: ListRenderItemInfo<PicklistItem>) => {
-          return <PickListItem item={item} onPickItem={formSubmit} />;
-        }}
-      />
-    </View>
+    <>
+      {/* Swipe Prompt */}
+      {picklistItems && picklistItems.length > 1 && (
+        <>
+          <Divider />
+
+          <View style={styles.swipePromptContainer}>
+            <Icon name="swap-horizontal-bold" size={20} color={Theme.colors.warningText} />
+            <Text style={styles.swipePromptText}>Swipe to navigate between items.</Text>
+          </View>
+        </>
+      )}
+
+      <Divider />
+
+      <View style={styles.screenContainer}>
+        <Carousel
+          ref={carouselRef}
+          sliderWidth={device.windowWidth}
+          itemWidth={device.windowWidth * 0.95}
+          inactiveSlideScale={0.9}
+          inactiveSlideOpacity={0.7}
+          activeSlideAlignment={'center'}
+          data={picklistItems}
+          renderItem={renderCarouselItem}
+          firstItem={selectedPicklistItemIndex || 0}
+          scrollEnabled
+          lockScrollWhileSnapping
+          useScrollView
+          onSnapToItem={(index) => setActiveIndex(index)}
+        />
+        <Pagination
+          dotsLength={picklistItems.length}
+          activeDotIndex={activeIndex}
+          containerStyle={{
+            backgroundColor: 'transparent',
+            paddingVertical: Theme.spacing.large,
+            marginTop: Theme.spacing.small
+          }}
+          dotStyle={{
+            width: 11,
+            height: 11,
+            borderRadius: Theme.roundness,
+            marginHorizontal: Theme.spacing.small,
+            backgroundColor: Theme.colors.primary
+          }}
+          inactiveDotOpacity={0.5}
+          inactiveDotScale={0.5}
+        />
+      </View>
+    </>
   );
 };
 

@@ -13,6 +13,7 @@ export default {
     ...DefaultTheme.colors,
     primary: '#20345c',
     warning: '#FCFFC1',
+    warningText: '#8a6d3b',
     danger: '#FF5630',
     success: '#22bb33',
     info: '#00B8D9'

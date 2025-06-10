@@ -4,7 +4,14 @@ import Spinner from 'react-native-input-spinner';
 import { device } from '../constants';
 import Theme from '../utils/Theme';
 
-const InputSpinner = ({ title, value, max, setValue }: any) => {
+const DEFAULT_RATIO = 1.08;
+
+const InputSpinner = ({ title, value, max, setValue, ratio = DEFAULT_RATIO }: any) => {
+  if (ratio < 1) {
+    console.warn('Ratio should be greater than or equal to 1');
+    ratio = DEFAULT_RATIO;
+  }
+
   return (
     <>
       <View style={styles.container}>
@@ -18,7 +25,7 @@ const InputSpinner = ({ title, value, max, setValue }: any) => {
           min={0}
           longStep={10}
           speed={1}
-          width={device.windowWidth / 1.08}
+          width={device.windowWidth / ratio}
           value={value}
           onChange={(num: any) => {
             setValue(num);

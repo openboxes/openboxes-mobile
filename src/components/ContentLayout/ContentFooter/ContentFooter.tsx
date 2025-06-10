@@ -1,9 +1,10 @@
 import React from 'react';
 import { View } from 'react-native';
-import { Props } from './types';
-import styles, { gapStyle } from './styles';
-import AddPropsToChildren from '../../../utils/AddPropsToChildren';
 import { Divider } from 'react-native-paper';
+
+import AddPropsToChildren from '../../../utils/AddPropsToChildren';
+import styles, { gapStyle } from './styles';
+import { Props } from './types';
 
 const ContentFooter: React.FC<Props> = (props) => {
   const { children, direction = 'row', gap = 0, ...otherProps } = props;

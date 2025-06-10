@@ -117,11 +117,7 @@ const PickListItem: React.FC<Props> = ({ item, onPickItem }) => {
             <InputBox
               editable
               value={scannedBinLocation}
-              placeholder={
-                item['binLocation.locationNumber'] ||
-                item['binLocation.name'] ||
-                ''
-              }
+              placeholder={item['binLocation.locationNumber'] || item['binLocation.name'] || ''}
               label={'Bin Location'}
               disabled={false}
               icon={getIcon(scannedBinLocation, item['binLocation.name'])}
@@ -175,6 +171,7 @@ const PickListItem: React.FC<Props> = ({ item, onPickItem }) => {
             <View style={styles.inputSpinner}>
               <InputSpinner
                 title={'Quantity to Pick'}
+                ratio={1.15}
                 value={quantityToPick}
                 setValue={(quantity: number) => {
                   setQuantityToPick(quantity);
