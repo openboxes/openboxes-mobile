@@ -8,7 +8,7 @@
     "ios": "react-native run-ios --simulator='iPhone 16'",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "pod": "yarn postinstall && cd ios && pod",
-    "postinstall": "bash ./scripts/patch-podspecs.sh",
+    "postinstall": "bash ./scripts/patch_podspecs.sh",
     "start": "NODE_OPTIONS='--openssl-legacy-provider' npx react-native start --verbose",
     "test": "jest",
     "branding:vipr": "./scripts/apply_branding.sh vipr"
