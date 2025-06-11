@@ -4,14 +4,14 @@
   "private": true,
   "scripts": {
     "android": "react-native run-android",
+    "branding:vipr": "./scripts/apply_branding.sh vipr",
     "format": "prettier-eslint --eslint-config-path ./.eslintrc.js --write '**/*.ts' '**/*.tsx' '**/*.js' '**/*.jsx'",
     "ios": "react-native run-ios --simulator='iPhone 16'",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "pod": "yarn postinstall && cd ios && pod",
-    "postinstall": "bash ./scripts/patch_podspecs.sh",
+    "postinstall": "find node_modules -type f -name '*.podspec' -exec sed -i.pre-postinstall.bak 's|https://boostorg\\.jfrog\\.io/artifactory/main/|https://archives.boost.io/|g' {} +",
     "start": "NODE_OPTIONS='--openssl-legacy-provider' npx react-native start --verbose",
-    "test": "jest",
-    "branding:vipr": "./scripts/apply_branding.sh vipr"
+    "test": "jest"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "~1.15.9",
