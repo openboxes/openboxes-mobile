@@ -2,6 +2,7 @@
 format_version: '11'
 default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
 project_type: react-native
+
 trigger_map:
 - push_branch: master
   workflow: app_distribution_to_testers
@@ -11,188 +12,99 @@ trigger_map:
   workflow: primary
 - pull_request_source_branch: "*"
   workflow: primary
+
+_dependency_versions:
+  # https://github.com/android/ndk/wiki/Unsupported-Downloads#r21e
+  android_ndk_version: &android_ndk_version 21.4.7075529
+  node_version: &node_version 14.21.3
+  # We use RN 0.66; use this table to find the correct version of react-native-cli
+  # https://github.com/react-native-community/cli?tab=readme-ov-file#compatibility
+  react_native_cli_version: &react_native_cli_version 6.4.0
+
+step_bundles:
+  setup_steps:
+    description: |-
+      Check out code, install dependencies, and prepare the environment.
+    steps:
+      - activate-ssh-key@4:
+          run_if: '{{getenv "SSH_RSA_PRIVATE_KEY" | ne ""}}'
+      - git-clone@8:
+          is_always_run: true
+      - script@1:
+          title: Script - create .env file
+          inputs:
+          - content: |-
+              set -euxo pipefail
+              echo "BUILD_NUMBER='$BITRISE_BUILD_NUMBER'
+              API_BASE_URL='$API_BASE_URL'" > ./.env
+              echo "Check if the file was properly created: "
+              wc .env
+      - nvm@1:
+          title: Node Version Manager (NVM) - install Node.js
+          inputs:
+          - node_version: *node_version
+      - install-react-native@0:
+          inputs:
+          - version: *react_native_cli_version
+          title: Install React Native - CLI tools
+      - yarn@0:
+          title: Run yarn command - install
+          inputs:
+          - command: install
+      - install-missing-android-tools@3:
+          inputs:
+          - gradlew_path: "$PROJECT_LOCATION/gradlew"
+          - ndk_version: *android_ndk_version
+          is_always_run: true
+  release_steps:
+    description: |-
+      Bundle the Android app and copy the APK to $BITRISE_DEPLOY_DIR.
+      Currently, filenames are hardcoded, but they could be parameterized.
+    steps:
+      - yarn@0:
+          title: Run yarn command - bundle:android
+          inputs:
+          - command: bundle:android
+      - gradle-runner@3:
+          title: Gradle Runner - assembleRelease
+          inputs:
+          - apk_file_exclude_filter: "*-unaligned.apk\n\n"
+          - cache_level: all
+          - gradle_task: assembleRelease
+      - script@1:
+          inputs:
+          - content: |-
+              set -euxo pipefail
+              cp $BITRISE_APK_PATH $BITRISE_DEPLOY_DIR/openboxes_test_b$BITRISE_BUILD_NUMBER.apk
+          title: Script - copy APK for deploy-to-bitrise-io step
+      - deploy-to-bitrise-io@2:
+          is_always_run: false
+          inputs:
+          - notify_email_list: "$TESTERS"
+          - notify_user_groups: owner, admins, developers
+          - deploy_path: "$BITRISE_DEPLOY_DIR/openboxes_test_b$BITRISE_BUILD_NUMBER.apk"
+
 workflows:
   app_distribution_to_testers:
     steps:
-    - activate-ssh-key@4:
-        run_if: '{{getenv "SSH_RSA_PRIVATE_KEY" | ne ""}}'
-    - git-clone@6: {}
-    - script@1:
-        title: Create .env file
-        inputs:
-        - content: |-
-            #!/usr/bin/env bash
-            # fail if any commands fails
-            set -e
-            # debug log
-            set -x
-
-            # FOR NOW WE DO NOT NEED TO CREATE THIS FILE. UNCOMMENT IF NEEDED AGAIN
-            #echo "import {Environment} from './Environment';
-            #export const EnvironmentActual: Environment = {
-            #  API_BASE_URL: $API_BASE_URL
-            #};" > ./src/utils/EnvironmentActual.ts
-
-
-            echo "DSN_KEY='$DSN_KEY'
-            BUILD_NUMBER='$BITRISE_BUILD_NUMBER'
-            API_BASE_URL='$API_BASE_URL'" > ./.env
-
-            echo "Check if the file was properly created: "
-            echo ""
-
-            cat .env
-    - install-react-native@0:
-        inputs:
-        - npm_options: "--force"
-    - npm@1:
-        inputs:
-        - command: install
-    - install-missing-android-tools@3:
-        inputs:
-        - gradlew_path: "$PROJECT_LOCATION/gradlew"
-    - script@1:
-        title: npx react-native bundle
-        inputs:
-        - content: |+
-            #!/usr/bin/env bash
-            # fail if any commands fails
-            set -e
-            # debug log
-            set -x
-
-            mkdir android/app/src/main/assets
-
-            npx react-native bundle --entry-file index.js --platform android --bundle-output android/app/src/main/assets/index.android.bundle --dev true
-
-    - gradle-runner@2:
-        inputs:
-        - apk_file_exclude_filter: "*-unaligned.apk\n\n"
-        - gradle_task: assembleRelease
-        - cache_level: all
-    - script@1:
-        inputs:
-        - content: |-
-            #!/usr/bin/env bash
-            # fail if any commands fails
-            set -e
-            # debug log
-            set -x
-
-            # write your script here
-            cp $BITRISE_APK_PATH $BITRISE_DEPLOY_DIR/openboxes_test_b$BITRISE_BUILD_NUMBER.apk
-        title: copy APK to deploy
-    - deploy-to-bitrise-io@2:
-        is_always_run: false
-        inputs:
-        - notify_email_list: "$TESTERS"
-        - notify_user_groups: owner, admins, developers
-        - deploy_path: "$BITRISE_DEPLOY_DIR/openboxes_test_b$BITRISE_BUILD_NUMBER.apk"
+    - bundle::setup_steps: {}
+    - bundle::release_steps: {}
     triggers:
       enabled: false
   primary:
     steps:
-    - activate-ssh-key@4:
-        run_if: '{{getenv "SSH_RSA_PRIVATE_KEY" | ne ""}}'
+    - bundle::setup_steps: {}
     - brew-install@1:
         inputs:
         - packages: jq
         is_skippable: true
-        title: Brew install jq
-    - git-clone@6:
-        is_always_run: true
-    - script@1:
-        title: Create .env file
+        title: Brew install - jq (required for branding:vipr)
+    - yarn@0:
         inputs:
-        - content: |-
-            #!/usr/bin/env bash
-            # fail if any commands fails
-            set -e
-            # debug log
-            set -x
-
-            # FOR NOW WE DO NOT NEED TO CREATE THIS FILE. UNCOMMENT IF NEEDED AGAIN
-            #echo "import {Environment} from './Environment';
-            #export const EnvironmentActual: Environment = {
-            #  API_BASE_URL: $API_BASE_URL
-            #};" > ./src/utils/EnvironmentActual.ts
-
-
-            echo "DSN_KEY='$DSN_KEY'
-            BUILD_NUMBER='$BITRISE_BUILD_NUMBER'
-            API_BASE_URL='$API_BASE_URL'" > ./.env
-
-            echo "Check if the file was properly created: "
-            echo ""
-
-            cat .env
-    - nvm@1:
-        inputs:
-        - node_version: 14.21.3
-    - script@1:
-        inputs:
-        - content: |-
-            #!/usr/bin/env bash
-            set -exnpm install -g npm@6.14.18
-        title: install npm 6.14.18
-    - install-react-native@0.10:
-        inputs:
-        - version: 6.1.0
-    - npm@1:
-        inputs:
-        - command: install
-        - cache_local_deps: 'true'
-        - npm_version: 6.14.18
-        is_always_run: true
-        title: npm run install
-    - npm@1:
-        inputs:
-        - npm_version: 6.14.18
-        - command: run branding:vipr
+        - command: branding:vipr
         is_skippable: true
-        title: Branding VIPR
-    - install-missing-android-tools@3:
-        inputs:
-        - gradlew_path: "$PROJECT_LOCATION/gradlew"
-        - ndk_version: 21.4.7075529
-        is_always_run: true
-    - script@1:
-        title: npx react-native bundle
-        inputs:
-        - content: |+
-            #!/usr/bin/env bash
-            # fail if any commands fails
-            set -e
-            # debug log
-            set -x
-
-            mkdir android/app/src/main/assets
-
-            npx react-native bundle --entry-file index.js --platform android --bundle-output android/app/src/main/assets/index.android.bundle --dev true
-
-    - gradle-runner@2:
-        inputs:
-        - apk_file_exclude_filter: "*-unaligned.apk\n\n"
-        - gradle_task: assembleRelease
-        - cache_level: all
-    - script@1:
-        inputs:
-        - content: |-
-            #!/usr/bin/env bash
-            # fail if any commands fails
-            set -e
-            # debug log
-            set -x
-
-            # write your script here
-            cp $BITRISE_APK_PATH $BITRISE_DEPLOY_DIR/openboxes_test_b$BITRISE_BUILD_NUMBER.apk
-        title: copy APK to deploy
-    - deploy-to-bitrise-io@2:
-        is_always_run: false
-        inputs:
-        - notify_email_list: "$TESTERS"
-        - notify_user_groups: owner, admins, developers
-        - deploy_path: "$BITRISE_DEPLOY_DIR/openboxes_test_b$BITRISE_BUILD_NUMBER.apk"
+        title: Run yarn command - branding:vipr
+    - bundle::release_steps: {}
     triggers:
       enabled: false
 app:

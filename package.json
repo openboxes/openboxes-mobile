@@ -5,12 +5,13 @@
   "scripts": {
     "android": "react-native run-android",
     "branding:vipr": "./scripts/apply_branding.sh vipr",
+    "bundle:android": "mkdir -p android/app/src/main/assets && npx react-native bundle --entry-file index.js --platform android --bundle-output android/app/src/main/assets/index.android.bundle --dev true",
     "format": "prettier-eslint --eslint-config-path ./.eslintrc.js --write '**/*.ts' '**/*.tsx' '**/*.js' '**/*.jsx'",
     "ios": "react-native run-ios --simulator='iPhone 16'",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "pod": "yarn postinstall && cd ios && pod",
     "postinstall": "find node_modules -type f -name '*.podspec' -exec sed -i.pre-postinstall.bak 's|https://boostorg\\.jfrog\\.io/artifactory/main/|https://archives.boost.io/|g' {} +",
-    "start": "NODE_OPTIONS='--openssl-legacy-provider' npx react-native start --verbose",
+    "start": "npx react-native start --verbose",
     "test": "jest"
   },
   "dependencies": {
