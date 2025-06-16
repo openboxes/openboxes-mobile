@@ -3,7 +3,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Image, ScrollView, TouchableOpacity, View } from 'react-native';
 import DatePicker from 'react-native-datepicker';
-import { Caption, Chip, Divider, Subheading } from 'react-native-paper';
+import { Caption, Chip, Divider, Subheading, Text } from 'react-native-paper';
 import SelectDropdown from 'react-native-select-dropdown';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -211,6 +211,18 @@ const InboundReceiveDetail: React.FC = () => {
 
         <Subheading style={{ fontWeight: 'bold' }}>{shipmentItem['product.name']}</Subheading>
         <Caption>{shipmentData.name}</Caption>
+        <Divider style={styles.dividerHorizontal} />
+
+        <View style={styles.additionalInfoRow}>
+          <View style={styles.columnItem}>
+            <Text style={styles.label}>{'Shipment Number'}</Text>
+            <Text style={styles.value}>{shipmentData?.shipmentNumber || ''}</Text>
+          </View>
+          <View style={styles.columnItem}>
+            <Text style={styles.label}>{'Lot / Serial Number'}</Text>
+            <Text style={styles.value}>{shipmentItem?.lotNumber || 'Default'}</Text>
+          </View>
+        </View>
         <Divider style={styles.dividerHorizontal} />
 
         <View style={styles.rowItem}>
