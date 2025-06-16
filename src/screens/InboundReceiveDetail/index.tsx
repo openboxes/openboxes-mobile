@@ -1,9 +1,9 @@
 /* eslint-disable react-native/no-inline-styles */
 import { useNavigation, useRoute } from '@react-navigation/native';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Image, ScrollView, TouchableOpacity, View } from 'react-native';
 import DatePicker from 'react-native-datepicker';
-import { Caption, Chip, Divider, Subheading, Text } from 'react-native-paper';
+import { Caption, Chip, Divider, Subheading } from 'react-native-paper';
 import SelectDropdown from 'react-native-select-dropdown';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -14,82 +14,125 @@ import InputBox from '../../components/InputBox';
 import InputSpinner from '../../components/InputSpinner';
 import showPopup from '../../components/Popup';
 import Radio from '../../components/Radio';
-import { submitPartialReceiving, createReceivingBin } from '../../redux/actions/inboundorder';
+import ShipmentItems from '../../data/inbound/ShipmentItems';
+import Location from '../../data/location/Location';
+import { createReceivingBin, submitPartialReceiving } from '../../redux/actions/inboundorder';
 import { searchInternalLocations } from '../../redux/actions/locations';
 import { RootState } from '../../redux/reducers';
 import Theme from '../../utils/Theme';
 import styles from './styles';
 
-const renderIcon = () => {
-  return <Image style={styles.arrowDownIcon} source={require('../../assets/images/arrow-down.png')} />;
+type ShipmentData = {
+  id: string;
+  shipmentNumber?: string;
+  expectedDeliveryDate?: string;
+  name?: string;
 };
 
-const InboundReceiveDetail = () => {
+const renderIcon = () => <Image style={styles.arrowDownIcon} source={require('../../assets/images/arrow-down.png')} />;
+
+const InboundReceiveDetail: React.FC = () => {
   const dispatch = useDispatch();
-  const route = useRoute();
-  const { shipmentItem, shipmentData, shipmentId }: any = route.params;
-  const [cancelRemaining, setCancelRemaining] = useState(false);
   const navigation = useNavigation();
-  const location = useSelector((state: RootState) => state.mainReducer.currentLocation);
-  const [state, setState] = useState<any>({
-    comments: '',
-    internalLocation: [],
-    receiveLocation: {
-      id: shipmentItem['binLocation.id'],
-      name: shipmentItem['binLocation.name']
-    },
-    lotNumber: shipmentItem.lotNumber,
-    expirationDate: shipmentItem.expirationDate,
-    deliveryDate: shipmentData.expectedDeliveryDate,
-    quantityToReceive: Number(shipmentItem.quantityRemaining) || 0,
-    error: null
+  const route = useRoute();
+  const { shipmentItem, shipmentData, shipmentId } = route.params as {
+    shipmentItem: ShipmentItems;
+    shipmentData: ShipmentData;
+    shipmentId: string;
+  };
+
+  const currentLocation = useSelector((state: RootState) => state.mainReducer.currentLocation);
+
+  const [quantity, setQuantity] = useState<number>(shipmentItem.quantityRemaining);
+  const [cancelRemaining, setCancelRemaining] = useState(false);
+  const [receiveLocation, setReceiveLocation] = useState<Pick<Location, 'id' | 'name'>>({
+    id: shipmentItem['binLocation.id'],
+    name: shipmentItem['binLocation.name']
   });
-  const [lotStatusCode, setLotStatusCode] = useState<string>('');
+  const [internalLocations, setInternalLocations] = useState<Pick<Location, 'id' | 'name'>[]>([]);
+  const [lotNumber, setLotNumber] = useState<string>(shipmentItem.lotNumber ?? '');
+  const [expirationDate, setExpirationDate] = useState<string | undefined>(shipmentItem.expirationDate);
+  const [comments, setComments] = useState<string>('');
+  const [lotStatus, setLotStatus] = useState<string>('');
+
+  const lotStatusOptions = useMemo(
+    () => ['Select lot status', 'APPROVED', 'RECALLED', 'ON_HOLD', 'QUARANTINED', 'EXPIRED', 'RESERVED', 'DAMAGED'],
+    []
+  );
 
   useEffect(() => {
-    createReceivingBinLocation(shipmentData?.id);
-  }, []);
-  
+    dispatch(
+      searchInternalLocations(
+        '',
+        {
+          'parentLocation.id': currentLocation.id,
+          max: '25',
+          offset: '0'
+        },
+        (data: any) => {
+          if (data?.error) {
+            showPopup({
+              title: 'Internal location error',
+              message: data.errorMessage || 'Failed to load internal locations'
+            });
+            return;
+          }
+          const locs: Location[] = data.data.map((item: any) => ({
+            id: item.id,
+            name: item.name
+          }));
+          setInternalLocations(locs);
+          const found = locs.find((l) => l.id === receiveLocation.id);
+          if (found) {
+            setReceiveLocation(found);
+          }
+        }
+      )
+    );
+  }, [currentLocation.id, dispatch, receiveLocation.id]);
+
   useEffect(() => {
-    getInternalLocation(location.id);
-  }, [shipmentItem]);
+    dispatch(
+      createReceivingBin(shipmentData.id, (data: any) => {
+        if (!data?.error && data.data?.id) {
+          const bin: Pick<Location, 'id' | 'name'> = {
+            id: data.data.id,
+            name: data.data.name
+          };
+          setInternalLocations((prev) => (prev.some((l) => l.id === bin.id) ? prev : [...prev, bin]));
+          setReceiveLocation(bin);
+        }
+      })
+    );
+  }, [dispatch, shipmentData.id]);
 
-  const onReceive = () => {
-    let errorTitle = '';
-    let errorMessage = '';
-
-    if (Number(state.quantityToReceive) < 0) {
-      errorTitle = 'Quantity!';
-      errorMessage = 'Please fill the Quantity to Receive';
-    }
-
-    if (Number(state.quantityToReceive) > Number(shipmentItem.quantityRemaining)) {
-      errorTitle = 'You are receiving more than the remaining quantity';
-      errorMessage = 'It is not possible to receive more than the remaining quantity';
-    }
-
-    if (Number(state.quantityToReceive) === 0 && !cancelRemaining) {
-      errorTitle = 'Quantity to receive is 0';
-      errorMessage = 'You cannot receive 0 without cancelling remaining';
-    }
-
-    if (state.expirationDate && !state.lotNumber) {
-      errorTitle = 'Expiration date without Lot';
-      errorMessage = 'Please fill the Lot Number if you want to set the Expiration Date';
-    }
-
-    if (errorTitle !== '') {
+  const onReceive = useCallback(() => {
+    if (quantity <= 0 && !cancelRemaining) {
       showPopup({
-        title: errorTitle,
-        message: errorMessage
+        title: 'Quantity to receive is 0',
+        message: 'You cannot receive 0 without cancelling remaining'
       });
-      return Promise.resolve(null);
+      return;
+    }
+    if (quantity > shipmentItem.quantityRemaining) {
+      showPopup({
+        title: 'Quantity!',
+        message: 'You cannot receive more than the remaining quantity'
+      });
+      return;
+    }
+    if (expirationDate && !lotNumber) {
+      showPopup({
+        title: 'Expiration date without Lot',
+        message: 'Please fill the Lot Number if you want to set the Expiration Date'
+      });
+      return;
     }
 
     const request = {
       receiptId: '',
       receiptStatus: 'PENDING',
-      shipmentId: shipmentId,
+      shipmentId,
       containers: [
         {
           'container.id': shipmentItem['container.id'] ?? '',
@@ -98,189 +141,60 @@ const InboundReceiveDetail = () => {
               receiptItemId: '',
               shipmentItemId: shipmentItem.shipmentItemId,
               'container.id': shipmentItem['container.id'] ?? '',
-              'product': {
+              product: {
                 id: shipmentItem['product.id'] ?? ''
               },
-              'binLocation': state.receiveLocation?.id ?? '',
-              lotNumber: state.lotNumber,
-              expirationDate: state.expirationDate,
+              binLocation: receiveLocation.id,
+              lotNumber,
+              expirationDate,
               recipient: '',
-              quantityReceiving: state.quantityToReceive,
-              cancelRemaining: cancelRemaining,
+              quantityReceiving: quantity,
+              cancelRemaining,
               quantityOnHand: '',
-              comment: state.comments,
+              comment: comments,
               mobile: true,
-              lotStatusCode: lotStatusCode
+              lotStatusCode: lotStatus
             }
           ]
         }
       ]
     };
 
-    submitReceiving(shipmentId, request);
-  };
-
-  const onChangeComment = (text: string) => {
-    setState({ ...state, comments: text });
-  };
-
-  const onChangeLotNumber = (text: string) => {
-    setState({ ...state, lotNumber: text });
-  };
-
-  const clearSelection = () => {
-    setState({ ...state, expirationDate: null });
-  };
-
-  const onChangeQuantity = (quantityToReceive: string) => {
-    setState({ ...state, quantityToReceive });
-    setCancelRemaining(
-      cancelRemaining && Number(quantityToReceive) >= Number(shipmentItem.quantityRemaining) ? false : cancelRemaining
-    );
-  };
-
-  const createReceivingBinLocation = (id: string) => {
-    const callback = (data: any) => {
-      if (data?.error) {
-        showPopup({
-          title: data.message ? 'Inbound order details' : null,
-          message: data.errorMessage ?? `Failed to create receiving bin ${id}`,
-          positiveButton: {
-            text: 'Retry',
-            callback: () => {
-              dispatch(createReceivingBin(id, callback));
-            }
-          },
-          negativeButtonText: 'Cancel'
-        });
-      } else {
-        if (data && Object.keys(data).length !== 0) {
-          const newReceivingBin = {
-            id: data.data.id,
-            name: data.data.name
-          }
-
-          const updatedLocations = [...state.internalLocation];
-          const alreadyExists = updatedLocations.find(loc => loc.id === newReceivingBin.id);
-          if (!alreadyExists) {
-            updatedLocations.push(newReceivingBin);
-          }
-
-          setState(prev => ({
-            ...prev,
-            internalLocation: updatedLocations,
-            receiveLocation: newReceivingBin
-          }));
-        }
-      }
-    }
-    dispatch(createReceivingBin(id, callback));
-  }
-
-  const submitReceiving = (id: string, requestBody: any) => {
-    const callback = (data: any) => {
-      if (data?.error) {
-        showPopup({
-          title: data.message ? 'Inbound order details' : null,
-          message: data.errorMessage ?? `Failed to load Inbound order details value ${id}`,
-          positiveButton: {
-            text: 'Retry',
-            callback: () => {
-              dispatch(submitPartialReceiving(id, requestBody, callback));
-            }
-          },
-          negativeButtonText: 'Cancel'
-        });
-      } else {
-        if (data && Object.keys(data).length !== 0) {
-          if (data.receiptId !== '' && data.receipt !== '') {
-            const receiptStatus = {
-              receiptStatus: 'COMPLETED'
-            };
-            dispatch(submitPartialReceiving(id, receiptStatus, onComplete));
-          }
-        }
-        setState({ ...state });
-      }
-    };
-    dispatch(submitPartialReceiving(id, requestBody, callback));
-  };
-
-  const onComplete = (data: any) => {
-    if (data?.error) {
-      showPopup({
-        title: data.errorMessage ? 'In Bound order details' : 'Error',
-        message: data.errorMessage ?? 'Failed to load Inbound order details',
-        positiveButton: {
-          text: 'Ok'
-        }
-      });
-    } else {
-      if (data && Object.keys(data).length !== 0) {
-        navigation.goBack();
-      }
-    }
-  };
-
-  const getInternalLocation = (id: string = '') => {
-    const callback = (data: any) => {
-      if (data?.error) {
-        showPopup({
-          title: data.message ? 'internal location details' : '',
-          message: data.errorMessage ?? `Failed to load internal location value ${id}`,
-          positiveButton: {
-            text: 'Retry',
-            callback: () => {
-              dispatch(
-                searchInternalLocations(
-                  '',
-                  {
-                    'parentLocation.id': location.id,
-                    max: '25',
-                    offset: '0'
-                  },
-                  callback
-                )
-              );
-            }
-          },
-          negativeButtonText: 'Cancel'
-        });
-      } else {
-        if (data && Object.keys(data).length !== 0) {
-          let locationList: any[] = [];
-          data.data.map((item: any) => {
-            const locationData = {
-              name: item.name,
-              id: item.id
-            };
-            locationList.push(locationData);
-          });
-
-          setState(prev => {
-            const existing = locationList.find(loc => loc.id === prev.receiveLocation?.id);
-          
-            return {
-              ...prev,
-              internalLocation: locationList,
-              receiveLocation: existing ?? locationList[0] ?? { id: null, name: null }
-            };
-          });
-        }
-      }
-    };
     dispatch(
-      searchInternalLocations(
-        '',
-        {
-          'parentLocation.id': location.id,
-          max: 25,
-          offset: 0
-        },
-        callback
-      )
+      submitPartialReceiving(shipmentId, request, (data: any) => {
+        if (data?.error) {
+          showPopup({
+            title: 'Receive error',
+            message: data.errorMessage
+          });
+          return;
+        }
+        dispatch(
+          submitPartialReceiving(shipmentId, { receiptStatus: 'COMPLETED' }, (res: any) => {
+            if (!res?.error) {
+              navigation.goBack();
+            }
+          })
+        );
+      })
     );
-  };
+  }, [
+    cancelRemaining,
+    comments,
+    dispatch,
+    expirationDate,
+    lotNumber,
+    lotStatus,
+    navigation,
+    quantity,
+    receiveLocation.id,
+    shipmentId,
+    shipmentItem
+  ]);
+
+  const onClearDate = useCallback(() => {
+    setExpirationDate(undefined);
+  }, []);
 
   return (
     <ScrollView keyboardShouldPersistTaps="always">
@@ -290,25 +204,13 @@ const InboundReceiveDetail = () => {
             {shipmentItem['product.productCode']}
           </Chip>
           <Chip icon="calendar" style={[styles.chipDefault, styles.lastChild]} textStyle={styles.chipWarningText}>
-            {`Expiration Date: ${shipmentItem?.expirationDate || 'Never'}`}
+            {`Expiration Date: ${shipmentItem.expirationDate || 'Never'}`}
           </Chip>
         </View>
         <Divider style={styles.dividerHorizontal} />
 
-        <Subheading style={{ fontWeight: 'bold' }}> {shipmentItem['product.name']} </Subheading>
-        <Caption> {shipmentData?.name} </Caption>
-        <Divider style={styles.dividerHorizontal} />
-
-        <View style={styles.additionalInfoRow}>
-          <View style={styles.columnItem}>
-            <Text style={styles.label}>{'Shipment Number'}</Text>
-            <Text style={styles.value}>{shipmentData?.shipmentNumber || ''}</Text>
-          </View>
-          <View style={styles.columnItem}>
-            <Text style={styles.label}>{'Lot / Serial Number'}</Text>
-            <Text style={styles.value}>{shipmentItem?.lotNumber || 'Default'}</Text>
-          </View>
-        </View>
+        <Subheading style={{ fontWeight: 'bold' }}>{shipmentItem['product.name']}</Subheading>
+        <Caption>{shipmentData.name}</Caption>
         <Divider style={styles.dividerHorizontal} />
 
         <View style={styles.rowItem}>
@@ -317,7 +219,11 @@ const InboundReceiveDetail = () => {
           </Chip>
           <Chip
             icon="database"
-            style={{ ...styles.chipDefault, ...styles.lastChild, flex: 1 }}
+            style={{
+              ...styles.chipDefault,
+              ...styles.lastChild,
+              flex: 1
+            }}
             textStyle={styles.chipWarningText}
           >
             {`Remaining: ${shipmentItem.quantityRemaining > 0 ? shipmentItem.quantityRemaining : 0}`}
@@ -327,7 +233,12 @@ const InboundReceiveDetail = () => {
         <View style={styles.rowItem}>
           <Chip
             icon="thumb-up"
-            style={{ ...styles.chipDefault, ...styles.lastChild, flex: 1, marginTop: Theme.spacing.small }}
+            style={{
+              ...styles.chipDefault,
+              ...styles.lastChild,
+              flex: 1,
+              marginTop: Theme.spacing.small
+            }}
             textStyle={styles.chipWarningText}
           >
             {`Received: ${shipmentItem.quantityReceived}`}
@@ -338,79 +249,67 @@ const InboundReceiveDetail = () => {
       <View style={styles.container}>
         <View style={styles.from}>
           <View style={styles.itemView}>
-            <InputSpinner title={'Quantity to Receive'} value={state.quantityToReceive} setValue={onChangeQuantity} />
+            <InputSpinner title="Quantity to Receive" value={quantity} setValue={setQuantity} />
           </View>
           <Radio
-            title={'Cancel remaining quantity for this item'}
-            setChecked={setCancelRemaining}
+            title="Cancel remaining quantity"
             checked={cancelRemaining}
-            disabled={Number(state.quantityToReceive) >= Number(shipmentItem.quantityRemaining)}
+            setChecked={setCancelRemaining}
+            disabled={quantity >= shipmentItem.quantityRemaining}
           />
+
           <AsyncModalSelect
-            key={state.receiveLocation?.id}
+            key={receiveLocation.id}
             placeholder="Receiving Location"
             label="Receiving Location"
-            initValue={state.receiveLocation?.name || ''}
-            initialData={state.internalLocation}
+            initValue={receiveLocation.name}
+            initialData={internalLocations}
             searchAction={searchInternalLocations}
-            searchActionParams={{ 'parentLocation.id': location.id }}
-            onSelect={(selectedItem: any) => {
-              if (selectedItem) {
-                state.receiveLocation = selectedItem;
-                setState({ ...state });
-              }
+            searchActionParams={{
+              'parentLocation.id': currentLocation.id
             }}
+            onSelect={(loc: Location) => setReceiveLocation(loc)}
           />
+
           <InputBox
-            value={state.lotNumber}
+            value={lotNumber}
+            editable={true}
+            label="Lot Number"
+            onChange={setLotNumber}
             style={{ marginBottom: Theme.spacing.small }}
-            disabled={false}
-            editable={false}
-            label={'Lot Number'}
-            onChange={onChangeLotNumber}
           />
-          
+
           <SelectDropdown
             renderDropdownIcon={renderIcon}
-            data={['Select lot status', 'APPROVED', 'RECALLED', 'ON_HOLD', 'QUARANTINED', 'EXPIRED', 'RESERVED', 'DAMAGED']}
-            defaultValue={lotStatusCode}
+            data={lotStatusOptions}
+            defaultValue={lotStatusOptions[0]}
             buttonTextStyle={styles.lotStatusSelectTextStyle}
-            buttonTextAfterSelection={(selectedItem) => selectedItem}
-            dropdownIconPosition={'right'}
-            defaultValueByIndex={0}
             buttonStyle={styles.lotStatusSelectStyle}
             rowTextForSelection={(item) => item}
-            onSelect={(selectedItem, index) => {
-              setLotStatusCode(index === 0 ? '' : selectedItem);
-            }}
+            buttonTextAfterSelection={(item) => item}
+            onSelect={(s) => setLotStatus(s === lotStatusOptions[0] ? '' : s)}
           />
+
           <View style={styles.datePickerContainer}>
             <DatePicker
               style={styles.datePicker}
-              date={state.expirationDate}
+              date={expirationDate}
               mode="date"
               placeholder="Expiration Date"
               format="MM/DD/YYYY"
               confirmBtnText="Confirm"
               cancelBtnText="Cancel"
               customStyles={styles.datePickerCustomStyle}
-              onDateChange={(date: any) => {
-                setState({ ...state, expirationDate: date });
-              }}
+              onDateChange={setExpirationDate}
             />
-            {state.expirationDate ? (
-              <TouchableOpacity onPress={clearSelection}>
+
+            {expirationDate && (
+              <TouchableOpacity onPress={onClearDate}>
                 <Image source={CLEAR} style={styles.imageIcon} />
               </TouchableOpacity>
-            ) : null}
+            )}
           </View>
-          <InputBox
-            value={state.comments}
-            disabled={false}
-            editable={false}
-            label={'Comments'}
-            onChange={onChangeComment}
-          />
+          <InputBox value={comments} editable={true} label="Comments" onChange={setComments} />
         </View>
       </View>
       <Divider />
