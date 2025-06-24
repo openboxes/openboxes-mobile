@@ -106,6 +106,66 @@ const InboundReceiveDetail: React.FC = () => {
     );
   }, [dispatch, shipmentData.id]);
 
+  const createPendingReceivingPayload = useCallback(
+    () => ({
+      receiptId: '',
+      receiptStatus: 'PENDING',
+      shipmentId,
+      containers: [
+        {
+          'container.id': shipmentItem['container.id'] ?? '',
+          shipmentItems: [
+            {
+              receiptItemId: '',
+              shipmentItemId: shipmentItem.shipmentItemId,
+              product: {
+                id: shipmentItem['product.id'] ?? ''
+              },
+              binLocation: receiveLocation.id,
+              lotNumber,
+              expirationDate,
+              recipient: '',
+              quantityReceiving: quantity,
+              cancelRemaining,
+              quantityOnHand: '',
+              comment: comments,
+              mobile: true,
+              lotStatusCode: lotStatus
+            }
+          ]
+        }
+      ]
+    }),
+    []
+  );
+
+  const createCompleteReceivingPayload = useCallback(
+    (responseData: any) => ({
+      isShipmentFromPurchaseOrder: responseData.isShipmentFromPurchaseOrder,
+      receiptStatus: 'COMPLETED',
+      containers: responseData.containers,
+      dateShipped: responseData.dateShipped,
+      description: responseData.description,
+      destination: {
+        name: responseData['destination.name'],
+        id: responseData['destination.id']
+      },
+      origin: {
+        name: responseData['origin.name'],
+        id: responseData['origin.id']
+      },
+      receiptId: responseData.receiptId,
+      shipmentStatus: responseData.shipmentStatus,
+      shipment: {
+        name: responseData['shipment.name'],
+        shipmentNumber: responseData['shipment.shipmentNumber']
+      },
+      requisition: responseData.requisition,
+      recipient: responseData.recipient.id
+    }),
+    []
+  );
+
   const onReceive = useCallback(() => {
     if (quantity <= 0 && !cancelRemaining) {
       showPopup({
@@ -129,48 +189,32 @@ const InboundReceiveDetail: React.FC = () => {
       return;
     }
 
-    const request = {
-      receiptId: '',
-      receiptStatus: 'PENDING',
-      shipmentId,
-      containers: [
-        {
-          'container.id': shipmentItem['container.id'] ?? '',
-          shipmentItems: [
-            {
-              receiptItemId: '',
-              shipmentItemId: shipmentItem.shipmentItemId,
-              'container.id': shipmentItem['container.id'] ?? '',
-              product: {
-                id: shipmentItem['product.id'] ?? ''
-              },
-              binLocation: receiveLocation.id,
-              lotNumber,
-              expirationDate,
-              recipient: '',
-              quantityReceiving: quantity,
-              cancelRemaining,
-              quantityOnHand: '',
-              comment: comments,
-              mobile: true,
-              lotStatusCode: lotStatus
-            }
-          ]
-        }
-      ]
-    };
+    const partialReceivingPayload = createPendingReceivingPayload();
 
     dispatch(
-      submitPartialReceiving(shipmentId, request, (data: any) => {
-        if (data?.error) {
+      submitPartialReceiving(shipmentId, partialReceivingPayload, (response: any) => {
+        if (response?.error) {
           showPopup({
             title: 'Receive error',
-            message: data.errorMessage
+            message: response.errorMessage
           });
           return;
         }
+
+        const responseData = response?.data;
+
+        if (!responseData) {
+          showPopup({
+            title: 'Receive error',
+            message: 'No data received from the server'
+          });
+          return;
+        }
+
+        const completeReceivingPayload = createCompleteReceivingPayload(responseData);
+
         dispatch(
-          submitPartialReceiving(shipmentId, { receiptStatus: 'COMPLETED' }, (res: any) => {
+          submitPartialReceiving(shipmentId, completeReceivingPayload, (res: any) => {
             if (!res?.error) {
               navigation.goBack();
             }
