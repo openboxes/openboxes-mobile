@@ -23,8 +23,13 @@ class PutawayItem extends Component<Props, State> {
 
     const { item } = this.props.route.params;
 
+    const preferredBin = {
+      id: item['preferredBin.id'],
+      label: item['preferredBin.name']
+    };
+
     this.state = {
-      selectedLocation: null,
+      selectedLocation: preferredBin.id ? preferredBin : null,
       internalLocations: [],
       quantity: item ? item.quantity : 0
     };
@@ -45,8 +50,7 @@ class PutawayItem extends Component<Props, State> {
                   'parentLocation.id': this.props.currentLocation.id,
                   locationTypeCode: 'BIN_LOCATION',
                   max: '25',
-                  offset: '0',
-
+                  offset: '0'
                 },
                 callback
               );
@@ -99,7 +103,7 @@ class PutawayItem extends Component<Props, State> {
           inventoryItem: item['inventoryItem.id'],
           putawayFacility: currentLocation?.id,
           currentLocation: item['currentLocation.id'],
-          putawayLocation: this.state.selectedLocation?.id || item['putawayLocation.id'] || '',
+          putawayLocation: this.state.selectedLocation?.id || '',
           quantity: this.state?.quantity
         }
       ],
@@ -178,7 +182,7 @@ class PutawayItem extends Component<Props, State> {
             <AsyncModalSelect
               placeholder="Default"
               label="Default"
-              initValue={selectedLocation?.label || item['putawayLocation.name'] || ''}
+              initValue={selectedLocation?.label || ''}
               initialData={internalLocations}
               searchAction={searchInternalLocations}
               searchActionParams={{

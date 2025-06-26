@@ -6,13 +6,13 @@ import { connect } from 'react-redux';
 
 import { LayoutStyle } from '../../assets/styles';
 import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSearchHeader';
+import Button from '../../components/Button';
 import EmptyView from '../../components/EmptyView';
 import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
 import { getCandidates } from '../../redux/actions/putaways';
 import { RootState } from '../../redux/reducers';
 import styles from './styles';
 import { DispatchProps, Props, State } from './types';
-import Button from '../../components/Button';
 
 class PutawayCandidates extends Component<Props, State> {
   constructor(props: Props) {
@@ -36,10 +36,10 @@ class PutawayCandidates extends Component<Props, State> {
         .sort((a: any, b: any) =>
           a['currentLocation.name'].toLowerCase().localeCompare(b['currentLocation.name'].toLowerCase())
         );
-    
+
       this.setState({
         refreshing: false,
-        putawayCandidates,
+        putawayCandidates
       });
     }
   }
@@ -89,7 +89,7 @@ class PutawayCandidates extends Component<Props, State> {
     );
   };
 
-  naviageteToPutawayITem = (item: any) => {
+  navigateToPutawayItem = (item: any) => {
     this.props.navigation.navigate('PutawayItem', { item });
   };
 
@@ -103,7 +103,7 @@ class PutawayCandidates extends Component<Props, State> {
 
       if (exactPutawayCandidate.length === 1) {
         this.resetFiltering();
-        this.naviageteToPutawayITem(exactPutawayCandidate[0]);
+        this.navigateToPutawayItem(exactPutawayCandidate[0]);
       } else {
         const filteredPutawayCandidates = _.filter(
           this.state.putawayCandidates,
