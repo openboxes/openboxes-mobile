@@ -147,11 +147,9 @@ const InboundReceiveDetail: React.FC = () => {
       dateShipped: responseData.dateShipped,
       description: responseData.description,
       destination: {
-        name: responseData['destination.name'],
         id: responseData['destination.id']
       },
       origin: {
-        name: responseData['origin.name'],
         id: responseData['origin.id']
       },
       receiptId: responseData.receiptId,
