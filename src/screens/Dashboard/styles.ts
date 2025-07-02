@@ -5,6 +5,27 @@ export default StyleSheet.create({
   screenContainer: {
     flex: 1
   },
+  emptyScreenContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: Theme.spacing.large
+  },
+  emptyScreenTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginTop: Theme.spacing.medium,
+    color: Theme.colors.primary
+  },
+  emptyScreenDescription: {
+    fontSize: 14,
+    textAlign: 'center',
+    marginTop: Theme.spacing.small,
+    color: Theme.colors.placeholder
+  },
+  emptyScreenButton: {
+    marginTop: Theme.spacing.large
+  },
   flatListContentContainer: {
     padding: Theme.spacing.small / 2
   },

@@ -13,6 +13,7 @@ import ShipmentItems from '../../data/inbound/ShipmentItems';
 import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
 import { getShipment } from '../../redux/actions/packing';
 import { RootState } from '../../redux/reducers';
+import Theme from '../../utils/Theme';
 import { parseDateToISODate, parseFromISODateToLocaleString } from '../../utils/utils';
 import ContainerDetails from './ContainerDetails';
 import styles from './styles';
@@ -188,7 +189,7 @@ class OutboundStockDetails extends React.Component<Props, State> {
     return (
       <>
         <ScrollView>
-          <View style={styles.contentContainer}>
+          <View style={[styles.contentContainer, { backgroundColor: Theme.colors.surface }]}>
             <View style={styles.headerRow}>
               <View style={styles.identifierContainer}>
                 <Text style={styles.value}>{shipment?.shipmentNumber}</Text>

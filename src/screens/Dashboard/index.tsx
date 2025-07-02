@@ -2,13 +2,16 @@ import React from 'react';
 import { FlatList, ListRenderItemInfo, Text, View } from 'react-native';
 import { Card } from 'react-native-paper';
 
-import EmptyView from '../../components/EmptyView';
-import { DashboardItem, Props, State } from './Types';
-import dashboardData from './dashboardData';
+import { connect } from 'react-redux';
+import EmptyIcon from '../../assets/images/icon_empty.svg';
+import Button from '../../components/Button';
+import { RootState } from '../../redux/reducers';
+import { Props, State } from './Types';
+import { getFilteredDashboardEntries, type DashboardEntry } from './dashboardData';
 import styles from './styles';
 
 class Dashboard extends React.Component<Props, State> {
-  renderItem = ({ item }: ListRenderItemInfo<DashboardItem>) => {
+  renderItem = ({ item }: ListRenderItemInfo<DashboardEntry>) => {
     const IconComponent = item.icon;
 
     return (
@@ -28,18 +31,37 @@ class Dashboard extends React.Component<Props, State> {
     );
   };
 
-  keyExtractor = (item: DashboardItem, index: number): string =>
-    item.id || item.navigationScreenName || `dashboard-item-${index}`;
+  keyExtractor = (item: DashboardEntry, index: number): string =>
+    item.key || item.navigationScreenName || `dashboard-item-${index}`;
 
   render() {
+    const { dashboardEntriesVisibility } = this.props;
+    const dashboardEntries = getFilteredDashboardEntries(dashboardEntriesVisibility);
+
     return (
       <View style={styles.screenContainer}>
         <FlatList
-          data={dashboardData as DashboardItem[]}
+          data={dashboardEntries}
           renderItem={this.renderItem}
           keyExtractor={this.keyExtractor}
           numColumns={2}
-          ListEmptyComponent={<EmptyView title={'No items found'} isRefresh={undefined} />}
+          ListEmptyComponent={
+            <View style={styles.emptyScreenContainer}>
+              <EmptyIcon />
+
+              <Text style={styles.emptyScreenTitle}>No Dashboard Entries</Text>
+              <Text style={styles.emptyScreenDescription}>Please check your settings to enable dashboard entries.</Text>
+
+              <Button
+                style={styles.emptyScreenButton}
+                title="Go To Settings"
+                mode="contained"
+                onPress={() => {
+                  this.props.navigation.navigate('Settings');
+                }}
+              />
+            </View>
+          }
           contentContainerStyle={styles.flatListContentContainer}
         />
       </View>
@@ -47,4 +69,8 @@ class Dashboard extends React.Component<Props, State> {
   }
 }
 
-export default Dashboard;
+const mapStateToProps = (state: RootState) => ({
+  dashboardEntriesVisibility: state.settingsReducer.dashboardEntriesVisibility
+});
+
+export default connect(mapStateToProps)(Dashboard);
