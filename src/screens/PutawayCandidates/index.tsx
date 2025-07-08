@@ -51,6 +51,9 @@ class PutawayCandidates extends Component<Props, State> {
   };
 
   renderItem = (item: any) => {
+    const { productSummaryConfig } = this.props;
+    const showLotNumber = productSummaryConfig?.lotNumber !== false;
+
     return (
       <Card
         style={LayoutStyle.listItemContainer}
@@ -74,7 +77,9 @@ class PutawayCandidates extends Component<Props, State> {
           <Subheading style={styles.destinationSubheading}>
             {`${item['product.productCode']} - ${item['product.name']}`}
           </Subheading>
-          <Caption style={styles.caption}> {`Lot Number: ${item?.['inventoryItem.lotNumber'] ?? 'Default'}`}</Caption>
+          {showLotNumber && (
+            <Caption style={styles.caption}> {`Lot Number: ${item?.['inventoryItem.lotNumber'] ?? 'Default'}`}</Caption>
+          )}
 
           <View style={styles.additionalInfoRow}>
             <Chip icon="calendar" style={styles.chipDefault} textStyle={styles.chipDefaultText}>
@@ -168,7 +173,8 @@ class PutawayCandidates extends Component<Props, State> {
 
 const mapStateToProps = (state: RootState) => ({
   candidates: state.putawayReducer.candidates,
-  currentLocation: state.mainReducer.currentLocation
+  currentLocation: state.mainReducer.currentLocation,
+  productSummaryConfig: state.settingsReducer.productSummaryConfig
 });
 
 const mapDispatchToProps: DispatchProps = {

@@ -6,6 +6,9 @@ export interface OwnProps {
 export interface StateProps {
   candidates: any;
   currentLocation: any;
+  productSummaryConfig: {
+    [key: string]: boolean;
+  };
 }
 
 export interface DispatchProps {

@@ -1,13 +1,14 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { Caption, Chip, Divider, Subheading, Text } from 'react-native-paper';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import Button from '../../components/Button';
 import InputBox from '../../components/InputBox';
 import showPopup from '../../components/Popup';
 import { submitPutawayItem } from '../../redux/actions/putaways';
+import { RootState } from '../../redux/reducers';
 import styles from './styles';
 
 const PutawayItemDetail = () => {
@@ -20,6 +21,7 @@ const PutawayItemDetail = () => {
     putAwayItem: null,
     scannedPutawayLocation: ''
   });
+  const { productSummaryConfig } = useSelector((state: RootState) => state.settingsReducer);
   const { putAway, putAwayItem }: any = route.params;
 
   useEffect(() => {
@@ -101,6 +103,9 @@ const PutawayItemDetail = () => {
     setState({ ...state, scannedPutawayLocation: text });
   };
 
+  const showLotNumber = useMemo(() => productSummaryConfig?.lotNumber !== false, [productSummaryConfig]);
+  const showExpirationDate = useMemo(() => productSummaryConfig?.expirationDate !== false, [productSummaryConfig]);
+
   return (
     <ScrollView>
       <View style={styles.dataContainer}>
@@ -108,16 +113,20 @@ const PutawayItemDetail = () => {
           <Chip icon="identifier" style={styles.chipDefault} textStyle={styles.chipWarningText}>
             {state.putAway?.putawayNumber}
           </Chip>
-          <Chip icon="calendar" style={[styles.chipDefault, styles.lastChild]} textStyle={styles.chipWarningText}>
-            {`Expiry Date: ${state.putAwayItem?.['inventoryItem.expiryDate'] || 'Never'}`}
-          </Chip>
+          {showExpirationDate && (
+            <Chip icon="calendar" style={[styles.chipDefault, styles.lastChild]} textStyle={styles.chipWarningText}>
+              {`Expiry Date: ${state.putAwayItem?.['inventoryItem.expiryDate'] || 'Never'}`}
+            </Chip>
+          )}
         </View>
         <Divider style={styles.dividerHorizontal} />
 
         <Subheading style={{ fontWeight: 'bold' }}>
           {`${state.putAwayItem?.['product.productCode']} - ${state.putAwayItem?.['product.name']}`}
         </Subheading>
-        <Caption> {`Lot Number: ${state.putAwayItem?.['inventoryItem.lotNumber'] || 'Default'}`} </Caption>
+        {showLotNumber && (
+          <Caption> {`Lot Number: ${state.putAwayItem?.['inventoryItem.lotNumber'] || 'Default'}`} </Caption>
+        )}
 
         <View style={styles.rowItem}>
           <Chip icon="package" style={styles.chipDefault} textStyle={styles.chipWarningText}>

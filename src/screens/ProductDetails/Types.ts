@@ -9,6 +9,9 @@ export interface OwnProps {
 
 export interface StateProps {
   selectedProduct: any;
+  productSummaryConfig: {
+    [key: string]: boolean;
+  };
 }
 
 export interface DispatchProps {

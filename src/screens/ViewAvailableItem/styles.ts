@@ -31,7 +31,7 @@ export default StyleSheet.create({
   },
   buttons: {
     flexDirection: 'column',
-    marginTop: Theme.spacing.large,
+    marginVertical: Theme.spacing.large,
     justifyContent: 'space-between',
     height: ratio.height * 100
   },

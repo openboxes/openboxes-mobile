@@ -42,6 +42,7 @@ const InboundReceiveDetail: React.FC = () => {
   };
 
   const currentLocation = useSelector((state: RootState) => state.mainReducer.currentLocation);
+  const { productSummaryConfig } = useSelector((state: RootState) => state.settingsReducer);
 
   const [quantity, setQuantity] = useState<number>(shipmentItem.quantityRemaining);
   const [cancelRemaining, setCancelRemaining] = useState(false);
@@ -196,6 +197,9 @@ const InboundReceiveDetail: React.FC = () => {
     setExpirationDate(undefined);
   }, []);
 
+  const showLotNumber = useMemo(() => productSummaryConfig?.lotNumber !== false, [productSummaryConfig]);
+  const showExpirationDate = useMemo(() => productSummaryConfig?.expirationDate !== false, [productSummaryConfig]);
+
   return (
     <ScrollView keyboardShouldPersistTaps="always">
       <View style={styles.inboundDetailsContainer}>
@@ -203,9 +207,11 @@ const InboundReceiveDetail: React.FC = () => {
           <Chip icon="barcode" style={styles.chipDefault} textStyle={styles.chipWarningText}>
             {shipmentItem['product.productCode']}
           </Chip>
-          <Chip icon="calendar" style={[styles.chipDefault, styles.lastChild]} textStyle={styles.chipWarningText}>
-            {`Expiration Date: ${shipmentItem.expirationDate || 'Never'}`}
-          </Chip>
+          {showExpirationDate && (
+            <Chip icon="calendar" style={[styles.chipDefault, styles.lastChild]} textStyle={styles.chipWarningText}>
+              {`Expiration Date: ${shipmentItem.expirationDate || 'Never'}`}
+            </Chip>
+          )}
         </View>
         <Divider style={styles.dividerHorizontal} />
 
@@ -218,10 +224,12 @@ const InboundReceiveDetail: React.FC = () => {
             <Text style={styles.label}>{'Shipment Number'}</Text>
             <Text style={styles.value}>{shipmentData?.shipmentNumber || ''}</Text>
           </View>
-          <View style={styles.columnItem}>
-            <Text style={styles.label}>{'Lot / Serial Number'}</Text>
-            <Text style={styles.value}>{shipmentItem?.lotNumber || 'Default'}</Text>
-          </View>
+          {showLotNumber && (
+            <View style={styles.columnItem}>
+              <Text style={styles.label}>{'Lot / Serial Number'}</Text>
+              <Text style={styles.value}>{shipmentItem?.lotNumber || 'Default'}</Text>
+            </View>
+          )}
         </View>
         <Divider style={styles.dividerHorizontal} />
 
@@ -283,13 +291,15 @@ const InboundReceiveDetail: React.FC = () => {
             onSelect={(loc: Location) => setReceiveLocation(loc)}
           />
 
-          <InputBox
-            value={lotNumber}
-            editable={true}
-            label="Lot Number"
-            onChange={setLotNumber}
-            style={{ marginBottom: Theme.spacing.small }}
-          />
+          {showLotNumber ? (
+            <InputBox
+              value={lotNumber}
+              editable={true}
+              label="Lot Number"
+              onChange={setLotNumber}
+              style={{ marginBottom: Theme.spacing.small }}
+            />
+          ) : null}
 
           <SelectDropdown
             renderDropdownIcon={renderIcon}

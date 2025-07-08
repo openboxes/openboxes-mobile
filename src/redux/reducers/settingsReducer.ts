@@ -2,17 +2,20 @@ import {
   DASHBOARD_ENTRIES_VISIBILITY,
   DASHBOARD_ENTRIES_VISIBILITY_RESET,
   GROUP_LOCATION_ENTRIES,
+  PRODUCT_SUMMARY_CONFIG,
   SettingsActionTypes
 } from '../actions/settings';
 
 type SettingsState = {
   groupLocationEntries: boolean;
   dashboardEntriesVisibility: { [key: string]: boolean };
+  productSummaryConfig: { [key: string]: boolean };
 };
 
 const initialState: SettingsState = {
   groupLocationEntries: false,
-  dashboardEntriesVisibility: {}
+  dashboardEntriesVisibility: {},
+  productSummaryConfig: {}
 };
 
 function settingsReducer(state = initialState, action: SettingsActionTypes): SettingsState {
@@ -38,6 +41,17 @@ function settingsReducer(state = initialState, action: SettingsActionTypes): Set
       return {
         ...state,
         dashboardEntriesVisibility: {}
+      };
+    }
+    case PRODUCT_SUMMARY_CONFIG: {
+      const { key, visible } = action.payload;
+
+      return {
+        ...state,
+        productSummaryConfig: {
+          ...state.productSummaryConfig,
+          [key]: visible
+        }
       };
     }
     default: {

@@ -1,18 +1,23 @@
 import { useNavigation } from '@react-navigation/native';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { SectionList, Text, TouchableOpacity, View } from 'react-native';
 import { Caption, Card, Chip, Subheading } from 'react-native-paper';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
+import { useSelector } from 'react-redux';
 import { HYPHEN } from '../../constants';
+import { RootState } from '../../redux/reducers';
 import styles from './styles';
 
 const ContainerDetails = ({ item }: any) => {
   const navigation = useNavigation<any>();
+  const { productSummaryConfig } = useSelector((state: RootState) => state.settingsReducer);
 
   const navigateToOutboundOrderDetails = (item: any, section: any) => {
     navigation.navigate('ShipmentDetails', { item: item, section: section });
   };
+
+  const showLotNumber = useMemo(() => productSummaryConfig?.lotNumber !== false, [productSummaryConfig]);
 
   const renderListItem = (item: any, index: any, section: any) => {
     return (
@@ -26,7 +31,9 @@ const ContainerDetails = ({ item }: any) => {
             <Subheading style={styles.subheading}>
               {`${item.inventoryItem.product?.productCode} - ${item.inventoryItem.product?.name}`}
             </Subheading>
-            <Caption style={styles.caption}>{`Lot Number: ${item?.inventoryItem?.lotNumber ?? 'Default'}`}</Caption>
+            {showLotNumber && (
+              <Caption style={styles.caption}>{`Lot Number: ${item?.inventoryItem?.lotNumber ?? 'Default'}`}</Caption>
+            )}
 
             <View style={styles.additionalInfoRow}>
               <Chip icon="package" style={styles.chipDefault} textStyle={styles.chipDefaultText}>

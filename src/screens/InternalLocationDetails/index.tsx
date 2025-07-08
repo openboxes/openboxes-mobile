@@ -1,22 +1,23 @@
 /* eslint-disable complexity */
-import React, { useEffect, useState } from 'react';
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import styles from './styles';
-import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import showPopup from '../../components/Popup';
-import { hideScreenLoading } from '../../redux/actions/main';
-import { getInternalLocationDetail, getInternalLocationDetails } from '../../redux/actions/locations';
+import React, { useEffect, useMemo, useState } from 'react';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { Card } from 'react-native-paper';
-import { RootState } from '../../redux/reducers';
+import { useDispatch, useSelector } from 'react-redux';
 import Button from '../../components/Button';
+import showPopup from '../../components/Popup';
 import PrintModal from '../../components/PrintModal';
+import { getInternalLocationDetail, getInternalLocationDetails } from '../../redux/actions/locations';
+import { hideScreenLoading } from '../../redux/actions/main';
+import { RootState } from '../../redux/reducers';
+import styles from './styles';
 
 const InternalLocationDetails = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const route = useRoute();
   const location = useSelector((state: RootState) => state.mainReducer.currentLocation);
+  const { productSummaryConfig } = useSelector((state: RootState) => state.settingsReducer);
   const [state, setState] = useState<any>({
     error: null,
     searchProductCode: null,
@@ -138,6 +139,10 @@ const InternalLocationDetails = () => {
     setState({ ...state, visible: false });
   };
 
+  const showLotNumber = useMemo(() => productSummaryConfig?.lotNumber !== false, [productSummaryConfig]);
+  const showExpirationDate = useMemo(() => productSummaryConfig?.expirationDate !== false, [productSummaryConfig]);
+  const showLocationType = useMemo(() => productSummaryConfig?.locationType !== false, [productSummaryConfig]);
+
   const renderListItem = (item: any, index: any) => (
     <TouchableOpacity key={index} style={styles.itemView} onPress={() => navigateToDetails(item)}>
       <Card>
@@ -147,8 +152,12 @@ const InternalLocationDetails = () => {
             <RenderItem title={'Product Name'} subTitle={item['product.name']} />
           </View>
           <View style={styles.rowItem}>
-            <RenderItem title={'Lot Number'} subTitle={item['inventoryItem.lotNumber'] ?? 'Default'} />
-            <RenderItem title={'Lot Number'} subTitle={item['inventoryItem.expirationDate'] ?? 'Never'} />
+            {showLotNumber && (
+              <RenderItem title={'Lot Number'} subTitle={item['inventoryItem.lotNumber'] ?? 'Default'} />
+            )}
+            {showExpirationDate && (
+              <RenderItem title={'Expiration Date'} subTitle={item['inventoryItem.expirationDate'] ?? 'Never'} />
+            )}
           </View>
           <View style={styles.rowItem}>
             <RenderItem title={'Bin Location'} subTitle={item['binLocation.name'] ?? 'Default'} />
@@ -158,6 +167,7 @@ const InternalLocationDetails = () => {
       </Card>
     </TouchableOpacity>
   );
+
   return (
     <View style={styles.screenContainer}>
       {state.locationData && (
@@ -166,7 +176,9 @@ const InternalLocationDetails = () => {
             <Text style={styles.boxHeading}>Details</Text>
             <View style={styles.rowItem}>
               <RenderItem title={'Bin Location Name'} subTitle={state.locationData?.name ?? ''} />
-              <RenderItem title={'Location Type'} subTitle={state.locationData?.locationType.name ?? ''} />
+              {showLocationType && (
+                <RenderItem title={'Location Type'} subTitle={state.locationData?.locationType.name ?? ''} />
+              )}
             </View>
             <View style={styles.rowItem}>
               <RenderItem title={'Facility Name'} subTitle={state.locationData?.parentLocation?.name ?? ''} />

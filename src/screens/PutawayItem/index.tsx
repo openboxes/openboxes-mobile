@@ -147,6 +147,9 @@ class PutawayItem extends Component<Props, State> {
   render() {
     const { item } = this.props.route.params;
     const { quantity, internalLocations, selectedLocation } = this.state;
+    const { productSummaryConfig } = this.props;
+    const showLotNumber = productSummaryConfig?.lotNumber !== false;
+    const showExpirationDate = productSummaryConfig?.expirationDate !== false;
 
     return (
       <ScrollView keyboardShouldPersistTaps style={{ width: '100%', height: '100%' }}>
@@ -156,16 +159,18 @@ class PutawayItem extends Component<Props, State> {
               <Chip icon="identifier" style={styles.chipDefault} textStyle={styles.chipWarningText}>
                 {item['stockMovement.id']}
               </Chip>
-              <Chip icon="calendar" style={[styles.chipDefault, styles.lastChild]} textStyle={styles.chipWarningText}>
-                {`Expiration Date: ${item?.['inventoryItem.expirationDate'] || 'Never'}`}
-              </Chip>
+              {showExpirationDate && (
+                <Chip icon="calendar" style={[styles.chipDefault, styles.lastChild]} textStyle={styles.chipWarningText}>
+                  {`Expiration Date: ${item?.['inventoryItem.expirationDate'] || 'Never'}`}
+                </Chip>
+              )}
             </View>
             <Divider style={styles.dividerHorizontal} />
 
             <Subheading style={{ fontWeight: 'bold' }}>
               {`${item?.['product.productCode']} - ${item?.['product.name']}`}
             </Subheading>
-            <Caption> {`Lot Number: ${item['inventoryItem.lotNumber'] ?? 'Default'}`} </Caption>
+            {showLotNumber && <Caption> {`Lot Number: ${item['inventoryItem.lotNumber'] ?? 'Default'}`} </Caption>}
 
             <View style={styles.rowItem}>
               <Chip icon="pin" style={styles.chipDefault} textStyle={styles.chipWarningText}>
@@ -208,7 +213,8 @@ class PutawayItem extends Component<Props, State> {
 
 const mapStateToProps = (state: RootState) => ({
   binLocations: state.locationsReducer.binLocations,
-  currentLocation: state.mainReducer.currentLocation
+  currentLocation: state.mainReducer.currentLocation,
+  productSummaryConfig: state.settingsReducer.productSummaryConfig
 });
 
 const mapDispatchToProps: DispatchProps = {

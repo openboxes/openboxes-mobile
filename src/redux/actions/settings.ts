@@ -1,6 +1,7 @@
 export const DASHBOARD_ENTRIES_VISIBILITY = 'DASHBOARD_ENTRIES_VISIBILITY';
 export const DASHBOARD_ENTRIES_VISIBILITY_RESET = 'DASHBOARD_ENTRIES_VISIBILITY_RESET';
 export const GROUP_LOCATION_ENTRIES = 'GROUP_LOCATION_ENTRIES';
+export const PRODUCT_SUMMARY_CONFIG = 'PRODUCT_SUMMARY_CONFIG';
 
 type SetGroupLocationEntriesAction = {
   type: typeof GROUP_LOCATION_ENTRIES;
@@ -14,8 +15,13 @@ type SetDashboardEntriesVisibilityAction = {
   payload: { entryKey: string; visible: boolean };
 };
 
-type SetDashboardEntriesVisibilityResetAction = {
+type ResetDashboardEntriesVisibility = {
   type: typeof DASHBOARD_ENTRIES_VISIBILITY_RESET;
+};
+
+type SetProductSummaryConfigAction = {
+  type: typeof PRODUCT_SUMMARY_CONFIG;
+  payload: { key: string; visible: boolean };
 };
 
 // Create a union type for all action types in this file.
@@ -23,7 +29,8 @@ type SetDashboardEntriesVisibilityResetAction = {
 export type SettingsActionTypes =
   | SetGroupLocationEntriesAction
   | SetDashboardEntriesVisibilityAction
-  | SetDashboardEntriesVisibilityResetAction;
+  | ResetDashboardEntriesVisibility
+  | SetProductSummaryConfigAction;
 
 export const setGroupLocationEntries = (group: boolean): SetGroupLocationEntriesAction => {
   return {
@@ -42,8 +49,15 @@ export const setDashboardEntriesVisibility = (
   };
 };
 
-export const resetDashboardEntriesVisibility = (): SetDashboardEntriesVisibilityResetAction => {
+export const resetDashboardEntriesVisibility = (): ResetDashboardEntriesVisibility => {
   return {
     type: DASHBOARD_ENTRIES_VISIBILITY_RESET
+  };
+};
+
+export const setProductSummaryConfig = (key: string, visible: boolean): SetProductSummaryConfigAction => {
+  return {
+    type: PRODUCT_SUMMARY_CONFIG,
+    payload: { key, visible }
   };
 };

@@ -5,16 +5,15 @@ export interface OwnProps {
 
 export interface StateProps {
   currentLocation: any;
+  productSummaryConfig: {
+    [key: string]: boolean;
+  };
 }
 
 export interface DispatchProps {
   showScreenLoading: (message?: string) => void;
   hideScreenLoading: () => void;
-  searchInternalLocations: (
-    searchTerm: string,
-    additionalParams: any,
-    callback?: (data: any) => void
-  ) => void;
+  searchInternalLocations: (searchTerm: string, additionalParams: any, callback?: (data: any) => void) => void;
   createPutawayOderAction: (data: any, callback?: (data: any) => void) => void;
 }
 

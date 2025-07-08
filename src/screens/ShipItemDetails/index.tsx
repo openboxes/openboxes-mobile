@@ -3,10 +3,11 @@
 /* eslint-disable react/jsx-sort-props */
 import { useNavigation, useRoute } from '@react-navigation/native';
 import _ from 'lodash';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { ScrollView, Text, ToastAndroid, View } from 'react-native';
 import { Caption, Chip, Divider, Subheading } from 'react-native-paper';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+
 import CLEAR from '../../assets/images/icon_clear.png';
 import SCAN from '../../assets/images/scan.jpg';
 import TICK from '../../assets/images/tick.png';
@@ -17,6 +18,7 @@ import showPopup from '../../components/Popup';
 import { HYPHEN } from '../../constants';
 import { getAllContainers } from '../../redux/actions/lpn';
 import { getShipment, submitShipmentDetails } from '../../redux/actions/packing';
+import { RootState } from '../../redux/reducers';
 import Theme from '../../utils/Theme';
 import styles from './styles';
 
@@ -33,6 +35,7 @@ const ShipItemDetails = () => {
     containerList: []
   });
   const [selectedContainerItem, setSelectedContainerItem] = useState<any>();
+  const { productSummaryConfig } = useSelector((state: RootState) => state.settingsReducer);
 
   useEffect(() => {
     getShipmentDetails(item.shipment.id);
@@ -165,6 +168,9 @@ const ShipItemDetails = () => {
       quantityPicked: query
     });
   };
+
+  const showLotNumber = useMemo(() => productSummaryConfig?.lotNumber, [productSummaryConfig]);
+
   return (
     <ScrollView>
       <View style={styles.infoContainer}>
@@ -178,7 +184,9 @@ const ShipItemDetails = () => {
         <Subheading
           style={styles.subheading}
         >{`${item.inventoryItem.product.productCode} - ${item.inventoryItem.product.name}`}</Subheading>
-        <Caption style={styles.caption}>{`Lot Number: ${item.inventoryItem.lotNumber ?? 'Default'}`}</Caption>
+        {showLotNumber && (
+          <Caption style={styles.caption}>{`Lot Number: ${item.inventoryItem.lotNumber ?? 'Default'}`}</Caption>
+        )}
 
         <View style={styles.additionalInfoRow}>
           <Chip icon="package" style={styles.chipDefault} textStyle={styles.chipText}>

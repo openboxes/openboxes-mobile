@@ -162,5 +162,6 @@ export default StyleSheet.create({
     fontWeight: 'bold',
     marginTop: 2,
     textAlign: 'right'
-  }
+  },
+  caption: { fontSize: 12, color: Theme.colors.text }
 });

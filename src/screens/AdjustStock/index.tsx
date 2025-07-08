@@ -1,5 +1,5 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { ToastAndroid, View } from 'react-native';
 import { Caption, Chip, Divider, Subheading } from 'react-native-paper';
 import DropDown from 'react-native-paper-dropdown';
@@ -95,6 +95,7 @@ const AdjustStock = () => {
   const { item }: any = route.params;
   const navigation = useNavigation();
   const location = useSelector((state: RootState) => state.mainReducer.currentLocation);
+  const { productSummaryConfig } = useSelector((state: RootState) => state.settingsReducer);
 
   const [comments, setComments] = useState('');
   const [quantityAdjusted, setQuantityAdjusted] = useState(item.quantityAvailable);
@@ -120,8 +121,8 @@ const AdjustStock = () => {
     const request = {
       'location.id': location.id,
       'product.id': item.product.id,
-      'inventoryItem': item?.['inventoryItem.id'] ?? '',
-      'binLocation': item?.binLocation?.id ?? '',
+      inventoryItem: item?.['inventoryItem.id'] ?? '',
+      binLocation: item?.binLocation?.id ?? '',
       currentQuantity: item.quantityAvailable,
       reasonCode: reasonCode ?? 'CORRECTION',
       newQuantity: quantityAdjusted,
@@ -159,6 +160,9 @@ const AdjustStock = () => {
     dispatch(stockAdjustments(requestBody, callback));
   };
 
+  const showLotNumber = useMemo(() => productSummaryConfig?.lotNumber !== false, [productSummaryConfig]);
+  const showExpirationDate = useMemo(() => productSummaryConfig?.expirationDate !== false, [productSummaryConfig]);
+
   return (
     <>
       <View style={styles.infoContainer}>
@@ -166,14 +170,16 @@ const AdjustStock = () => {
           <Chip icon="pin" style={styles.chipDefault} textStyle={styles.chipText}>
             {`Bin Location: ${item?.binLocation?.name ?? 'Default'}`}
           </Chip>
-          <Chip icon="calendar" style={styles.chipDefault} textStyle={styles.chipText}>
-            {`Expiration Date: ${item?.expirationDate ?? 'Never'}`}
-          </Chip>
+          {showExpirationDate && (
+            <Chip icon="calendar" style={styles.chipDefault} textStyle={styles.chipText}>
+              {`Expiration Date: ${item?.expirationDate ?? 'Never'}`}
+            </Chip>
+          )}
         </View>
         <Divider style={{ marginVertical: Theme.spacing.medium }} />
 
         <Subheading style={styles.subheading}>{`${item?.product.productCode} - ${item?.product.name}`}</Subheading>
-        <Caption style={styles.caption}>{`Lot Number: ${item?.lotNumber ?? 'Default'}`}</Caption>
+        {showLotNumber && <Caption style={styles.caption}>{`Lot Number: ${item?.lotNumber ?? 'Default'}`}</Caption>}
 
         <View style={styles.additionalInfoRow}>
           <Chip icon="package" style={styles.chipDefault} textStyle={styles.chipText}>

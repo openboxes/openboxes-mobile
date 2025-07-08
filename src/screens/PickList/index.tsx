@@ -1,15 +1,16 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ListRenderItemInfo, ToastAndroid, View } from 'react-native';
 import { Divider, Text } from 'react-native-paper';
 import Carousel, { Pagination } from 'react-native-snap-carousel';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import PickListItem from '../../components/PickListItem';
 import showPopup from '../../components/Popup';
 import { device } from '../../constants';
 import { PicklistItem } from '../../data/picklist/PicklistItem';
 import { submitPickListItem } from '../../redux/actions/orders';
+import { RootState } from '../../redux/reducers';
 import Theme from '../../utils/Theme';
 import styles from './styles';
 
@@ -17,6 +18,9 @@ const PickOrderItem = ({ picklistItems, selectedPicklistItemIndex, successfulPic
   const [activeIndex, setActiveIndex] = useState(selectedPicklistItemIndex || 0);
   const dispatch = useDispatch();
   const carouselRef = useRef<Carousel<any>>(null);
+  const { productSummaryConfig } = useSelector((state: RootState) => state.settingsReducer);
+
+  const showLotNumber = useMemo(() => productSummaryConfig?.lotNumber !== false, [productSummaryConfig]);
 
   useEffect(() => {
     if (carouselRef.current) {
@@ -31,12 +35,15 @@ const PickOrderItem = ({ picklistItems, selectedPicklistItemIndex, successfulPic
       let errorTitle = '';
       let errorMessage = '';
 
-      const scannedLotNumberValid = isPropertyValid(itemToSave, 'lotNumber', 'scannedLotNumber');
+      const scannedLotNumberValid = isPropertyValid(itemToSave, 'lotNumber', 'scannedLotNumber', showLotNumber);
       const scannedBinLocationValid = isPropertyValid(itemToSave, 'binLocation.name', 'scannedBinLocation');
 
-      if (!scannedLotNumberValid || !scannedBinLocationValid) {
-        errorTitle = 'Lot number or bin location is invalid';
-        errorMessage = 'Scan proper lot number and bin location';
+      if (!scannedLotNumberValid) {
+        errorTitle = 'Invalid Lot Number';
+        errorMessage = 'Scanned Lot Number does not match the item Lot Number!';
+      } else if (!scannedBinLocationValid) {
+        errorTitle = 'Invalid Bin Location';
+        errorMessage = 'Scanned Bin Location does not match the item Bin Location!';
       }
 
       if (!Number(itemToSave.quantityToPick) && !itemToSave.shortage) {
@@ -93,8 +100,8 @@ const PickOrderItem = ({ picklistItems, selectedPicklistItemIndex, successfulPic
     }
   };
 
-  const isPropertyValid = (item: any, property: string, scannedProperty: string) => {
-    if (!item[property] && !item[scannedProperty]) {
+  const isPropertyValid = (item: any, property: string, scannedProperty: string, enabled: boolean = true) => {
+    if (!enabled || (!item[property] && !item[scannedProperty])) {
       return true;
     }
 

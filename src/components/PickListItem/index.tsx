@@ -17,6 +17,8 @@ import Theme from '../../utils/Theme';
 import DetailsTable from '../DetailsTable';
 import styles from './styles';
 import { Props } from './types';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../redux/reducers';
 
 // TODO: Refactor (pull from api, when shortage reason codes will be available)
 const SHORTAGE_REASON_CODES = [
@@ -34,6 +36,7 @@ const PickListItem: React.FC<Props> = ({ item, onPickItem }) => {
   );
   const [scannedLotNumber, setScannedLotNumber] = useState<string>('');
   const [scannedBinLocation, setScannedBinLocation] = useState<string>('');
+  const { productSummaryConfig } = useSelector((state: RootState) => state.settingsReducer);
 
   const isPropertyValid = (itemValue?: string, value?: string | null) => {
     if (!itemValue && !value) {
@@ -65,26 +68,33 @@ const PickListItem: React.FC<Props> = ({ item, onPickItem }) => {
     });
   };
 
+  const showLotNumber = productSummaryConfig?.lotNumber !== false;
+  const showLocationType = productSummaryConfig?.locationType !== false;
+
+  const productColumns = [
+    { label: 'Product Code', value: item?.productCode },
+    { label: 'Product Name', value: item?.['product.name'] },
+    showLotNumber ? { label: 'Lot Number', value: item?.lotNumber, defaultValue: 'Default' } : null
+  ].filter(Boolean);
+
+  const locationColumns = [
+    { label: 'Location', value: item?.['binLocation.name'], defaultValue: 'Default' },
+    showLocationType ? { label: 'Type', value: item?.['binLocation.locationType'], defaultValue: 'None' } : null,
+    { label: 'Zone', value: item?.['binLocation.zoneName'], defaultValue: 'None' }
+  ].filter(Boolean);
+
   return (
     <Card style={styles.card}>
       <Card.Content>
         <View style={styles.inputContainer}>
-          <DetailsTable
-            style={styles.dataTable}
-            columns={3}
-            data={[
-              { label: 'Product Code', value: item?.productCode },
-              { label: 'Product Name', value: item?.['product.name'] },
-              { label: 'Lot Number', value: item?.lotNumber, defaultValue: 'Default' }
-            ]}
-          />
-          <View>
+          <DetailsTable style={styles.dataTable} columns={productColumns.length} data={productColumns} />
+          {showLotNumber ? (
             <InputBox
               editable
               value={scannedLotNumber}
               placeholder={item.lotNumber || ''}
               label={'Lot Number'}
-              disabled={false}
+              disabled={!showLotNumber}
               icon={getIcon(scannedLotNumber, item.lotNumber)}
               onEndEdit={setScannedLotNumber}
               onChange={setScannedLotNumber}
@@ -103,17 +113,9 @@ const PickListItem: React.FC<Props> = ({ item, onPickItem }) => {
                 });
               }}
             />
-          </View>
+          ) : null}
           <View>
-            <DetailsTable
-              style={styles.dataTable}
-              columns={3}
-              data={[
-                { label: 'Location', value: item?.['binLocation.name'], defaultValue: 'Default' },
-                { label: 'Type', value: item?.['binLocation.locationType'], defaultValue: 'None' },
-                { label: 'Zone', value: item?.['binLocation.zoneName'], defaultValue: 'None' }
-              ]}
-            />
+            <DetailsTable style={styles.dataTable} columns={locationColumns.length} data={locationColumns} />
             <InputBox
               editable
               value={scannedBinLocation}

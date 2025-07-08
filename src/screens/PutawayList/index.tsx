@@ -14,6 +14,7 @@ import PutAwayItems from '../../data/putaway/PutAwayItems';
 import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
 import { getOrdersAction } from '../../redux/actions/orders';
 import { fetchPutAwayFromOrderAction } from '../../redux/actions/putaways';
+import { RootState } from '../../redux/reducers';
 import styles from './styles';
 import { DispatchProps, Props, State } from './types';
 
@@ -103,6 +104,8 @@ class PutawayList extends React.Component<Props, State> {
 
   render() {
     const { showList, putAwayList, putAwayListFiltered, lpnFilter } = this.state;
+    const { productSummaryConfig } = this.props;
+    const showLotNumber = productSummaryConfig?.lotNumber !== false;
 
     return (
       <View style={styles.screenContainer}>
@@ -144,9 +147,11 @@ class PutawayList extends React.Component<Props, State> {
                     <Subheading style={styles.destinationSubheading}>
                       {`${listRenderItemInfo.item?.putawayItem?.['product.productCode']} - ${listRenderItemInfo.item?.putawayItem?.['product.name']}`}
                     </Subheading>
-                    <Caption style={styles.caption}>
-                      {`Lot Number: ${listRenderItemInfo.item?.putawayItem?.inventoryItem?.lotNumber ?? 'Default'}`}
-                    </Caption>
+                    {showLotNumber && (
+                      <Caption style={styles.caption}>
+                        {`Lot Number: ${listRenderItemInfo.item?.putawayItem?.inventoryItem?.lotNumber ?? 'Default'}`}
+                      </Caption>
+                    )}
 
                     <View style={styles.rowItem}>
                       <Chip icon="truck" style={styles.chipDefault} textStyle={styles.chipDefaultText}>
@@ -168,10 +173,15 @@ class PutawayList extends React.Component<Props, State> {
   }
 }
 
+const mapStateToProps = (state: RootState) => ({
+  productSummaryConfig: state.settingsReducer.productSummaryConfig
+});
+
 const mapDispatchToProps: DispatchProps = {
   showScreenLoading,
   hideScreenLoading,
   getOrdersAction,
   fetchPutAwayFromOrderAction
 };
-export default connect(null, mapDispatchToProps)(PutawayList);
+
+export default connect(mapStateToProps, mapDispatchToProps)(PutawayList);

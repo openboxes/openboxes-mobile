@@ -1,6 +1,6 @@
 import React from 'react';
 import { ScrollView, TouchableOpacity, View } from 'react-native';
-import { Card, Chip, Divider, Paragraph, Subheading } from 'react-native-paper';
+import { Caption, Card, Chip, Divider, Paragraph, Subheading } from 'react-native-paper';
 import { connect } from 'react-redux';
 
 import Button from '../../components/Button';
@@ -109,34 +109,41 @@ class ProductDetails extends React.Component<Props, State> {
     });
   };
 
-  renderListItem = (item: any, index: any) => (
-    <TouchableOpacity key={index} style={styles.itemView} onPress={() => this.navigateToDetails(item)}>
-      <Card style={styles.cardContainer}>
-        <Card.Content>
-          <View style={styles.headerRow}>
-            <Chip icon="pin" style={styles.chipDefault} textStyle={styles.chipText}>
-              {`Bin Location: ${item?.binLocation?.name ?? 'Default'}`}
-            </Chip>
-          </View>
-          <Divider style={styles.contentDivider} />
+  renderListItem = (item: any, index: any) => {
+    const { productSummaryConfig } = this.props;
+    const showLotNumber = productSummaryConfig?.lotNumber !== false;
 
-          <Subheading style={styles.subheading}> {`Lot Number: ${item?.lotNumber || 'Default'}`} </Subheading>
-          <View style={styles.additionalInfoRow}>
-            {item.quantityOnHand ? (
-              <Chip icon="package-variant" style={styles.chipDefault} textStyle={styles.chipText}>
-                {`Qty On Hand: ${item.quantityOnHand}`}
+    return (
+      <TouchableOpacity key={index} style={styles.itemView} onPress={() => this.navigateToDetails(item)}>
+        <Card style={styles.cardContainer}>
+          <Card.Content>
+            <View style={styles.headerRow}>
+              <Chip icon="pin" style={styles.chipDefault} textStyle={styles.chipText}>
+                {`Bin Location: ${item?.binLocation?.name ?? 'Default'}`}
               </Chip>
-            ) : null}
-            {item.quantityAvailable ? (
-              <Chip icon="thumb-up" style={styles.chipDefault} textStyle={styles.chipText}>
-                {`Qty Available: ${item.quantityAvailable}`}
-              </Chip>
-            ) : null}
-          </View>
-        </Card.Content>
-      </Card>
-    </TouchableOpacity>
-  );
+            </View>
+            <Divider style={styles.contentDivider} />
+
+            <Subheading style={styles.subheading}>{`${item?.product.name}`}</Subheading>
+            {showLotNumber && <Caption style={styles.caption}>{`Lot Number: ${item?.lotNumber ?? 'Default'}`}</Caption>}
+
+            <View style={styles.additionalInfoRow}>
+              {item.quantityOnHand ? (
+                <Chip icon="package-variant" style={styles.chipDefault} textStyle={styles.chipText}>
+                  {`Qty On Hand: ${item.quantityOnHand}`}
+                </Chip>
+              ) : null}
+              {item.quantityAvailable ? (
+                <Chip icon="thumb-up" style={styles.chipDefault} textStyle={styles.chipText}>
+                  {`Qty Available: ${item.quantityAvailable}`}
+                </Chip>
+              ) : null}
+            </View>
+          </Card.Content>
+        </Card>
+      </TouchableOpacity>
+    );
+  };
 
   render() {
     const vm = vmMapper(this.state.productDetails, this.state);
@@ -218,7 +225,8 @@ class ProductDetails extends React.Component<Props, State> {
 }
 
 const mapStateToProps = (state: RootState) => ({
-  selectedProduct: state.productsReducer.selectedProduct
+  selectedProduct: state.productsReducer.selectedProduct,
+  productSummaryConfig: state.settingsReducer.productSummaryConfig
 });
 const mapDispatchToProps: DispatchProps = {
   getProductByIdAction,
