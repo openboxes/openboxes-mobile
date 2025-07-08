@@ -4,7 +4,7 @@ Openboxes mobile app built using React Native.
 
 ## ⭐ Prerequisites
 
-**iOS** : XCode(10.2) onwards
+**iOS** : XCode(16.4) onwards
 
 **Android** : Android Studio(3.4) with gradle(5.1.1) onwards
 
@@ -19,7 +19,7 @@ Openboxes mobile app built using React Native.
 
 **Step 3:** Install the dependencies with `yarn install`
 
-**Step 4:** Run the npm script to install the cocoapods `yarn pod install`
+**Step 4:** [iOS only] Run the npm script to install the cocoapods with `yarn pod install`
 
 ## 🕵️ How to Run the Project
 
@@ -49,6 +49,15 @@ Openboxes mobile app built using React Native.
      npm run android -release // .env
      ```
    - Note: These npm scripts will lint your code first. If there are no lint errors, then it will run the iOS or Android app. Otherwise it will show the lint errors in the terminal.
+
+## How to Package the Project
+  - Package iOS app
+    1. `yarn install`
+    2. `yarn pod install`
+    3. `yarn bundle:ios`
+    4. `yarn package:ios`
+
+    After running these four commands, look for `ios/build/openboxes_mobile_o.app`. If you are paranoid, and want to launch the `.app` in a simulator, replace step 4 with `yarn package:ios:simulate`.
 
 ## 🧶 Coding Style
 

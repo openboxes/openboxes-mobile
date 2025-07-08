@@ -63,6 +63,13 @@ target 'openboxes_mobile_o' do
           config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)', '_LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION']
         end
 
+        # Without this, Sentry fills build logs with warnings like:
+        #   `using '@_implementationOnly' without enabling library evolution for 'Sentry' may lead to instability during execution`
+        #
+        if target.name == 'Sentry'
+          config.build_settings['SWIFT_ENABLE_LIBRARY_EVOLUTION'] = 'YES'
+        end
+
         #
         # Prevent Yoga from breaking the build with this compiler warning:
         #   `error: use of bitwise '|' with boolean operands`
@@ -71,6 +78,12 @@ target 'openboxes_mobile_o' do
         if target.name == 'Yoga'
           config.build_settings['OTHER_CPLUSPLUSFLAGS'] ||= ['$(inherited)', '-Wno-error=bitwise-instead-of-logical']
         end
+
+        #
+        # Prevent xcodebuild from failing with this error:
+        #   `openboxes-mobile/ios/Pods/Pods.xcodeproj: warning: The iOS deployment target 'IPHONEOS_DEPLOYMENT_TARGET' is set to 11.0, but the range of supported deployment target versions is 12.0 to 18.5.99. (in target '***' from project 'Pods')`
+        #
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.0'
       end
     end
 

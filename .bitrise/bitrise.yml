@@ -7,31 +7,35 @@ trigger_map:
 - push_branch: master
   workflow: app_distribution_to_testers
 - push_branch: develop
-  workflow: primary
+  workflow: android-only
 - pull_request_target_branch: develop
-  workflow: primary
+  workflow: android-only
 - pull_request_source_branch: "*"
-  workflow: primary
+  workflow: android-only
 
 _dependency_versions:
   # https://github.com/android/ndk/wiki/Unsupported-Downloads#r21e
   android_ndk_version: &android_ndk_version 21.4.7075529
+  # On stacks that support Xcode 16+, Bitrise's install-missing-android-tools
+  # step ends up calling an sdkmanager release that requires Java 17+.
+  java_version_ndk: &java_version_ndk 17
+  # But for everything else we want to keep using Java 11
+  java_version: &java_version 11
   node_version: &node_version 14.21.3
   # We use RN 0.66; use this table to find the correct version of react-native-cli
   # https://github.com/react-native-community/cli?tab=readme-ov-file#compatibility
   react_native_cli_version: &react_native_cli_version 6.4.0
 
 step_bundles:
-  setup_steps:
+  setup-steps:
     description: |-
-      Check out code, install dependencies, and prepare the environment.
+      Check out code, install common dependencies, and prepare the environment.
     steps:
       - activate-ssh-key@4:
           run_if: '{{getenv "SSH_RSA_PRIVATE_KEY" | ne ""}}'
       - git-clone@8:
           is_always_run: true
       - script@1:
-          title: Script - create .env file
           inputs:
           - content: |-
               set -euxo pipefail
@@ -39,61 +43,49 @@ step_bundles:
               API_BASE_URL='$API_BASE_URL'" > ./.env
               echo "Check if the file was properly created: "
               wc .env
+          title: Script - create .env file
       - nvm@1:
-          title: Node Version Manager (NVM) - install Node.js
           inputs:
           - node_version: *node_version
+          title: Node Version Manager (NVM) - install Node.js
+      - restore-npm-cache@2: {}
       - install-react-native@0:
           inputs:
           - version: *react_native_cli_version
           title: Install React Native - CLI tools
       - yarn@0:
-          title: Run yarn command - install
           inputs:
           - command: install
+          title: Run yarn command - install
+      - save-npm-cache@1: {}
+  setup-steps-android:
+    description: |-
+      Install Android-specific dependencies.
+    steps:
+      - set-java-version@1:
+          inputs:
+          - set_java_version: *java_version_ndk
       - install-missing-android-tools@3:
           inputs:
-          - gradlew_path: "$PROJECT_LOCATION/gradlew"
+          - gradlew_path: "$GRADLEW_PATH"
           - ndk_version: *android_ndk_version
           is_always_run: true
-  release_steps:
+      - set-java-version@1:
+          inputs:
+          - set_java_version: *java_version
+  setup-steps-ios:
     description: |-
-      Bundle the Android app and copy the APK to $BITRISE_DEPLOY_DIR.
-      Currently, filenames are hardcoded, but they could be parameterized.
+      Install iOS-specific dependencies.
     steps:
-      - yarn@0:
-          title: Run yarn command - bundle:android
+      - restore-cocoapods-cache: {}
+      - cocoapods-install@2:
           inputs:
-          - command: bundle:android
-      - gradle-runner@3:
-          title: Gradle Runner - assembleRelease
-          inputs:
-          - apk_file_exclude_filter: "*-unaligned.apk\n\n"
-          - cache_level: all
-          - gradle_task: assembleRelease
-      - script@1:
-          inputs:
-          - content: |-
-              set -euxo pipefail
-              cp $BITRISE_APK_PATH $BITRISE_DEPLOY_DIR/openboxes_test_b$BITRISE_BUILD_NUMBER.apk
-          title: Script - copy APK for deploy-to-bitrise-io step
-      - deploy-to-bitrise-io@2:
-          is_always_run: false
-          inputs:
-          - notify_email_list: "$TESTERS"
-          - notify_user_groups: owner, admins, developers
-          - deploy_path: "$BITRISE_DEPLOY_DIR/openboxes_test_b$BITRISE_BUILD_NUMBER.apk"
-
-workflows:
-  app_distribution_to_testers:
+          - source_root_path: "$BITRISE_SOURCE_DIR/ios"
+      - save-cocoapods-cache: {}
+  branding:
+    description: |-
+      Apply modifications for branding.
     steps:
-    - bundle::setup_steps: {}
-    - bundle::release_steps: {}
-    triggers:
-      enabled: false
-  primary:
-    steps:
-    - bundle::setup_steps: {}
     - brew-install@1:
         inputs:
         - packages: jq
@@ -104,41 +96,133 @@ workflows:
         - command: branding:vipr
         is_skippable: true
         title: Run yarn command - branding:vipr
-    - bundle::release_steps: {}
+  release-steps-android:
+    description: |-
+      Assemble the Android app and copy the APK to $BITRISE_DEPLOY_DIR.
+      Currently, filenames are hardcoded, but they could be parameterized.
+    steps:
+      - yarn@0:
+          inputs:
+          - command: bundle:android
+          title: Run yarn command - bundle:android
+      - restore-gradle-cache@2: {}
+      - gradle-runner@3:
+          inputs:
+          - apk_file_exclude_filter: "*-unaligned.apk\n\n"
+          - cache_level: all
+          - gradle_task: assembleRelease
+          title: Gradle Runner - assembleRelease
+      - save-gradle-cache@1: {}
+      - script@1:
+          inputs:
+          - content: |-
+              set -euxo pipefail
+              cp $BITRISE_APK_PATH $BITRISE_DEPLOY_DIR/openboxes_test_b$BITRISE_BUILD_NUMBER.apk
+          title: Script - copy APK for deploy-to-bitrise-io step
+      - deploy-to-bitrise-io@2:
+          inputs:
+          - deploy_path: "$BITRISE_DEPLOY_DIR/openboxes_test_b$BITRISE_BUILD_NUMBER.apk"
+          - notify_email_list: "$TESTERS"
+          - notify_user_groups: owner, admins, developers
+          is_always_run: false
+  release-steps-ios:
+    description: |-
+      Assemble the iOS app and copy the *.app package to $BITRISE_DEPLOY_DIR.
+    steps:
+      - yarn@0:
+          inputs:
+          - command: bundle:ios
+          title: Run yarn command - bundle:ios
+      - script@1:
+          inputs:
+          - content: |-
+              set -euxo pipefail
+              plutil -lint "$BITRISE_SOURCE_DIR/ios/openboxes_mobile_o.xcodeproj/project.pbxproj"
+              swift --version
+              xcodebuild -version
+          title: Script - check project.pbxproj validity and Xcode version
+      - xcode-build-for-simulator@3:
+          inputs:
+          - export_method: "$BITRISE_EXPORT_METHOD"
+          - project_path: "$BITRISE_PROJECT_PATH"
+          - scheme: "$BITRISE_SCHEME"
+      - deploy-to-bitrise-io@2:
+          inputs:
+          - deploy_path: "$BITRISE_XCODEBUILD_BUILD_FOR_SIMULATOR_LOG_PATH"
+          - notify_user_groups: developers
+          is_always_run: true
+          title: Deploy to Bitrise.io - Xcode build log
+      - deploy-to-bitrise-io@2:
+          inputs:
+          - deploy_path: "$BITRISE_APP_DIR_PATH"
+          - notify_email_list: "$TESTERS"
+          - notify_user_groups: owner, admins, developers
+          is_always_run: false
+workflows:
+  app_distribution_to_testers:
+    steps:
+    - bundle::setup-steps: {}
+    - bundle::setup-steps-android: {}
+    - bundle::setup-steps-ios: {}
+    - bundle::release-steps-android: {}
+    - bundle::release-steps-ios: {}
+    triggers:
+      enabled: false
+  android-only:
+    steps:
+    - bundle::setup-steps: {}
+    - bundle::setup-steps-android: {}
+    - bundle::branding: {}
+    - bundle::release-steps-android: {}
+    triggers:
+      enabled: false
+  ios-only:
+    steps:
+    - bundle::setup-steps: {}
+    - bundle::setup-steps-ios: {}
+    - bundle::branding: {}
+    - bundle::release-steps-ios: {}
     triggers:
       enabled: false
 app:
   envs:
   - opts:
       is_expand: false
+    BITRISE_EXPORT_METHOD: development
+  - opts:
+      is_expand: false
+    BITRISE_PROJECT_PATH: ios/openboxes_mobile_o.xcworkspace
+  - opts:
+      is_expand: false
+    BITRISE_SCHEME: openboxes_mobile_o
+  - opts:
+      is_expand: false
     GRADLE_BUILD_FILE_PATH: android/build.gradle
+  - opts:
+      is_expand: false
+    #
+    # The --add-opens=... argument prevents the following error and may not be
+    # necessary in the future (e.g., if we upgrade Gradle or React Native):
+    #   java.lang.reflect.InaccessibleObjectException: Unable to make field private final java.lang.String java.io.File.path accessible: module java.base does not "opens java.io" to unnamed module @4191eb2a
+    #
+    GRADLE_OPTS:
+      -Dorg.gradle.jvmargs="-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError --add-opens=java.base/java.io=ALL-UNNAMED"
   - opts:
       is_expand: false
     GRADLEW_PATH: android/gradlew
   - opts:
       is_expand: false
-    PROJECT_LOCATION: android
+    JAVA_OPTS: "-Xms512m -Xmx2048m"
   - opts:
       is_expand: false
     MODULE: app
   - opts:
       is_expand: false
+    PROJECT_LOCATION: android
+  - opts:
+      is_expand: false
     VARIANT: staging
-  - opts:
-      is_expand: false
-    BITRISE_PROJECT_PATH: ios/openboxesexpo.xcworkspace
-  - opts:
-      is_expand: false
-    BITRISE_SCHEME: openboxesexpo
-  - opts:
-      is_expand: false
-    BITRISE_EXPORT_METHOD: development
-  - opts:
-      is_expand: false
-    GRADLE_OPTS: -Dorg.gradle.jvmargs="-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError"
-  - opts:
-      is_expand: false
-    JAVA_OPTS: "-Xms512m -Xmx2048m"
+
 meta:
   bitrise.io:
-    stack: osx-xcode-14.3.x-ventura
+    stack: osx-xcode-16.4.x

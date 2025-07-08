@@ -6,13 +6,21 @@
     "android": "react-native run-android",
     "branding:vipr": "./scripts/apply_branding.sh vipr",
     "bundle:android": "mkdir -p android/app/src/main/assets && npx react-native bundle --entry-file index.js --platform android --bundle-output android/app/src/main/assets/index.android.bundle --dev true",
+    "bundle:ios": "mkdir -p ios/build && (xattr -w com.apple.xcode.CreatedByBuildSystem true ios/build || true) && npx react-native bundle --entry-file index.js --platform ios --bundle-output ios/main.jsbundle --assets-dest ios/build --dev true",
+    "clean": "yarn clean:android && yarn clean:ios && yarn clean:node_modules && yarn watchman:reset",
+    "clean:android": "rm android/app/src/main/assets/index.android.bundle || true && cd android && ./gradlew clean",
+    "clean:ios": "rm -rf ios/build ios/Pods && cd ios && xcodebuild clean",
+    "clean:node_modules": "rm -rf node_modules",
     "format": "prettier-eslint --eslint-config-path ./.eslintrc.js --write '**/*.ts' '**/*.tsx' '**/*.js' '**/*.jsx'",
     "ios": "react-native run-ios --simulator='iPhone 16'",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "package:ios": "xcodebuild clean build -allowProvisioningUpdates -archivePath ios/build/Products/OpenBoxes.xcarchive -configuration Debug -derivedDataPath ios/build -scheme openboxes_mobile_o -sdk iphonesimulator -workspace ./ios/openboxes_mobile_o.xcworkspace && cp -R ./ios/build/Build/Products/Debug-iphonesimulator/openboxes_mobile_o.app ios/build",
+    "package:ios:simulate": "yarn package:ios && (xcrun simctl boot 'iPhone 16' || true) && open -a Simulator && xcrun simctl install booted ios/build/openboxes_mobile_o.app && xcrun simctl launch booted com.openboxes.openboxes-mobile-o",
     "pod": "yarn postinstall && cd ios && pod",
     "postinstall": "find node_modules -type f -name '*.podspec' -exec sed -i.pre-postinstall.bak 's|https://boostorg\\.jfrog\\.io/artifactory/main/|https://archives.boost.io/|g' {} +",
     "start": "npx react-native start --verbose",
-    "test": "jest"
+    "test": "jest",
+    "watchman:reset": "watchman watch-del . && watchman watch-project ."
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "~1.15.9",
