@@ -1,12 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-<<<<<<< HEAD
 import { ScrollView } from 'react-native';
 import { Card, Paragraph, TextInput } from 'react-native-paper';
-=======
-import { ScrollView, View } from 'react-native';
-import { Caption, Card, IconButton, Paragraph, Switch, TextInput } from 'react-native-paper';
->>>>>>> develop
 import { useDispatch, useSelector } from 'react-redux';
 
 import Button from '../../components/Button';
@@ -15,24 +10,15 @@ import * as NavigationService from '../../NavigationService';
 import {
   resetDashboardEntriesVisibility,
   setDashboardEntriesVisibility,
-<<<<<<< HEAD
   setGroupLocationEntries,
   setProductSummaryConfig,
   SettingsActionTypes
-=======
-  setGroupLocationEntries
->>>>>>> develop
 } from '../../redux/actions/settings';
 import { RootState } from '../../redux/reducers';
 import ApiClient from '../../utils/ApiClient';
 import { environment } from '../../utils/Environment';
-<<<<<<< HEAD
 import { DashboardEntry, getDashboardEntries } from '../Dashboard/dashboardData';
 import { getProductSummaryConfig, ProductSummaryItem } from './productSummaryConfig';
-=======
-import Theme from '../../utils/Theme';
-import { DashboardEntry, getDashboardEntries } from '../Dashboard/dashboardData';
->>>>>>> develop
 import styles from './styles';
 import { ToggleCard } from './ToggleCard';
 import { ToggleRow } from './ToggleRow';
@@ -41,22 +27,14 @@ const API_URL_KEY = 'API_URL';
 
 const Settings = () => {
   const dispatch = useDispatch();
-<<<<<<< HEAD
   const { groupLocationEntries, dashboardEntriesVisibility, productSummaryConfig } = useSelector(
     (state: RootState) => state.settingsReducer
   );
-=======
-  const { groupLocationEntries, dashboardEntriesVisibility } = useSelector((state: RootState) => state.settingsReducer);
->>>>>>> develop
 
   const [serverUrl, setServerUrl] = useState<string>('');
 
   useEffect(() => {
-<<<<<<< HEAD
     AsyncStorage.getItem(API_URL_KEY)
-=======
-    AsyncStorage.getItem('API_URL')
->>>>>>> develop
       .then((url) => {
         setServerUrl(url ?? environment.API_BASE_URL);
       })
@@ -68,11 +46,7 @@ const Settings = () => {
 
   const handleServerUrlSave = useCallback(() => {
     ApiClient.setBaseUrl(serverUrl);
-<<<<<<< HEAD
     AsyncStorage.setItem(API_URL_KEY, serverUrl)
-=======
-    AsyncStorage.setItem('API_URL', serverUrl)
->>>>>>> develop
       .then(() => {
         NavigationService.goBack();
       })
@@ -81,7 +55,6 @@ const Settings = () => {
       });
   }, [serverUrl]);
 
-<<<<<<< HEAD
   const askResetDashboard = useCallback(() => {
     showPopup({
       title: 'Reset Dashboard Entries',
@@ -114,41 +87,11 @@ const Settings = () => {
       dispatch(actionCreator(entity.key, !current));
     },
     [dispatch, isVisible]
-=======
-  const toggleGroupEntries = useCallback(() => {
-    dispatch(setGroupLocationEntries(!groupLocationEntries));
-  }, [dispatch, groupLocationEntries]);
-
-  const isEntryVisible = useCallback(
-    (entry: DashboardEntry): boolean => {
-      const preference = dashboardEntriesVisibility?.[entry.key];
-      if (preference !== undefined) {
-        return preference;
-      }
-
-      return entry.defaultVisible ?? true;
-    },
-    [dashboardEntriesVisibility]
-  );
-
-  const handleDashboardEntryToggle = useCallback(
-    (entry: DashboardEntry) => {
-      const current = isEntryVisible(entry);
-      dispatch(setDashboardEntriesVisibility(entry.key, !current));
-    },
-    [dispatch, isEntryVisible]
->>>>>>> develop
   );
 
   const dashboardEntries = useMemo(() => getDashboardEntries(), []);
 
-<<<<<<< HEAD
   const productConfigEntries = useMemo(() => getProductSummaryConfig(), []);
-=======
-  const handleDefaultDashboardEntries = useCallback(() => {
-    dispatch(resetDashboardEntriesVisibility());
-  }, [dispatch]);
->>>>>>> develop
 
   return (
     <ScrollView style={styles.container}>
@@ -172,7 +115,6 @@ const Settings = () => {
       </Card>
 
       {/* Group Location Entries */}
-<<<<<<< HEAD
       <ToggleCard title="Customization">
         <ToggleRow
           title="Group Location Entries"
@@ -209,65 +151,6 @@ const Settings = () => {
           />
         ))}
       </ToggleCard>
-=======
-      <Card style={styles.card}>
-        <Card.Title title="Customization" />
-        <Card.Content>
-          <View style={styles.settingRow}>
-            <View style={styles.settingTextContainer}>
-              <Paragraph>Group Location Entries</Paragraph>
-              <Caption>Displays locations from the same organization in a collapsible list.</Caption>
-            </View>
-            <Switch value={groupLocationEntries} color={Theme.colors.primary} onValueChange={toggleGroupEntries} />
-          </View>
-        </Card.Content>
-      </Card>
-
-      {/* Dashboard Entries */}
-      {dashboardEntries.length > 0 && (
-        <Card style={[styles.card, { marginBottom: Theme.spacing.large }]}>
-          <Card.Title
-            title="Menu Entries"
-            subtitle="Toggle visibility of dashboard entries."
-            right={() => (
-              <IconButton
-                icon="refresh"
-                color={Theme.colors.primary}
-                size={24}
-                style={{ marginRight: Theme.spacing.medium }}
-                accessibilityLabel="Reset to Default Entries"
-                onPress={() =>
-                  showPopup({
-                    title: 'Reset Dashboard Entries',
-                    message: 'Are you sure you want to reset the dashboard entries to their default visibility?',
-                    positiveButton: {
-                      text: 'Reset',
-                      callback: handleDefaultDashboardEntries
-                    },
-                    negativeButtonText: 'Cancel'
-                  })
-                }
-              />
-            )}
-          />
-          <Card.Content>
-            {dashboardEntries.map((entry) => (
-              <View key={entry.key} style={styles.settingRow}>
-                <View style={styles.settingTextContainer}>
-                  <Paragraph>{entry.screenName}</Paragraph>
-                  <Caption>{entry.entryDescription ?? ''}</Caption>
-                </View>
-                <Switch
-                  value={isEntryVisible(entry)}
-                  color={Theme.colors.primary}
-                  onValueChange={() => handleDashboardEntryToggle(entry)}
-                />
-              </View>
-            ))}
-          </Card.Content>
-        </Card>
-      )}
->>>>>>> develop
     </ScrollView>
   );
 };
