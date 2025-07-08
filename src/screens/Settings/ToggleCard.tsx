@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { Card, IconButton } from 'react-native-paper';
 
 import Theme from '../../utils/Theme';
@@ -12,7 +12,7 @@ type ToggleCardProps = {
   lastChild?: boolean;
 };
 
-export const ToggleCard = React.memo(function ToggleCard({
+export const ToggleCard = memo(function ToggleCard({
   title,
   subtitle,
   onReset,
