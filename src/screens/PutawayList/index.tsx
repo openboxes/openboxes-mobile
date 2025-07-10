@@ -149,7 +149,9 @@ class PutawayList extends React.Component<Props, State> {
                     </Subheading>
                     {showLotNumber && (
                       <Caption style={styles.caption}>
-                        {`Lot Number: ${listRenderItemInfo.item?.putawayItem?.inventoryItem?.lotNumber ?? 'Default'}`}
+                        {`Lot Number: ${
+                          listRenderItemInfo.item?.putawayItem?.['inventoryItem.lotNumber'] ?? 'Default'
+                        }`}
                       </Caption>
                     )}
 

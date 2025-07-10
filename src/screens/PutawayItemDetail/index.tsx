@@ -115,7 +115,7 @@ const PutawayItemDetail = () => {
           </Chip>
           {showExpirationDate && (
             <Chip icon="calendar" style={[styles.chipDefault, styles.lastChild]} textStyle={styles.chipWarningText}>
-              {`Expiry Date: ${state.putAwayItem?.['inventoryItem.expiryDate'] || 'Never'}`}
+              {`Expiry Date: ${state.putAwayItem?.['inventoryItem.expirationDate'] || 'Never'}`}
             </Chip>
           )}
         </View>
