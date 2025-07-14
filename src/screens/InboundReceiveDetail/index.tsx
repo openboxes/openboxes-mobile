@@ -21,6 +21,7 @@ import { searchInternalLocations } from '../../redux/actions/locations';
 import { RootState } from '../../redux/reducers';
 import Theme from '../../utils/Theme';
 import styles from './styles';
+import { partial } from 'lodash';
 
 type ShipmentData = {
   id: string;
@@ -137,7 +138,17 @@ const InboundReceiveDetail: React.FC = () => {
         }
       ]
     }),
-    []
+    [
+      shipmentId,
+      shipmentItem,
+      receiveLocation.id,
+      lotNumber,
+      expirationDate,
+      comments,
+      lotStatus,
+      quantity,
+      cancelRemaining
+    ]
   );
 
   const createCompleteReceivingPayload = useCallback(
