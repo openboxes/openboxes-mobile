@@ -21,7 +21,6 @@ import { searchInternalLocations } from '../../redux/actions/locations';
 import { RootState } from '../../redux/reducers';
 import Theme from '../../utils/Theme';
 import styles from './styles';
-import { partial } from 'lodash';
 
 type ShipmentData = {
   id: string;
