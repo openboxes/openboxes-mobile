@@ -344,45 +344,48 @@ const InboundReceiveDetail: React.FC = () => {
           />
 
           {showLotNumber ? (
-            <InputBox
-              value={lotNumber}
-              editable={true}
-              label="Lot Number"
-              onChange={setLotNumber}
-              style={{ marginBottom: Theme.spacing.small }}
-            />
+            <>
+              <InputBox
+                value={lotNumber}
+                editable={true}
+                label="Lot Number"
+                onChange={setLotNumber}
+                style={{ marginBottom: Theme.spacing.small }}
+              />
+              <SelectDropdown
+                renderDropdownIcon={renderIcon}
+                data={lotStatusOptions}
+                defaultValue={lotStatusOptions[0]}
+                buttonTextStyle={styles.lotStatusSelectTextStyle}
+                buttonStyle={styles.lotStatusSelectStyle}
+                rowTextForSelection={(item) => item}
+                buttonTextAfterSelection={(item) => item}
+                onSelect={(s) => setLotStatus(s === lotStatusOptions[0] ? '' : s)}
+              />
+            </>
           ) : null}
 
-          <SelectDropdown
-            renderDropdownIcon={renderIcon}
-            data={lotStatusOptions}
-            defaultValue={lotStatusOptions[0]}
-            buttonTextStyle={styles.lotStatusSelectTextStyle}
-            buttonStyle={styles.lotStatusSelectStyle}
-            rowTextForSelection={(item) => item}
-            buttonTextAfterSelection={(item) => item}
-            onSelect={(s) => setLotStatus(s === lotStatusOptions[0] ? '' : s)}
-          />
+          {showExpirationDate ? (
+            <View style={styles.datePickerContainer}>
+              <DatePicker
+                style={styles.datePicker}
+                date={expirationDate}
+                mode="date"
+                placeholder="Expiration Date"
+                format="MM/DD/YYYY"
+                confirmBtnText="Confirm"
+                cancelBtnText="Cancel"
+                customStyles={styles.datePickerCustomStyle}
+                onDateChange={setExpirationDate}
+              />
 
-          <View style={styles.datePickerContainer}>
-            <DatePicker
-              style={styles.datePicker}
-              date={expirationDate}
-              mode="date"
-              placeholder="Expiration Date"
-              format="MM/DD/YYYY"
-              confirmBtnText="Confirm"
-              cancelBtnText="Cancel"
-              customStyles={styles.datePickerCustomStyle}
-              onDateChange={setExpirationDate}
-            />
-
-            {expirationDate && (
-              <TouchableOpacity onPress={onClearDate}>
-                <Image source={CLEAR} style={styles.imageIcon} />
-              </TouchableOpacity>
-            )}
-          </View>
+              {expirationDate && (
+                <TouchableOpacity onPress={onClearDate}>
+                  <Image source={CLEAR} style={styles.imageIcon} />
+                </TouchableOpacity>
+              )}
+            </View>
+          ) : null}
           <InputBox value={comments} editable={true} label="Comments" onChange={setComments} />
         </View>
       </View>

@@ -53,6 +53,7 @@ class PutawayCandidates extends Component<Props, State> {
   renderItem = (item: any) => {
     const { productSummaryConfig } = this.props;
     const showLotNumber = productSummaryConfig?.lotNumber !== false;
+    const showExpirationDate = productSummaryConfig?.expirationDate !== false;
 
     return (
       <Card
@@ -82,9 +83,11 @@ class PutawayCandidates extends Component<Props, State> {
           )}
 
           <View style={styles.additionalInfoRow}>
-            <Chip icon="calendar" style={styles.chipDefault} textStyle={styles.chipDefaultText}>
-              {`Expiration Date: ${item['inventoryItem.expirationDate'] ?? 'Never'}`}
-            </Chip>
+            {showExpirationDate && (
+              <Chip icon="calendar" style={styles.chipDefault} textStyle={styles.chipDefaultText}>
+                {`Expiration Date: ${item['inventoryItem.expirationDate'] ?? 'Never'}`}
+              </Chip>
+            )}
             <Chip icon="package" style={styles.chipDefault} textStyle={styles.chipDefaultText}>
               {`Quantity: ${item.quantity}`}
             </Chip>
