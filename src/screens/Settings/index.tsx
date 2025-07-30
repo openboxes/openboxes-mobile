@@ -9,7 +9,7 @@ import showPopup from '../../components/Popup';
 import * as NavigationService from '../../NavigationService';
 import {
   resetDashboardEntriesVisibility,
-  setDashboardEntriesVisibility,
+  setDashboardEntriesOrder,
   setGroupLocationEntries,
   setProductSummaryConfig,
   SettingsActionTypes
@@ -17,7 +17,8 @@ import {
 import { RootState } from '../../redux/reducers';
 import ApiClient from '../../utils/ApiClient';
 import { environment } from '../../utils/Environment';
-import { DashboardEntry, getDashboardEntries } from '../Dashboard/dashboardData';
+import { DashboardEntry } from '../Dashboard/dashboardData';
+import { DashboardEntriesList } from './DashboardEntriesList';
 import { getProductSummaryConfig, ProductSummaryItem } from './productSummaryConfig';
 import styles from './styles';
 import { ToggleCard } from './ToggleCard';
@@ -26,12 +27,9 @@ import { ToggleRow } from './ToggleRow';
 const API_URL_KEY = 'API_URL';
 
 const Settings = () => {
-  const dispatch = useDispatch();
-  const { groupLocationEntries, dashboardEntriesVisibility, productSummaryConfig } = useSelector(
-    (state: RootState) => state.settingsReducer
-  );
-
   const [serverUrl, setServerUrl] = useState<string>('');
+  const dispatch = useDispatch();
+  const { groupLocationEntries, productSummaryConfig } = useSelector((state: RootState) => state.settingsReducer);
 
   useEffect(() => {
     AsyncStorage.getItem(API_URL_KEY)
@@ -58,10 +56,13 @@ const Settings = () => {
   const askResetDashboard = useCallback(() => {
     showPopup({
       title: 'Reset Dashboard Entries',
-      message: 'Are you sure you want to reset the dashboard entries ' + 'to their default visibility?',
+      message: 'Are you sure you want to reset dashboard entries to their ' + 'default order & visibility?',
       positiveButton: {
         text: 'Reset',
-        callback: () => dispatch(resetDashboardEntriesVisibility())
+        callback: () => {
+          dispatch(resetDashboardEntriesVisibility());
+          dispatch(setDashboardEntriesOrder([]));
+        }
       },
       negativeButtonText: 'Cancel'
     });
@@ -88,8 +89,6 @@ const Settings = () => {
     },
     [dispatch, isVisible]
   );
-
-  const dashboardEntries = useMemo(() => getDashboardEntries(), []);
 
   const productConfigEntries = useMemo(() => getProductSummaryConfig(), []);
 
@@ -124,20 +123,9 @@ const Settings = () => {
         />
       </ToggleCard>
 
-      {/* Dashboard Entries */}
-      {dashboardEntries.length > 0 && (
-        <ToggleCard title="Menu Entries" subtitle="Toggle visibility of dashboard entries." onReset={askResetDashboard}>
-          {dashboardEntries.map((entry) => (
-            <ToggleRow
-              key={entry.key}
-              title={entry.screenName}
-              description={entry.entryDescription}
-              value={isVisible(entry, dashboardEntriesVisibility)}
-              onValueChange={() => handleToggle(entry, dashboardEntriesVisibility, setDashboardEntriesVisibility)}
-            />
-          ))}
-        </ToggleCard>
-      )}
+      <ToggleCard title="Menu Entries" subtitle="Toggle & reorder dashboard entries." onReset={askResetDashboard}>
+        <DashboardEntriesList />
+      </ToggleCard>
 
       {/* Product Summary */}
       <ToggleCard lastChild title="Product Summary" subtitle="Toggle visibility of particular product detail.">

@@ -1,5 +1,6 @@
 export const DASHBOARD_ENTRIES_VISIBILITY = 'DASHBOARD_ENTRIES_VISIBILITY';
 export const DASHBOARD_ENTRIES_VISIBILITY_RESET = 'DASHBOARD_ENTRIES_VISIBILITY_RESET';
+export const DASHBOARD_ENTRIES_ORDER = 'DASHBOARD_ENTRIES_ORDER';
 export const GROUP_LOCATION_ENTRIES = 'GROUP_LOCATION_ENTRIES';
 export const PRODUCT_SUMMARY_CONFIG = 'PRODUCT_SUMMARY_CONFIG';
 
@@ -24,12 +25,18 @@ type SetProductSummaryConfigAction = {
   payload: { key: string; visible: boolean };
 };
 
+type SetDashboardEntriesOrderAction = {
+  type: typeof DASHBOARD_ENTRIES_ORDER;
+  payload: string[];
+};
+
 // Create a union type for all action types in this file.
 // e.g., export type SettingsActionTypes = SetGroupLocationEntriesAction | SetThemeAction;
 export type SettingsActionTypes =
   | SetGroupLocationEntriesAction
   | SetDashboardEntriesVisibilityAction
   | ResetDashboardEntriesVisibility
+  | SetDashboardEntriesOrderAction
   | SetProductSummaryConfigAction;
 
 export const setGroupLocationEntries = (group: boolean): SetGroupLocationEntriesAction => {
@@ -52,6 +59,13 @@ export const setDashboardEntriesVisibility = (
 export const resetDashboardEntriesVisibility = (): ResetDashboardEntriesVisibility => {
   return {
     type: DASHBOARD_ENTRIES_VISIBILITY_RESET
+  };
+};
+
+export const setDashboardEntriesOrder = (order: string[]): SetDashboardEntriesOrderAction => {
+  return {
+    type: DASHBOARD_ENTRIES_ORDER,
+    payload: order
   };
 };
 

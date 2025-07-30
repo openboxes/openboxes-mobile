@@ -40,6 +40,7 @@
     "react-native-datepicker": "~1.7.2",
     "react-native-device-info": "~8.7.0",
     "react-native-dotenv": "~3.3.0",
+    "react-native-draggable-flatlist": "^4.0.1",
     "react-native-gesture-handler": "~1.10.3",
     "react-native-input-spinner": "~1.7.12",
     "react-native-modal-selector-searchable": "~2.1.4",

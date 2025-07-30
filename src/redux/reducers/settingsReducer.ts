@@ -1,4 +1,6 @@
+import { getDashboardEntriesKeys } from '../../screens/Dashboard/dashboardData';
 import {
+  DASHBOARD_ENTRIES_ORDER,
   DASHBOARD_ENTRIES_VISIBILITY,
   DASHBOARD_ENTRIES_VISIBILITY_RESET,
   GROUP_LOCATION_ENTRIES,
@@ -9,11 +11,13 @@ import {
 type SettingsState = {
   groupLocationEntries: boolean;
   dashboardEntriesVisibility: { [key: string]: boolean };
+  dashboardEntriesOrder: string[];
   productSummaryConfig: { [key: string]: boolean };
 };
 
 const initialState: SettingsState = {
   groupLocationEntries: false,
+  dashboardEntriesOrder: getDashboardEntriesKeys(),
   dashboardEntriesVisibility: {},
   productSummaryConfig: {}
 };
@@ -54,6 +58,11 @@ function settingsReducer(state = initialState, action: SettingsActionTypes): Set
         }
       };
     }
+    case DASHBOARD_ENTRIES_ORDER:
+      return {
+        ...state,
+        dashboardEntriesOrder: action.payload
+      };
     default: {
       return state;
     }

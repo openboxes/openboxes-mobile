@@ -99,19 +99,10 @@ const dashboardEntries: DashboardEntry[] = [
   }
 ];
 
-export function getFilteredDashboardEntries(dashboardEntriesVisibility: { [key: string]: boolean } = {}) {
-  return dashboardEntries.filter((entry) => {
-    const visibilityPreferences = dashboardEntriesVisibility?.[entry.key];
-
-    if (visibilityPreferences === undefined) {
-      // The default visibility is true unless explicitly set to false
-      return entry.defaultVisible !== false;
-    }
-
-    return visibilityPreferences !== false;
-  });
-}
-
 export function getDashboardEntries() {
   return dashboardEntries;
+}
+
+export function getDashboardEntriesKeys() {
+  return dashboardEntries.map((entry) => entry.key);
 }
