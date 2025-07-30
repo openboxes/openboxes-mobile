@@ -1,5 +1,6 @@
 import React from 'react';
 import DraggableFlatList, { RenderItemParams } from 'react-native-draggable-flatlist';
+import { Caption } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { useOrderedDashboardEntries } from '../../hooks/useOrderedDashboardEntries';
@@ -16,6 +17,10 @@ export function DashboardEntriesList() {
   );
 
   const orderedEntries = useOrderedDashboardEntries(dashboardEntriesOrder);
+
+  if (!orderedEntries || orderedEntries.length === 0) {
+    return <Caption> No dashboard entries available </Caption>;
+  }
 
   return (
     <DraggableFlatList<DashboardEntry>

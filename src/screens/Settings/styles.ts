@@ -10,26 +10,10 @@ const styles = StyleSheet.create({
     margin: Theme.spacing.small,
     elevation: Theme.spacing.small / 2
   },
-  resetButton: {
-    marginRight: Theme.spacing.small
-  },
   paragraph: {
     marginBottom: Theme.spacing.large
   },
   input: {
-    marginBottom: Theme.spacing.large
-  },
-  settingRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: Theme.spacing.small
-  },
-  settingTextContainer: {
-    flex: 1,
-    marginRight: Theme.spacing.large
-  },
-  lastChild: {
     marginBottom: Theme.spacing.large
   }
 });

@@ -18,11 +18,11 @@ import { RootState } from '../../redux/reducers';
 import ApiClient from '../../utils/ApiClient';
 import { environment } from '../../utils/Environment';
 import { DashboardEntry } from '../Dashboard/dashboardData';
-import { DashboardEntriesList } from './DashboardEntriesList';
+import { DashboardEntriesList } from '../Dashboard/DashboardEntriesList';
+import { ToggleCard } from '../Dashboard/ToggleCard';
+import { ToggleRow } from '../Dashboard/ToggleRow';
 import { getProductSummaryConfig, ProductSummaryItem } from './productSummaryConfig';
 import styles from './styles';
-import { ToggleCard } from './ToggleCard';
-import { ToggleRow } from './ToggleRow';
 
 const API_URL_KEY = 'API_URL';
 

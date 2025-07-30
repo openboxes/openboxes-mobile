@@ -14,8 +14,8 @@ type ToggleRowProps = {
 
 export const ToggleRow = memo(function ToggleRow({ title, description, value, onValueChange }: ToggleRowProps) {
   return (
-    <View style={styles.settingRow}>
-      <View style={styles.settingTextContainer}>
+    <View style={styles.toggleRow}>
+      <View style={styles.toggleTextContainer}>
         <Paragraph>{title}</Paragraph>
         {description ? <Caption>{description}</Caption> : null}
       </View>

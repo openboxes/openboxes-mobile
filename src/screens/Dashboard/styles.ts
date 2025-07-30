@@ -49,5 +49,25 @@ export default StyleSheet.create({
   cardLabel: {
     color: Theme.colors.primary,
     fontWeight: '600'
+  },
+  toggleRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: Theme.spacing.small
+  },
+  toggleTextContainer: {
+    flex: 1,
+    marginRight: Theme.spacing.large
+  },
+  lastChild: {
+    marginBottom: Theme.spacing.large
+  },
+  card: {
+    margin: Theme.spacing.small,
+    elevation: Theme.spacing.small / 2
+  },
+  resetButton: {
+    marginRight: Theme.spacing.small
   }
 });
