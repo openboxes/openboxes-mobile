@@ -49,14 +49,15 @@ import PutawayList from './screens/PutawayList';
 import Scan from './screens/Scan';
 import Settings from './screens/Settings';
 import ShipItemDetails from './screens/ShipItemDetails';
-import SortationDetailScreen from './screens/Sortation/SortationDetailScreen';
 import SortationEntryScreen from './screens/Sortation/SortationEntryScreen';
+import SortationQuantityScreen from './screens/Sortation/SortationQuantityScreen';
 import Transfer from './screens/Transfer';
 import Transfers from './screens/Transfers';
 import TransferDetails from './screens/TransfersDetails';
 import ViewAvailableItem from './screens/ViewAvailableItem';
 import ApiClient from './utils/ApiClient';
 import Theme from './utils/Theme';
+import SortationContainerScreen from './screens/Sortation/SortationContainerScreen';
 
 const Stack = createStackNavigator();
 export interface OwnProps {
@@ -257,8 +258,13 @@ class Main extends Component<Props, State> {
                 options={{ title: 'Inbound Sortation' }}
               />
               <Stack.Screen
-                name="SortationDetail"
-                component={SortationDetailScreen}
+                name="SortationQuantity"
+                component={SortationQuantityScreen}
+                options={{ title: 'Inbound Sortation' }}
+              />
+              <Stack.Screen
+                name="SortationContainer"
+                component={SortationContainerScreen}
                 options={{ title: 'Inbound Sortation' }}
               />
             </Stack.Navigator>
