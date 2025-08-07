@@ -9,6 +9,7 @@ import IconProducts from '../../assets/images/icon_products.svg';
 import IconPutawayCandidates from '../../assets/images/icon_putaway_candidates.svg';
 import IconReceiving from '../../assets/images/icon_receiving.svg';
 import IconScan from '../../assets/images/icon_scan.svg';
+import IconSortation from '../../assets/images/icon_sortation.svg';
 
 export type DashboardEntry = {
   key: string;
@@ -20,6 +21,13 @@ export type DashboardEntry = {
 };
 
 const dashboardEntries: DashboardEntry[] = [
+  {
+    key: 'sortation',
+    screenName: 'Sortation',
+    entryDescription: 'Manage sortation tasks and workflows',
+    icon: IconSortation,
+    navigationScreenName: 'Sortation'
+  },
   {
     key: 'picking',
     screenName: 'Picking',

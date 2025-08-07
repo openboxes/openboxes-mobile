@@ -49,6 +49,8 @@ import PutawayList from './screens/PutawayList';
 import Scan from './screens/Scan';
 import Settings from './screens/Settings';
 import ShipItemDetails from './screens/ShipItemDetails';
+import SortationDetailScreen from './screens/Sortation/SortationDetailScreen';
+import SortationEntryScreen from './screens/Sortation/SortationEntryScreen';
 import Transfer from './screens/Transfer';
 import Transfers from './screens/Transfers';
 import TransferDetails from './screens/TransfersDetails';
@@ -249,6 +251,16 @@ class Main extends Component<Props, State> {
                 options={{ title: 'Packing Location' }}
               />
               <Stack.Screen name="AppInfo" component={AppInfoScreen} options={{ title: 'App Info' }} />
+              <Stack.Screen
+                name="Sortation"
+                component={SortationEntryScreen}
+                options={{ title: 'Inbound Sortation' }}
+              />
+              <Stack.Screen
+                name="SortationDetail"
+                component={SortationDetailScreen}
+                options={{ title: 'Inbound Sortation' }}
+              />
             </Stack.Navigator>
           </NavigationContainer>
         </SafeAreaView>
