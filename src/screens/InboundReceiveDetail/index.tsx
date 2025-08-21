@@ -114,7 +114,9 @@ const InboundReceiveDetail: React.FC = () => {
       shipmentId,
       containers: [
         {
-          'container.id': shipmentItem['container.id'] ?? '',
+          container: {
+            id: shipmentItem['container.id'] ?? ''
+          },
           shipmentItems: [
             {
               receiptItemId: '',
@@ -151,27 +153,47 @@ const InboundReceiveDetail: React.FC = () => {
   );
 
   const createCompleteReceivingPayload = useCallback(
-    (responseData: any) => ({
-      isShipmentFromPurchaseOrder: responseData.isShipmentFromPurchaseOrder,
-      receiptStatus: 'COMPLETED',
-      containers: responseData.containers,
-      dateShipped: responseData.dateShipped,
-      description: responseData.description,
-      destination: {
-        id: responseData['destination.id']
-      },
-      origin: {
-        id: responseData['origin.id']
-      },
-      receiptId: responseData.receiptId,
-      shipmentStatus: responseData.shipmentStatus,
-      shipment: {
-        name: responseData['shipment.name'],
-        shipmentNumber: responseData['shipment.shipmentNumber']
-      },
-      requisition: responseData.requisition,
-      recipient: responseData.recipient.id
-    }),
+    (responseData: any) => {
+      const transformedContainers = responseData.containers.map((container: any) => {
+        const {
+          'container.id': id,
+          'container.name': name,
+          'container.type': type,
+          ...rest
+        } = container;
+  
+        return {
+          container: {
+            id,
+            name,
+            type
+          },
+          ...rest
+        };
+      });
+  
+      return {
+        isShipmentFromPurchaseOrder: responseData.isShipmentFromPurchaseOrder,
+        receiptStatus: 'COMPLETED',
+        containers: transformedContainers,
+        dateShipped: responseData.dateShipped,
+        description: responseData.description,
+        destination: {
+          id: responseData['destination.id']
+        },
+        origin: {
+          id: responseData['origin.id']
+        },
+        receiptId: responseData.receiptId,
+        shipmentStatus: responseData.shipmentStatus,
+        shipment: {
+          name: responseData['shipment.name'],
+          shipmentNumber: responseData['shipment.shipmentNumber']
+        },
+        requisition: responseData.requisition,
+        recipient: responseData.recipient.id
+      };
+    },
     []
   );
 
