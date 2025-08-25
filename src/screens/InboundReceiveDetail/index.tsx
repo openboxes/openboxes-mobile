@@ -127,7 +127,7 @@ const InboundReceiveDetail: React.FC = () => {
               binLocation: receiveLocation.id,
               lotNumber,
               expirationDate,
-              recipient: '',
+              recipient: shipmentItem['recipient.id'],
               quantityReceiving: quantity,
               cancelRemaining,
               quantityOnHand: '',
