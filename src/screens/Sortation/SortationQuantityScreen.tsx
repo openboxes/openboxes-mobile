@@ -11,11 +11,11 @@ import SortationProductDetails, { DetailChip } from './SortationProductDetails';
 import styles from './styles';
 
 // TODO: The Product type will be changed to some `SortationProduct` type in the future.
-type QuantityRouteProp = RouteProp<{ SortationQuantity: { product: Product } }, 'SortationQuantity'>;
+type QuantityRouteProp = RouteProp<{ SortationQuantity: { product: Product, task: any } }, 'SortationQuantity'>;
 
 export default function SortationQuantityScreen() {
   const { params } = useRoute<QuantityRouteProp>();
-  const { product } = params;
+  const { product, task } = params;
 
   const inputRef = useRef<TextInput | null>(null);
   const isFocused = useIsFocused();
@@ -59,29 +59,24 @@ export default function SortationQuantityScreen() {
      * - Call the API here.
      */
     // eslint-disable-next-line no-restricted-syntax
-    console.log('Submitting quantity:', quantitySorted);
-
-    navigate('SortationContainer', { product, quantitySorted });
+    navigate('SortationContainer', { product, quantitySorted, task });
   }
-
+  
   const productDetailsChips: DetailChip[] = [
     {
       icon: 'package',
       label: 'Quantity Required',
-      // Mocked value for demonstration purposes
-      value: product?.quantityRequired
+      value: task?.quantity
     },
     {
       icon: 'map-search',
       label: 'Putaway Zone',
-      // Mocked value for demonstration purposes
-      value: product?.putawayZone
+      value: task?.destination?.zoneName
     },
     {
       icon: 'map-marker',
       label: 'Final Storage Location',
-      // Mocked value for demonstration purposes
-      value: product?.finalStorageLocation
+      value: task?.destination.name
     }
   ];
 

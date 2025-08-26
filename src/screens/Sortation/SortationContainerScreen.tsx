@@ -12,13 +12,13 @@ import styles from './styles';
 
 // TODO: The Product type will be changed to some `SortationProduct` type in the future.
 type ContainerRouteProp = RouteProp<
-  { SortationQuantity: { product: Product; quantitySorted: number } },
+  { SortationQuantity: { product: Product; quantitySorted: number, task: any } },
   'SortationQuantity'
 >;
 
 export default function SortationContainerScreen() {
   const { params } = useRoute<ContainerRouteProp>();
-  const { product, quantitySorted } = params;
+  const { product, quantitySorted, task } = params;
 
   const inputRef = useRef<TextInput | null>(null);
   const isFocused = useIsFocused();
@@ -98,14 +98,12 @@ export default function SortationContainerScreen() {
     {
       icon: 'map-search',
       label: 'Putaway Zone',
-      // Mocked value for demonstration purposes
-      value: product?.putawayZone
+      value: task?.destination?.zoneName
     },
     {
       icon: 'map-marker',
       label: 'Final Storage Location',
-      // Mocked value for demonstration purposes
-      value: product?.finalStorageLocation
+      value: task?.destination.name
     }
   ];
 

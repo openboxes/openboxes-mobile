@@ -59,3 +59,7 @@ export function stockAdjustments(requestBody: any) {
 export function searchBarcode(id: string) {
   return apiClient.get(`/globalSearch/${id}`, {});
 }
+
+export function getProductByBarcode(barcode: string) {
+  return apiClient.get(`/barcodes?id=${encodeURIComponent(barcode)}`)
+}

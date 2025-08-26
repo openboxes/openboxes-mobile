@@ -7,31 +7,14 @@ import { TextInput as PaperTextInput, Paragraph, Title } from 'react-native-pape
 import { appConfig } from '../../constants';
 import { navigate } from '../../NavigationService';
 import styles from './styles';
-
-function getProduct() {
-  return {
-    active: true,
-    category: 'Pain',
-    color: null,
-    putawayZone: '2025-05-05T09:28:46Z',
-    description: 'Morphine is a powerful pain reliever used to treat moderate to severe pain.',
-    displayNames: { default: null },
-    handlingIcons: [{ color: '#db1919', icon: 'fa-exclamation-circle', label: 'Controlled substance' }],
-    id: '40288094969fb47401969fc6c2cb0096',
-    finalStorageLocation: '2025-05-05T09:28:46Z',
-    lotAndExpiryControl: true,
-    name: 'Morphine 10mg immediate release tablet',
-    quantityRequired: 25,
-    productCode: 'QX039',
-    unitOfMeasure: 'Each',
-    updatedBy: 'Miss Administrator'
-  };
-}
+import { useDispatch } from 'react-redux';
+import { getSortationDetailsByBarcode } from '../../redux/actions/products';
 
 export default function SortationEntryScreen() {
   const [barcode, setBarcode] = useState<string>('');
   const isFocused = useIsFocused();
   const inputRef = useRef<TextInput | null>(null);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (!isFocused) {
@@ -48,18 +31,27 @@ export default function SortationEntryScreen() {
       return;
     }
 
-    /**
-     * TO DO: Handle the validation and processing of the scanned barcode.
-     * - Fetch and validate the product exists in the system.
-     * - Check if the product is on Inbound Movement.
-     * - If valid, navigate to SortationQuantity screen with the barcode.
-     */
-    const product = getProduct();
+      /**
+        * TO DO: Handle the validation and processing of the scanned barcode.
+        * - Fetch and validate the product exists in the system.
+        * - Check if the product is on Inbound Movement.
+        * - If valid, navigate to SortationQuantity screen with the barcode.
+      */
 
-    setBarcode('');
-
-    navigate('SortationQuantity', { product });
-  }, []);
+    dispatch(
+      getSortationDetailsByBarcode(code, (response) => {
+        setBarcode('');
+        if (response && !response.error) {
+          navigate('SortationQuantity', { product: response.product, task: response.task });
+        } else {
+          Alert.alert(
+            'Error',
+            response?.errorMessage || 'Could not find a product with the scanned barcode.'
+          );
+        }
+      })
+    );
+  }, [dispatch]);
 
   const debouncedScan = useMemo(() => debounce(performScan, appConfig.DEFAULT_DEBOUNCE_TIME), [performScan]);
 

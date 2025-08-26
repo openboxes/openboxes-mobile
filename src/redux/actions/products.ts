@@ -31,6 +31,9 @@ export const STOCK_ADJUSTMENT_REQUEST_SUCCESS = 'STOCK_ADJUSTMENT_REQUEST_SUCCES
 
 export const SEARCH_BARCODE = 'SEARCH_BARCODE';
 export const SEARCH_BARCODE_SUCCESS = 'SEARCH_BARCODE_SUCCESS';
+
+export const GET_SORTATION_DETAILS_BY_BARCODE = 'GET_SORTATION_DETAILS_BY_BARCODE';
+
 export function getProductsAction(callback?: (products: any) => void) {
   return {
     type: GET_PRODUCTS_REQUEST,
@@ -98,5 +101,13 @@ export function searchBarcode(id: any, callback?: (data: any) => void) {
     type: SEARCH_BARCODE,
     payload: { id },
     callback
+  };
+}
+
+export function getSortationDetailsByBarcode(barcode: string, callback: (data: any) => void) {
+  return {
+    type: GET_SORTATION_DETAILS_BY_BARCODE,
+    payload: { barcode },
+    callback,
   };
 }

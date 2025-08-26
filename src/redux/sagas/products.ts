@@ -1,9 +1,10 @@
-import { call, put, takeLatest } from 'redux-saga/effects';
+import { call, put, select, takeLatest } from 'redux-saga/effects';
 import {
   GET_PRODUCT_BY_ID_REQUEST,
   GET_PRODUCT_BY_ID_REQUEST_SUCCESS,
   GET_PRODUCTS_REQUEST,
   GET_PRODUCTS_REQUEST_SUCCESS,
+  GET_SORTATION_DETAILS_BY_BARCODE,
   PRINT_LABEL_REQUEST,
   PRINT_LABEL_REQUEST_SUCCESS,
   SEARCH_BARCODE,
@@ -22,6 +23,7 @@ import {
 
 import * as api from '../../apis';
 import { hideScreenLoading, showScreenLoading } from '../actions/main';
+import { userLocation } from '../selectors/auth';
 
 function* getProducts(action: any) {
   try {
@@ -213,6 +215,41 @@ function* stockAdjustments(action: any) {
   }
 }
 
+function* getSortationDetailsSaga(action: any) {
+  try {
+    const productResponse: any = yield call(api.getProductByBarcode, action.payload.barcode);
+    const product = productResponse.data;
+
+    if (!product) {
+      throw new Error('Product not found.');
+    }
+
+    const location = yield select(userLocation)
+    if (!location || !location.id) {
+      return;
+    }
+
+    const tasksResponse: any = yield call(api.getPutawayTasks, location.id, product.id);
+    const tasks = tasksResponse.data;
+
+    if (!tasks || tasks.length === 0) {
+      yield action.callback({
+        error: true,
+        errorMessage: 'Product found but there is not putaway task for it',
+      });
+      return;
+    }
+    yield action.callback({ product, task: tasks[0] });
+  } catch (error: any) {
+    if (error.code != 401) {
+      yield action.callback({
+        error: true,
+        errorMessage: error.message
+      });
+    }
+  }
+}
+
 export default function* watcher() {
   yield takeLatest(GET_PRODUCTS_REQUEST, getProducts);
   yield takeLatest(SEARCH_PRODUCTS_BY_NAME_REQUEST, searchProductsByName);
@@ -226,4 +263,5 @@ export default function* watcher() {
   yield takeLatest(PRINT_LABEL_REQUEST, printLabel);
   yield takeLatest(STOCK_ADJUSTMENT_REQUEST, stockAdjustments);
   yield takeLatest(SEARCH_BARCODE, searchBarcode);
+  yield takeLatest(GET_SORTATION_DETAILS_BY_BARCODE, getSortationDetailsSaga)
 }

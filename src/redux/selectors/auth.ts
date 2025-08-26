@@ -1,0 +1,1 @@
+export const userLocation = (state: any) => state.mainReducer.currentLocation

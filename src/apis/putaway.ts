@@ -18,3 +18,9 @@ export function getCandidates(locationId: string) {
 export function createPutawayOder(data: any) {
   return apiClient.post('/putaways', data);
 }
+
+export function getPutawayTasks(facilityId: string, productId: string) {
+  return apiClient.get(
+    `/facilities/${facilityId}/putaway-tasks?statusCategory=OPEN&product.id=${productId}`
+  )
+}
