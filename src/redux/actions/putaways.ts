@@ -6,6 +6,8 @@ export const CREATE_PUTAWAY_ORDER_REQUEST = 'CREATE_PUTAWAY_ORDER_REQUEST';
 export const CREATE_PUTAWAY_ORDER_REQUEST_SUCCESS = 'CREATE_PUTAWAY_ORDER_REQUEST_SUCCESS';
 export const SUBMIT_PUTAWAY_ITEM_BIN_LOCATION = 'SUBMIT_PUTAWAY_ITEM_BIN_LOCATION';
 export const SUBMIT_PUTAWAY_ITEM_BIN_LOCATION_SUCCESS = 'SUBMIT_PUTAWAY_ITEM_BIN_LOCATION_SUCCESS';
+export const PATCH_PUTAWAY_TASK_REQUEST = 'PATCH_PUTAWAY_TASK_REQUEST';
+export const PATCH_PUTAWAY_TASK_REQUEST_SUCCESS = 'PATCH_PUTAWAY_TASK_REQUEST_SUCCESS';
 
 export function fetchPutAwayFromOrderAction(q: string | null, callback: (data: any) => void) {
   return {
@@ -36,4 +38,12 @@ export function createPutawayOderAction(data: any, callback?: (data: any) => voi
     payload: { data },
     callback
   };
+}
+
+export function patchPutawayTaskAction(facilityId: string, putawayItemId: string, payload: any, callback?: (data: any) => void) {
+  return {
+    type: PATCH_PUTAWAY_TASK_REQUEST,
+    payload: { facilityId, putawayItemId, payload },
+    callback
+  }
 }

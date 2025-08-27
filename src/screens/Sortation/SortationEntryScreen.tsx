@@ -31,13 +31,6 @@ export default function SortationEntryScreen() {
       return;
     }
 
-      /**
-        * TO DO: Handle the validation and processing of the scanned barcode.
-        * - Fetch and validate the product exists in the system.
-        * - Check if the product is on Inbound Movement.
-        * - If valid, navigate to SortationQuantity screen with the barcode.
-      */
-
     dispatch(
       getSortationDetailsByBarcode(code, (response) => {
         setBarcode('');

@@ -34,6 +34,10 @@ class _ApiClient {
     return await this.client.delete(endpoint, config);
   }
 
+  async patch(endpoint: string, config = this.client.defaults) {
+    return await this.client.patch(endpoint, config);
+  }
+
   handleApiSuccess = (response: AxiosResponse) => {
     const responseBody: string = JSON.stringify(response.data);
     return JSON.parse(responseBody);

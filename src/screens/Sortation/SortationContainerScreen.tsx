@@ -9,6 +9,8 @@ import Product from '../../data/product/Product';
 import { navigate } from '../../NavigationService';
 import SortationProductDetails, { DetailChip } from './SortationProductDetails';
 import styles from './styles';
+import { useDispatch } from 'react-redux';
+import { patchPutawayTaskAction } from '../../redux/actions/putaways';
 
 // TODO: The Product type will be changed to some `SortationProduct` type in the future.
 type ContainerRouteProp = RouteProp<
@@ -23,6 +25,7 @@ export default function SortationContainerScreen() {
   const inputRef = useRef<TextInput | null>(null);
   const isFocused = useIsFocused();
   const [putawayContainerBarcode, setPutawayContainerBarcode] = useState<string>('');
+  const dispatch = useDispatch()
 
   useEffect(() => {
     if (!isFocused) {
@@ -64,28 +67,30 @@ export default function SortationContainerScreen() {
       return;
     }
 
-    /**
-     * TO DO: Handle the submission and validation of sortation container.
-     * - Validate the putaway container exists in the system.
-     * - Validate that the product can be sorted into this container (zone).
-     * - Call the API here to finalize the sortation process.
-     */
-    // eslint-disable-next-line no-restricted-syntax
-    console.log(
-      'Submitting sortation for product:',
-      product,
-      'with quantity:',
-      quantitySorted,
-      'to container:',
-      putawayContainerBarcode
+    const locationNumber = task?.destination?.locationNumber
+    if (putawayContainerBarcode !== locationNumber) {
+      Alert.alert(
+        'Wrong location number', 
+        `Scanned location number: ${putawayContainerBarcode} is different from the expected one: ${locationNumber}`
+      );
+      return;
+    }
+
+    const payload = {
+      action: 'complete',
+      putawayContainerId: putawayContainerBarcode || null 
+    };
+
+    dispatch(
+      patchPutawayTaskAction(task.facility.id, task.id, payload, (response) => {
+        if (response && !response.error) {
+          Alert.alert('Sortation Successful', 'The product has been sorted successfully.');
+          navigate('Sortation');
+        } else {
+          Alert.alert('Sortation Failed', response.errorMessage || 'Sortation Failed');
+        }
+      })
     );
-
-    // TODO: If the Putaway Container ID scanned has Product for a different zone,
-    // the user will get a warning and will need to decide HOW to proceed (Yes / No option).
-
-    // For now, if successful, navigate back to Sortation screen.
-    Alert.alert('Sortation Successful', 'The product has been sorted successfully.');
-    navigate('Sortation');
   }
 
   const productDetailsChips: DetailChip[] = [

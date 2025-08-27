@@ -53,11 +53,11 @@ export default function SortationQuantityScreen() {
       return;
     }
 
-    /**
-     * TO DO: Handle the submission and validation of sortation quantity.
-     * - Quantity should be a positive value, less or equal than Expected Quantity.
-     * - Call the API here.
-     */
+    if (quantitySorted > task.quantity) {
+      Alert.alert('Invalid Quantity', 'Quantity to sort can not be greater than quantity in total');
+      return;
+    }
+
     // eslint-disable-next-line no-restricted-syntax
     navigate('SortationContainer', { product, quantitySorted, task });
   }

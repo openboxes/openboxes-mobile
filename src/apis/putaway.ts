@@ -24,3 +24,7 @@ export function getPutawayTasks(facilityId: string, productId: string) {
     `/facilities/${facilityId}/putaway-tasks?statusCategory=OPEN&product.id=${productId}`
   )
 }
+
+export function patchPutawayTask(facilityId: string, putawayItemId: string, payload: any) {
+  return apiClient.patch(`/facilities/${facilityId}/putaway-tasks/${putawayItemId}`, payload);
+}

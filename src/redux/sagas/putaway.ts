@@ -6,6 +6,8 @@ import {
   FETCH_PUTAWAY_FROM_ORDER_REQUEST_SUCCESS,
   GET_PUTAWAY_CANDIDATES_REQUEST,
   GET_PUTAWAY_CANDIDATES_REQUEST_SUCCESS,
+  PATCH_PUTAWAY_TASK_REQUEST,
+  PATCH_PUTAWAY_TASK_REQUEST_SUCCESS,
   SUBMIT_PUTAWAY_ITEM_BIN_LOCATION,
   SUBMIT_PUTAWAY_ITEM_BIN_LOCATION_SUCCESS
 } from '../actions/putaways';
@@ -94,9 +96,29 @@ function* createPutawayOder(action: any) {
   } catch (error) {
     yield put(hideScreenLoading());
     yield action.callback({
-      errorMessage: error.message,
-      error: true
+      error: true,
+      errorMessage: error.message
     });
+  }
+}
+
+function* patchPutawayTask(action: any) {
+  try {
+      yield put(showScreenLoading('Submitting...'));
+      const { facilityId, putawayItemId, payload } = action.payload;
+      const response = yield call(api.patchPutawayTask, facilityId, putawayItemId, payload);
+      yield put({
+          type: PATCH_PUTAWAY_TASK_REQUEST_SUCCESS,
+          payload: response.data,
+      });
+      yield put(hideScreenLoading());
+      yield action.callback({ success: true, data: response.data });
+  } catch (error) {
+      yield put(hideScreenLoading());
+      yield action.callback({
+          error: true,
+          errorMessage: error.message
+      });
   }
 }
 
@@ -105,4 +127,5 @@ export default function* watcher() {
   yield takeLatest(GET_PUTAWAY_CANDIDATES_REQUEST, getCandidates);
   yield takeLatest(CREATE_PUTAWAY_ORDER_REQUEST, createPutawayOder);
   yield takeLatest(SUBMIT_PUTAWAY_ITEM_BIN_LOCATION, submitPutawayItem);
+  yield takeLatest(PATCH_PUTAWAY_TASK_REQUEST, patchPutawayTask);
 }
