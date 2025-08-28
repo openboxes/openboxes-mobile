@@ -13,19 +13,13 @@ import {
 } from '../actions/putaways';
 import { hideScreenLoading, showScreenLoading } from '../actions/main';
 import * as api from '../../apis';
-import {
-  GetPutAwaysApiResponse,
-  PostPutAwayItemApiResponse
-} from '../../data/putaway/PutAway';
+import { GetPutAwaysApiResponse, PostPutAwayItemApiResponse } from '../../data/putaway/PutAway';
 import * as Sentry from '@sentry/react-native';
 
 function* fetchPutAwayFromOrder(action: any) {
   try {
     yield put(showScreenLoading('Loading..'));
-    const response: GetPutAwaysApiResponse = yield call(
-      api.fetchPutAwayFromOrder,
-      action.payload.q
-    );
+    const response: GetPutAwaysApiResponse = yield call(api.fetchPutAwayFromOrder, action.payload.q);
     yield put({
       type: FETCH_PUTAWAY_FROM_ORDER_REQUEST_SUCCESS,
       payload: response.data
@@ -104,21 +98,21 @@ function* createPutawayOder(action: any) {
 
 function* patchPutawayTask(action: any) {
   try {
-      yield put(showScreenLoading('Submitting...'));
-      const { facilityId, putawayItemId, payload } = action.payload;
-      const response = yield call(api.patchPutawayTask, facilityId, putawayItemId, payload);
-      yield put({
-          type: PATCH_PUTAWAY_TASK_REQUEST_SUCCESS,
-          payload: response.data,
-      });
-      yield put(hideScreenLoading());
-      yield action.callback({ success: true, data: response.data });
+    yield put(showScreenLoading('Submitting...'));
+    const { facilityId, putawayItemId, payload } = action.payload;
+    const response = yield call(api.patchPutawayTask, facilityId, putawayItemId, payload);
+    yield put({
+      type: PATCH_PUTAWAY_TASK_REQUEST_SUCCESS,
+      payload: response.data
+    });
+    yield put(hideScreenLoading());
+    yield action.callback({ success: true, data: response.data });
   } catch (error) {
-      yield put(hideScreenLoading());
-      yield action.callback({
-          error: true,
-          errorMessage: error.message
-      });
+    yield put(hideScreenLoading());
+    yield action.callback({
+      error: true,
+      errorMessage: error.message
+    });
   }
 }
 

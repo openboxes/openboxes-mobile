@@ -40,10 +40,15 @@ export function createPutawayOderAction(data: any, callback?: (data: any) => voi
   };
 }
 
-export function patchPutawayTaskAction(facilityId: string, putawayItemId: string, payload: any, callback?: (data: any) => void) {
+export function patchPutawayTaskAction(
+  facilityId: string,
+  putawayItemId: string,
+  payload: any,
+  callback?: (data: any) => void
+) {
   return {
     type: PATCH_PUTAWAY_TASK_REQUEST,
     payload: { facilityId, putawayItemId, payload },
     callback
-  }
+  };
 }
