@@ -108,6 +108,6 @@ export function getSortationDetailsByBarcode(barcode: string, callback: (data: a
   return {
     type: GET_SORTATION_DETAILS_BY_BARCODE,
     payload: { barcode },
-    callback,
+    callback
   };
 }

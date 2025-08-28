@@ -60,12 +60,14 @@ export default StyleSheet.create({
     fontWeight: 'bold'
   },
   caption: { fontSize: 12 },
+  bold: { fontWeight: 'bold' },
   paragraph: {
     fontSize: 14,
     color: Theme.colors.text,
     fontWeight: 'normal'
   },
   topSpace: { marginTop: Theme.spacing.small },
+  bottomSpace: { marginBottom: Theme.spacing.small },
   cardAnnotation: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -76,5 +78,24 @@ export default StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     padding: Theme.spacing.large
+  },
+  card: {
+    marginTop: Theme.spacing.small,
+    marginBottom: Theme.spacing.small,
+    borderRadius: Theme.roundness * 2,
+    borderColor: Theme.colors.disabled,
+    borderWidth: 0.5
+  },
+  cardContent: {
+    paddingVertical: Theme.spacing.medium,
+    paddingHorizontal: Theme.spacing.large
+  },
+  cardSelected: {
+    borderColor: Theme.colors.primary,
+    backgroundColor: Theme.colors.surface,
+    borderWidth: 2
+  },
+  cardContainer: {
+    paddingVertical: Theme.spacing.large
   }
 });

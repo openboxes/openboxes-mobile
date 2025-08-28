@@ -1,20 +1,19 @@
 import { RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
 import React, { useEffect, useRef, useState } from 'react';
 import { Alert, TextInput, View } from 'react-native';
-
 import { Divider, TextInput as PaperTextInput, Paragraph, Subheading } from 'react-native-paper';
+import { useDispatch } from 'react-redux';
+
 import Button from '../../components/Button';
 import EmptyView from '../../components/EmptyView';
-import Product from '../../data/product/Product';
 import { navigate } from '../../NavigationService';
+import { patchPutawayTaskAction } from '../../redux/actions/putaways';
 import SortationProductDetails, { DetailChip } from './SortationProductDetails';
 import styles from './styles';
-import { useDispatch } from 'react-redux';
-import { patchPutawayTaskAction } from '../../redux/actions/putaways';
+import { SortationProduct, SortationTask } from './types';
 
-// TODO: The Product type will be changed to some `SortationProduct` type in the future.
 type ContainerRouteProp = RouteProp<
-  { SortationQuantity: { product: Product; quantitySorted: number, task: any } },
+  { SortationQuantity: { product: SortationProduct; quantitySorted: number; task: SortationTask } },
   'SortationQuantity'
 >;
 
@@ -25,7 +24,7 @@ export default function SortationContainerScreen() {
   const inputRef = useRef<TextInput | null>(null);
   const isFocused = useIsFocused();
   const [putawayContainerBarcode, setPutawayContainerBarcode] = useState<string>('');
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (!isFocused) {
@@ -67,10 +66,10 @@ export default function SortationContainerScreen() {
       return;
     }
 
-    const locationNumber = task?.destination?.locationNumber
+    const locationNumber = task?.destination?.locationNumber;
     if (putawayContainerBarcode !== locationNumber) {
       Alert.alert(
-        'Wrong location number', 
+        'Wrong location number',
         `Scanned location number: ${putawayContainerBarcode} is different from the expected one: ${locationNumber}`
       );
       return;
@@ -78,7 +77,7 @@ export default function SortationContainerScreen() {
 
     const payload = {
       action: 'complete',
-      putawayContainerId: putawayContainerBarcode || null 
+      putawayContainerId: putawayContainerBarcode || null
     };
 
     dispatch(
@@ -97,7 +96,6 @@ export default function SortationContainerScreen() {
     {
       icon: 'package',
       label: 'Quantity Sorted',
-      // Mocked value for demonstration purposes
       value: quantitySorted
     },
     {
@@ -108,7 +106,7 @@ export default function SortationContainerScreen() {
     {
       icon: 'map-marker',
       label: 'Final Storage Location',
-      value: task?.destination.name
+      value: task?.destination?.name
     }
   ];
 

@@ -69,10 +69,7 @@ function* searchProductsByName(action: any) {
 function* searchProductByCode(action: any) {
   try {
     yield showScreenLoading('Please wait...');
-    const data = yield call(
-      api.searchProductByCode,
-      action.payload.productCode
-    );
+    const data = yield call(api.searchProductByCode, action.payload.productCode);
     yield put({
       type: SEARCH_PRODUCT_BY_CODE_REQUEST_SUCCESS,
       payload: data
@@ -112,10 +109,7 @@ function* searchProductGlobally(action: any) {
 function* searchProductsByCategory(action: any) {
   try {
     yield showScreenLoading('Searching..');
-    const data = yield call(
-      api.searchProductsByCategory,
-      action.payload.category
-    );
+    const data = yield call(api.searchProductsByCategory, action.payload.category);
     yield put({
       type: SEARCH_PRODUCTS_BY_CATEGORY_REQUEST_SUCCESS,
       payload: data
@@ -224,22 +218,23 @@ function* getSortationDetailsSaga(action: any) {
       throw new Error('Product not found.');
     }
 
-    const location = yield select(userLocation)
+    const location = yield select(userLocation);
     if (!location || !location.id) {
       return;
     }
 
     const tasksResponse: any = yield call(api.getPutawayTasks, location.id, product.id);
-    const tasks = tasksResponse.data;
+    const tasks = tasksResponse?.data ?? [];
 
     if (!tasks || tasks.length === 0) {
       yield action.callback({
         error: true,
-        errorMessage: 'Product found but there is not putaway task for it',
+        errorMessage: 'Product found but there is not putaway task for it'
       });
       return;
     }
-    yield action.callback({ product, task: tasks[0] });
+
+    yield action.callback({ product, tasks });
   } catch (error: any) {
     if (error.code != 401) {
       yield action.callback({
@@ -255,13 +250,10 @@ export default function* watcher() {
   yield takeLatest(SEARCH_PRODUCTS_BY_NAME_REQUEST, searchProductsByName);
   yield takeLatest(SEARCH_PRODUCT_BY_CODE_REQUEST, searchProductByCode);
   yield takeLatest(SEARCH_PRODUCT_GLOBALY_REQUEST, searchProductGlobally);
-  yield takeLatest(
-    SEARCH_PRODUCTS_BY_CATEGORY_REQUEST,
-    searchProductsByCategory
-  );
+  yield takeLatest(SEARCH_PRODUCTS_BY_CATEGORY_REQUEST, searchProductsByCategory);
   yield takeLatest(GET_PRODUCT_BY_ID_REQUEST, getProductById);
   yield takeLatest(PRINT_LABEL_REQUEST, printLabel);
   yield takeLatest(STOCK_ADJUSTMENT_REQUEST, stockAdjustments);
   yield takeLatest(SEARCH_BARCODE, searchBarcode);
-  yield takeLatest(GET_SORTATION_DETAILS_BY_BARCODE, getSortationDetailsSaga)
+  yield takeLatest(GET_SORTATION_DETAILS_BY_BARCODE, getSortationDetailsSaga);
 }

@@ -5,13 +5,15 @@ import { Divider, TextInput as PaperTextInput, Paragraph, Subheading } from 'rea
 
 import Button from '../../components/Button';
 import EmptyView from '../../components/EmptyView';
-import Product from '../../data/product/Product';
 import { navigate } from '../../NavigationService';
 import SortationProductDetails, { DetailChip } from './SortationProductDetails';
 import styles from './styles';
+import { SortationProduct, SortationTask } from './types';
 
-// TODO: The Product type will be changed to some `SortationProduct` type in the future.
-type QuantityRouteProp = RouteProp<{ SortationQuantity: { product: Product, task: any } }, 'SortationQuantity'>;
+type QuantityRouteProp = RouteProp<
+  { SortationQuantity: { product: SortationProduct; task: SortationTask } },
+  'SortationQuantity'
+>;
 
 export default function SortationQuantityScreen() {
   const { params } = useRoute<QuantityRouteProp>();
@@ -19,7 +21,10 @@ export default function SortationQuantityScreen() {
 
   const inputRef = useRef<TextInput | null>(null);
   const isFocused = useIsFocused();
+
   const [quantitySorted, setQuantitySorted] = useState<number | undefined>();
+  // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
+  const [directPutawayRequired, setDirectPutawayRequired] = useState<boolean>(true);
 
   useEffect(() => {
     if (!isFocused) {
@@ -58,10 +63,13 @@ export default function SortationQuantityScreen() {
       return;
     }
 
-    // eslint-disable-next-line no-restricted-syntax
-    navigate('SortationContainer', { product, quantitySorted, task });
+    navigate('SortationContainer', {
+      product,
+      quantitySorted,
+      task
+    });
   }
-  
+
   const productDetailsChips: DetailChip[] = [
     {
       icon: 'package',
@@ -76,7 +84,7 @@ export default function SortationQuantityScreen() {
     {
       icon: 'map-marker',
       label: 'Final Storage Location',
-      value: task?.destination.name
+      value: task?.destination?.name
     }
   ];
 
@@ -84,9 +92,11 @@ export default function SortationQuantityScreen() {
     <View style={styles.contentContainer}>
       <SortationProductDetails
         showDirectPutawayRequired
-        directPutawayRequired
         product={product}
         detailsChips={productDetailsChips}
+        directPutawayRequired={directPutawayRequired}
+        // TODO: enable this when different strategies for putaway are supported
+        // onToggleDirectPutaway={setDirectPutawayRequired}
       />
 
       <Divider />

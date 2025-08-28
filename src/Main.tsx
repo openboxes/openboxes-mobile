@@ -58,6 +58,7 @@ import ViewAvailableItem from './screens/ViewAvailableItem';
 import ApiClient from './utils/ApiClient';
 import Theme from './utils/Theme';
 import SortationContainerScreen from './screens/Sortation/SortationContainerScreen';
+import SortationTaskSelectionListScreen from './screens/Sortation/SortationTaskSelectionListScreen';
 
 const Stack = createStackNavigator();
 export interface OwnProps {
@@ -265,6 +266,11 @@ class Main extends Component<Props, State> {
               <Stack.Screen
                 name="SortationContainer"
                 component={SortationContainerScreen}
+                options={{ title: 'Inbound Sortation' }}
+              />
+              <Stack.Screen
+                name="SortationTaskList"
+                component={SortationTaskSelectionListScreen}
                 options={{ title: 'Inbound Sortation' }}
               />
             </Stack.Navigator>

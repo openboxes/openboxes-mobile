@@ -1,29 +1,32 @@
 import React from 'react';
 import { View } from 'react-native';
-import { Caption, Chip, Divider, Paragraph, Title } from 'react-native-paper';
+import { Caption, Chip, Divider, Paragraph, Switch, Title } from 'react-native-paper';
 
 import { HYPHEN } from '../../constants';
-import Product from '../../data/product/Product';
 import styles from './styles';
+import { SortationProduct } from './types';
+import Theme from '../../utils/Theme';
 
 export type DetailChip = {
   icon: string;
   label: string;
-  value: string;
+  value: string | null | number | undefined;
 };
 
 export type SortationProductDetailsProps = {
-  product: Product;
+  product: SortationProduct;
   detailsChips: DetailChip[];
   showDirectPutawayRequired?: boolean;
   directPutawayRequired?: boolean;
+  onToggleDirectPutaway?: (value: boolean) => void;
 };
 
 export default function SortationProductDetails({
   product,
   detailsChips,
   showDirectPutawayRequired = false,
-  directPutawayRequired
+  directPutawayRequired = false,
+  onToggleDirectPutaway
 }: SortationProductDetailsProps) {
   const { productCode, name, description } = product;
 
@@ -50,14 +53,13 @@ export default function SortationProductDetails({
         <>
           <Divider style={styles.contentDivider} />
           <View style={styles.cardAnnotation}>
-            <Paragraph style={styles.paragraph}>Direct Putaway Required</Paragraph>
-            <Chip
-              icon={directPutawayRequired === true ? 'check' : 'close'}
-              style={styles.chipDefault}
-              textStyle={styles.chipText}
-            >
-              {directPutawayRequired === true ? 'Yes' : 'No'}
-            </Chip>
+            <Paragraph style={[styles.paragraph, styles.bold]}>Direct Putaway Required</Paragraph>
+            <Switch
+              disabled={!onToggleDirectPutaway}
+              color={Theme.colors.primary}
+              value={directPutawayRequired}
+              onValueChange={(val) => onToggleDirectPutaway?.(val)}
+            />
           </View>
         </>
       )}

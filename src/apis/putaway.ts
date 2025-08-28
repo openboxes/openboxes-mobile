@@ -20,9 +20,7 @@ export function createPutawayOder(data: any) {
 }
 
 export function getPutawayTasks(facilityId: string, productId: string) {
-  return apiClient.get(
-    `/facilities/${facilityId}/putaway-tasks?statusCategory=OPEN&product.id=${productId}`
-  )
+  return apiClient.get(`/facilities/${facilityId}/putaway-tasks?statusCategory=OPEN&product.id=${productId}`);
 }
 
 export function patchPutawayTask(facilityId: string, putawayItemId: string, payload: any) {
