@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
-import { Container } from '../../data/container/Shipment';
-import LocationType from '../../data/location/LocationType';
-import PutAwayItems from '../../data/putaway/PutAwayItems';
+import { Container } from '../data/container/Shipment';
+import LocationType from '../data/location/LocationType';
+import PutAwayItems from '../data/putaway/PutAwayItems';
 
 export type SortationProduct = {
   active: boolean;
@@ -75,4 +75,10 @@ export type SortationTask = {
   putaway: SortationPutaway | null;
   quantity: number;
   status: string;
+};
+
+export type DetailChip = {
+  icon: string;
+  label: string;
+  value: string | null | number | undefined;
 };

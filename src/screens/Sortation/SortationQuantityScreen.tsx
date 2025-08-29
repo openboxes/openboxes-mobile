@@ -6,9 +6,9 @@ import { Divider, TextInput as PaperTextInput, Paragraph, Subheading } from 'rea
 import Button from '../../components/Button';
 import EmptyView from '../../components/EmptyView';
 import { navigate } from '../../NavigationService';
-import SortationProductDetails, { DetailChip } from './SortationProductDetails';
+import { DetailChip, SortationProduct, SortationTask } from '../../types/sortation';
+import SortationProductDetails from './SortationProductDetails';
 import styles from './styles';
-import { SortationProduct, SortationTask } from './types';
 
 type QuantityRouteProp = RouteProp<
   { SortationQuantity: { product: SortationProduct; task: SortationTask } },

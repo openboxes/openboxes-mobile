@@ -26,3 +26,8 @@ export function getPutawayTasks(facilityId: string, productId: string) {
 export function patchPutawayTask(facilityId: string, putawayItemId: string, payload: any) {
   return apiClient.patch(`/facilities/${facilityId}/putaway-tasks/${putawayItemId}`, payload);
 }
+
+export function getPutawayDetails(containerId: string) {
+  // TODO [Putaway]: Implement API call
+  return apiClient.get(`/putaways/container/${containerId}`);
+}

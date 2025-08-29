@@ -10,6 +10,7 @@ import IconPutawayCandidates from '../../assets/images/icon_putaway_candidates.s
 import IconReceiving from '../../assets/images/icon_receiving.svg';
 import IconScan from '../../assets/images/icon_scan.svg';
 import IconSortation from '../../assets/images/icon_sortation.svg';
+import IconPutaway from '../../assets/images/icon_putaway.svg';
 
 export type DashboardEntry = {
   key: string;
@@ -27,6 +28,13 @@ const dashboardEntries: DashboardEntry[] = [
     entryDescription: 'Manage sortation tasks and workflows',
     icon: IconSortation,
     navigationScreenName: 'Sortation'
+  },
+  {
+    key: 'putaway',
+    screenName: 'Putaway',
+    entryDescription: 'Manage putaway tasks and workflows',
+    icon: IconPutaway,
+    navigationScreenName: 'SortationPutaway'
   },
   {
     key: 'picking',
@@ -85,7 +93,7 @@ const dashboardEntries: DashboardEntry[] = [
     navigationScreenName: 'Product Summary'
   },
   {
-    key: 'putaway',
+    key: 'createLPN',
     screenName: 'Create LPN',
     entryDescription: 'Create a new License Plate Number (LPN)',
     icon: IconCreateLPN,

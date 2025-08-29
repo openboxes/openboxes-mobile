@@ -4,9 +4,9 @@ import { Alert, FlatList, View } from 'react-native';
 import { Button, Caption, Card, Chip, Divider, Paragraph, Text, Title } from 'react-native-paper';
 
 import { HYPHEN } from '../../constants';
-import styles from './styles';
-import { SortationProduct, SortationTask } from './types';
 import { navigate } from '../../NavigationService';
+import { SortationProduct, SortationTask } from '../../types/sortation';
+import styles from './styles';
 
 type TaskSelectionRouteProp = RouteProp<
   { SortationQuantity: { product: SortationProduct; tasks: SortationTask[] } },

@@ -61,5 +61,5 @@ export function searchBarcode(id: string) {
 }
 
 export function getProductByBarcode(barcode: string) {
-  return apiClient.get(`/barcodes?id=${encodeURIComponent(barcode)}`)
+  return apiClient.get(`/barcodes?id=${encodeURIComponent(barcode)}`);
 }

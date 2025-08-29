@@ -1,17 +1,11 @@
 import React from 'react';
 import { View } from 'react-native';
-import { Caption, Chip, Divider, Paragraph, Switch, Title } from 'react-native-paper';
+import { Caption, Chip, Divider, Paragraph, Switch, Text, Title } from 'react-native-paper';
 
 import { HYPHEN } from '../../constants';
-import styles from './styles';
-import { SortationProduct } from './types';
+import { DetailChip, SortationProduct } from '../../types/sortation';
 import Theme from '../../utils/Theme';
-
-export type DetailChip = {
-  icon: string;
-  label: string;
-  value: string | null | number | undefined;
-};
+import styles from './styles';
 
 export type SortationProductDetailsProps = {
   product: SortationProduct;
@@ -44,8 +38,10 @@ export default function SortationProductDetails({
       <Caption style={styles.caption}>{description}</Caption>
 
       {detailsChips.map(({ icon, value, label }) => (
-        <Chip key={label} icon={icon} style={[styles.chipDefault, styles.topSpace]} textStyle={styles.chipText}>
-          {`${label}: ${value ?? HYPHEN}`}
+        <Chip key={label} icon={icon} style={[styles.chipDefault, styles.topSpace]}>
+          <Text style={styles.chipText}>
+            {label}: <Text style={[styles.bold, styles.chipText]}>{value ?? HYPHEN}</Text>
+          </Text>
         </Chip>
       ))}
 

@@ -59,6 +59,10 @@ import ApiClient from './utils/ApiClient';
 import Theme from './utils/Theme';
 import SortationContainerScreen from './screens/Sortation/SortationContainerScreen';
 import SortationTaskSelectionListScreen from './screens/Sortation/SortationTaskSelectionListScreen';
+import PutawayEntryScreen from './screens/SortationPutaway/PutawayEntryScreen';
+import PutawayLocationScanScreen from './screens/SortationPutaway/PutawayLocationScanScreen';
+import PutawayProductScanScreen from './screens/SortationPutaway/PutawayProductScanScreen';
+import PutawayQuantityScreen from './screens/SortationPutaway/PutawayQuantityScreen';
 
 const Stack = createStackNavigator();
 export interface OwnProps {
@@ -272,6 +276,22 @@ class Main extends Component<Props, State> {
                 name="SortationTaskList"
                 component={SortationTaskSelectionListScreen}
                 options={{ title: 'Inbound Sortation' }}
+              />
+              <Stack.Screen name="SortationPutaway" component={PutawayEntryScreen} options={{ title: 'Putaway' }} />
+              <Stack.Screen
+                name="SortationPutawayLocationScan"
+                component={PutawayLocationScanScreen}
+                options={{ title: 'Putaway Details' }}
+              />
+              <Stack.Screen
+                name="SortationPutawayProductScan"
+                component={PutawayProductScanScreen}
+                options={{ title: 'Putaway Details' }}
+              />
+              <Stack.Screen
+                name="SortationPutawayQuantity"
+                component={PutawayQuantityScreen}
+                options={{ title: 'Putaway Details' }}
               />
             </Stack.Navigator>
           </NavigationContainer>
