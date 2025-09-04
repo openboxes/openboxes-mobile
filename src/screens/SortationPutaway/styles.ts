@@ -69,5 +69,22 @@ export default StyleSheet.create({
   },
   secondaryButton: {
     height: 35
-  }
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center', // Wyśrodkuj w pionie
+    alignItems: 'center',     // Wyśrodkuj w poziomie
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Ciemne, półprzezroczyste tło
+  },
+  modalContent: {
+    width: '90%', // Okienko zajmie 90% szerokości ekranu
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+    elevation: 5, // Dodaje cień na Androidzie
+    shadowColor: '#000', // Dodaje cień na iOS
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
 });

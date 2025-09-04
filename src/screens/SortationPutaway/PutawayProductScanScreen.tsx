@@ -57,10 +57,11 @@ export default function PutawayProductScanScreen() {
       return;
     }
 
-    if (putawayProductBarcode !== putawayDetails.product.code) {
+    const productCode = putawayDetails.inventoryItem?.product?.productCode
+    if (putawayProductBarcode !== productCode) {
       Alert.alert(
         'Invalid Product Barcode',
-        `The scanned barcode does not match the expected putaway product: ${putawayDetails.product.code}.`
+        `The scanned barcode does not match the expected putaway product: ${productCode}.`
       );
       return;
     }

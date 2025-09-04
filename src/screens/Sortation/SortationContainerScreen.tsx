@@ -77,7 +77,7 @@ export default function SortationContainerScreen() {
 
     const payload = {
       action: 'complete',
-      putawayContainerId: putawayContainerBarcode || null
+      destination: task.destination?.id || null
     };
 
     dispatch(

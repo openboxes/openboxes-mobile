@@ -33,35 +33,18 @@ export default function PutawayEntryScreen() {
         return;
       }
 
-      // TODO [Putaway]: Implement navigation based on response and handle exceptions (Screen 5, 6 - Putaway Mock Up)
       dispatch(
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         getPutawayDetailsByContainerId(containerId, (response) => {
-          // if (!response || response.error) {
-          //   Alert.alert(
-          //     'Fetching Putaway Failed',
-          //     response?.errorMessage || 'Could not find a putaway with the scanned container ID.'
-          //   );
-          //   return;
-          // }
-
-          const mockedPutawayDetails = {
-            putawayContainerId: containerId,
-            product: {
-              id: 'mocked-product-id',
-              name: 'Mocked Product',
-              description: 'This is a mocked product description.',
-              code: 'MP-001'
-            },
-            location: {
-              id: 'mocked-location-id',
-              name: 'Mocked Location',
-              code: 'ML-001'
-            },
-            quantity: 10
-          };
-
-          navigate('SortationPutawayLocationScan', { putawayDetails: mockedPutawayDetails });
+          if (response && !response.error) {
+            const task = response?.response?.data[0];
+            navigate('SortationPutawayLocationScan', { putawayDetails: task });
+          } else {
+            Alert.alert(
+              'Not found',
+              `Container ${containerId} not found`
+            );
+          }
         })
       );
     },

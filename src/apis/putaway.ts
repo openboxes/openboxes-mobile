@@ -20,14 +20,13 @@ export function createPutawayOder(data: any) {
 }
 
 export function getPutawayTasks(facilityId: string, productId: string) {
-  return apiClient.get(`/facilities/${facilityId}/putaway-tasks?statusCategory=OPEN&product.id=${productId}`);
+  return apiClient.get(`/facilities/${facilityId}/putaway-tasks?statusCategory=OPEN&product=${productId}`);
 }
 
 export function patchPutawayTask(facilityId: string, putawayItemId: string, payload: any) {
   return apiClient.patch(`/facilities/${facilityId}/putaway-tasks/${putawayItemId}`, payload);
 }
 
-export function getPutawayDetails(containerId: string) {
-  // TODO [Putaway]: Implement API call
-  return apiClient.get(`/putaways/container/${containerId}`);
+export function getPutawayDetails(facilityId: string, containerId: string) {
+  return apiClient.get(`/facilities/${facilityId}/putaway-tasks?statusCategory=OPEN&container=${containerId}`)
 }

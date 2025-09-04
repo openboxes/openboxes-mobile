@@ -57,10 +57,12 @@ export default function PutawayLocationScanScreen() {
       return;
     }
 
-    if (putawayLocationBarcode !== putawayDetails.location.code) {
+    const locationNumber = putawayDetails.destination?.locationNumber
+
+    if (putawayLocationBarcode !==locationNumber) {
       Alert.alert(
         'Invalid Location Barcode',
-        `The scanned barcode does not match the expected putaway location: ${putawayDetails.location.code}.`
+        `The scanned barcode does not match the expected putaway location: ${locationNumber}.`
       );
       return;
     }

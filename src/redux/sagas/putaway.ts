@@ -1,4 +1,4 @@
-import { call, put, takeLatest } from 'redux-saga/effects';
+import { call, put, select, takeLatest } from 'redux-saga/effects';
 import {
   CREATE_PUTAWAY_ORDER_REQUEST,
   CREATE_PUTAWAY_ORDER_REQUEST_SUCCESS,
@@ -17,6 +17,7 @@ import { hideScreenLoading, showScreenLoading } from '../actions/main';
 import * as api from '../../apis';
 import { GetPutAwaysApiResponse, PostPutAwayItemApiResponse } from '../../data/putaway/PutAway';
 import * as Sentry from '@sentry/react-native';
+import { userLocation } from '../selectors/auth';
 
 function* fetchPutAwayFromOrder(action: any) {
   try {
@@ -120,8 +121,12 @@ function* patchPutawayTask(action: any) {
 
 function* getPutawayDetailsByContainerId(action: any) {
   try {
+    const location = yield select(userLocation)
+    if (!location || !location.id) {
+      return;
+    }
     yield put(showScreenLoading('Loading..'));
-    const response = yield call(api.getPutawayDetails, action.payload.containerId);
+    const response = yield call(api.getPutawayDetails, location.id, action.payload.containerId);
     yield put({
       type: GET_PUTAWAY_DETAILS_BY_CONTAINER_ID_REQUEST_SUCCESS,
       payload: response.data

@@ -12,18 +12,18 @@ type PutawayDetailsProps = {
 };
 
 export default function PutawayDetails({ putawayDetails }: PutawayDetailsProps) {
-  const { product, location, quantity } = putawayDetails;
+  const { inventoryItem, quantity, container, destination } = putawayDetails;
 
   const detailsChips: DetailChip[] = [
     {
       icon: 'identifier',
       label: 'Putaway Container ID',
-      value: location?.name ?? HYPHEN
+      value: container?.locationNumber ?? HYPHEN
     },
     {
       icon: 'map-marker',
       label: 'Putaway Location',
-      value: location?.name ?? HYPHEN
+      value: destination?.name ?? HYPHEN
     },
     {
       icon: 'cube',
@@ -37,15 +37,15 @@ export default function PutawayDetails({ putawayDetails }: PutawayDetailsProps) 
       <View style={styles.headerRow}>
         <Chip icon="barcode" style={styles.chipDefault} textStyle={styles.chipText}>
           <Text>
-            Product Code: <Text style={styles.bold}>{product?.code}</Text>
+            Product Code: <Text style={styles.bold}>{inventoryItem?.product?.productCode}</Text>
           </Text>
         </Chip>
       </View>
 
       <Divider style={styles.contentDivider} />
 
-      <Title style={styles.title}>{product?.name}</Title>
-      <Caption style={styles.caption}>{product?.description}</Caption>
+      <Title style={styles.title}>{inventoryItem?.product?.name}</Title>
+      <Caption style={styles.caption}>{inventoryItem?.product?.description}</Caption>
 
       {detailsChips.map(({ icon, value, label }) => (
         <Chip key={label} icon={icon} style={[styles.chipDefault, styles.topSpace]} textStyle={styles.chipText}>
