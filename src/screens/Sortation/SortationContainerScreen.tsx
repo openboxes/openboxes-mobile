@@ -1,7 +1,7 @@
 import { RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
 import React, { useEffect, useRef, useState } from 'react';
 import { Alert, TextInput, View } from 'react-native';
-import { Divider, TextInput as PaperTextInput, Paragraph, Subheading } from 'react-native-paper';
+import { Divider, TextInput as PaperTextInput, Paragraph, Subheading, Switch } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
 import Button from '../../components/Button';
@@ -11,6 +11,7 @@ import { patchPutawayTaskAction } from '../../redux/actions/putaways';
 import { DetailChip, SortationProduct, SortationTask } from '../../types/sortation';
 import SortationProductDetails from './SortationProductDetails';
 import styles from './styles';
+import Theme from '../../utils/Theme';
 
 type ContainerRouteProp = RouteProp<
   { SortationQuantity: { product: SortationProduct; quantitySorted: number; task: SortationTask } },
@@ -23,6 +24,7 @@ export default function SortationContainerScreen() {
 
   const inputRef = useRef<TextInput | null>(null);
   const isFocused = useIsFocused();
+  const [isOverrideEnabled, setIsOverrideEnabled] = useState<boolean>(false);
   const [putawayContainerBarcode, setPutawayContainerBarcode] = useState<string>('');
   const dispatch = useDispatch();
 
@@ -66,18 +68,21 @@ export default function SortationContainerScreen() {
       return;
     }
 
-    const locationNumber = task?.destination?.locationNumber;
-    if (putawayContainerBarcode !== locationNumber) {
-      Alert.alert(
-        'Wrong location number',
-        `Scanned location number: ${putawayContainerBarcode} is different from the expected one: ${locationNumber}`
-      );
-      return;
+    if (!isOverrideEnabled) {
+      const containerLocationNumber = task?.container?.locationNumber;
+      if (putawayContainerBarcode !== containerLocationNumber) {
+        Alert.alert(
+          'Wrong container number',
+          `Scanned container number: ${putawayContainerBarcode} is different from the expected one: ${containerLocationNumber}. If you want to load into different container please select 'Override container' option.`
+        );
+        return;
+      }
     }
 
     const payload = {
-      action: 'complete',
-      destination: task.destination?.id || null
+      action: 'load',
+      container: putawayContainerBarcode,
+      override: isOverrideEnabled
     };
 
     dispatch(
@@ -102,6 +107,11 @@ export default function SortationContainerScreen() {
       icon: 'map-search',
       label: 'Putaway Zone',
       value: task?.destination?.zoneName
+    },
+    {
+      icon: 'package',
+      label: 'Container',
+      value: task?.container?.locationNumber
     },
     {
       icon: 'map-marker',
@@ -133,6 +143,15 @@ export default function SortationContainerScreen() {
           onChangeText={setPutawayContainerBarcode}
           onSubmitEditing={handleSubmit}
         />
+
+        <View style={[styles.cardAnnotation, styles.cardContainer]}>
+          <Paragraph style={[styles.paragraph, styles.bold]}>Override container</Paragraph>
+          <Switch 
+            value={isOverrideEnabled} 
+            onValueChange={setIsOverrideEnabled}
+            color={Theme.colors.primary}
+          />
+        </View>
 
         <Button style={styles.topSpace} title="Confirm" mode="contained" size="100%" onPress={handleSubmit}>
           Submit

@@ -82,6 +82,11 @@ export default function SortationQuantityScreen() {
       value: task?.destination?.zoneName
     },
     {
+      icon: 'package',
+      label: 'Container',
+      value: task?.container?.locationNumber
+    },
+    {
       icon: 'map-marker',
       label: 'Final Storage Location',
       value: task?.destination?.name

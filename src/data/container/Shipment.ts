@@ -24,6 +24,7 @@ export interface Container {
   containerType: any;
   status: string;
   shipmentItems?: ShipmentItems[];
+  locationNumber: string;
 }
 
 export interface Shipment {

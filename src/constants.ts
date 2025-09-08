@@ -14,6 +14,7 @@ export const ratio = {
 };
 
 export const HYPHEN = '-';
+export const EMPTY_CHAR = '';
 
 export const DEFAULT_DATE_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = {
   year: 'numeric',
@@ -22,7 +23,7 @@ export const DEFAULT_DATE_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = {
 };
 
 export const appConfig = {
-  DEFAULT_DEBOUNCE_TIME: 2000,
+  DEFAULT_DEBOUNCE_TIME: 1000,
   APP_HEADER_HEIGHT: 56,
   LOCALE: 'en-US'
 };

@@ -2,7 +2,7 @@ import React from 'react';
 import { View } from 'react-native';
 import { Caption, Chip, Divider, Paragraph, Switch, Text, Title } from 'react-native-paper';
 
-import { HYPHEN } from '../../constants';
+import { EMPTY_CHAR } from '../../constants';
 import { DetailChip, SortationProduct } from '../../types/sortation';
 import Theme from '../../utils/Theme';
 import styles from './styles';
@@ -40,7 +40,7 @@ export default function SortationProductDetails({
       {detailsChips.map(({ icon, value, label }) => (
         <Chip key={label} icon={icon} style={[styles.chipDefault, styles.topSpace]}>
           <Text style={styles.chipText}>
-            {label}: <Text style={[styles.bold, styles.chipText]}>{value ?? HYPHEN}</Text>
+            {label}: <Text style={[styles.bold, styles.chipText]}>{value ?? EMPTY_CHAR}</Text>
           </Text>
         </Chip>
       ))}
