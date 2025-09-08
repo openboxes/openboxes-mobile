@@ -7,9 +7,7 @@ import { SafeAreaView } from 'react-native';
 import { Provider } from 'react-native-paper';
 import SplashScreen from 'react-native-splash-screen';
 import { connect } from 'react-redux';
-
 import FullScreenLoadingIndicator from './components/FullScreenLoadingIndicator';
-import OptionMenu from './components/OptionMenu';
 import showPopup from './components/Popup';
 import { appConfig } from './constants';
 import { Session } from './data/auth/Session';
@@ -63,6 +61,7 @@ import PutawayEntryScreen from './screens/SortationPutaway/PutawayEntryScreen';
 import PutawayLocationScanScreen from './screens/SortationPutaway/PutawayLocationScanScreen';
 import PutawayProductScanScreen from './screens/SortationPutaway/PutawayProductScanScreen';
 import PutawayQuantityScreen from './screens/SortationPutaway/PutawayQuantityScreen';
+import HeaderRight from './screens/TopBar/RightHeader';
 
 const Stack = createStackNavigator();
 export interface OwnProps {
@@ -155,7 +154,7 @@ class Main extends Component<Props, State> {
             <Stack.Navigator
               initialRouteName={initialRouteName}
               screenOptions={({ route, navigation }) => ({
-                headerRight: () => <OptionMenu route={route} navigation={navigation} />,
+                headerRight: () => <HeaderRight route={route} navigation={navigation} />,
                 headerTintColor: Theme.colors.surface,
                 headerStyle: {
                   backgroundColor: Theme.colors.primary,

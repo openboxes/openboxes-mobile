@@ -14,6 +14,7 @@ import { styles } from './styles';
 const CustomDrawerContent = (props: DrawerContentComponentProps) => {
   const dispatch = useDispatch();
   const loggedUser = useSelector((state: RootState) => state.mainReducer.session?.user);
+  const currentLocation = useSelector((state: RootState) => state.mainReducer.currentLocation)
 
   const handleLogout = () => dispatch(logout());
 
@@ -24,8 +25,9 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
           <Icon name={2} size={36} color={Theme.colors.primary} />
         </View>
         <View>
-          <Paragraph style={styles.textBold}> {loggedUser?.name} </Paragraph>
-          <Caption> {loggedUser?.email} </Caption>
+          <Paragraph style={styles.textBold}>{loggedUser?.name}</Paragraph>
+          <Caption>{loggedUser?.email}</Caption>
+          <Caption>{currentLocation?.name}</Caption>
         </View>
       </View>
 

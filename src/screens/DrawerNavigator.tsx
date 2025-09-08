@@ -5,6 +5,7 @@ import { appConfig } from '../constants';
 import Theme from '../utils/Theme';
 import ChooseCurrentLocation from './ChooseCurrentLocation';
 import Dashboard from './Dashboard';
+import HeaderRight from './TopBar/RightHeader';
 
 const Drawer = createDrawerNavigator();
 
@@ -12,7 +13,7 @@ const DrawerNavigator = () => {
   return (
     <Drawer.Navigator
       drawerContent={(props) => <CustomDrawerContent {...props} />}
-      screenOptions={{
+      screenOptions={({ route, navigation }) => ({
         headerStyle: {
           backgroundColor: Theme.colors.primary,
           height: appConfig.APP_HEADER_HEIGHT
@@ -21,8 +22,9 @@ const DrawerNavigator = () => {
           color: Theme.colors.surface
         },
         drawerActiveTintColor: Theme.colors.primary,
-        headerTintColor: '#ffffff'
-      }}
+        headerTintColor: '#ffffff',
+        headerRight: () => <HeaderRight route={route} navigation={navigation} />,
+      })}
     >
       <Drawer.Screen
         name="Choose Location"

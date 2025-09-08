@@ -50,7 +50,7 @@ const OptionMenu = ({ route, navigation }: any) => {
             style={styles.menuItem}
             title="Change location"
             onPress={() => {
-              navigation.navigate('Drawer');
+              navigation.navigate('Choose Location');
               closeMenu();
             }}
           />
@@ -71,7 +71,6 @@ const OptionMenu = ({ route, navigation }: any) => {
 
 const styles = StyleSheet.create({
   touchable: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center'
   },

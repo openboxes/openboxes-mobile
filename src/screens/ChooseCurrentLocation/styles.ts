@@ -39,5 +39,13 @@ export default StyleSheet.create({
     fontSize: 12,
     color: Theme.colors.backdrop,
     fontWeight: '400'
-  }
+  },
+  selectedCard: {
+    borderColor: Theme.colors.primary,
+    borderWidth: 5,
+  },
+  selectedItem: {
+    backgroundColor: '#e0e0e0',
+    borderRadius: Theme.roundness,
+  },
 });

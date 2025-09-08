@@ -20,6 +20,7 @@ const NO_LOCATION_GROUP_NAME = 'NO_LOCATION_GROUP_PROVIDED';
 export interface OwnProps {
   navigation: any;
   groupLocationEntries?: boolean;
+  currentLocation?: Location | null
 }
 
 interface DispatchProps {
@@ -68,34 +69,25 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
   };
 
   setCurrentLocation = async (location: Location) => {
-    showPopup({
-      message: `Do you want to select current location as ${location.name}?`,
-      positiveButton: {
-        text: 'Yes',
-        callback: () => {
-          const actionCallback = (data: any) => {
-            if (data?.error) {
-              showPopup({
-                message: 'Failed to set current location',
-                positiveButton: {
-                  text: 'Try Again',
-                  callback: () => {
-                    this.props.setCurrentLocationAction(location, actionCallback);
-                  }
-                },
-                negativeButtonText: 'Cancel'
-              });
-            } else {
-              global.location = location;
-              this.props.navigation.navigate('Dashboard');
+    const actionCallback = (data: any) => {
+      if (data?.error) {
+        showPopup({
+          message: 'Failed to set current location',
+          positiveButton: {
+            text: 'Try Again',
+            callback: () => {
+              this.props.setCurrentLocationAction(location, actionCallback);
             }
-          };
+          },
+          negativeButtonText: 'Cancel'
+        });
+      } else {
+        global.location = location;
+        this.props.navigation.navigate('Dashboard');
+      }
+    };
 
-          this.props.setCurrentLocationAction(location, actionCallback);
-        }
-      },
-      negativeButtonText: 'No'
-    });
+    this.props.setCurrentLocationAction(location, actionCallback);
   };
 
   getSortedOrgNameAndLocationsDictionary = (locations: Location[]): Dictionary<Location[]> => {
@@ -124,7 +116,7 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
     );
   };
 
-  renderGroupedLocations = (locations: Dictionary<Location[]>) => (
+  renderGroupedLocations = (locations: Dictionary<Location[]>, currentLocation: Location | null | undefined) => (
     <List.AccordionGroup>
       {_.map(_.keys(locations), (orgName: string) => {
         return (
@@ -137,6 +129,7 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
             style={{ backgroundColor: Theme.colors.surface, borderRadius: Theme.roundness }}
           >
             {_.map(locations[orgName], (location) => {
+              const isSelected = currentLocation && location.id === currentLocation.id;
               return (
                 <List.Item
                   title={location.name}
@@ -144,7 +137,10 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
                   key={`orgName_${orgName}_locationName_${location.name}`}
                   hasTVPreferredFocus={false}
                   tvParallaxProperties={undefined}
-                  style={{ backgroundColor: Theme.colors.surface, borderRadius: Theme.roundness }}
+                  style={[
+                    { backgroundColor: Theme.colors.surface, borderRadius: Theme.roundness },
+                    isSelected && styles.selectedItem
+                  ]}
                   onPress={() => this.setCurrentLocation(location)}
                 />
               );
@@ -155,13 +151,18 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
     </List.AccordionGroup>
   );
 
-  renderAllLocations = (locations: Location[]) =>
-    locations.map((location) => (
-      <Card key={location.id} style={styles.cardContainer} onPress={() => this.setCurrentLocation(location)}>
+  renderAllLocations = (locations: Location[], currentLocation: Location | null | undefined) =>
+    locations.map((location) => {
+      const isSelected = currentLocation && location.id === currentLocation.id;
+      return (
+        <Card 
+          key={location.id} 
+          style={[styles.cardContainer, isSelected && styles.selectedCard]} 
+          onPress={() => this.setCurrentLocation(location)}
+        >
         <Card.Content style={styles.cardContent}>
           <View style={styles.contentContainer}>
             <GarageIcon width={48} height={48} />
-
             <View style={styles.textContainer}>
               <Text style={styles.cardTitle}>{location.name}</Text>
               <Text style={styles.cardSubtitle}>{location.locationGroup?.name || NO_LOCATION_GROUP_NAME}</Text>
@@ -169,11 +170,12 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
           </View>
         </Card.Content>
       </Card>
-    ));
+      );
+    });
 
   render() {
     const { availableLocations } = this.state;
-    const { groupLocationEntries } = this.props;
+    const { groupLocationEntries, currentLocation } = this.props;
 
     if (!availableLocations || availableLocations.length === 0) {
       return (
@@ -190,8 +192,8 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
       <View>
         <ScrollView style={styles.scrollView}>
           {groupLocationEntries
-            ? this.renderGroupedLocations(this.getSortedOrgNameAndLocationsDictionary(availableLocations))
-            : this.renderAllLocations(availableLocations)}
+            ? this.renderGroupedLocations(this.getSortedOrgNameAndLocationsDictionary(availableLocations), currentLocation)
+            : this.renderAllLocations(availableLocations, currentLocation)}
         </ScrollView>
       </View>
     );
@@ -199,7 +201,8 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
 }
 
 const mapStateToProps = (state: RootState) => ({
-  groupLocationEntries: state.settingsReducer.groupLocationEntries
+  groupLocationEntries: state.settingsReducer.groupLocationEntries,
+  currentLocation: state.mainReducer.currentLocation
 });
 
 const mapDispatchToProps: DispatchProps = {
