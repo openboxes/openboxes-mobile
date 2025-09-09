@@ -9,6 +9,7 @@ import { appConfig } from '../../constants';
 import { navigate } from '../../NavigationService';
 import { getPutawayDetailsByContainerId } from '../../redux/actions/putaways';
 import styles from './styles';
+import { SortationTask } from '../../types/sortation';
 
 export default function PutawayEntryScreen() {
   const [putawayContainerId, setPutawayContainerId] = useState<string>('');
@@ -37,8 +38,17 @@ export default function PutawayEntryScreen() {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         getPutawayDetailsByContainerId(containerId, (response) => {
           if (response && !response.error) {
-            const task = response?.response?.data[0];
-            navigate('SortationPutawayLocationScan', { putawayDetails: task });
+            const allTasks: SortationTask[] = response?.response?.data || [];
+            const filteredTasks = allTasks.filter(task => task.status === 'IN_TRANSIT');
+            if (filteredTasks.length > 0) {
+              const task = filteredTasks[0];
+              navigate('SortationPutawayLocationScan', { putawayDetails: task });
+            } else {
+              Alert.alert(
+                'No Valid Tasks Found',
+                `No IN_TRANSIT tasks found for container ${containerId}`
+              );
+            }
           } else {
             Alert.alert(
               'Not found',

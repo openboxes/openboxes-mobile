@@ -137,7 +137,7 @@ export default function SortationContainerScreen() {
           autoCompleteType="off"
           style={styles.topSpace}
           mode="outlined"
-          label="Location Barcode"
+          label="Container Barcode"
           value={putawayContainerBarcode}
           returnKeyType="done"
           onChangeText={setPutawayContainerBarcode}

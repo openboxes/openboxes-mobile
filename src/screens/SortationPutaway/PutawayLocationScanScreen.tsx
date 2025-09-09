@@ -8,14 +8,14 @@ import EmptyView from '../../components/EmptyView';
 import { navigate } from '../../NavigationService';
 import PutawayDetails from './PutawayDetails';
 import styles from './styles';
+import { PutawayDetailsModel } from '../../types/sortation';
 
 // NOTE: Currently, Product Scan and Location Scan are implemented as separate screens.
 // If their scanning flow and UI remain largely the same, we can consider merging them
 // into a single reusable screen in the future.
 
 type PutawayLocationScanRouteProp = RouteProp<
-  // TODO [Putaway]: Create a proper type for putawayDetails
-  { SortationPutawayLocationScan: { putawayDetails: any } },
+  { SortationPutawayLocationScan: { putawayDetails: PutawayDetailsModel } },
   'SortationPutawayLocationScan'
 >;
 
@@ -58,8 +58,7 @@ export default function PutawayLocationScanScreen() {
     }
 
     const locationNumber = putawayDetails.destination?.locationNumber
-
-    if (putawayLocationBarcode !==locationNumber) {
+    if (putawayLocationBarcode !== locationNumber) {
       Alert.alert(
         'Invalid Location Barcode',
         `The scanned barcode does not match the expected putaway location: ${locationNumber}.`

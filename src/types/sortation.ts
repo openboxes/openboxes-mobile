@@ -1,6 +1,8 @@
 /* eslint-disable no-undef */
 import { Container } from '../data/container/Shipment';
+import Location from '../data/location/Location';
 import LocationType from '../data/location/LocationType';
+import InventoryItem from '../data/picklist/InventoryItem';
 import PutAwayItems from '../data/putaway/PutAwayItems';
 
 export type SortationProduct = {
@@ -66,7 +68,7 @@ export type SortationPutaway = {
 };
 
 export type SortationTask = {
-  container: Container;
+  container: SortationLocation;
   destination: SortationLocation;
   facility: SortationFacility;
   id: string;
@@ -81,4 +83,16 @@ export type DetailChip = {
   icon: string;
   label: string;
   value: string | null | number | undefined;
+};
+
+export type PutawayDetailsModel = {
+  id: string;
+  status: string;
+  identifier: string;
+  inventoryItem: InventoryItem;
+  facility: SortationFacility;
+  location: SortationLocation;
+  quantity: number;
+  container: SortationLocation;
+  destination: SortationLocation;
 };

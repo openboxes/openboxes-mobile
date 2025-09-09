@@ -24,7 +24,17 @@ export default function SortationQuantityScreen() {
 
   const [quantitySorted, setQuantitySorted] = useState<number | undefined>();
   // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
-  const [directPutawayRequired, setDirectPutawayRequired] = useState<boolean>(true);
+  const [directPutawayRequired, setDirectPutawayRequired] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (directPutawayRequired) {
+      navigate('SortationPutawayLocationScan', {
+        putawayDetails: {
+          ...task
+        }
+      });
+    }
+  }, [directPutawayRequired, product, task]);
 
   useEffect(() => {
     if (!isFocused) {
@@ -32,6 +42,12 @@ export default function SortationQuantityScreen() {
     }
     const t = setTimeout(() => inputRef.current?.focus(), 100);
     return () => clearTimeout(t);
+  }, [isFocused]);
+
+  useEffect(() => {
+    if (isFocused) {
+      setDirectPutawayRequired(false);
+    }
   }, [isFocused]);
 
   if (!product) {
@@ -100,8 +116,7 @@ export default function SortationQuantityScreen() {
         product={product}
         detailsChips={productDetailsChips}
         directPutawayRequired={directPutawayRequired}
-        // TODO: enable this when different strategies for putaway are supported
-        // onToggleDirectPutaway={setDirectPutawayRequired}
+        onToggleDirectPutaway={setDirectPutawayRequired}
       />
 
       <Divider />

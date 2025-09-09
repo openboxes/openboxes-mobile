@@ -3,12 +3,11 @@ import { Text, View } from 'react-native';
 import { Caption, Chip, Divider, Title } from 'react-native-paper';
 
 import { HYPHEN } from '../../constants';
-import { DetailChip } from '../../types/sortation';
+import { DetailChip, PutawayDetailsModel } from '../../types/sortation';
 import styles from './styles';
 
 type PutawayDetailsProps = {
-  // TODO [Putaway]: Create a proper type for putawayDetails
-  putawayDetails: any;
+  putawayDetails: PutawayDetailsModel;
 };
 
 export default function PutawayDetails({ putawayDetails }: PutawayDetailsProps) {

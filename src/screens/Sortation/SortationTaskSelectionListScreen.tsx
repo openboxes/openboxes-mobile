@@ -1,9 +1,9 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Alert, FlatList, View } from 'react-native';
 import { Button, Caption, Card, Chip, Divider, Paragraph, Text, Title } from 'react-native-paper';
 
-import { HYPHEN } from '../../constants';
+import { EMPTY_CHAR, HYPHEN } from '../../constants';
 import { navigate } from '../../NavigationService';
 import { SortationProduct, SortationTask } from '../../types/sortation';
 import styles from './styles';
@@ -46,7 +46,6 @@ export default function SortationTaskSelectionListScreen() {
 
       <Divider style={styles.topSpace} />
 
-      {/* Task List */}
       <FlatList
         data={tasks}
         keyExtractor={(item) => item.id}
@@ -57,7 +56,7 @@ export default function SortationTaskSelectionListScreen() {
               <Card.Content style={styles.cardContent}>
                 <View style={styles.headerRow}>
                   <Chip icon="barcode" style={styles.chipDefault} textStyle={styles.chipText}>
-                    {`${item.putaway?.putawayNumber ?? HYPHEN}`}
+                    {`${item.putaway?.putawayNumber ?? EMPTY_CHAR}`}
                   </Chip>
 
                   <Chip style={[styles.chipDefault]} textStyle={styles.chipText}>
@@ -73,7 +72,7 @@ export default function SortationTaskSelectionListScreen() {
                   {`Quantity: ${item.quantity ?? HYPHEN}`}
                 </Chip>
                 <Chip icon="map-marker" style={[styles.chipDefault, styles.topSpace]} textStyle={styles.chipText}>
-                  {`Final Storage Location: ${item.destination?.name ?? HYPHEN}`}
+                  {`Final Storage Location: ${item.destination?.name ?? EMPTY_CHAR}`}
                 </Chip>
               </Card.Content>
             </Card>

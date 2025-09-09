@@ -9,6 +9,7 @@ import { appConfig } from '../../constants';
 import { navigate } from '../../NavigationService';
 import { getSortationDetailsByBarcode } from '../../redux/actions/products';
 import styles from './styles';
+import { SortationTask } from '../../types/sortation';
 
 export default function SortationEntryScreen() {
   const [barcode, setBarcode] = useState<string>('');
@@ -37,12 +38,18 @@ export default function SortationEntryScreen() {
           if (response && !response.error) {
             const { product, tasks } = response || {};
 
-            if (tasks?.length === 1) {
-              navigate('SortationQuantity', { product, task: tasks[0] });
-              return;
-            }
+            const allowedStatuses = ['PENDING', 'IN_PROGRESS'];
+            const filteredTasks = (tasks || []).filter((task: SortationTask) => 
+              allowedStatuses.includes(task.status)
+            );
 
-            navigate('SortationTaskList', { product, tasks });
+            if (filteredTasks.length === 0) {
+              Alert.alert('No Valid Tasks', 'No tasks with PENDING or IN_PROGRESS status found for this product.');
+            } else if (filteredTasks.length === 1) {
+              navigate('SortationQuantity', { product, task: filteredTasks[0] });
+            } else {
+              navigate('SortationTaskList', { product, tasks: filteredTasks });
+            }
           } else {
             Alert.alert(
               'Sortation Failed',
@@ -84,7 +91,7 @@ export default function SortationEntryScreen() {
         autoCompleteType="off"
         ref={inputRef}
         mode="outlined"
-        label="Barcode"
+        label="Product Barcode"
         value={barcode}
         returnKeyType="done"
         onChangeText={handleChange}

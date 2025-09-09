@@ -1,5 +1,6 @@
 import ShipmentItems from '../inbound/ShipmentItems';
 import Location from '../location/Location';
+import LocationType from '../location/LocationType';
 
 export interface PackingStatusDetails {
   statusMessage: string;
@@ -25,6 +26,7 @@ export interface Container {
   status: string;
   shipmentItems?: ShipmentItems[];
   locationNumber: string;
+  locationType?: LocationType;
 }
 
 export interface Shipment {
