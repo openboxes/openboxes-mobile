@@ -12,6 +12,8 @@ import { DetailChip, SortationProduct, SortationTask } from '../../types/sortati
 import SortationProductDetails from './SortationProductDetails';
 import styles from './styles';
 
+const startedTaskIds = new Set<string>();
+
 type QuantityRouteProp = RouteProp<
   { SortationQuantity: { product: SortationProduct; task: SortationTask } },
   'SortationQuantity'
@@ -53,15 +55,20 @@ export default function SortationQuantityScreen() {
   }, [isFocused]);
 
   useEffect(() => {
-    if (task && task.status === 'PENDING') {
+    if (task && task.status === 'PENDING' && !startedTaskIds.has(task.id)) {
       const payload = {
         action: 'start'
       };
 
       dispatch(
         patchPutawayTaskAction(task.facility.id, task.id, payload, (response) => {
-          if (response && response.error) {
-            Alert.alert('Error', response?.errorMessage || 'An error occurred while starting the task.');
+          if (response && !response.error) {
+            startedTaskIds.add(task.id);
+          } else {
+            Alert.alert(
+              'Error', 
+              response?.errorMessage || 'An error occurred while starting the task.'
+            );
           }
         })
       );
