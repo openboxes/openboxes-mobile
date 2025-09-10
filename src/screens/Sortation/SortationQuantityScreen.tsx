@@ -9,6 +9,8 @@ import { navigate } from '../../NavigationService';
 import { DetailChip, SortationProduct, SortationTask } from '../../types/sortation';
 import SortationProductDetails from './SortationProductDetails';
 import styles from './styles';
+import { useDispatch } from 'react-redux';
+import { patchPutawayTaskAction } from '../../redux/actions/putaways';
 
 type QuantityRouteProp = RouteProp<
   { SortationQuantity: { product: SortationProduct; task: SortationTask } },
@@ -21,6 +23,7 @@ export default function SortationQuantityScreen() {
 
   const inputRef = useRef<TextInput | null>(null);
   const isFocused = useIsFocused();
+  const dispatch = useDispatch();
 
   const [quantitySorted, setQuantitySorted] = useState<number | undefined>();
   // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
@@ -49,6 +52,26 @@ export default function SortationQuantityScreen() {
       setDirectPutawayRequired(false);
     }
   }, [isFocused]);
+
+  useEffect(() => {
+    if (task && task.status === 'PENDING') {
+      const payload = {
+        action: 'start'
+      }
+
+      dispatch(
+        patchPutawayTaskAction(task.facility.id, task.id, payload, (response) => {
+          if (response && response.error) {
+            Alert.alert(
+              'Error',
+              response?.errorMessage || 'An error occurred while starting the task.'
+            );
+          }
+        })
+      );
+
+    }
+  }, [task, dispatch]);
 
   if (!product) {
     return (
