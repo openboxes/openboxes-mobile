@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Alert, FlatList, View } from 'react-native';
 import { Button, Caption, Card, Chip, Divider, Paragraph, Text, Title } from 'react-native-paper';
 
-import { EMPTY_FALLBACK, HYPHEN } from '../../constants';
+import { EMPTY_FALLBACK } from '../../constants';
 import { navigate } from '../../NavigationService';
 import { SortationProduct, SortationTask } from '../../types/sortation';
 import styles from './styles';
@@ -64,7 +64,7 @@ export default function SortationTaskSelectionListScreen() {
                   </Chip>
 
                   <Chip style={[styles.chipWarning]} textStyle={styles.chipText}>
-                    {`${item.status ?? HYPHEN}`}
+                    {`${item.status ?? EMPTY_FALLBACK}`}
                   </Chip>
                 </View>
 

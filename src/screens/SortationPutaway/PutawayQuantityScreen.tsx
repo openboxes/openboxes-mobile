@@ -12,10 +12,10 @@ import { navigate } from '../../NavigationService';
 import { searchInternalLocations } from '../../redux/actions/locations';
 import { RootState } from '../../redux/reducers';
 import AsyncModalSelect from '../../components/AsyncModalSelect';
+import { PutawayDetailsModel } from '../../types/sortation';
 
 type PutawayQuantityRouteProp = RouteProp<
-  // TODO [Putaway]: Create a proper type for putawayDetails
-  { SortationPutawayQuantity: { putawayDetails: any } },
+  { SortationPutawayQuantity: { putawayDetails: PutawayDetailsModel, isDirectPutaway?: boolean } },
   'SortationPutawayQuantity'
 >;
 
@@ -27,7 +27,7 @@ type Location = {
 
 export default function PutawayQuantityScreen() {
   const { params } = useRoute<PutawayQuantityRouteProp>();
-  const { putawayDetails } = params;
+  const { putawayDetails, isDirectPutaway } = params;
   const dispatch = useDispatch();
 
   const inputRef = useRef<TextInput | null>(null);
@@ -119,7 +119,11 @@ export default function PutawayQuantityScreen() {
       patchPutawayTaskAction(putawayDetails.facility.id, putawayDetails.id, payload, (response) => {
         if (response && !response.error) {
           Alert.alert('Sortation Successful', 'The product has been sorted successfully.');
-          navigate('SortationPutaway');
+          if (isDirectPutaway) {  
+            navigate('Sortation');
+          } else {
+            navigate('SortationPutaway');
+          }
         } else {
           Alert.alert('Sortation Failed', response.errorMessage || 'Sortation Failed');
         }

@@ -15,13 +15,13 @@ import { PutawayDetailsModel } from '../../types/sortation';
 // into a single reusable screen in the future.
 
 type PutawayLocationScanRouteProp = RouteProp<
-  { SortationPutawayLocationScan: { putawayDetails: PutawayDetailsModel } },
+  { SortationPutawayLocationScan: { putawayDetails: PutawayDetailsModel, isDirectPutaway?: boolean } },
   'SortationPutawayLocationScan'
 >;
 
 export default function PutawayLocationScanScreen() {
   const { params } = useRoute<PutawayLocationScanRouteProp>();
-  const { putawayDetails } = params;
+  const { putawayDetails, isDirectPutaway } = params;
 
   const inputRef = useRef<TextInput | null>(null);
   const isFocused = useIsFocused();
@@ -66,7 +66,7 @@ export default function PutawayLocationScanScreen() {
       return;
     }
 
-    navigate('SortationPutawayProductScan', { putawayDetails });
+    navigate('SortationPutawayProductScan', { putawayDetails, isDirectPutaway });
   }
 
   return (

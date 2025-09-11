@@ -2,7 +2,7 @@ import React from 'react';
 import { Text, View } from 'react-native';
 import { Caption, Chip, Divider, Title } from 'react-native-paper';
 
-import { HYPHEN } from '../../constants';
+import { EMPTY_FALLBACK } from '../../constants';
 import { DetailChip, PutawayDetailsModel } from '../../types/sortation';
 import styles from './styles';
 
@@ -17,17 +17,17 @@ export default function PutawayDetails({ putawayDetails }: PutawayDetailsProps) 
     {
       icon: 'identifier',
       label: 'Putaway Container ID',
-      value: container?.locationNumber ?? HYPHEN
+      value: container?.locationNumber ?? EMPTY_FALLBACK
     },
     {
       icon: 'map-marker',
       label: 'Putaway Location',
-      value: destination?.name ?? HYPHEN
+      value: destination?.name ?? EMPTY_FALLBACK
     },
     {
       icon: 'cube',
       label: 'Putaway Quantity',
-      value: quantity ?? HYPHEN
+      value: quantity ?? EMPTY_FALLBACK
     }
   ];
 
@@ -49,7 +49,7 @@ export default function PutawayDetails({ putawayDetails }: PutawayDetailsProps) 
       {detailsChips.map(({ icon, value, label }) => (
         <Chip key={label} icon={icon} style={[styles.chipDefault, styles.topSpace]} textStyle={styles.chipText}>
           <Text>
-            {label}: <Text style={styles.bold}>{value ?? HYPHEN}</Text>
+            {label}: <Text style={styles.bold}>{value}</Text>
           </Text>
         </Chip>
       ))}

@@ -35,7 +35,8 @@ export default function SortationQuantityScreen() {
       navigate('SortationPutawayLocationScan', {
         putawayDetails: {
           ...task
-        }
+        },
+        isDirectPutaway: true
       });
     }
   }, [directPutawayRequired, product, task]);

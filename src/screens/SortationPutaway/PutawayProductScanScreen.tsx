@@ -8,20 +8,20 @@ import EmptyView from '../../components/EmptyView';
 import { navigate } from '../../NavigationService';
 import PutawayDetails from './PutawayDetails';
 import styles from './styles';
+import { PutawayDetailsModel } from '../../types/sortation';
 
 // NOTE: Currently, Product Scan and Location Scan are implemented as separate screens.
 // If their scanning flow and UI remain largely the same, we can consider merging them
 // into a single reusable screen in the future.
 
 type PutawayProductScanRouteProp = RouteProp<
-  // TODO [Putaway]: Create a proper type for putawayDetails
-  { SortationPutawayProductScan: { putawayDetails: any } },
+  { SortationPutawayProductScan: { putawayDetails: PutawayDetailsModel, isDirectPutaway: boolean } },
   'SortationPutawayProductScan'
 >;
 
 export default function PutawayProductScanScreen() {
   const { params } = useRoute<PutawayProductScanRouteProp>();
-  const { putawayDetails } = params;
+  const { putawayDetails, isDirectPutaway } = params;
 
   const inputRef = useRef<TextInput | null>(null);
   const isFocused = useIsFocused();
@@ -66,7 +66,7 @@ export default function PutawayProductScanScreen() {
       return;
     }
 
-    navigate('SortationPutawayQuantity', { putawayDetails });
+    navigate('SortationPutawayQuantity', { putawayDetails, isDirectPutaway });
   }
 
   return (
