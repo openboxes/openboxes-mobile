@@ -5,7 +5,7 @@ import { Alert, TextInput, View } from 'react-native';
 import { TextInput as PaperTextInput, Paragraph, Title } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
-import { appConfig } from '../../constants';
+import { appConfig, EMPTY_STRING, INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
 import { navigate } from '../../NavigationService';
 import { getPutawayDetailsByContainerId } from '../../redux/actions/putaways';
 import styles from './styles';
@@ -21,7 +21,10 @@ export default function PutawayEntryScreen() {
     if (!isFocused) {
       return;
     }
-    const t = setTimeout(() => inputRef.current?.focus(), 100);
+
+    setPutawayContainerId(EMPTY_STRING);
+
+    const t = setTimeout(() => inputRef.current?.focus(), INPUT_FOCUS_DELAY_TIME_IN_MS);
     return () => clearTimeout(t);
   }, [isFocused]);
 
@@ -30,7 +33,10 @@ export default function PutawayEntryScreen() {
       const containerId = rawContainerId.trim();
 
       if (!containerId) {
-        Alert.alert('Empty Container Id', 'You must scan a container ID or enter a code manually to proceed.');
+        Alert.alert(
+          'Empty Container ID', 
+          'You must scan a container ID or enter a code manually to proceed.'
+        );
         return;
       }
 
@@ -41,8 +47,10 @@ export default function PutawayEntryScreen() {
             const allTasks: SortationTask[] = response?.response?.data || [];
             const filteredTasks = allTasks.filter(task => task.status === 'IN_TRANSIT');
             if (filteredTasks.length > 0) {
-              const task = filteredTasks[0];
-              navigate('SortationPutawayLocationScan', { putawayDetails: task });
+              navigate('SortationPutawayLocationScan', {
+                taskList: filteredTasks,
+                currentTaskIndex: 0
+              });
             } else {
               Alert.alert(
                 'No Valid Tasks Found',
@@ -55,6 +63,7 @@ export default function PutawayEntryScreen() {
               `Container ${containerId} not found`
             );
           }
+          setPutawayContainerId(EMPTY_STRING);
         })
       );
     },

@@ -12,6 +12,7 @@ import { DetailChip, SortationProduct, SortationTask } from '../../types/sortati
 import Theme from '../../utils/Theme';
 import SortationProductDetails from './SortationProductDetails';
 import styles from './styles';
+import { EMPTY_STRING, INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
 
 type ContainerRouteProp = RouteProp<
   { SortationQuantity: { product: SortationProduct; quantitySorted: number; task: SortationTask } },
@@ -32,7 +33,7 @@ export default function SortationContainerScreen() {
     if (!isFocused) {
       return;
     }
-    const t = setTimeout(() => inputRef.current?.focus(), 100);
+    const t = setTimeout(() => inputRef.current?.focus(), INPUT_FOCUS_DELAY_TIME_IN_MS);
     return () => clearTimeout(t);
   }, [isFocused]);
 
@@ -64,7 +65,10 @@ export default function SortationContainerScreen() {
 
   function handleSubmit() {
     if (!putawayContainerBarcode) {
-      Alert.alert('Empty Barcode', 'You must scan a putaway container barcode to proceed.');
+      Alert.alert(
+        'Empty Barcode', 
+        'You must scan a putaway container barcode to proceed.'
+      );
       return;
     }
 
@@ -75,6 +79,7 @@ export default function SortationContainerScreen() {
           'Wrong container number',
           `Scanned container number: ${putawayContainerBarcode} is different from the expected one: ${containerLocationNumber}. If you want to load into different container please select 'Override container' option.`
         );
+        setPutawayContainerBarcode(EMPTY_STRING);
         return;
       }
     }
@@ -88,10 +93,17 @@ export default function SortationContainerScreen() {
     dispatch(
       patchPutawayTaskAction(task.facility.id, task.id, payload, (response) => {
         if (response && !response.error) {
-          Alert.alert('Sortation Successful', 'The product has been sorted successfully.');
+          Alert.alert(
+            'Sortation Successful', 
+            'The product has been sorted successfully.'
+          );
           navigate('Sortation');
         } else {
-          Alert.alert('Sortation Failed', response.errorMessage || 'Sortation Failed');
+          Alert.alert(
+            'Sortation Failed', 
+            response.errorMessage || 'Sortation Failed'
+          );
+          setPutawayContainerBarcode(EMPTY_STRING);
         }
       })
     );

@@ -9,30 +9,33 @@ import { navigate } from '../../NavigationService';
 import PutawayDetails from './PutawayDetails';
 import styles from './styles';
 import { PutawayDetailsModel } from '../../types/sortation';
+import { EMPTY_STRING, INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
 
 // NOTE: Currently, Product Scan and Location Scan are implemented as separate screens.
 // If their scanning flow and UI remain largely the same, we can consider merging them
 // into a single reusable screen in the future.
 
 type PutawayLocationScanRouteProp = RouteProp<
-  { SortationPutawayLocationScan: { putawayDetails: PutawayDetailsModel, isDirectPutaway?: boolean } },
+  { SortationPutawayLocationScan: { taskList: PutawayDetailsModel[]; currentTaskIndex: number; isDirectPutaway?: boolean } },
   'SortationPutawayLocationScan'
 >;
 
 export default function PutawayLocationScanScreen() {
   const { params } = useRoute<PutawayLocationScanRouteProp>();
-  const { putawayDetails, isDirectPutaway } = params;
-
+  const { taskList, currentTaskIndex, isDirectPutaway } = params;
+  const putawayDetails = taskList[currentTaskIndex];
   const inputRef = useRef<TextInput | null>(null);
   const isFocused = useIsFocused();
-
   const [putawayLocationBarcode, setPutawayLocationBarcode] = useState<string | undefined>();
 
   useEffect(() => {
     if (!isFocused) {
       return;
     }
-    const t = setTimeout(() => inputRef.current?.focus(), 100);
+
+    setPutawayLocationBarcode(EMPTY_STRING);
+
+    const t = setTimeout(() => inputRef.current?.focus(), INPUT_FOCUS_DELAY_TIME_IN_MS);
     return () => clearTimeout(t);
   }, [isFocused]);
 
@@ -53,7 +56,10 @@ export default function PutawayLocationScanScreen() {
 
   function handleSubmit() {
     if (!putawayLocationBarcode) {
-      Alert.alert('Invalid Location Barcode', 'Please enter a valid putaway location barcode.');
+      Alert.alert(
+        'Invalid Location Barcode', 
+        'Please enter a valid putaway location barcode.'
+      );
       return;
     }
 
@@ -63,10 +69,11 @@ export default function PutawayLocationScanScreen() {
         'Invalid Location Barcode',
         `The scanned barcode does not match the expected putaway location: ${locationNumber}.`
       );
+      setPutawayLocationBarcode(EMPTY_STRING);
       return;
     }
 
-    navigate('SortationPutawayProductScan', { putawayDetails, isDirectPutaway });
+    navigate('SortationPutawayProductScan', { taskList, currentTaskIndex, isDirectPutaway });
   }
 
   return (

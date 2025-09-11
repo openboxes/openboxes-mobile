@@ -11,6 +11,7 @@ import { patchPutawayTaskAction } from '../../redux/actions/putaways';
 import { DetailChip, SortationProduct, SortationTask } from '../../types/sortation';
 import SortationProductDetails from './SortationProductDetails';
 import styles from './styles';
+import { INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
 
 const startedTaskIds = new Set<string>();
 
@@ -33,9 +34,8 @@ export default function SortationQuantityScreen() {
   useEffect(() => {
     if (directPutawayRequired) {
       navigate('SortationPutawayLocationScan', {
-        putawayDetails: {
-          ...task
-        },
+        taskList: [task], 
+        currentTaskIndex: 0, 
         isDirectPutaway: true
       });
     }
@@ -45,7 +45,10 @@ export default function SortationQuantityScreen() {
     if (!isFocused) {
       return;
     }
-    const t = setTimeout(() => inputRef.current?.focus(), 100);
+
+    setQuantitySorted(undefined);
+
+    const t = setTimeout(() => inputRef.current?.focus(), INPUT_FOCUS_DELAY_TIME_IN_MS);
     return () => clearTimeout(t);
   }, [isFocused]);
 
@@ -96,12 +99,18 @@ export default function SortationQuantityScreen() {
 
   function handleSubmit() {
     if (!quantitySorted || quantitySorted <= 0) {
-      Alert.alert('Invalid Quantity', 'Please enter a valid quantity greater than zero.');
+      Alert.alert(
+        'Invalid Quantity', 
+        'Please enter a valid quantity greater than zero.'
+      );
       return;
     }
 
     if (quantitySorted > task.quantity) {
-      Alert.alert('Invalid Quantity', 'Quantity to sort can not be greater than quantity in total');
+      Alert.alert(
+        'Invalid Quantity', 
+        'Quantity to sort can not be greater than quantity in total'
+      );
       return;
     }
 

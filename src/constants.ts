@@ -15,6 +15,8 @@ export const ratio = {
 
 export const HYPHEN = '-';
 export const EMPTY_FALLBACK = 'Unassigned';
+export const EMPTY_STRING = '';
+export const INPUT_FOCUS_DELAY_TIME_IN_MS = 500;
 
 export const DEFAULT_DATE_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = {
   year: 'numeric',

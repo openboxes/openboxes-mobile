@@ -5,7 +5,7 @@ import { Alert, TextInput, View } from 'react-native';
 import { TextInput as PaperTextInput, Paragraph, Title } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
-import { appConfig } from '../../constants';
+import { appConfig, EMPTY_STRING, INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
 import { navigate } from '../../NavigationService';
 import { getSortationDetailsByBarcode } from '../../redux/actions/products';
 import { SortationTask } from '../../types/sortation';
@@ -21,7 +21,10 @@ export default function SortationEntryScreen() {
     if (!isFocused) {
       return;
     }
-    const t = setTimeout(() => inputRef.current?.focus(), 100);
+
+    setBarcode(EMPTY_STRING);
+
+    const t = setTimeout(() => inputRef.current?.focus(), INPUT_FOCUS_DELAY_TIME_IN_MS);
     return () => clearTimeout(t);
   }, [isFocused]);
 
@@ -29,7 +32,10 @@ export default function SortationEntryScreen() {
     (raw: string) => {
       const code = raw.trim();
       if (!code) {
-        Alert.alert('Empty Barcode', 'You must scan a barcode or enter a code manually to proceed.');
+        Alert.alert(
+          'Empty Barcode', 
+          'You must scan a barcode or enter a code manually to proceed.'
+        );
         return;
       }
 
@@ -40,7 +46,6 @@ export default function SortationEntryScreen() {
 
             const allowedStatuses = ['PENDING', 'IN_PROGRESS'];
             const filteredTasks = (tasks || []).filter((task: SortationTask) => allowedStatuses.includes(task.status));
-
             if (filteredTasks.length === 0) {
               Alert.alert(
                 'No Valid Tasks',
@@ -57,6 +62,7 @@ export default function SortationEntryScreen() {
               response?.errorMessage || 'Could not find a product with the scanned barcode.'
             );
           }
+          setBarcode(EMPTY_STRING);
         })
       );
     },
