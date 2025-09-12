@@ -33,35 +33,25 @@ export default function PutawayEntryScreen() {
       const containerId = rawContainerId.trim();
 
       if (!containerId) {
-        Alert.alert(
-          'Empty Container ID', 
-          'You must scan a container ID or enter a code manually to proceed.'
-        );
+        Alert.alert('Empty Container ID', 'You must scan a container ID or enter a code manually to proceed.');
         return;
       }
 
       dispatch(
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         getPutawayDetailsByContainerId(containerId, (response) => {
           if (response && !response.error) {
             const allTasks: SortationTask[] = response?.response?.data || [];
-            const filteredTasks = allTasks.filter(task => task.status === 'IN_TRANSIT');
+            const filteredTasks = allTasks.filter((task) => task.status === 'IN_TRANSIT');
             if (filteredTasks.length > 0) {
               navigate('SortationPutawayLocationScan', {
                 taskList: filteredTasks,
                 currentTaskIndex: 0
               });
             } else {
-              Alert.alert(
-                'No Valid Tasks Found',
-                `No IN_TRANSIT tasks found for container ${containerId}`
-              );
+              Alert.alert('No Valid Tasks Found', `No IN_TRANSIT tasks found for container ${containerId}`);
             }
           } else {
-            Alert.alert(
-              'Not found',
-              `Container ${containerId} not found`
-            );
+            Alert.alert('Not found', `Container ${containerId} not found`);
           }
           setPutawayContainerId(EMPTY_STRING);
         })

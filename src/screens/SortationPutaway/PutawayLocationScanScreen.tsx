@@ -16,7 +16,13 @@ import { EMPTY_STRING, INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
 // into a single reusable screen in the future.
 
 type PutawayLocationScanRouteProp = RouteProp<
-  { SortationPutawayLocationScan: { taskList: PutawayDetailsModel[]; currentTaskIndex: number; isDirectPutaway?: boolean } },
+  {
+    SortationPutawayLocationScan: {
+      taskList: PutawayDetailsModel[];
+      currentTaskIndex: number;
+      isDirectPutaway?: boolean;
+    };
+  },
   'SortationPutawayLocationScan'
 >;
 
@@ -56,14 +62,11 @@ export default function PutawayLocationScanScreen() {
 
   function handleSubmit() {
     if (!putawayLocationBarcode) {
-      Alert.alert(
-        'Invalid Location Barcode', 
-        'Please enter a valid putaway location barcode.'
-      );
+      Alert.alert('Invalid Location Barcode', 'Please enter a valid putaway location barcode.');
       return;
     }
 
-    const locationNumber = putawayDetails.destination?.locationNumber
+    const locationNumber = putawayDetails.destination?.locationNumber;
     if (putawayLocationBarcode !== locationNumber) {
       Alert.alert(
         'Invalid Location Barcode',

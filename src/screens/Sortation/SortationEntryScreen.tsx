@@ -32,10 +32,7 @@ export default function SortationEntryScreen() {
     (raw: string) => {
       const code = raw.trim();
       if (!code) {
-        Alert.alert(
-          'Empty Barcode', 
-          'You must scan a barcode or enter a code manually to proceed.'
-        );
+        Alert.alert('Empty Barcode', 'You must scan a barcode or enter a code manually to proceed.');
         return;
       }
 

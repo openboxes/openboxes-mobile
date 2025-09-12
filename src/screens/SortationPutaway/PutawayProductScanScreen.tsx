@@ -16,7 +16,13 @@ import { EMPTY_STRING, INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
 // into a single reusable screen in the future.
 
 type PutawayProductScanRouteProp = RouteProp<
-  { SortationPutawayProductScan: { taskList: PutawayDetailsModel[]; currentTaskIndex: number; isDirectPutaway: boolean } },
+  {
+    SortationPutawayProductScan: {
+      taskList: PutawayDetailsModel[];
+      currentTaskIndex: number;
+      isDirectPutaway: boolean;
+    };
+  },
   'SortationPutawayProductScan'
 >;
 
@@ -56,14 +62,11 @@ export default function PutawayProductScanScreen() {
 
   function handleSubmit() {
     if (!putawayProductBarcode) {
-      Alert.alert(
-        'Invalid Product Barcode', 
-        'Please enter a valid putaway product barcode.'
-      );
+      Alert.alert('Invalid Product Barcode', 'Please enter a valid putaway product barcode.');
       return;
     }
 
-    const productCode = putawayDetails.inventoryItem?.product?.productCode
+    const productCode = putawayDetails.inventoryItem?.product?.productCode;
     if (putawayProductBarcode !== productCode) {
       Alert.alert(
         'Invalid Product Barcode',

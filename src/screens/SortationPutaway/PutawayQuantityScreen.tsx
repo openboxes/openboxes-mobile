@@ -16,7 +16,9 @@ import { PutawayDetailsModel } from '../../types/sortation';
 import { INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
 
 type PutawayQuantityRouteProp = RouteProp<
-  { SortationPutawayQuantity: { taskList: PutawayDetailsModel[]; currentTaskIndex: number; isDirectPutaway?: boolean } },
+  {
+    SortationPutawayQuantity: { taskList: PutawayDetailsModel[]; currentTaskIndex: number; isDirectPutaway?: boolean };
+  },
   'SortationPutawayQuantity'
 >;
 
@@ -37,29 +39,26 @@ export default function PutawayQuantityScreen() {
   const currentLocation = useSelector((rootState: RootState) => rootState.mainReducer.currentLocation);
 
   const [putawayQuantity, setPutawayQuantity] = useState<number | undefined>();
-  const [isAlternativeLocationModalVisible, setIsAlternativeLocationModalVisible] = useState(false)
+  const [isAlternativeLocationModalVisible, setIsAlternativeLocationModalVisible] = useState(false);
   const [internalLocations, setInternalLocations] = useState<Location[]>([]);
-  const [selectedAlternativeDestination, setSelectedAlternativeDestination] = useState<Location | null>(putawayDetails.destination);
+  const [selectedAlternativeDestination, setSelectedAlternativeDestination] = useState<Location | null>(
+    putawayDetails.destination
+  );
 
   useEffect(() => {
     dispatch(
       searchInternalLocations('', { 'parentLocation.id': currentLocation?.id }, (data: any) => {
         if (data?.error) {
-          Alert.alert(
-            'Error', 
-            'Failed to load internal locations.'
-          );
+          Alert.alert('Error', 'Failed to load internal locations.');
           return;
         }
-        const internalLocations: Location[] = data.data.map((item: any) => ({
+        const mappedLocations: Location[] = data.data.map((item: any) => ({
           id: item.id,
           name: item.name,
           locationNumber: item.locationNumber
         }));
 
-        const filteredLocations = internalLocations.filter(
-          (location) => location.id !== putawayDetails.destination?.id
-        )
+        const filteredLocations = mappedLocations.filter((location) => location.id !== putawayDetails.destination?.id);
         setInternalLocations(filteredLocations);
       })
     );
@@ -93,10 +92,7 @@ export default function PutawayQuantityScreen() {
 
   function handleMainConfirm() {
     if (!putawayQuantity) {
-      Alert.alert(
-        'Invalid Putaway Quantity', 
-        'Please enter a valid putaway quantity.'
-      );
+      Alert.alert('Invalid Putaway Quantity', 'Please enter a valid putaway quantity.');
       return;
     }
 
@@ -126,10 +122,7 @@ export default function PutawayQuantityScreen() {
     dispatch(
       patchPutawayTaskAction(putawayDetails.facility.id, putawayDetails.id, payload, (response) => {
         if (response && !response.error) {
-          Alert.alert(
-            'Sortation Successful', 
-            'The product has been sorted successfully.'
-          );
+          Alert.alert('Sortation Successful', 'The product has been sorted successfully.');
           const nextTaskIndex = currentTaskIndex + 1;
           if (nextTaskIndex < taskList.length) {
             navigate('SortationPutawayLocationScan', {
@@ -138,17 +131,14 @@ export default function PutawayQuantityScreen() {
               isDirectPutaway
             });
           } else {
-            if (isDirectPutaway) {  
+            if (isDirectPutaway) {
               navigate('Sortation');
             } else {
               navigate('SortationPutaway');
             }
           }
         } else {
-          Alert.alert(
-            'Sortation Failed', 
-            response.errorMessage || 'Sortation Failed'
-          );
+          Alert.alert('Sortation Failed', response.errorMessage || 'Sortation Failed');
         }
       })
     );
@@ -165,11 +155,11 @@ export default function PutawayQuantityScreen() {
       setSelectedAlternativeDestination(location);
     }
 
-    setIsAlternativeLocationModalVisible(false)
+    setIsAlternativeLocationModalVisible(false);
   }
 
   function handlePartialPutaway() {
-    handleMainConfirm() // so far call the same logic as for main(full qty) confirm
+    handleMainConfirm(); // so far call the same logic as for main(full qty) confirm
   }
 
   const updatedPutawayDetails = {
@@ -215,35 +205,36 @@ export default function PutawayQuantityScreen() {
         </View>
       </View>
 
-      <Modal 
-        visible={isAlternativeLocationModalVisible} 
-        animationType="slide" 
+      <Modal
+        transparent
+        visible={isAlternativeLocationModalVisible}
+        animationType="slide"
         onRequestClose={() => setIsAlternativeLocationModalVisible(false)}
-        transparent={true} >
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalContent}>
-              <Subheading style={{ marginBottom: 15 }}>Select Alternative Location</Subheading>
-              <AsyncModalSelect
-                placeholder="Search for internal location"
-                label="Search for internal location"
-                initValue={
-                  selectedAlternativeDestination?.id !== putawayDetails.destination?.id
-                    ? selectedAlternativeDestination?.name || ''
-                    : ''
-                }
-                initialData={internalLocations}
-                searchAction={searchInternalLocations}
-                searchActionParams={{ 'parentLocation.id': currentLocation.id }}
-                onSelect={handleLocationSelect}
-              />
-              <Button 
-                style={styles.secondaryButton} 
-                size="50%" 
-                title="Close" 
-                onPress={() => setIsAlternativeLocationModalVisible(false)}
-              />
-            </View>
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Subheading style={styles.bottomSpace}>Select Alternative Location</Subheading>
+            <AsyncModalSelect
+              placeholder="Search for internal location"
+              label="Search for internal location"
+              initValue={
+                selectedAlternativeDestination?.id !== putawayDetails.destination?.id
+                  ? selectedAlternativeDestination?.name || ''
+                  : ''
+              }
+              initialData={internalLocations}
+              searchAction={searchInternalLocations}
+              searchActionParams={{ 'parentLocation.id': currentLocation.id }}
+              onSelect={handleLocationSelect}
+            />
+            <Button
+              style={styles.secondaryButton}
+              size="50%"
+              title="Close"
+              onPress={() => setIsAlternativeLocationModalVisible(false)}
+            />
           </View>
+        </View>
       </Modal>
     </View>
   );

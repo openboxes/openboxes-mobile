@@ -34,8 +34,8 @@ export default function SortationQuantityScreen() {
   useEffect(() => {
     if (directPutawayRequired) {
       navigate('SortationPutawayLocationScan', {
-        taskList: [task], 
-        currentTaskIndex: 0, 
+        taskList: [task],
+        currentTaskIndex: 0,
         isDirectPutaway: true
       });
     }
@@ -69,10 +69,7 @@ export default function SortationQuantityScreen() {
           if (response && !response.error) {
             startedTaskIds.add(task.id);
           } else {
-            Alert.alert(
-              'Error', 
-              response?.errorMessage || 'An error occurred while starting the task.'
-            );
+            Alert.alert('Error', response?.errorMessage || 'An error occurred while starting the task.');
           }
         })
       );
@@ -99,18 +96,12 @@ export default function SortationQuantityScreen() {
 
   function handleSubmit() {
     if (!quantitySorted || quantitySorted <= 0) {
-      Alert.alert(
-        'Invalid Quantity', 
-        'Please enter a valid quantity greater than zero.'
-      );
+      Alert.alert('Invalid Quantity', 'Please enter a valid quantity greater than zero.');
       return;
     }
 
     if (quantitySorted > task.quantity) {
-      Alert.alert(
-        'Invalid Quantity', 
-        'Quantity to sort can not be greater than quantity in total'
-      );
+      Alert.alert('Invalid Quantity', 'Quantity to sort can not be greater than quantity in total');
       return;
     }
 

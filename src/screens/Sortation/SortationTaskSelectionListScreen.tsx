@@ -21,18 +21,12 @@ export default function SortationTaskSelectionListScreen() {
 
   const onContinue = () => {
     if (!selectedTask) {
-      Alert.alert(
-        'Validation Error', 
-        'Please select a task to continue.'
-      );
+      Alert.alert('Validation Error', 'Please select a task to continue.');
       return;
     }
 
     if (!selectedTask.destination?.id) {
-      Alert.alert(
-        'Validation Error', 
-        'Selected task does not have a valid destination location.'
-      );
+      Alert.alert('Validation Error', 'Selected task does not have a valid destination location.');
       return;
     }
 

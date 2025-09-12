@@ -65,10 +65,7 @@ export default function SortationContainerScreen() {
 
   function handleSubmit() {
     if (!putawayContainerBarcode) {
-      Alert.alert(
-        'Empty Barcode', 
-        'You must scan a putaway container barcode to proceed.'
-      );
+      Alert.alert('Empty Barcode', 'You must scan a putaway container barcode to proceed.');
       return;
     }
 
@@ -93,16 +90,10 @@ export default function SortationContainerScreen() {
     dispatch(
       patchPutawayTaskAction(task.facility.id, task.id, payload, (response) => {
         if (response && !response.error) {
-          Alert.alert(
-            'Sortation Successful', 
-            'The product has been sorted successfully.'
-          );
+          Alert.alert('Sortation Successful', 'The product has been sorted successfully.');
           navigate('Sortation');
         } else {
-          Alert.alert(
-            'Sortation Failed', 
-            response.errorMessage || 'Sortation Failed'
-          );
+          Alert.alert('Sortation Failed', response.errorMessage || 'Sortation Failed');
           setPutawayContainerBarcode(EMPTY_STRING);
         }
       })
