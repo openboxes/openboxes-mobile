@@ -14,6 +14,7 @@ export interface OwnProps {
   keyboard?: any;
   editable?: boolean;
   onEndEdit?: (text: string) => void;
+  serverSearchEnabled?: boolean;
 }
 
 export type Props = OwnProps;

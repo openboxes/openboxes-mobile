@@ -9,8 +9,9 @@ import inbound from './inbound'
 import lpn from './lpn'
 import transfers from './transfers';
 import packing from './packing'
+import others from './others';
 
 export default function* root() {
-    const sagas = [auth, products, locations, orders, putaway, transfer, transfers, inbound, packing, lpn];
+    const sagas = [auth, products, locations, orders, putaway, transfer, transfers, inbound, packing, lpn, others];
     yield all(sagas.map(fork));
 }

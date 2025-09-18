@@ -72,19 +72,27 @@ export default StyleSheet.create({
   },
   modalOverlay: {
     flex: 1,
-    justifyContent: 'center', // Wyśrodkuj w pionie
-    alignItems: 'center',     // Wyśrodkuj w poziomie
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Ciemne, półprzezroczyste tło
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)'
   },
   modalContent: {
-    width: '90%', // Okienko zajmie 90% szerokości ekranu
+    width: '90%',
     backgroundColor: 'white',
     padding: 20,
     borderRadius: 10,
-    elevation: 5, // Dodaje cień na Androidzie
-    shadowColor: '#000', // Dodaje cień na iOS
+    elevation: 5,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    shadowRadius: 3.84
   },
+  dropdownContainer: {
+    width: '50%',
+    alignSelf: 'flex-end'
+  },
+  bottomActionContainer: {
+    padding: Theme.spacing.large,
+    borderTopColor: Theme.colors.disabled
+  }
 });

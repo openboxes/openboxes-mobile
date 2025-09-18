@@ -1,15 +1,16 @@
 import { RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
 import React, { useEffect, useRef, useState } from 'react';
-import { Alert, Modal, ScrollView, TextInput, View } from 'react-native';
+import { Alert, ScrollView, TextInput, View } from 'react-native';
 import { Divider, TextInput as PaperTextInput, Paragraph, Subheading } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 import AsyncModalSelect from '../../components/AsyncModalSelect';
 import Button from '../../components/Button';
 import EmptyView from '../../components/EmptyView';
 import { INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
-import { navigate } from '../../NavigationService';
+import { navigate, replace } from '../../NavigationService';
 import { searchInternalLocations } from '../../redux/actions/locations';
 import { patchPutawayTaskAction } from '../../redux/actions/putaways';
+import { getReasonCodesAction } from '../../redux/actions/others';
 import { RootState } from '../../redux/reducers';
 import { PutawayDetailsModel } from '../../types/sortation';
 import PutawayDetails from './PutawayDetails';
@@ -28,6 +29,11 @@ type Location = {
   locationNumber?: string;
 };
 
+type ReasonCode = {
+  id: string;
+  name: string;
+};
+
 export default function PutawayQuantityScreen() {
   const { params } = useRoute<PutawayQuantityRouteProp>();
   const { taskList, currentTaskIndex, isDirectPutaway } = params;
@@ -39,11 +45,24 @@ export default function PutawayQuantityScreen() {
   const currentLocation = useSelector((rootState: RootState) => rootState.mainReducer.currentLocation);
 
   const [putawayQuantity, setPutawayQuantity] = useState<number | undefined>();
-  const [isAlternativeLocationModalVisible, setIsAlternativeLocationModalVisible] = useState(false);
   const [internalLocations, setInternalLocations] = useState<Location[]>([]);
   const [selectedAlternativeDestination, setSelectedAlternativeDestination] = useState<Location | null>(
     putawayDetails.destination
   );
+  const [reasonCodes, setReasonCodes] = useState<ReasonCode[]>([]);
+  const [selectedReasonCode, setSelectedReasonCode] = useState<ReasonCode | null>(null);
+
+  useEffect(() => {
+    dispatch(
+      getReasonCodesAction('ADJUST_INVENTORY', (data: any) => {
+        if (data?.error) {
+          Alert.alert('Error', 'Failed to load reason codes.');
+        } else {
+          setReasonCodes(data);
+        }
+      })
+    );
+  }, [dispatch]);
 
   useEffect(() => {
     dispatch(
@@ -90,7 +109,38 @@ export default function PutawayQuantityScreen() {
     setPutawayQuantity(num);
   }
 
-  function handleMainConfirm() {
+  function handleConfirm() {
+    if (selectedReasonCode?.id) {
+      const payload = {
+        action: 'shortage',
+        reasonCode: selectedReasonCode.id
+      };
+      dispatch(
+        patchPutawayTaskAction(putawayDetails.facility.id, putawayDetails.id, payload, (response) => {
+          if (response && !response.error) {
+            Alert.alert('Sortation Successful', 'The product has been sorted successfully.');
+            const nextTaskIndex = currentTaskIndex + 1;
+            if (nextTaskIndex < taskList.length) {
+              navigate('SortationPutawayLocationScan', {
+                taskList,
+                currentTaskIndex: nextTaskIndex,
+                isDirectPutaway
+              });
+            } else {
+              if (isDirectPutaway) {
+                navigate('Sortation');
+              } else {
+                navigate('SortationPutaway');
+              }
+            }
+          } else {
+            Alert.alert('Shortage Report Failed', response.errorMessage || 'Failed to report shortage.');
+          }
+        })
+      );
+      return;
+    }
+
     if (!putawayQuantity) {
       Alert.alert('Invalid Putaway Quantity', 'Please enter a valid putaway quantity.');
       return;
@@ -104,62 +154,72 @@ export default function PutawayQuantityScreen() {
       return;
     }
 
-    if (putawayQuantity !== putawayDetails.quantity) {
-      Alert.alert(
-        'Confirm Partial Putaway',
-        `Entered quantity (${putawayQuantity}) does not match expected quantity (${putawayDetails.quantity}). If you want to proceed with the partial putaway, please use the "Partial Putaway" confirmation.`
-      );
-      return;
-    }
-
     const isAlternativeLocationSelected = selectedAlternativeDestination?.id !== putawayDetails.destination?.id;
-    const payload = {
-      action: 'complete',
-      destination: selectedAlternativeDestination?.id,
-      force: isAlternativeLocationSelected
-    };
-
-    dispatch(
-      patchPutawayTaskAction(putawayDetails.facility.id, putawayDetails.id, payload, (response) => {
-        if (response && !response.error) {
-          Alert.alert('Sortation Successful', 'The product has been sorted successfully.');
-          const nextTaskIndex = currentTaskIndex + 1;
-          if (nextTaskIndex < taskList.length) {
-            navigate('SortationPutawayLocationScan', {
-              taskList,
-              currentTaskIndex: nextTaskIndex,
+    if (putawayQuantity === putawayDetails.quantity) {
+      const payload = {
+        action: 'complete',
+        destination: selectedAlternativeDestination?.id,
+        force: isAlternativeLocationSelected
+      };
+      dispatch(
+        patchPutawayTaskAction(putawayDetails.facility.id, putawayDetails.id, payload, (response) => {
+          if (response && !response.error) {
+            Alert.alert('Sortation Successful', 'The product has been sorted successfully.');
+            const nextTaskIndex = currentTaskIndex + 1;
+            if (nextTaskIndex < taskList.length) {
+              navigate('SortationPutawayLocationScan', {
+                taskList,
+                currentTaskIndex: nextTaskIndex,
+                isDirectPutaway
+              });
+            } else {
+              if (isDirectPutaway) {
+                navigate('Sortation');
+              } else {
+                navigate('SortationPutaway');
+              }
+            }
+          } else {
+            Alert.alert('Sortation Failed', response.errorMessage || 'Sortation Failed');
+          }
+        })
+      );
+    } else if (putawayQuantity > 0 && putawayQuantity < putawayDetails.quantity && !selectedReasonCode?.id) {
+      const payload = {
+        action: 'partialComplete',
+        quantity: putawayQuantity,
+        destination: selectedAlternativeDestination?.id,
+        force: isAlternativeLocationSelected
+      };
+      dispatch(
+        patchPutawayTaskAction(putawayDetails.facility.id, putawayDetails.id, payload, (response) => {
+          if (response && !response.error && response.data) {
+            const remainingTask = response.data;
+            replace('SortationPutawayQuantity', {
+              taskList: [remainingTask],
+              currentTaskIndex: 0,
               isDirectPutaway
             });
           } else {
-            if (isDirectPutaway) {
-              navigate('Sortation');
-            } else {
-              navigate('SortationPutaway');
-            }
+            Alert.alert('Partial Putaway Failed', response.errorMessage || 'Partial putaway operation failed');
           }
-        } else {
-          Alert.alert('Sortation Failed', response.errorMessage || 'Sortation Failed');
-        }
-      })
-    );
+        })
+      );
+    } else {
+      Alert.alert('Unknown error', 'Something went wrong, please try again.');
+    }
   }
 
   function handleAlternativeLocation() {
-    setIsAlternativeLocationModalVisible(true);
-  }
-
-  function handleLocationSelect(location: Location) {
-    if (!location || !location.id) {
-      setSelectedAlternativeDestination(putawayDetails.destination);
-    } else {
-      setSelectedAlternativeDestination(location);
+    if (internalLocations.length === 0) {
+      Alert.alert('No Alternatives', 'No alternative locations are available');
+      return;
     }
 
-    setIsAlternativeLocationModalVisible(false);
-  }
+    const randomIndex = Math.floor(Math.random() * internalLocations.length);
+    const randomLocation = internalLocations[randomIndex];
 
-  function handlePartialPutaway() {
-    handleMainConfirm(); // so far call the same logic as for main(full qty) confirm
+    setSelectedAlternativeDestination(randomLocation);
   }
 
   const updatedPutawayDetails = {
@@ -170,12 +230,10 @@ export default function PutawayQuantityScreen() {
   return (
     <ScrollView style={styles.contentContainer}>
       <PutawayDetails putawayDetails={updatedPutawayDetails} />
-
       <Divider />
 
       <View style={styles.formContainer}>
         <Subheading style={styles.subheading}>Enter Putaway Quantity</Subheading>
-
         <PaperTextInput
           ref={inputRef}
           autoCompleteType="off"
@@ -188,54 +246,34 @@ export default function PutawayQuantityScreen() {
           onChangeText={handleChange}
         />
 
-        <Button style={styles.topSpace} title="Confirm" mode="contained" size="100%" onPress={handleMainConfirm}>
+        <View style={styles.topSpace}>
+          <View style={[styles.headerRow, styles.bottomSpace]}>
+            <Paragraph style={styles.paragraph}>Alternative Location?</Paragraph>
+            <Button style={styles.secondaryButton} size="50%" title="Request" onPress={handleAlternativeLocation} />
+          </View>
+
+          <View style={styles.headerRow}>
+            <Paragraph style={styles.paragraph}>Partial Shortage?</Paragraph>
+            <View style={styles.dropdownContainer}>
+              <AsyncModalSelect
+                placeholder="Select a reason"
+                label="Reason for shortage"
+                initValue={selectedReasonCode?.name || ''}
+                initialData={reasonCodes}
+                searchAction={() => {}}
+                serverSearchEnabled={false}
+                onSelect={(reason: ReasonCode) => setSelectedReasonCode(reason)}
+              />
+            </View>
+          </View>
+        </View>
+      </View>
+
+      <View style={styles.bottomActionContainer}>
+        <Button style={styles.topSpace} title="Confirm" mode="contained" size="100%" onPress={handleConfirm}>
           Submit
         </Button>
       </View>
-
-      <View style={styles.formContainer}>
-        <View style={[styles.headerRow, styles.bottomSpace]}>
-          <Paragraph style={styles.paragraph}>Alternative Location?</Paragraph>
-          <Button style={styles.secondaryButton} size="50%" title="Request" onPress={handleAlternativeLocation} />
-        </View>
-
-        <View style={styles.headerRow}>
-          <Paragraph style={styles.paragraph}>Partial Putaway?</Paragraph>
-          <Button style={styles.secondaryButton} size="50%" title="Confirm" onPress={handlePartialPutaway} />
-        </View>
-      </View>
-
-      <Modal
-        transparent
-        visible={isAlternativeLocationModalVisible}
-        animationType="slide"
-        onRequestClose={() => setIsAlternativeLocationModalVisible(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Subheading style={styles.bottomSpace}>Select Alternative Location</Subheading>
-            <AsyncModalSelect
-              placeholder="Search for internal location"
-              label="Search for internal location"
-              initValue={
-                selectedAlternativeDestination?.id !== putawayDetails.destination?.id
-                  ? selectedAlternativeDestination?.name || ''
-                  : ''
-              }
-              initialData={internalLocations}
-              searchAction={searchInternalLocations}
-              searchActionParams={{ 'parentLocation.id': currentLocation.id }}
-              onSelect={handleLocationSelect}
-            />
-            <Button
-              style={styles.secondaryButton}
-              size="50%"
-              title="Close"
-              onPress={() => setIsAlternativeLocationModalVisible(false)}
-            />
-          </View>
-        </View>
-      </Modal>
     </ScrollView>
   );
 }

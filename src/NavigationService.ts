@@ -1,5 +1,5 @@
 import React from 'react';
-import { CommonActions, NavigationContainerRef } from '@react-navigation/native';
+import { CommonActions, NavigationContainerRef, StackActions } from '@react-navigation/native';
 
 type RootStackParamList = {
   Login: undefined;
@@ -22,6 +22,11 @@ export function reset(routeName: string) {
     })
   );
 }
+
 export function goBack() {
   navigationRef.current?.dispatch(CommonActions.goBack());
+}
+
+export function replace(name: string, params?: any) {
+  navigationRef.current?.dispatch(StackActions.replace(name, params));
 }

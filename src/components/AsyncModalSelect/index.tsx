@@ -16,7 +16,8 @@ const AsyncModalSelect = ({
   initValue = '',
   searchAction,
   searchActionParams,
-  placeholder
+  placeholder,
+  serverSearchEnabled = true
 }: Props) => {
   const [label, setLabel] = useState(initValue);
   const [data, setData] = useState<any[]>([]);
@@ -77,8 +78,15 @@ const AsyncModalSelect = ({
           setLabel(option.label);
           onSelect?.({ id: option.key, name: option.label });
         }}
-        onSearchFilterer={(searchText, unfilteredData) => unfilteredData}
-        onChangeSearch={debounceOnSearchTerm}
+        onSearchFilterer={
+          serverSearchEnabled
+            ? (searchText, unfilteredData) => unfilteredData
+            : (searchText, unfilteredData) =>
+                unfilteredData.filter((item) =>
+                  (item.label || '').toLowerCase().includes((searchText || '').toLowerCase())
+                )
+        }
+        onChangeSearch={serverSearchEnabled ? debounceOnSearchTerm : undefined}
       >
         <TextInput style={styles.textInput} editable={false} placeholder={placeholder || ''} value={label} />
       </ModalSelector>
