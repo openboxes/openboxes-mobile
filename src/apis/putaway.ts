@@ -28,5 +28,5 @@ export function patchPutawayTask(facilityId: string, putawayItemId: string, payl
 }
 
 export function getPutawayDetails(facilityId: string, containerId: string) {
-  return apiClient.get(`/facilities/${facilityId}/putaway-tasks?statusCategory=OPEN&container=${containerId}`)
+  return apiClient.get(`/facilities/${facilityId}/putaway-tasks?statusCategory=OPEN&container=${containerId}`);
 }

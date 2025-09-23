@@ -54,7 +54,7 @@ export default function PutawayQuantityScreen() {
 
   useEffect(() => {
     dispatch(
-      getReasonCodesAction('ADJUST_INVENTORY', (data: any) => {
+      getReasonCodesAction('PUTAWAY_DISCREPANCY', (data: any) => {
         if (data?.error) {
           Alert.alert('Error', 'Failed to load reason codes.');
         } else {
@@ -110,39 +110,8 @@ export default function PutawayQuantityScreen() {
   }
 
   function handleConfirm() {
-    if (selectedReasonCode?.id) {
-      const payload = {
-        action: 'shortage',
-        reasonCode: selectedReasonCode.id
-      };
-      dispatch(
-        patchPutawayTaskAction(putawayDetails.facility.id, putawayDetails.id, payload, (response) => {
-          if (response && !response.error) {
-            Alert.alert('Sortation Successful', 'The product has been sorted successfully.');
-            const nextTaskIndex = currentTaskIndex + 1;
-            if (nextTaskIndex < taskList.length) {
-              navigate('SortationPutawayLocationScan', {
-                taskList,
-                currentTaskIndex: nextTaskIndex,
-                isDirectPutaway
-              });
-            } else {
-              if (isDirectPutaway) {
-                navigate('Sortation');
-              } else {
-                navigate('SortationPutaway');
-              }
-            }
-          } else {
-            Alert.alert('Shortage Report Failed', response.errorMessage || 'Failed to report shortage.');
-          }
-        })
-      );
-      return;
-    }
-
     if (!putawayQuantity) {
-      Alert.alert('Invalid Putaway Quantity', 'Please enter a valid putaway quantity.');
+      Alert.alert('Invalid Putaway Quantity', 'Quantity is required.');
       return;
     }
 
@@ -184,13 +153,18 @@ export default function PutawayQuantityScreen() {
           }
         })
       );
-    } else if (putawayQuantity > 0 && putawayQuantity < putawayDetails.quantity && !selectedReasonCode?.id) {
+    } else {
       const payload = {
         action: 'partialComplete',
         quantity: putawayQuantity,
         destination: selectedAlternativeDestination?.id,
-        force: isAlternativeLocationSelected
+        force: isAlternativeLocationSelected,
+        reasonCode: selectedReasonCode?.id ? selectedReasonCode.id : null
       };
+      if (!selectedReasonCode?.id) {
+        Alert.alert('Discrepancy Reason Required', 'Please select a discrepancy reason for a partial putaway.');
+        return;
+      }
       dispatch(
         patchPutawayTaskAction(putawayDetails.facility.id, putawayDetails.id, payload, (response) => {
           if (response && !response.error && response.data) {
@@ -205,8 +179,6 @@ export default function PutawayQuantityScreen() {
           }
         })
       );
-    } else {
-      Alert.alert('Unknown error', 'Something went wrong, please try again.');
     }
   }
 
@@ -253,7 +225,7 @@ export default function PutawayQuantityScreen() {
           </View>
 
           <View style={styles.headerRow}>
-            <Paragraph style={styles.paragraph}>Partial Shortage?</Paragraph>
+            <Paragraph style={styles.paragraph}>Discrepancy Reason</Paragraph>
             <View style={styles.dropdownContainer}>
               <AsyncModalSelect
                 placeholder="Select a reason"
