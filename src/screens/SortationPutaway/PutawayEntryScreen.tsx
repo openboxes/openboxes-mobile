@@ -41,7 +41,7 @@ export default function PutawayEntryScreen() {
         getPutawayDetailsByContainerId(containerId, (response) => {
           if (response && !response.error) {
             const allTasks: SortationTask[] = response?.response?.data || [];
-            const filteredTasks = allTasks.filter((task) => task.status === 'IN_PROGRESS');
+            const filteredTasks = allTasks.filter((task) => task.status === 'IN_PROGRESS' || task.status === 'PENDING');
             if (filteredTasks.length > 0) {
               navigate('SortationPutawayLocationScan', {
                 taskList: filteredTasks,
