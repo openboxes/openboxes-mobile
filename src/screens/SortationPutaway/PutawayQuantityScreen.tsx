@@ -119,7 +119,7 @@ export default function PutawayQuantityScreen() {
       dispatch(
         patchPutawayTaskAction(putawayDetails.facility.id, putawayDetails.id, payload, (response) => {
           if (response && !response.error) {
-            Alert.alert('Sortation Successful', 'The product has been sorted successfully.');
+            Alert.alert('Putaway Successful', 'The putaway was successful.');
             const nextTaskIndex = currentTaskIndex + 1;
             if (nextTaskIndex < taskList.length) {
               navigate('SortationPutawayLocationScan', {
@@ -135,7 +135,7 @@ export default function PutawayQuantityScreen() {
               }
             }
           } else {
-            Alert.alert('Sortation Failed', response.errorMessage || 'Sortation Failed');
+            Alert.alert('Putaway Failed', response.errorMessage || 'Putaway Failed');
           }
         })
       );
@@ -204,17 +204,12 @@ export default function PutawayQuantityScreen() {
 
           <View style={styles.topSpace}>
             <View style={[styles.headerRow, styles.bottomSpace]}>
-              <Paragraph style={styles.paragraph}>Alternative Location?</Paragraph>
-              <Button
-                style={styles.secondaryButton}
-                size="50%"
-                title="Request"
-                onPress={() => setIsDialogVisible(true)}
-              />
+              <Paragraph style={styles.subheading}>Alternative Location?</Paragraph>
+              <Button size="50%" title="Request" onPress={() => setIsDialogVisible(true)} />
             </View>
 
             <View style={styles.headerRow}>
-              <Paragraph style={styles.paragraph}>Discrepancy Reason</Paragraph>
+              <Paragraph style={styles.subheading}>Discrepancy Reason</Paragraph>
               <View style={styles.dropdownContainer}>
                 <AsyncModalSelect
                   placeholder="Select a reason"
@@ -230,7 +225,7 @@ export default function PutawayQuantityScreen() {
           </View>
 
           <View style={styles.cardAnnotation}>
-            <Paragraph style={[styles.paragraph]}>Cancel Remaining</Paragraph>
+            <Paragraph style={[styles.subheading]}>Cancel Remaining</Paragraph>
             <Switch
               value={isCancelRemainingEnabled}
               color={Theme.colors.primary}

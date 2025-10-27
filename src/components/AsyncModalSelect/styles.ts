@@ -5,31 +5,11 @@ export default StyleSheet.create({
   mainContainer: {
     marginVertical: 5
   },
-  itemContainer: {
-    flex: 1,
-    marginTop: 5,
-    height: 25,
-    borderColor: 'grey'
-  },
-  autoCompleteContainer: {
-    borderWidth: 2,
-    borderRadius: 4,
-    flexDirection: 'row',
-    backgroundColor: 'white',
-    borderColor: 'grey',
-    justifyContent: 'center',
-    paddingHorizontal: 10
-  },
-  autoCompleteInputContainer: {
-    borderWidth: 1
-  },
-  clearButton: {
-    width: 25,
-    height: 25,
-    margin: 5
-  },
   container: {
     backgroundColor: 'white'
+  },
+  inputContainer: {
+    position: 'relative'
   },
   option: {
     color: 'black'
@@ -37,21 +17,26 @@ export default StyleSheet.create({
   textInput: {
     borderWidth: 1,
     borderColor: 'grey',
-    padding: Theme.spacing.medium,
-    height: 55,
+    paddingVertical: Theme.spacing.medium,
+    paddingLeft: Theme.spacing.medium,
+    paddingRight: 40,
+    minHeight: 55,
     borderRadius: Theme.roundness,
     marginBottom: Theme.spacing.small,
-    color: 'black'
+    color: 'black',
+    textAlignVertical: 'top'
   },
-  imageIcon: {
+  imageIconContainer: {
     position: 'absolute',
-    end: Theme.spacing.medium,
-    width: 30,
-    height: 30,
-    bottom: 20,
-    padding: 10,
+    top: '50%',
+    right: Theme.spacing.small,
+    transform: [{ translateY: -18 }],
     justifyContent: 'center',
     alignItems: 'center',
-    zIndex: 100
+    zIndex: 10
+  },
+  imageIcon: {
+    width: 30,
+    height: 30
   }
 });

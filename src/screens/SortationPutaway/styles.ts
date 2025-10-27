@@ -74,9 +74,6 @@ export default StyleSheet.create({
     flexDirection: 'column',
     padding: Theme.spacing.large
   },
-  secondaryButton: {
-    height: 35
-  },
   modalOverlay: {
     flex: 1,
     justifyContent: 'center',

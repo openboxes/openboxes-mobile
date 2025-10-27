@@ -60,41 +60,52 @@ const AsyncModalSelect = ({
 
   return (
     <View style={styles.mainContainer}>
-      <ModalSelector
-        accessible
-        initValue=""
-        cancelText="Cancel"
-        supportedOrientations={['landscape']}
-        optionContainerStyle={styles.container}
-        optionTextStyle={styles.option}
-        scrollViewAccessibilityLabel={'Scrollable options'}
-        data={data.map((item) => ({
-          key: item.key || item.id,
-          label: item.label || item.name
-        }))}
-        cancelButtonAccessibilityLabel={'Cancel Button'}
-        searchText="Search for more options..."
-        onChange={(option: { label: React.SetStateAction<string>; key: any }) => {
-          setLabel(option.label);
-          onSelect?.({ id: option.key, name: option.label });
-        }}
-        onSearchFilterer={
-          serverSearchEnabled
-            ? (searchText, unfilteredData) => unfilteredData
-            : (searchText, unfilteredData) =>
-                unfilteredData.filter((item) =>
-                  (item.label || '').toLowerCase().includes((searchText || '').toLowerCase())
-                )
-        }
-        onChangeSearch={serverSearchEnabled ? debounceOnSearchTerm : undefined}
-      >
-        <TextInput style={styles.textInput} editable={false} placeholder={placeholder || ''} value={label} />
-      </ModalSelector>
-      {label ? (
-        <TouchableOpacity onPress={clearSelection}>
-          <Image source={CLEAR} style={styles.imageIcon} />
-        </TouchableOpacity>
-      ) : null}
+      <View style={styles.inputContainer}>
+        <ModalSelector
+          accessible
+          initValue=""
+          cancelText="Cancel"
+          supportedOrientations={['landscape']}
+          optionContainerStyle={styles.container}
+          optionTextStyle={styles.option}
+          scrollViewAccessibilityLabel="Scrollable options"
+          data={data.map((item) => ({
+            key: item.key || item.id,
+            label: item.label || item.name
+          }))}
+          cancelButtonAccessibilityLabel="Cancel Button"
+          searchText="Search for more options..."
+          renderItem={() => null}
+          onChange={(option: { label: string; key: any }) => {
+            setLabel(option.label);
+            onSelect?.({ id: option.key, name: option.label });
+          }}
+          onSearchFilterer={
+            serverSearchEnabled
+              ? (searchText, unfilteredData) => unfilteredData
+              : (searchText, unfilteredData) =>
+                  unfilteredData.filter((item) =>
+                    (item.label || '').toLowerCase().includes((searchText || '').toLowerCase())
+                  )
+          }
+          onChangeSearch={serverSearchEnabled ? debounceOnSearchTerm : undefined}
+        >
+          <TextInput
+            multiline
+            style={styles.textInput}
+            editable={false}
+            textAlignVertical="center"
+            placeholder={placeholder || ''}
+            value={label}
+          />
+        </ModalSelector>
+
+        {label ? (
+          <TouchableOpacity style={styles.imageIconContainer} onPress={clearSelection}>
+            <Image source={CLEAR} style={styles.imageIcon} />
+          </TouchableOpacity>
+        ) : null}
+      </View>
     </View>
   );
 };

@@ -120,13 +120,8 @@ export default function PutawayLocationScanScreen() {
 
           <View style={styles.topSpace}>
             <View style={[styles.headerRow, styles.bottomSpace]}>
-              <Paragraph style={styles.paragraph}>Alternative Location?</Paragraph>
-              <Button
-                style={styles.secondaryButton}
-                size="50%"
-                title="Request"
-                onPress={() => setIsDialogVisible(true)}
-              />
+              <Paragraph style={styles.subheading}>Alternative Location?</Paragraph>
+              <Button size="50%" title="Request" onPress={() => setIsDialogVisible(true)} />
             </View>
           </View>
 
