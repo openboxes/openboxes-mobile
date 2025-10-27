@@ -78,18 +78,15 @@ export default StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    width: '100%',
+    height: '100%',
     backgroundColor: 'rgba(0, 0, 0, 0.5)'
   },
   modalContent: {
     width: '90%',
     backgroundColor: 'white',
-    padding: 20,
-    borderRadius: 10,
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84
+    padding: Theme.spacing.large,
+    borderRadius: Theme.roundness * 2
   },
   dropdownContainer: {
     width: '50%',
@@ -105,15 +102,14 @@ export default StyleSheet.create({
     alignItems: 'center'
   },
   dialogActions: {
-    justifyContent: 'space-between'
+    flexDirection: 'row',
+    justifyContent: 'flex-end'
   },
   dialogNewLocationHeader: {
-    marginTop: 16,
+    marginBottom: Theme.spacing.large,
+    marginTop: Theme.spacing.small,
     fontWeight: 'bold',
-    fontSize: 20
-  },
-  dialogScanLocationInput: {
-    marginTop: 16
+    fontSize: 16
   },
   dialogCurrentLocationLabel: {
     fontWeight: 'bold',
@@ -123,10 +119,42 @@ export default StyleSheet.create({
     marginBottom: 16,
     fontWeight: 'bold'
   },
-  dialogCloseButton: {
+  modalSurface: {
+    width: '90%',
+    borderRadius: 8,
+    padding: 16,
+    elevation: 4,
+    backgroundColor: 'white'
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8
+  },
+  modalContainer: {
     position: 'absolute',
-    right: 5,
-    top: 5,
-    zIndex: 1
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  modalTitleText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: Theme.colors.text,
+    flexShrink: 1
+  },
+  dialogSuggestButton: {
+    marginBottom: Theme.spacing.large,
+    marginTop: Theme.spacing.medium
+  },
+  dialogActionButton: {
+    marginLeft: Theme.spacing.small
   }
 });

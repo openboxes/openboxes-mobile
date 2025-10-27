@@ -1,20 +1,21 @@
 import { RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
 import React, { useEffect, useRef, useState } from 'react';
 import { Alert, ScrollView, TextInput, View } from 'react-native';
-import { Divider, Paragraph, Portal, Subheading, Switch, TextInput as PaperTextInput } from 'react-native-paper';
+import { Divider, TextInput as PaperTextInput, Paragraph, Portal, Subheading, Switch } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
+
 import AsyncModalSelect from '../../components/AsyncModalSelect';
 import Button from '../../components/Button';
 import EmptyView from '../../components/EmptyView';
 import { INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
 import { navigate, replace } from '../../NavigationService';
-import { patchPutawayTaskAction } from '../../redux/actions/putaways';
 import { getReasonCodesAction } from '../../redux/actions/others';
+import { patchPutawayTaskAction } from '../../redux/actions/putaways';
 import { PutawayDetailsModel, SortationLocation } from '../../types/sortation';
+import Theme from '../../utils/Theme';
+import AlternativeLocationSelector from './AlternativeLocationSelector';
 import PutawayDetails from './PutawayDetails';
 import styles from './styles';
-import Theme from '../../utils/Theme';
-import AlternativeLocationSelector from '../../components/AlternativeLocationSelector';
 
 type PutawayQuantityRouteProp = RouteProp<
   {

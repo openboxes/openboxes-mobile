@@ -8,10 +8,10 @@ import EmptyView from '../../components/EmptyView';
 import { EMPTY_STRING, INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
 import { navigate } from '../../NavigationService';
 import { SortationLocation, SortationPutawayScreenType } from '../../types/sortation';
+import AlternativeLocationSelector from './AlternativeLocationSelector';
 import PutawayDetails from './PutawayDetails';
 import { SkipButton } from './SkipButton';
 import styles from './styles';
-import AlternativeLocationSelector from '../../components/AlternativeLocationSelector';
 
 type PutawayLocationScanRouteProp = RouteProp<
   {

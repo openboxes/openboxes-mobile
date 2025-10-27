@@ -1,20 +1,14 @@
 import { debounce } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Alert } from 'react-native';
-import {
-  Button as PaperButton,
-  Dialog,
-  IconButton,
-  Paragraph,
-  Portal,
-  Subheading,
-  TextInput as PaperTextInput
-} from 'react-native-paper';
+import { Alert, Modal, View } from 'react-native';
+import { Paragraph, Subheading, TextInput } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
-import styles from '../screens/SortationPutaway/styles';
-import { getAlternativeDestinationsAction, searchLocationByLocationNumber } from '../redux/actions/locations';
-import { appConfig } from '../constants';
-import { PutawayDetailsModel, SortationLocation } from '../types/sortation';
+
+import { appConfig } from '../../constants';
+import { getAlternativeDestinationsAction, searchLocationByLocationNumber } from '../../redux/actions/locations';
+import styles from './styles';
+import { PutawayDetailsModel, SortationLocation } from '../../types/sortation';
+import Button from '../../components/Button';
 
 type Props = {
   visible: boolean;
@@ -47,7 +41,9 @@ export default function AlternativeLocationSelector({
   }, [visible, initialLocation]);
 
   useEffect(() => {
-    if (!visible) return;
+    if (!visible) {
+      return;
+    }
 
     dispatch(
       getAlternativeDestinationsAction(putawayDetails.facility.id, putawayDetails.id, (data: any) => {
@@ -55,25 +51,25 @@ export default function AlternativeLocationSelector({
           Alert.alert('Error', 'Failed to load alternative locations.');
           return;
         }
-        const mappedLocations: SortationLocation[] = data.data.map((item: any) => ({
+        const mapped: SortationLocation[] = data.data.map((item: any) => ({
           id: item.id,
           name: item.name,
           locationNumber: item.locationNumber
         }));
-        setAlternativeLocations(mappedLocations);
+        setAlternativeLocations(mapped);
       })
     );
   }, [dispatch, putawayDetails.facility.id, putawayDetails.id, visible]);
 
   const performLocationSearch = useCallback(
     (locationNumber: string) => {
-      const trimmedText = locationNumber.trim();
-      if (!trimmedText) {
+      const trimmed = locationNumber.trim();
+      if (!trimmed) {
         setTempAlternativeLocation(null);
         return;
       }
       dispatch(
-        searchLocationByLocationNumber(trimmedText, (data: any) => {
+        searchLocationByLocationNumber(trimmed, (data: any) => {
           if (data && !data.error) {
             setTempAlternativeLocation(data);
           } else {
@@ -97,9 +93,11 @@ export default function AlternativeLocationSelector({
   }, [debouncedLocationSearch]);
 
   const handleSuggestLocation = () => {
-    if (alternativeLocations.length === 0) return;
-    const suggestedLocation = alternativeLocations[suggestionIndex];
-    setTempAlternativeLocation(suggestedLocation);
+    if (alternativeLocations.length === 0) {
+      return;
+    }
+    const suggested = alternativeLocations[suggestionIndex];
+    setTempAlternativeLocation(suggested);
     setScannedLocationInput('');
     const nextIndex = (suggestionIndex + 1) % alternativeLocations.length;
     setSuggestionIndex(nextIndex);
@@ -118,38 +116,44 @@ export default function AlternativeLocationSelector({
   };
 
   return (
-    <Portal>
-      <Dialog visible={visible} dismissable={false} onDismiss={onDismiss}>
-        <IconButton icon="close" size={24} style={styles.dialogCloseButton} onPress={onDismiss} />
-        <Dialog.Title>Choose Alternative Location</Dialog.Title>
-        <Dialog.Content>
+    <Modal transparent visible={visible} animationType="slide" onRequestClose={onDismiss}>
+      <View style={styles.modalOverlay}>
+        <View style={styles.modalContent}>
+          <View style={styles.modalHeader}>
+            <Subheading style={styles.modalTitleText}>Choose Alternative Location</Subheading>
+          </View>
+
           <Paragraph style={styles.dialogCurrentLocationWrapper}>
             <Paragraph style={styles.dialogCurrentLocationLabel}>Current Location: </Paragraph>
             {putawayDetails.destination?.name || 'Unassigned'}
           </Paragraph>
 
-          <PaperButton icon="shuffle-variant" mode="contained" onPress={handleSuggestLocation}>
-            Suggest new location
-          </PaperButton>
+          <Button
+            size="100%"
+            title="Suggest new location"
+            mode="contained"
+            style={styles.dialogSuggestButton}
+            onPress={handleSuggestLocation}
+          />
 
-          <PaperTextInput
+          <TextInput
+            autoCompleteType="off"
             label="Scan location number"
             value={scannedLocationInput}
             mode="outlined"
-            style={styles.dialogScanLocationInput}
-            autoCompleteType="off"
             onChangeText={handleScanLocation}
           />
 
-          <Subheading style={styles.dialogNewLocationHeader}>
+          <Paragraph style={styles.dialogNewLocationHeader}>
             New Location: {tempAlternativeLocation?.name || 'Unknown'}
-          </Subheading>
-        </Dialog.Content>
-        <Dialog.Actions style={styles.dialogActions}>
-          <PaperButton onPress={onDismiss}>Cancel</PaperButton>
-          <PaperButton onPress={handleConfirmAlternative}>OK</PaperButton>
-        </Dialog.Actions>
-      </Dialog>
-    </Portal>
+          </Paragraph>
+
+          <View style={styles.dialogActions}>
+            <Button size="default" mode="text" title="Cancel" onPress={onDismiss} />
+            <Button size="default" title="Confirm" onPress={handleConfirmAlternative} />
+          </View>
+        </View>
+      </View>
+    </Modal>
   );
 }
