@@ -35,7 +35,7 @@ function renderProduct(product: Product, onProductTapped: () => void): ReactElem
         <Card.Content>
           <View style={styles.headerRow}>
             <Chip icon="barcode" style={styles.chipDefault} textStyle={styles.chipText}>
-              {product.productCode}
+              {`Product Code: ${product.productCode || HYPHEN}`}
             </Chip>
           </View>
           <Divider style={styles.contentDivider} />
@@ -45,6 +45,11 @@ function renderProduct(product: Product, onProductTapped: () => void): ReactElem
             <Chip icon="package" style={styles.chipDefault} textStyle={styles.chipText}>
               {`Category: ${product.category ?? HYPHEN}`}
             </Chip>
+            {product?.upc ? (
+              <Chip icon="barcode" style={styles.chipDefault} textStyle={styles.chipText}>
+                {`Barcode: ${product.upc ?? HYPHEN}`}
+              </Chip>
+            ) : null}
           </View>
         </Card.Content>
       </Card>

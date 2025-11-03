@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import Button from '../../components/Button';
 import showPopup from '../../components/Popup';
 import PrintModal from '../../components/PrintModal';
-import { HYPHEN } from '../../constants';
+import { HYPHEN, NOT_CHANGED_STATUS } from '../../constants';
 import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
 import { getProductByIdAction, updateProductBarcodeAction } from '../../redux/actions/products';
 import { RootState } from '../../redux/reducers';
@@ -87,7 +87,7 @@ class ProductDetails extends React.Component<Props, State> {
       }
 
       // Check for no changes made
-      if (response?.code === 304) {
+      if (response?.status === NOT_CHANGED_STATUS) {
         showPopup({
           title: 'No Changes Made',
           message: 'The new barcode is the same as the current one. No changes were made.',
