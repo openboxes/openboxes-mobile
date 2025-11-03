@@ -1,9 +1,10 @@
-import { Props, State } from './types';
-import { DetailsItemVM, VM } from './VM';
+import { HYPHEN } from '../../constants';
 import { ProductCategory } from '../../data/product/category/ProductCategory';
 import Product from '../../data/product/Product';
+import { DetailsItemVM, VM } from './VM';
 
-export function vmMapper(product: Product, state: State): VM {
+// eslint-disable-next-line complexity
+export function vmMapper(product: Product): VM {
   return {
     header: 'Product Details',
     name: product?.name ?? '',
@@ -32,7 +33,8 @@ export function vmMapper(product: Product, state: State): VM {
         url: ''
       }
     ],
-    availableItems: product.availableItems
+    availableItems: product.availableItems,
+    upc: product.upc || HYPHEN
   };
 }
 
@@ -60,8 +62,6 @@ function getDetailsCategoryItem(product: Product): DetailsItemVM {
 }
 
 function getCategoryText(category: ProductCategory): string {
-  const prefix = category?.parentCategory
-    ? `${getCategoryText(category?.parentCategory)} > `
-    : '';
+  const prefix = category?.parentCategory ? `${getCategoryText(category?.parentCategory)} > ` : '';
   return `${prefix}${category?.name}`;
 }

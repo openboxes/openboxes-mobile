@@ -34,6 +34,10 @@ export const SEARCH_BARCODE_SUCCESS = 'SEARCH_BARCODE_SUCCESS';
 
 export const GET_SORTATION_DETAILS_BY_BARCODE = 'GET_SORTATION_DETAILS_BY_BARCODE';
 
+export const UPDATE_PRODUCT_BARCODE_REQUEST = 'UPDATE_PRODUCT_BARCODE_REQUEST';
+export const UPDATE_PRODUCT_BARCODE_SUCCESS = 'UPDATE_PRODUCT_BARCODE_SUCCESS';
+export const UPDATE_PRODUCT_BARCODE_FAIL = 'UPDATE_PRODUCT_BARCODE_FAIL';
+
 export function getProductsAction(callback?: (products: any) => void) {
   return {
     type: GET_PRODUCTS_REQUEST,
@@ -108,6 +112,14 @@ export function getSortationDetailsByBarcode(barcode: string, callback: (data: a
   return {
     type: GET_SORTATION_DETAILS_BY_BARCODE,
     payload: { barcode },
+    callback
+  };
+}
+
+export function updateProductBarcodeAction(id: string, barcode: string, callback?: (response: any) => void) {
+  return {
+    type: UPDATE_PRODUCT_BARCODE_REQUEST,
+    payload: { id, barcode },
     callback
   };
 }

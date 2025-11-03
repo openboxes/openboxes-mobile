@@ -22,6 +22,7 @@ export interface VM {
   unitOfMeasure: string;
   image?: any;
   availableItems: [];
+  upc: string;
 }
 
 export interface DetailsItemVM {
