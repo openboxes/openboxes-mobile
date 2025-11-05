@@ -57,6 +57,9 @@ class _ApiClient {
       case 404:
         message = message ?? 'Not found';
         break;
+      case 409:
+        message = error.response?.data ?? 'Conflict: Resource Already Exists';
+        break;
       case 500:
         message = message ?? 'Internal Server Error';
         break;
