@@ -14,22 +14,10 @@ export interface DispatchProps {
   showScreenLoading: (message?: string) => void;
   hideScreenLoading: () => void;
   getProductsAction: (callback: (products: any) => void) => void;
-  searchProductsByNameAction: (
-    name: string,
-    callback: (searchedProducts: any) => void
-  ) => void;
-  searchProductByCodeAction: (
-    productCode: string,
-    callback: (data: any) => void
-  ) => void;
-  searchProductGloballyAction: (
-    value: string,
-    callback: (data: any) => void
-  ) => void;
-  searchProductSByCategoryAction: (
-    category: any,
-    callback: (data: any) => void
-  ) => void;
+  searchProductsByNameAction: (name: string, callback: (searchedProducts: any) => void) => void;
+  searchProductByCodeAction: (productCode: string, callback: (data: any) => void) => void;
+  searchProductGloballyAction: (value: string, callback: (data: any) => void) => void;
+  searchProductSByCategoryAction: (category: any, callback: (data: any) => void) => void;
 }
 
 export type Props = OwnProps & StateProps & DispatchProps;

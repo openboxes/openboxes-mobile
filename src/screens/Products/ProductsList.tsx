@@ -42,14 +42,14 @@ function renderProduct(product: Product, onProductTapped: () => void): ReactElem
 
           <Subheading style={styles.subheading}> {product.name} </Subheading>
           <View style={styles.additionalInfoRow}>
-            <Chip icon="package" style={styles.chipDefault} textStyle={styles.chipText}>
-              {`Category: ${product.category ?? HYPHEN}`}
-            </Chip>
             {product?.upc ? (
               <Chip icon="barcode" style={styles.chipDefault} textStyle={styles.chipText}>
                 {`Barcode: ${product.upc ?? HYPHEN}`}
               </Chip>
             ) : null}
+            <Chip icon="package" style={styles.chipDefault} textStyle={styles.chipText}>
+              {`Category: ${product.category ?? HYPHEN}`}
+            </Chip>
           </View>
         </Card.Content>
       </Card>
