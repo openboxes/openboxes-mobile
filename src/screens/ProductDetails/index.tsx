@@ -8,7 +8,7 @@ import showPopup from '../../components/Popup';
 import PrintModal from '../../components/PrintModal';
 import { HYPHEN, NOT_CHANGED_STATUS } from '../../constants';
 import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
-import { getProductByIdAction, updateProductBarcodeAction } from '../../redux/actions/products';
+import { getProductByIdAction, updateProductIdentifierAction } from '../../redux/actions/products';
 import { RootState } from '../../redux/reducers';
 import EditBarcodeModal from './EditBarcodeModal';
 import styles from './styles';
@@ -76,11 +76,11 @@ class ProductDetails extends React.Component<Props, State> {
       return;
     }
 
-    this.props.updateProductBarcodeAction(id, newBarcode, (response: any) => {
+    this.props.updateProductIdentifierAction(id, 'upc', newBarcode, (response: any) => {
       if (response?.error) {
         showPopup({
           title: 'Error',
-          message: response.errorMessage ?? 'Product Barcode update failed',
+          message: response.errorMessage ?? 'Product Identifier update failed',
           positiveButton: { text: 'OK' }
         });
         return;
@@ -287,7 +287,7 @@ const mapDispatchToProps: DispatchProps = {
   getProductByIdAction,
   showScreenLoading,
   hideScreenLoading,
-  updateProductBarcodeAction
+  updateProductIdentifierAction
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProductDetails);

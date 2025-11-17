@@ -19,8 +19,8 @@ import {
   SEARCH_PRODUCTS_BY_NAME_REQUEST_SUCCESS,
   STOCK_ADJUSTMENT_REQUEST,
   STOCK_ADJUSTMENT_REQUEST_SUCCESS,
-  UPDATE_PRODUCT_BARCODE_REQUEST,
-  UPDATE_PRODUCT_BARCODE_SUCCESS
+  UPDATE_PRODUCT_IDENTIFIER_REQUEST,
+  UPDATE_PRODUCT_IDENTIFIER_SUCCESS
 } from '../actions/products';
 
 import * as api from '../../apis';
@@ -247,12 +247,17 @@ function* getSortationDetailsSaga(action: any) {
   }
 }
 
-function* updateProductBarcodeSaga(action: any) {
+function* updateProductIdentifierSaga(action: any) {
   try {
-    yield put(showScreenLoading('Updating Product Barcode...'));
-    const response = yield call(api.updateProductBarcode, action.payload.id, action.payload.barcode);
+    yield put(showScreenLoading('Updating Product Identifier...'));
+    const response = yield call(
+      api.updateProductIdentifier,
+      action.payload.id,
+      action.payload.type,
+      action.payload.value
+    );
     yield put({
-      type: UPDATE_PRODUCT_BARCODE_SUCCESS,
+      type: UPDATE_PRODUCT_IDENTIFIER_SUCCESS,
       payload: response.data
     });
     if (action.callback) action.callback(response.data);
@@ -279,5 +284,5 @@ export default function* watcher() {
   yield takeLatest(STOCK_ADJUSTMENT_REQUEST, stockAdjustments);
   yield takeLatest(SEARCH_BARCODE, searchBarcode);
   yield takeLatest(GET_SORTATION_DETAILS_BY_BARCODE, getSortationDetailsSaga);
-  yield takeLatest(UPDATE_PRODUCT_BARCODE_REQUEST, updateProductBarcodeSaga);
+  yield takeLatest(UPDATE_PRODUCT_IDENTIFIER_REQUEST, updateProductIdentifierSaga);
 }

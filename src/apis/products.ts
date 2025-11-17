@@ -64,6 +64,8 @@ export function getProductByBarcode(barcode: string) {
   return apiClient.get(`/barcodes?id=${encodeURIComponent(barcode)}`);
 }
 
-export function updateProductBarcode(id: string, barcode: string) {
-  return apiClient.put(`/mobile/products/${id}/barcode`, { upc: barcode });
+export function updateProductIdentifier(id: string, type: string, value: string) {
+  return apiClient.put(`/mobile/products/${id}/identifiers`, {
+    identifier: { type, value }
+  });
 }
