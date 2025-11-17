@@ -7,6 +7,7 @@ import { SafeAreaView } from 'react-native';
 import { Provider } from 'react-native-paper';
 import SplashScreen from 'react-native-splash-screen';
 import { connect } from 'react-redux';
+
 import FullScreenLoadingIndicator from './components/FullScreenLoadingIndicator';
 import showPopup from './components/Popup';
 import { appConfig } from './constants';
@@ -35,6 +36,8 @@ import OutboundStockDetails from './screens/OutboundStockDetails';
 import OutboundStockList from './screens/OutboundStockList';
 import PackingLocationPage from './screens/PackingLocationPage';
 import PickOrderItem from './screens/PickList';
+import { PickUpEntryScreen } from './screens/PickUpAllocation/PickUpEntryScreen';
+import { PickUpOrderScreen } from './screens/PickUpAllocation/PickUpOrderScreen';
 import Placeholder from './screens/Placeholder';
 import ProductDetails from './screens/ProductDetails';
 import Products from './screens/Products';
@@ -47,21 +50,21 @@ import PutawayList from './screens/PutawayList';
 import Scan from './screens/Scan';
 import Settings from './screens/Settings';
 import ShipItemDetails from './screens/ShipItemDetails';
+import SortationContainerScreen from './screens/Sortation/SortationContainerScreen';
 import SortationEntryScreen from './screens/Sortation/SortationEntryScreen';
 import SortationQuantityScreen from './screens/Sortation/SortationQuantityScreen';
-import Transfer from './screens/Transfer';
-import Transfers from './screens/Transfers';
-import TransferDetails from './screens/TransfersDetails';
-import ViewAvailableItem from './screens/ViewAvailableItem';
-import ApiClient from './utils/ApiClient';
-import Theme from './utils/Theme';
-import SortationContainerScreen from './screens/Sortation/SortationContainerScreen';
 import SortationTaskSelectionListScreen from './screens/Sortation/SortationTaskSelectionListScreen';
 import PutawayEntryScreen from './screens/SortationPutaway/PutawayEntryScreen';
 import PutawayLocationScanScreen from './screens/SortationPutaway/PutawayLocationScanScreen';
 import PutawayProductScanScreen from './screens/SortationPutaway/PutawayProductScanScreen';
 import PutawayQuantityScreen from './screens/SortationPutaway/PutawayQuantityScreen';
 import HeaderRight from './screens/TopBar/RightHeader';
+import Transfer from './screens/Transfer';
+import Transfers from './screens/Transfers';
+import TransferDetails from './screens/TransfersDetails';
+import ViewAvailableItem from './screens/ViewAvailableItem';
+import ApiClient from './utils/ApiClient';
+import Theme from './utils/Theme';
 
 const Stack = createStackNavigator();
 export interface OwnProps {
@@ -291,6 +294,16 @@ class Main extends Component<Props, State> {
                 name="SortationPutawayQuantity"
                 component={PutawayQuantityScreen}
                 options={{ title: 'Putaway Details' }}
+              />
+              <Stack.Screen
+                name="PickUpEntryScreen"
+                component={PickUpEntryScreen}
+                options={{ title: 'Pick Up Allocation' }}
+              />
+              <Stack.Screen
+                name="PickUpOrderScreen"
+                component={PickUpOrderScreen}
+                options={{ title: 'Pick Up Allocation' }}
               />
             </Stack.Navigator>
           </NavigationContainer>

@@ -44,6 +44,13 @@ const dashboardEntries: DashboardEntry[] = [
     navigationScreenName: 'Orders'
   },
   {
+    key: 'pickUpAllocation',
+    screenName: 'Pick-Up Allocation',
+    entryDescription: 'Manage pick-up allocations and tasks',
+    icon: IconPicking,
+    navigationScreenName: 'PickUpEntryScreen'
+  },
+  {
     key: 'packing',
     screenName: 'Packing',
     entryDescription: 'Manage packing tasks and shipments',
