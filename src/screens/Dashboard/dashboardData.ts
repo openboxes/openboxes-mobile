@@ -37,11 +37,12 @@ const dashboardEntries: DashboardEntry[] = [
     navigationScreenName: 'SortationPutaway'
   },
   {
-    key: 'picking',
-    screenName: 'Picking',
+    key: 'orders',
+    screenName: 'Orders Picking',
     entryDescription: 'Manage orders and picking tasks',
     icon: IconPicking,
-    navigationScreenName: 'Orders'
+    navigationScreenName: 'Orders',
+    defaultVisible: false
   },
   {
     key: 'packing',
@@ -112,6 +113,13 @@ const dashboardEntries: DashboardEntry[] = [
     entryDescription: 'Scan barcodes and QR codes for quick access',
     icon: IconScan,
     navigationScreenName: 'Scan'
+  },
+  {
+    key: 'picking',
+    screenName: 'Picking',
+    entryDescription: 'Manage and group picking tasks',
+    icon: IconPicking,
+    navigationScreenName: 'PickingPickType'
   }
 ];
 

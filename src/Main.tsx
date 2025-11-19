@@ -62,6 +62,10 @@ import PutawayLocationScanScreen from './screens/SortationPutaway/PutawayLocatio
 import PutawayProductScanScreen from './screens/SortationPutaway/PutawayProductScanScreen';
 import PutawayQuantityScreen from './screens/SortationPutaway/PutawayQuantityScreen';
 import HeaderRight from './screens/TopBar/RightHeader';
+import PickingPickTypeScreen from './screens/Picking/PickingPickTypeScreen';
+import PickingPickLocationScreen from './screens/Picking/PickingPickLocationScreen';
+import PickingPickProductScreen from './screens/Picking/PickingPickProductScreen';
+import PickingPickQuantityScreen from './screens/Picking/PickingPickQuantityScreen';
 
 const Stack = createStackNavigator();
 export interface OwnProps {
@@ -291,6 +295,26 @@ class Main extends Component<Props, State> {
                 name="SortationPutawayQuantity"
                 component={PutawayQuantityScreen}
                 options={{ title: 'Putaway Details' }}
+              />
+              <Stack.Screen
+                name="PickingPickType"
+                component={PickingPickTypeScreen}
+                options={{ title: 'Pick Type & Grouping' }}
+              />
+              <Stack.Screen
+                name="PickingPickLocation"
+                component={PickingPickLocationScreen}
+                options={{ title: 'Pick Location' }}
+              />
+              <Stack.Screen
+                name="PickingPickProduct"
+                component={PickingPickProductScreen}
+                options={{ title: 'Pick Product' }}
+              />
+              <Stack.Screen
+                name="PickingPickQuantity"
+                component={PickingPickQuantityScreen}
+                options={{ title: 'Pick Quantity' }}
               />
             </Stack.Navigator>
           </NavigationContainer>
