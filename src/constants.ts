@@ -29,5 +29,3 @@ export const appConfig = {
   APP_HEADER_HEIGHT: 56,
   LOCALE: 'en-US'
 };
-
-export const NOT_CHANGED_STATUS = 'no_change';
