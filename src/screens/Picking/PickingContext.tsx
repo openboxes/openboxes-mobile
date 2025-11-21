@@ -87,7 +87,7 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
         // @ts-ignore
         outboundContainer: {
           id: outboundContainerId,
-          name: 'Scanned Container' // In real app, you might look this up
+          name: 'Scanned Container'
         },
         status: 'COMPLETED'
       };
@@ -97,11 +97,9 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
 
     // 2. Check if there are more tasks
     if (currentTaskIndex < tasks.length - 1) {
-      // Move to next task
       setCurrentTaskIndex((prev) => prev + 1);
       return { isSessionComplete: false };
     } else {
-      // All done
       return { isSessionComplete: true };
     }
   };
