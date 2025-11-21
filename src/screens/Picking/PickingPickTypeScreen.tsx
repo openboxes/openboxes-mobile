@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Alert, FlatList, TouchableOpacity, View } from 'react-native';
+import { Alert, ScrollView, TouchableOpacity, View } from 'react-native';
 import { Badge, Button, TextInput as PaperTextInput, Paragraph, Subheading, Title } from 'react-native-paper';
 
 import Icon, { Name } from '../../components/Icon';
@@ -38,7 +38,7 @@ export default function PickingPickTypeScreen() {
     if (quantity > NUMBER_OF_ORDERS_THRESHOLD) {
       Alert.alert(
         'Max Number Exceeded',
-        `The maximum number of orders to groups is ${NUMBER_OF_ORDERS_THRESHOLD}. Please adjust your input.`
+        `The maximum number of orders to group is ${NUMBER_OF_ORDERS_THRESHOLD}. Please adjust your input.`
       );
       return;
     }
@@ -58,32 +58,33 @@ export default function PickingPickTypeScreen() {
   }
 
   return (
-    <View style={styles.mainWrapper}>
+    <ScrollView
+      style={styles.mainWrapper}
+      contentContainerStyle={{ paddingBottom: Theme.spacing.large }}
+      keyboardShouldPersistTaps="handled"
+    >
       <View style={styles.wrapperWithPadding}>
         <Title>Select Pick Type and Grouping</Title>
         <Paragraph>Please select the appropriate pick type and specify the number of orders to group.</Paragraph>
       </View>
 
       <View>
-        <FlatList
-          contentContainerStyle={styles.typeListContent}
-          data={PICK_TYPES}
-          keyExtractor={(item) => item.label}
-          renderItem={({ item }) => (
-            <View style={styles.cardWrapper}>
-              <TouchableOpacity onPress={() => setSelectedType(item)}>
-                <View style={[styles.typeCard, isSelected(item) && styles.selectedCard]}>
-                  <View style={styles.contentWrapper}>
-                    <Subheading style={styles.cardLabel}>{item.label}</Subheading>
-                    <Badge visible={!!item.priority} style={styles.priorityBadge}>{`P${item.priority}`}</Badge>
-                  </View>
-
-                  {isSelected(item) && <Icon name={Name.Check} size={20} color={Theme.colors.primary} />}
+        {PICK_TYPES.map((item) => (
+          <View key={item.label} style={styles.cardWrapper}>
+            <TouchableOpacity onPress={() => setSelectedType(item)}>
+              <View style={[styles.typeCard, isSelected(item) && styles.selectedCard]}>
+                <View style={styles.contentWrapper}>
+                  <Subheading style={styles.cardLabel}>{item.label}</Subheading>
+                  <Badge visible={!!item.priority} style={styles.priorityBadge}>
+                    {item.priority ? `P${item.priority}` : ''}
+                  </Badge>
                 </View>
-              </TouchableOpacity>
-            </View>
-          )}
-        />
+
+                {isSelected(item) && <Icon name={Name.Check} size={20} color={Theme.colors.primary} />}
+              </View>
+            </TouchableOpacity>
+          </View>
+        ))}
       </View>
 
       <View style={styles.formWrapper}>
@@ -120,6 +121,6 @@ export default function PickingPickTypeScreen() {
           Confirm Quantity
         </Button>
       </View>
-    </View>
+    </ScrollView>
   );
 }
