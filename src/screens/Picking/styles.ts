@@ -12,6 +12,10 @@ export default StyleSheet.create({
   typeListContent: {
     paddingBottom: Theme.spacing.medium
   },
+  formWrapper: {
+    paddingHorizontal: Theme.spacing.medium
+  },
+
   cardWrapper: {
     flex: 1,
     paddingHorizontal: Theme.spacing.medium,
@@ -46,18 +50,7 @@ export default StyleSheet.create({
     paddingHorizontal: Theme.spacing.medium,
     fontSize: 14
   },
-  formWrapper: {
-    paddingHorizontal: Theme.spacing.medium
-  },
-  marginTop: {
-    marginTop: Theme.spacing.medium
-  },
-  marginBottom: {
-    marginBottom: Theme.spacing.medium
-  },
-  marginTopSmall: {
-    marginTop: Theme.spacing.small
-  },
+
   productDetails: {
     backgroundColor: Theme.colors.surface,
     padding: Theme.spacing.large,
@@ -79,15 +72,10 @@ export default StyleSheet.create({
     fontSize: 12,
     color: Theme.colors.text
   },
+
   title: {
     fontSize: 18,
     color: Theme.colors.text,
-    fontWeight: 'bold'
-  },
-  divider: {
-    marginVertical: Theme.spacing.small
-  },
-  fontBold: {
     fontWeight: 'bold'
   },
   subheading: {
@@ -100,5 +88,89 @@ export default StyleSheet.create({
     fontSize: 14,
     color: Theme.colors.text,
     fontWeight: 'normal'
+  },
+  fontBold: {
+    fontWeight: 'bold'
+  },
+
+  divider: {
+    marginVertical: Theme.spacing.small
+  },
+  marginTop: {
+    marginTop: Theme.spacing.medium
+  },
+  marginBottom: {
+    marginBottom: Theme.spacing.medium
+  },
+  marginTopSmall: {
+    marginTop: Theme.spacing.small
+  },
+
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)'
+  },
+  modalContent: {
+    width: '90%',
+    backgroundColor: 'white',
+    padding: Theme.spacing.large,
+    borderRadius: Theme.roundness * 2
+  },
+  modalSurface: {
+    width: '90%',
+    borderRadius: 8,
+    padding: 16,
+    elevation: 4,
+    backgroundColor: 'white'
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8
+  },
+  modalContainer: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  modalTitleText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: Theme.colors.text,
+    flexShrink: 1
+  },
+  modalDescription: {
+    fontSize: 14,
+    color: Theme.colors.text,
+    marginBottom: Theme.spacing.medium
+  },
+
+  /** Dialog & actions **/
+  dialogActions: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginTop: Theme.spacing.medium
+  },
+  dialogActionButton: {
+    marginLeft: Theme.spacing.small
+  },
+  dialogSuggestButton: {
+    marginVertical: Theme.spacing.medium
+  },
+  dropdownContainer: {
+    width: '50%',
+    alignSelf: 'flex-end'
   }
 });

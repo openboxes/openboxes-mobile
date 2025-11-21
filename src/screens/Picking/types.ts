@@ -1,3 +1,4 @@
+import { Container } from '../../data/container/Container';
 import Location from '../../data/location/Location';
 import Product from '../../data/product/Product';
 
@@ -8,11 +9,17 @@ export type PickType = {
   label: string;
 };
 
+export type ReasonCode = {
+  id: string;
+  name: string;
+};
+
 // TODO: Adjust PickTask type as needed
 export type PickTask = {
   id: string;
   product: Product;
   destination: Location;
+  outboundContainer?: Container;
   quantityToPick: number;
   status: string;
 };

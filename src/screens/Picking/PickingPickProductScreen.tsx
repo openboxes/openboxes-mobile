@@ -1,25 +1,16 @@
-import { RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
+import { useIsFocused } from '@react-navigation/native';
 import * as React from 'react';
 import { Alert, TextInput, View } from 'react-native';
-
 import { Divider, TextInput as PaperTextInput, Paragraph, Subheading } from 'react-native-paper';
+
 import { INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
 import { navigate } from '../../NavigationService';
-import { ProductDetails, ProductProvider } from './ProductDetails';
+import { usePickingContext } from './PickingContext';
+import { ProductDetails } from './ProductDetails';
 import styles from './styles';
-import { PickTask } from './types';
-
-type PickingPickProductRouteProp = RouteProp<
-  {
-    // TODO: Adjust PickTask type as needed
-    PickingPickProduct: { pickTask: PickTask };
-  },
-  'PickingPickProduct'
->;
 
 export default function PickingPickProductScreen() {
-  const { params } = useRoute<PickingPickProductRouteProp>();
-  const { pickTask } = params;
+  const { currentTask, currentTaskIndex, allTasksCount } = usePickingContext();
 
   const inputRef = React.useRef<TextInput | null>(null);
   const isFocused = useIsFocused();
@@ -30,12 +21,14 @@ export default function PickingPickProductScreen() {
       return;
     }
 
+    setProductBarcode('');
+
     const t = setTimeout(() => inputRef.current?.focus(), INPUT_FOCUS_DELAY_TIME_IN_MS);
     return () => clearTimeout(t);
   }, [isFocused]);
 
-  if (!pickTask) {
-    return navigate('PickingPickType');
+  if (!currentTask) {
+    return null;
   }
 
   function handleSubmit() {
@@ -47,15 +40,18 @@ export default function PickingPickProductScreen() {
       return;
     }
 
-    navigate('PickingPickQuantity', { pickTask });
+    navigate('PickingPickQuantity');
   }
 
   return (
-    <ProductProvider product={pickTask.product} status={pickTask.status}>
+    <ProductDetails.Provider product={currentTask.product} status={currentTask.status}>
       <ProductDetails.Root>
         <ProductDetails.Header>
           <ProductDetails.Badge icon="barcode" label="Product Code">
-            {pickTask.product.productCode}
+            {currentTask.product.productCode}
+          </ProductDetails.Badge>
+          <ProductDetails.Badge icon="navigation" label="Pick Task">
+            {`${currentTaskIndex + 1} / ${allTasksCount}`}
           </ProductDetails.Badge>
         </ProductDetails.Header>
 
@@ -64,8 +60,8 @@ export default function PickingPickProductScreen() {
 
         <ProductDetails.List
           items={[
-            { icon: 'truck', label: 'Quantity Required', value: pickTask.quantityToPick },
-            { icon: 'pin', label: 'Pick Location', value: pickTask.destination.name }
+            { icon: 'truck', label: 'Quantity Required', value: currentTask.quantityToPick },
+            { icon: 'pin', label: 'Pick Location', value: currentTask.destination.name }
           ]}
         />
       </ProductDetails.Root>
@@ -75,8 +71,7 @@ export default function PickingPickProductScreen() {
       <View style={[styles.wrapperWithPadding]}>
         <Subheading style={styles.subheading}>Scan Product Barcode</Subheading>
         <Paragraph style={styles.paragraph}>
-          Point your barcode scanner at the product barcode or type the code manually, then wait a moment for it to
-          auto‐submit.
+          Point your barcode scanner at the product barcode or type the code manually.
         </Paragraph>
 
         <PaperTextInput
@@ -91,6 +86,6 @@ export default function PickingPickProductScreen() {
           onSubmitEditing={handleSubmit}
         />
       </View>
-    </ProductProvider>
+    </ProductDetails.Provider>
   );
 }

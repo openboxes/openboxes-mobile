@@ -1,48 +1,63 @@
-import { RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
+import { useIsFocused } from '@react-navigation/native';
 import * as React from 'react';
 import { Alert, TextInput, View } from 'react-native';
-
 import { Button, Divider, TextInput as PaperTextInput, Paragraph, Subheading } from 'react-native-paper';
+import { useDispatch } from 'react-redux';
+
 import { INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
 import { navigate } from '../../NavigationService';
-import { ProductDetails, ProductProvider } from './ProductDetails';
+import { getReasonCodesAction } from '../../redux/actions/others';
+import { usePickingContext } from './PickingContext';
+import PickingShortAndReasonModal from './PickingShortAndReasonModal';
+import { ProductDetails } from './ProductDetails';
 import styles from './styles';
-import { PickTask } from './types';
-
-type PickingPickQuantityRouteProp = RouteProp<
-  {
-    // TODO: Adjust PickTask type as needed
-    PickingPickQuantity: { pickTask: PickTask };
-  },
-  'PickingPickQuantity'
->;
+import { ReasonCode } from './types';
 
 export default function PickingPickQuantityScreen() {
-  const { params } = useRoute<PickingPickQuantityRouteProp>();
-  const { pickTask } = params;
-
+  const { currentTask, currentTaskIndex, allTasksCount, handlePartialPick } = usePickingContext();
+  const dispatch = useDispatch();
   const inputRef = React.useRef<TextInput | null>(null);
   const isFocused = useIsFocused();
-  const [quantityPicked, setQuantityPicked] = React.useState<string>('');
 
+  const [quantityPicked, setQuantityPicked] = React.useState<string>('');
+  const [reasonCodes, setReasonCodes] = React.useState<ReasonCode[]>([]);
+  const [selectedReasonCode, setSelectedReasonCode] = React.useState<ReasonCode | null>(null);
+  const [isShortModalVisible, setIsShortModalVisible] = React.useState(false);
+
+  // Focus input when screen is focused
   React.useEffect(() => {
     if (!isFocused) {
       return;
     }
-
+    setQuantityPicked('');
     const t = setTimeout(() => inputRef.current?.focus(), INPUT_FOCUS_DELAY_TIME_IN_MS);
     return () => clearTimeout(t);
   }, [isFocused]);
 
-  if (!pickTask) {
-    return navigate('PickingPickType');
+  // Fetch reason codes
+  React.useEffect(() => {
+    dispatch(
+      getReasonCodesAction('PUTAWAY_DISCREPANCY', (data: any) => {
+        if (data?.error) {
+          Alert.alert('Error', 'Failed to load reason codes.');
+        } else {
+          setReasonCodes(data);
+        }
+      })
+    );
+  }, [dispatch]);
+
+  if (!currentTask) {
+    return null;
   }
 
-  function handleSubmit() {
-    // TODO: Validate the quantityPicked
-    const isValid = true;
+  async function handleSubmit() {
+    const qty = Number(quantityPicked);
+    const isValid = !isNaN(qty) && qty >= 0;
+    const isFullPicked = qty === currentTask?.quantityToPick;
+    const is0Picked = qty === 0;
 
-    if (Number(quantityPicked) > pickTask.quantityToPick) {
+    if (qty > (currentTask?.quantityToPick ?? 0)) {
       Alert.alert('Invalid Quantity', 'Picked quantity cannot exceed required quantity.');
       return;
     }
@@ -52,52 +67,95 @@ export default function PickingPickQuantityScreen() {
       return;
     }
 
-    navigate('PickingPickQuantity', { pickTask });
+    if (isFullPicked) {
+      navigate('PickingPickOutboundContainer');
+      return;
+    }
+
+    if (is0Picked) {
+      setIsShortModalVisible(true);
+      return;
+    }
+
+    // Handle partial pick
+    await handlePartialPick(qty);
+    Alert.alert(
+      'Partial Pick Recorded',
+      `You have picked ${qty} units. The remaining quantity will need to be picked later.`,
+      [
+        {
+          text: 'OK',
+          onPress: () => setQuantityPicked('')
+        }
+      ]
+    );
+  }
+
+  function handleConfirmShort(reasonCode: ReasonCode) {
+    setIsShortModalVisible(false);
+    // TODO: Handle short pick with reason code
+    // eslint-disable-next-line no-restricted-syntax
+    console.log(reasonCode);
   }
 
   return (
-    <ProductProvider product={pickTask.product} status={pickTask.status}>
-      <ProductDetails.Root>
-        <ProductDetails.Header>
-          <ProductDetails.Badge icon="barcode" label="Product Code">
-            {pickTask.product.productCode}
-          </ProductDetails.Badge>
-        </ProductDetails.Header>
+    <>
+      <ProductDetails.Provider product={currentTask.product} status={currentTask.status}>
+        <ProductDetails.Root>
+          <ProductDetails.Header>
+            <ProductDetails.Badge icon="barcode" label="Product Code">
+              {currentTask.product.productCode}
+            </ProductDetails.Badge>
+            <ProductDetails.Badge icon="navigation" label="Pick Task">
+              {`${currentTaskIndex + 1} / ${allTasksCount}`}
+            </ProductDetails.Badge>
+          </ProductDetails.Header>
 
-        <ProductDetails.Separator />
-        <ProductDetails.Title />
+          <ProductDetails.Separator />
+          <ProductDetails.Title />
 
-        <ProductDetails.List
-          items={[
-            { icon: 'truck', label: 'Quantity Required', value: pickTask.quantityToPick },
-            { icon: 'pin', label: 'Pick Location', value: pickTask.destination.name }
-          ]}
-        />
-      </ProductDetails.Root>
+          <ProductDetails.List
+            items={[
+              { icon: 'truck', label: 'Quantity Required', value: currentTask.quantityToPick },
+              { icon: 'pin', label: 'Pick Location', value: currentTask.destination.name }
+            ]}
+          />
+        </ProductDetails.Root>
 
-      <Divider />
+        <Divider />
 
-      <View style={[styles.wrapperWithPadding]}>
-        <Subheading style={styles.subheading}>Enter Quantity Picked</Subheading>
-        <Paragraph style={styles.paragraph}>
-          Please enter the quantity of the product that you have picked from the location.
-        </Paragraph>
+        <View style={[styles.wrapperWithPadding]}>
+          <Subheading style={styles.subheading}>Enter Quantity Picked</Subheading>
+          <Paragraph style={styles.paragraph}>
+            Please enter the quantity of the product that you have picked from the location.
+          </Paragraph>
 
-        <PaperTextInput
-          style={styles.marginTop}
-          autoCompleteType="off"
-          ref={inputRef}
-          mode="outlined"
-          label="Quantity Picked"
-          value={quantityPicked}
-          returnKeyType="done"
-          onChangeText={setQuantityPicked}
-        />
+          <PaperTextInput
+            style={styles.marginTop}
+            autoCompleteType="off"
+            ref={inputRef}
+            mode="outlined"
+            label="Quantity Picked"
+            value={quantityPicked}
+            keyboardType="numeric"
+            returnKeyType="done"
+            onChangeText={setQuantityPicked}
+          />
 
-        <Button mode="contained" style={styles.marginTop} onPress={handleSubmit}>
-          Confirm Quantity
-        </Button>
-      </View>
-    </ProductProvider>
+          <Button mode="contained" style={styles.marginTop} onPress={handleSubmit}>
+            Confirm Quantity
+          </Button>
+        </View>
+      </ProductDetails.Provider>
+
+      <PickingShortAndReasonModal
+        visible={isShortModalVisible}
+        reasonCodes={reasonCodes}
+        selectedReasonCode={selectedReasonCode}
+        setSelectedReasonCode={setSelectedReasonCode}
+        onDismiss={() => setIsShortModalVisible(false)}
+        onConfirm={handleConfirmShort}
+      />
+    </>
   );
 }

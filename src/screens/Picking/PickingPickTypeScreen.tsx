@@ -1,10 +1,11 @@
 import * as React from 'react';
 import { Alert, FlatList, TouchableOpacity, View } from 'react-native';
-import { Badge, Button, Paragraph, Subheading, TextInput, Title } from 'react-native-paper';
+import { Badge, Button, TextInput as PaperTextInput, Paragraph, Subheading, Title } from 'react-native-paper';
 
 import Icon, { Name } from '../../components/Icon';
 import { navigate } from '../../NavigationService';
 import Theme from '../../utils/Theme';
+import { usePickingContext } from './PickingContext';
 import styles from './styles';
 import { PickType } from './types';
 
@@ -20,13 +21,21 @@ const PICK_TYPES: PickType[] = [
 const NUMBER_OF_ORDERS_THRESHOLD = 10;
 
 export default function PickingPickTypeScreen() {
+  const { startSession, currentTaskIndex } = usePickingContext();
   const [selectedType, setSelectedType] = React.useState<PickType | null>(PICK_TYPES[0]);
   const [numberOfOrdersToGroup, setNumberOfOrdersToGroup] = React.useState<string>('');
 
+  React.useEffect(() => {
+    setSelectedType(PICK_TYPES[0]);
+    setNumberOfOrdersToGroup('');
+  }, [currentTaskIndex]);
+
   const isSelected = (type: PickType) => selectedType?.label === type.label;
 
-  function handleConfirmQuantity() {
-    if (Number(numberOfOrdersToGroup) > NUMBER_OF_ORDERS_THRESHOLD) {
+  async function handleConfirmQuantity() {
+    const quantity = Number(numberOfOrdersToGroup);
+
+    if (quantity > NUMBER_OF_ORDERS_THRESHOLD) {
       Alert.alert(
         'Max Number Exceeded',
         `The maximum number of orders to groups is ${NUMBER_OF_ORDERS_THRESHOLD}. Please adjust your input.`
@@ -42,9 +51,10 @@ export default function PickingPickTypeScreen() {
       return;
     }
 
-    // TODO: Call an API here to get the Pick Tasks?
+    // This will load the tasks (mocked or API) and reset the index to 0
+    await startSession(selectedType, quantity);
 
-    navigate('PickingPickLocation', { pickTask: {} });
+    navigate('PickingPickLocation');
   }
 
   return (
@@ -77,7 +87,7 @@ export default function PickingPickTypeScreen() {
       </View>
 
       <View style={styles.formWrapper}>
-        <TextInput
+        <PaperTextInput
           disabled
           autoCompleteType="off"
           label="Selected Pick Type"
@@ -91,7 +101,7 @@ export default function PickingPickTypeScreen() {
           }
         />
 
-        <TextInput
+        <PaperTextInput
           autoCompleteType="off"
           style={styles.marginTopSmall}
           label="Number of Orders to Group"

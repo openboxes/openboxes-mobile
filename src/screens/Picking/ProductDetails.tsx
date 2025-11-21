@@ -25,7 +25,7 @@ type ProductProviderProps = {
   children: React.ReactNode;
 };
 
-export function ProductProvider({ product, status, children }: ProductProviderProps) {
+export function Provider({ product, status, children }: ProductProviderProps) {
   return <ProductContext.Provider value={{ product, status }}>{children}</ProductContext.Provider>;
 }
 
@@ -91,6 +91,7 @@ function Separator() {
 }
 
 export const ProductDetails = {
+  Provider,
   Root,
   Header,
   Badge,
