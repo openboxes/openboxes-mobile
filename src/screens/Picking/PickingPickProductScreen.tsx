@@ -3,7 +3,7 @@ import * as React from 'react';
 import { Alert, TextInput, View } from 'react-native';
 import { Divider, TextInput as PaperTextInput, Paragraph, Subheading } from 'react-native-paper';
 
-import { INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
+import { HYPHEN, INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
 import { navigate } from '../../NavigationService';
 import { usePickingContext } from './PickingContext';
 import { ProductDetails } from './ProductDetails';
@@ -32,11 +32,13 @@ export default function PickingPickProductScreen() {
   }
 
   function handleSubmit() {
-    // TODO: Validate the productBarcode
-    const isValid = true;
+    const isValid = productBarcode === currentTask?.product.productCode;
 
     if (!isValid) {
-      Alert.alert('Invalid Barcode', 'Incorrect product scanned. Please scan again.');
+      Alert.alert(
+        'Invalid Barcode',
+        `Incorrect product scanned. Expected: ${currentTask?.product.productCode}. Please try again.`
+      );
       return;
     }
 
@@ -60,8 +62,8 @@ export default function PickingPickProductScreen() {
 
         <ProductDetails.List
           items={[
-            { icon: 'truck', label: 'Quantity Required', value: currentTask.quantityToPick },
-            { icon: 'pin', label: 'Pick Location', value: currentTask.destination.name }
+            { icon: 'truck', label: 'Quantity Required', value: currentTask.quantityRequired },
+            { icon: 'pin', label: 'Pick Location', value: currentTask.location?.name || HYPHEN }
           ]}
         />
       </ProductDetails.Root>

@@ -4,17 +4,22 @@ import { Alert, TextInput, View } from 'react-native';
 import { Button, Divider, TextInput as PaperTextInput, Paragraph, Subheading } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
-import { INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
+import { HYPHEN, INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
 import { navigate } from '../../NavigationService';
 import { getReasonCodesAction } from '../../redux/actions/others';
+import { ReasonCode } from '../../types/picking';
 import { usePickingContext } from './PickingContext';
 import PickingShortAndReasonModal from './PickingShortAndReasonModal';
 import { ProductDetails } from './ProductDetails';
 import styles from './styles';
-import { ReasonCode } from './types';
 
 export default function PickingPickQuantityScreen() {
-  const { currentTask, currentTaskIndex, allTasksCount, handlePartialPick } = usePickingContext();
+  const {
+    currentTask,
+    currentTaskIndex,
+    allTasksCount
+    // handlePartialPick
+  } = usePickingContext();
   const dispatch = useDispatch();
   const inputRef = React.useRef<TextInput | null>(null);
   const isFocused = useIsFocused();
@@ -54,10 +59,10 @@ export default function PickingPickQuantityScreen() {
   async function handleSubmit() {
     const qty = Number(quantityPicked);
     const isValid = !isNaN(qty) && qty >= 0;
-    const isFullPicked = qty === currentTask?.quantityToPick;
+    const isFullPicked = qty === currentTask?.quantityRequired;
     const is0Picked = qty === 0;
 
-    if (qty > (currentTask?.quantityToPick ?? 0)) {
+    if (qty > (currentTask?.quantityRequired ?? 0)) {
       Alert.alert('Invalid Quantity', 'Picked quantity cannot exceed required quantity.');
       return;
     }
@@ -67,18 +72,22 @@ export default function PickingPickQuantityScreen() {
       return;
     }
 
-    if (isFullPicked) {
-      navigate('PickingPickOutboundContainer');
-      return;
-    }
-
+    // NOTE: Not supported yet
     if (is0Picked) {
       setIsShortModalVisible(true);
       return;
     }
 
+    // NOTE: Happy path
+    if (isFullPicked) {
+      navigate('PickingPickOutboundContainer');
+      return;
+    }
+
+    // TODO: Handle partial pick
     // Handle partial pick
-    await handlePartialPick(qty);
+    // handlePartialPick(qty);
+
     Alert.alert(
       'Partial Pick Recorded',
       `You have picked ${qty} units. The remaining quantity will need to be picked later.`,
@@ -116,8 +125,8 @@ export default function PickingPickQuantityScreen() {
 
           <ProductDetails.List
             items={[
-              { icon: 'truck', label: 'Quantity Required', value: currentTask.quantityToPick },
-              { icon: 'pin', label: 'Pick Location', value: currentTask.destination.name }
+              { icon: 'truck', label: 'Quantity Required', value: currentTask.quantityRequired },
+              { icon: 'pin', label: 'Pick Location', value: currentTask.location?.name || HYPHEN }
             ]}
           />
         </ProductDetails.Root>

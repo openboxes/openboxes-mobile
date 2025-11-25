@@ -1,0 +1,80 @@
+import { PickTaskParams } from '../../apis';
+import { PickTask } from '../../types/picking';
+
+export const GET_PICK_TASKS_REQUEST = 'GET_PICK_TASKS_REQUEST';
+export const GET_PICK_TASKS_REQUEST_SUCCESS = 'GET_PICK_TASKS_REQUEST_SUCCESS';
+export const GET_PICK_TASKS_REQUEST_FAIL = 'GET_PICK_TASKS_REQUEST_FAIL';
+
+export const START_PICK_TASK_REQUEST = 'START_PICK_TASK_REQUEST';
+export const START_PICK_TASK_REQUEST_SUCCESS = 'START_PICK_TASK_REQUEST_SUCCESS';
+export const START_PICK_TASK_REQUEST_FAIL = 'START_PICK_TASK_REQUEST_FAIL';
+
+export const PICK_PICK_TASK_REQUEST = 'PICK_PICK_TASK_REQUEST';
+export const PICK_PICK_TASK_REQUEST_SUCCESS = 'PICK_PICK_TASK_REQUEST_SUCCESS';
+export const PICK_PICK_TASK_REQUEST_FAIL = 'PICK_PICK_TASK_REQUEST_FAIL';
+
+export const DROP_PICK_TASK_REQUEST = 'DROP_PICK_TASK_REQUEST';
+export const DROP_PICK_TASK_REQUEST_SUCCESS = 'DROP_PICK_TASK_REQUEST_SUCCESS';
+export const DROP_PICK_TASK_REQUEST_FAIL = 'DROP_PICK_TASK_REQUEST_FAIL';
+
+export const GET_PICK_TASK_BY_ID_REQUEST = 'GET_PICK_TASK_BY_ID_REQUEST';
+export const GET_PICK_TASK_BY_ID_REQUEST_SUCCESS = 'GET_PICK_TASK_BY_ID_REQUEST_SUCCESS';
+export const GET_PICK_TASK_BY_ID_REQUEST_FAIL = 'GET_PICK_TASK_BY_ID_REQUEST_FAIL';
+
+export function getPickTasksAction(
+  params: PickTaskParams,
+  callback: (response: {
+    response: {
+      data: PickTask[];
+      errorCode?: string;
+      message?: string;
+      max?: number;
+      offset?: number;
+      totalCount?: number;
+    };
+  }) => void
+) {
+  return {
+    type: GET_PICK_TASKS_REQUEST,
+    payload: { ...params },
+    callback
+  };
+}
+
+export function startPickTaskAction(taskId: string) {
+  return {
+    type: START_PICK_TASK_REQUEST,
+    payload: { taskId }
+  };
+}
+
+export function pickPickTaskAction(taskId: string, outboundContainerId: string) {
+  return {
+    type: PICK_PICK_TASK_REQUEST,
+    payload: { taskId, outboundContainerId }
+  };
+}
+
+export function dropPickTaskAction(outboundContainerId: string, stagingLocationId: string) {
+  return {
+    type: DROP_PICK_TASK_REQUEST,
+    payload: { outboundContainerId, stagingLocationId }
+  };
+}
+
+export function getPickTaskByIdAction(
+  taskId: string,
+  callback: (response: {
+    response: {
+      data: PickTask;
+      errorCode?: string;
+      message?: string;
+    };
+  }) => void
+) {
+  return {
+    type: GET_PICK_TASK_BY_ID_REQUEST,
+    payload: { taskId },
+    callback
+  };
+}

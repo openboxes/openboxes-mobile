@@ -1,0 +1,164 @@
+import { call, put, select, takeLatest } from 'redux-saga/effects';
+
+import * as api from '../../apis';
+import { hideScreenLoading, showScreenLoading } from '../actions/main';
+import {
+  DROP_PICK_TASK_REQUEST,
+  DROP_PICK_TASK_REQUEST_FAIL,
+  DROP_PICK_TASK_REQUEST_SUCCESS,
+  GET_PICK_TASK_BY_ID_REQUEST,
+  GET_PICK_TASK_BY_ID_REQUEST_FAIL,
+  GET_PICK_TASK_BY_ID_REQUEST_SUCCESS,
+  GET_PICK_TASKS_REQUEST,
+  GET_PICK_TASKS_REQUEST_FAIL,
+  GET_PICK_TASKS_REQUEST_SUCCESS,
+  PICK_PICK_TASK_REQUEST,
+  PICK_PICK_TASK_REQUEST_FAIL,
+  PICK_PICK_TASK_REQUEST_SUCCESS,
+  START_PICK_TASK_REQUEST,
+  START_PICK_TASK_REQUEST_FAIL,
+  START_PICK_TASK_REQUEST_SUCCESS
+} from '../actions/picking';
+import { userLocation, userSession } from '../selectors/auth';
+
+function* getPickTasksAction(action: any) {
+  try {
+    // @ts-ignore
+    const currentLocation = yield select(userLocation);
+    if (!currentLocation) {
+      throw new Error('User Location Not Found');
+    }
+    yield put(showScreenLoading('Fetching Tasks...'));
+    // Call API to get pick tasks
+    // @ts-ignore
+    const response = yield call(api.getPickTasksApi, currentLocation.id, action.payload);
+    yield put({ type: GET_PICK_TASKS_REQUEST_SUCCESS, payload: response.data });
+    yield put(hideScreenLoading());
+    yield action.callback({ response });
+  } catch (error) {
+    yield put(hideScreenLoading());
+    yield put({ type: GET_PICK_TASKS_REQUEST_FAIL, payload: error instanceof Error ? error.message : 'Unknown Error' });
+    yield action.callback({ error });
+  }
+}
+
+function* startPickTaskAction(action: any) {
+  try {
+    // @ts-ignore
+    const currentLocation = yield select(userLocation);
+    if (!currentLocation) {
+      throw new Error('User Location Not Found');
+    }
+    // @ts-ignore
+    const session = yield select(userSession);
+    if (!session || !session.user) {
+      throw new Error('User Session Not Found');
+    }
+    yield put(showScreenLoading('Starting Pick Task...'));
+    // Start Pick Task API Call
+    yield call(api.patchPickTaskApi, currentLocation.id, action.payload.taskId, {
+      action: 'start',
+      assigneeId: session.user.id
+    });
+    yield put({ type: START_PICK_TASK_REQUEST_SUCCESS });
+    yield put(hideScreenLoading());
+  } catch (error) {
+    yield put(hideScreenLoading());
+    yield put({
+      type: START_PICK_TASK_REQUEST_FAIL,
+      payload: error instanceof Error ? error.message : 'Unknown Error'
+    });
+  }
+}
+
+function* pickPickTaskAction(action: any) {
+  try {
+    // @ts-ignore
+    const currentLocation = yield select(userLocation);
+    if (!currentLocation) {
+      throw new Error('User Location Not Found');
+    }
+    // @ts-ignore
+    const session = yield select(userSession);
+    if (!session || !session.user) {
+      throw new Error('User Session Not Found');
+    }
+    yield put(showScreenLoading('Picking Task...'));
+    // Pick Pick Task API Call
+    yield call(api.patchPickTaskApi, currentLocation.id, action.payload.taskId, {
+      action: 'pick',
+      outboundContainerId: action.payload.outboundContainerId,
+      pickById: session.user.id
+    });
+    yield put({ type: PICK_PICK_TASK_REQUEST_SUCCESS });
+    yield put(hideScreenLoading());
+  } catch (error) {
+    yield put(hideScreenLoading());
+    yield put({
+      type: PICK_PICK_TASK_REQUEST_FAIL,
+      payload: error instanceof Error ? error.message : 'Unknown Error'
+    });
+  }
+}
+
+function* dropPickTaskAction(action: any) {
+  try {
+    // @ts-ignore
+    const currentLocation = yield select(userLocation);
+    if (!currentLocation) {
+      throw new Error('User Location Not Found');
+    }
+    // @ts-ignore
+    const session = yield select(userSession);
+    if (!session || !session.user) {
+      throw new Error('User Session Not Found');
+    }
+    yield put(showScreenLoading('Dropping Pick Task...'));
+    // Drop Pick Task API Call
+    yield call(api.dropPickTaskApi, currentLocation.id, action.payload.outboundContainerId, {
+      action: 'drop',
+      stagingLocationId: action.payload.stagingLocationId,
+      stagedById: session.user.id
+    });
+    yield put({ type: DROP_PICK_TASK_REQUEST_SUCCESS });
+    yield put(hideScreenLoading());
+  } catch (error) {
+    yield put(hideScreenLoading());
+    yield put({
+      type: DROP_PICK_TASK_REQUEST_FAIL,
+      payload: error instanceof Error ? error.message : 'Unknown Error'
+    });
+  }
+}
+
+function* getPickTaskByIdAction(action: any) {
+  try {
+    // @ts-ignore
+    const currentLocation = yield select(userLocation);
+    if (!currentLocation) {
+      throw new Error('User Location Not Found');
+    }
+    yield put(showScreenLoading('Fetching Pick Task...'));
+    // Call API to get pick task by ID
+    // @ts-ignore
+    const response = yield call(api.getPickTaskByIdApi, currentLocation.id, action.payload.taskId);
+    yield put({ type: GET_PICK_TASK_BY_ID_REQUEST_SUCCESS, payload: response.data });
+    yield put(hideScreenLoading());
+    yield action.callback({ response });
+  } catch (error) {
+    yield put(hideScreenLoading());
+    yield put({
+      type: GET_PICK_TASK_BY_ID_REQUEST_FAIL,
+      payload: error instanceof Error ? error.message : 'Unknown Error'
+    });
+    yield action.callback({ error });
+  }
+}
+
+export default function* watcher() {
+  yield takeLatest(GET_PICK_TASKS_REQUEST, getPickTasksAction);
+  yield takeLatest(START_PICK_TASK_REQUEST, startPickTaskAction);
+  yield takeLatest(PICK_PICK_TASK_REQUEST, pickPickTaskAction);
+  yield takeLatest(DROP_PICK_TASK_REQUEST, dropPickTaskAction);
+  yield takeLatest(GET_PICK_TASK_BY_ID_REQUEST, getPickTaskByIdAction);
+}

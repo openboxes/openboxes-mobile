@@ -1,31 +1,15 @@
 import * as React from 'react';
-import { PickTask, PickType } from './types';
-
-// --- Mock Data Setup ---
-// We define it here to simulate the "Start Session" response.
-const MOCKED_PICK_TASKS: PickTask[] = [
-  {
-    id: 'task-001',
-    // @ts-ignore
-    product: { productCode: 'PROD-001', name: 'Mocked Product Number 1' },
-    // @ts-ignore
-    destination: { name: 'Aisle 1, Shelf A' },
-    // @ts-ignore
-    outboundContainer: { id: 'OUTBOUND-CONTAINER-0001', name: 'Outbound Container 1' },
-    quantityToPick: 10,
-    status: 'PENDING'
-  },
-  {
-    id: 'task-002',
-    // @ts-ignore
-    product: { productCode: 'PROD-002', name: 'Mocked Product Number 2' },
-    // @ts-ignore
-    destination: { name: 'Aisle 3, Shelf B' },
-    outboundContainer: undefined,
-    quantityToPick: 5,
-    status: 'PENDING'
-  }
-];
+import { Alert } from 'react-native';
+import { useDispatch } from 'react-redux';
+import { navigate } from '../../NavigationService';
+import {
+  dropPickTaskAction,
+  getPickTaskByIdAction,
+  getPickTasksAction,
+  pickPickTaskAction,
+  startPickTaskAction
+} from '../../redux/actions/picking';
+import { DeliveryType, PickTask } from '../../types/picking';
 
 type PickingContextType = {
   /** The list of all tasks for this session */
@@ -42,21 +26,29 @@ type PickingContextType = {
 
   /**
    * Initializes the picking session.
-   * Fetches tasks based on criteria (mocked for now).
+   * Fetches tasks based on criteria.
    */
-  startSession: (pickType: PickType, quantityToGroup: number) => Promise<void>;
+  startSession: (deliveryType: DeliveryType, ordersCount: number) => Promise<void>;
 
   /**
-   * Mark the current task as complete, assign the container,
-   * and decide if we move to the next task or finish.
+   * Completes the current pick task.
    */
-  completeCurrentTask: (outboundContainerId: string) => { isSessionComplete: boolean };
+  pickCurrentTask: (outboundContainerId: string) => void;
 
   /** Resets state to initial values */
   resetSession: () => void;
 
   /** Handle partial pick for the current task */
-  handlePartialPick: (pickedQuantity: number) => void;
+  handlePartialPick: () => void;
+
+  /** Start the pick task (API call) */
+  startPickTask: () => void;
+
+  /** Drop the current pick task at the staging location */
+  dropCurrentTask: (stagingLocationId: string) => void;
+
+  /** Revalidates the current pick task details from the server */
+  revalidateCurrentTask: (callback?: (task: PickTask) => void) => void;
 };
 
 const PickingContext = React.createContext<PickingContextType | undefined>(undefined);
@@ -64,58 +56,81 @@ const PickingContext = React.createContext<PickingContextType | undefined>(undef
 export function PickingProvider({ children }: { children: React.ReactNode }) {
   const [tasks, setTasks] = React.useState<PickTask[]>([]);
   const [currentTaskIndex, setCurrentTaskIndex] = React.useState<number>(0);
-  const currentTask = tasks[currentTaskIndex];
+  const dispatch = useDispatch();
   const allTasksCount = tasks.length;
+  const currentTask = allTasksCount > 0 ? tasks[currentTaskIndex] : undefined;
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const startSession = async (pickType: PickType, quantityToGroup: number) => {
-    // TODO: API Call goes here.
-    // const response = await api.getPickTasks(pickType, quantityToGroup);
+  const startSession = async (deliveryType: DeliveryType, ordersCount: number) => {
+    // Api call to fetch tasks based on deliveryType and ordersCount
+    dispatch(
+      getPickTasksAction({ deliveryTypeCode: deliveryType.code, ordersCount }, ({ response }) => {
+        if (response.errorCode) {
+          Alert.alert('Error', response.message ?? 'Failed to load pick tasks.');
+          navigate('PickingPickType');
+          return;
+        }
 
-    // For now, load mocks
-    setTasks(MOCKED_PICK_TASKS);
-    setCurrentTaskIndex(0);
+        setTasks(response.data);
+        setCurrentTaskIndex(0);
+      })
+    );
   };
 
-  const completeCurrentTask = (outboundContainerId: string) => {
-    const updatedTasks = [...tasks];
-
-    // 1. Update the specific task with the container info and status
-    if (updatedTasks[currentTaskIndex]) {
-      updatedTasks[currentTaskIndex] = {
-        ...updatedTasks[currentTaskIndex],
-        // @ts-ignore
-        outboundContainer: {
-          id: outboundContainerId,
-          name: 'Scanned Container'
-        },
-        status: 'COMPLETED'
-      };
+  const startPickTask = () => {
+    if (!currentTask) {
+      return;
     }
 
-    setTasks(updatedTasks);
-
-    // 2. Check if there are more tasks
-    if (currentTaskIndex < tasks.length - 1) {
-      setCurrentTaskIndex((prev) => prev + 1);
-      return { isSessionComplete: false };
-    } else {
-      return { isSessionComplete: true };
-    }
+    dispatch(startPickTaskAction(currentTask.id));
   };
 
-  // 3. Handle partial pick
-  const handlePartialPick = async (pickedQuantity: number) => {
-    const updatedTasks = [...tasks];
-
-    if (updatedTasks[currentTaskIndex]) {
-      updatedTasks[currentTaskIndex] = {
-        ...updatedTasks[currentTaskIndex],
-        quantityToPick: tasks[currentTaskIndex].quantityToPick - pickedQuantity
-      };
-      setTasks(updatedTasks);
+  const pickCurrentTask = (outboundContainerId: string) => {
+    if (!currentTask) {
+      return;
     }
+
+    dispatch(pickPickTaskAction(currentTask.id, outboundContainerId));
   };
+
+  const revalidateCurrentTask = (callback?: (task: PickTask) => void) => {
+    if (!currentTask) {
+      return;
+    }
+
+    dispatch(
+      getPickTaskByIdAction(currentTask.id, ({ response }) => {
+        if (response.errorCode || !response.data) {
+          Alert.alert('Error', 'Failed to revalidate the current pick task.');
+          return;
+        }
+
+        const updatedTask = response.data;
+        setTasks((prevTasks) => prevTasks.map((task, index) => (index === currentTaskIndex ? updatedTask : task)));
+
+        if (callback) {
+          callback(updatedTask);
+        }
+      })
+    );
+  };
+
+  const dropCurrentTask = (stagingLocationId: string) => {
+    if (!currentTask) {
+      return;
+    }
+
+    if (!stagingLocationId) {
+      Alert.alert('Missing Input', 'Please scan or enter a valid Staging Location ID.');
+      return;
+    }
+
+    revalidateCurrentTask((updatedTask) => {
+      dispatch(dropPickTaskAction(updatedTask.id, stagingLocationId));
+    });
+  };
+
+  // TODO: Implement partial pick logic
+  const handlePartialPick = () => {};
 
   const resetSession = () => {
     setTasks([]);
@@ -130,9 +145,12 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
         currentTask,
         allTasksCount,
         startSession,
-        completeCurrentTask,
+        pickCurrentTask,
         resetSession,
-        handlePartialPick
+        handlePartialPick,
+        startPickTask,
+        dropCurrentTask,
+        revalidateCurrentTask
       }}
     >
       {children}

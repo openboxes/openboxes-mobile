@@ -67,6 +67,7 @@ import PickingPickLocationScreen from './screens/Picking/PickingPickLocationScre
 import PickingPickProductScreen from './screens/Picking/PickingPickProductScreen';
 import PickingPickQuantityScreen from './screens/Picking/PickingPickQuantityScreen';
 import PickingPickOutboundContainerScreen from './screens/Picking/PickingPickOutboundContainerScreen';
+import PickingPickStagingLocationScreen from './screens/Picking/PickingPickStagingLocationScreen';
 import { PickingProvider } from './screens/Picking/PickingContext';
 
 const Stack = createStackNavigator();
@@ -331,6 +332,11 @@ class Main extends Component<Props, State> {
                   name="PickingPickOutboundContainer"
                   component={PickingPickOutboundContainerScreen}
                   options={{ title: 'Pick Outbound Container' }}
+                />
+                <Stack.Screen
+                  name="PickingPickStagingLocation"
+                  component={PickingPickStagingLocationScreen}
+                  options={{ title: 'Pick Staging Location' }}
                 />
               </Stack.Navigator>
             </NavigationContainer>

@@ -4,38 +4,30 @@ import { Badge, Button, TextInput as PaperTextInput, Paragraph, Subheading, Titl
 
 import Icon, { Name } from '../../components/Icon';
 import { navigate } from '../../NavigationService';
+import { DeliveryType } from '../../types/picking';
 import Theme from '../../utils/Theme';
+import { DELIVERY_TYPES } from './constants';
 import { usePickingContext } from './PickingContext';
 import styles from './styles';
-import { PickType } from './types';
-
-const PICK_TYPES: PickType[] = [
-  { priority: 1, label: 'Pick Up' },
-  { priority: 2, label: 'Local Delivery' },
-  { priority: 2, label: 'Service' },
-  { priority: 3, label: 'Will Call' },
-  { priority: 4, label: 'Ship To' },
-  { priority: undefined, label: 'System Directed' }
-];
 
 const NUMBER_OF_ORDERS_THRESHOLD = 10;
 
 export default function PickingPickTypeScreen() {
   const { startSession, currentTaskIndex } = usePickingContext();
-  const [selectedType, setSelectedType] = React.useState<PickType | null>(PICK_TYPES[0]);
+  const [deliveryType, setDeliveryType] = React.useState<DeliveryType | null>(DELIVERY_TYPES[0]);
   const [numberOfOrdersToGroup, setNumberOfOrdersToGroup] = React.useState<string>('');
 
   React.useEffect(() => {
-    setSelectedType(PICK_TYPES[0]);
+    setDeliveryType(DELIVERY_TYPES[0]);
     setNumberOfOrdersToGroup('');
   }, [currentTaskIndex]);
 
-  const isSelected = (type: PickType) => selectedType?.label === type.label;
+  const isSelected = (type: DeliveryType) => deliveryType?.label === type.label;
 
   async function handleConfirmQuantity() {
-    const quantity = Number(numberOfOrdersToGroup);
+    const ordersCount = Number(numberOfOrdersToGroup);
 
-    if (quantity > NUMBER_OF_ORDERS_THRESHOLD) {
+    if (ordersCount > NUMBER_OF_ORDERS_THRESHOLD) {
       Alert.alert(
         'Max Number Exceeded',
         `The maximum number of orders to group is ${NUMBER_OF_ORDERS_THRESHOLD}. Please adjust your input.`
@@ -43,7 +35,7 @@ export default function PickingPickTypeScreen() {
       return;
     }
 
-    if (!selectedType || !numberOfOrdersToGroup) {
+    if (!deliveryType || !numberOfOrdersToGroup) {
       Alert.alert(
         'Missing Information',
         'Please select a pick type and specify the number of orders to group before proceeding.'
@@ -51,8 +43,8 @@ export default function PickingPickTypeScreen() {
       return;
     }
 
-    // This will load the tasks (mocked or API) and reset the index to 0
-    await startSession(selectedType, quantity);
+    // This function initializes the picking session with the selected parameters
+    await startSession(deliveryType, ordersCount);
 
     navigate('PickingPickLocation');
   }
@@ -69,9 +61,9 @@ export default function PickingPickTypeScreen() {
       </View>
 
       <View>
-        {PICK_TYPES.map((item) => (
+        {DELIVERY_TYPES.map((item) => (
           <View key={item.label} style={styles.cardWrapper}>
-            <TouchableOpacity onPress={() => setSelectedType(item)}>
+            <TouchableOpacity onPress={() => setDeliveryType(item)}>
               <View style={[styles.typeCard, isSelected(item) && styles.selectedCard]}>
                 <View style={styles.contentWrapper}>
                   <Subheading style={styles.cardLabel}>{item.label}</Subheading>
@@ -94,10 +86,10 @@ export default function PickingPickTypeScreen() {
           label="Selected Pick Type"
           mode="outlined"
           value={
-            selectedType
-              ? selectedType.priority
-                ? `P${selectedType.priority} - ${selectedType.label}`
-                : selectedType.label
+            deliveryType
+              ? deliveryType.priority
+                ? `P${deliveryType.priority} - ${deliveryType.label}`
+                : deliveryType.label
               : ''
           }
         />
@@ -115,7 +107,7 @@ export default function PickingPickTypeScreen() {
         <Button
           mode="contained"
           style={styles.marginTop}
-          disabled={!selectedType || !numberOfOrdersToGroup}
+          disabled={!deliveryType || !numberOfOrdersToGroup}
           onPress={handleConfirmQuantity}
         >
           Confirm Quantity

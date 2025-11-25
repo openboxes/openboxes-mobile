@@ -3,7 +3,7 @@ import * as React from 'react';
 import { Alert, TextInput, View } from 'react-native';
 import { Divider, TextInput as PaperTextInput, Paragraph, Subheading } from 'react-native-paper';
 
-import { INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
+import { HYPHEN, INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
 import { navigate } from '../../NavigationService';
 import { usePickingContext } from './PickingContext';
 import { ProductDetails } from './ProductDetails';
@@ -11,8 +11,7 @@ import styles from './styles';
 
 export default function PickingPickLocationScreen() {
   const navigation = useNavigation();
-  // Get resetSession to clear data if they actually leave
-  const { currentTask, currentTaskIndex, allTasksCount, resetSession } = usePickingContext();
+  const { currentTask, currentTaskIndex, allTasksCount, resetSession, startPickTask } = usePickingContext();
 
   const inputRef = React.useRef<TextInput | null>(null);
   const isFocused = useIsFocused();
@@ -66,14 +65,17 @@ export default function PickingPickLocationScreen() {
   }
 
   function handleSubmit() {
-    // TODO: Validate the Location
-    const isValid = true;
+    const isValid = pickLocationBarcode === currentTask?.location?.locationNumber;
 
     if (!isValid) {
-      Alert.alert('Invalid Barcode', 'Incorrect location scanned. Please scan again.');
+      Alert.alert(
+        'Invalid Barcode',
+        `Incorrect location scanned. Expected location: ${currentTask?.location?.locationNumber}. Please try again.`
+      );
       return;
     }
 
+    startPickTask();
     navigate('PickingPickProduct');
   }
 
@@ -94,8 +96,8 @@ export default function PickingPickLocationScreen() {
 
         <ProductDetails.List
           items={[
-            { icon: 'truck', label: 'Quantity Required', value: currentTask.quantityToPick },
-            { icon: 'pin', label: 'Pick Location', value: currentTask.destination.name }
+            { icon: 'truck', label: 'Quantity Required', value: currentTask.quantityRequired },
+            { icon: 'pin', label: 'Pick Location', value: currentTask.location?.name || HYPHEN }
           ]}
         />
       </ProductDetails.Root>

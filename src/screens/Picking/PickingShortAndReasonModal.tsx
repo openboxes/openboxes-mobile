@@ -3,8 +3,8 @@ import { Modal, View } from 'react-native';
 import { Button, Paragraph, Subheading } from 'react-native-paper';
 
 import AsyncModalSelect from '../../components/AsyncModalSelect';
+import { ReasonCode } from '../../types/picking';
 import styles from './styles';
-import { ReasonCode } from './types';
 
 type Props = {
   visible: boolean;

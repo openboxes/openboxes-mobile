@@ -3,26 +3,25 @@ import * as React from 'react';
 import { Alert, TextInput, View } from 'react-native';
 import { Divider, TextInput as PaperTextInput, Paragraph, Subheading } from 'react-native-paper';
 
-import { INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
+import { HYPHEN, INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
 import { navigate } from '../../NavigationService';
 import { usePickingContext } from './PickingContext';
 import { ProductDetails } from './ProductDetails';
 import styles from './styles';
 
-export default function PickingPickOutboundContainerScreen() {
-  const { currentTask, pickCurrentTask, currentTaskIndex, allTasksCount } = usePickingContext();
+export default function PickingPickStagingLocationScreen() {
+  const { currentTask, dropCurrentTask, currentTaskIndex, allTasksCount } = usePickingContext();
 
   const inputRef = React.useRef<TextInput | null>(null);
   const isFocused = useIsFocused();
-  const [outboundContainerId, setOutboundContainerId] = React.useState<string>('');
+  const [stagingLocationId, setStagingLocationId] = React.useState<string>('');
 
   React.useEffect(() => {
     if (!isFocused) {
       return;
     }
 
-    setOutboundContainerId('');
-
+    setStagingLocationId('');
     const t = setTimeout(() => inputRef.current?.focus(), INPUT_FOCUS_DELAY_TIME_IN_MS);
     return () => clearTimeout(t);
   }, [isFocused]);
@@ -32,23 +31,25 @@ export default function PickingPickOutboundContainerScreen() {
   }
 
   function handleSubmit() {
-    if (!outboundContainerId) {
-      Alert.alert('Missing Input', 'Please scan or enter a valid Outbound Container ID.');
+    if (!stagingLocationId) {
+      Alert.alert('Missing Input', 'Please scan or enter a valid Staging Location ID.');
       return;
     }
 
-    // TODO: Implement validation of outboundContainerId
-    const isValid = true;
+    // Enforce that the scanned staging location matches the task's staging location
+    const isValid = stagingLocationId === currentTask?.stagingLocation?.id;
 
     if (!isValid) {
-      Alert.alert('Invalid Outbound Container ID', 'The scanned Outbound Container ID is not valid. Please try again.');
+      Alert.alert('Invalid Staging Location ID', 'The scanned Staging Location ID is not valid. Please try again.');
       return;
     }
 
-    pickCurrentTask(outboundContainerId);
+    // Here we could mark the task as staged or continue workflow
+    dropCurrentTask(stagingLocationId);
 
-    // Navigation to the staging location screen
-    navigate('PickingPickStagingLocation');
+    // NOTE: Happy path - for now, just navigate to the Pick Type screen
+    // TODO: In the future, we gonna navigate to the next task if exists
+    navigate('PickingPickType');
   }
 
   return (
@@ -68,14 +69,16 @@ export default function PickingPickOutboundContainerScreen() {
 
         <ProductDetails.List
           items={[
-            // NOTE: For now, we assume quantity picked equals quantity required.
-            // This might change in the future if we implement partial picks.
             {
-              icon: 'truck',
-              label: 'Quantity Picked',
-              value: currentTask.quantityPicked || currentTask.quantityRequired
+              icon: 'pin',
+              label: 'Outbound Container ID',
+              value: currentTask.outboundContainer?.id ?? HYPHEN
             },
-            { icon: 'pin', label: 'Outbound Container ID', value: currentTask.outboundContainer?.id ?? 'New' }
+            {
+              icon: 'package',
+              label: 'Staging Location',
+              value: currentTask.stagingLocation?.name || HYPHEN
+            }
           ]}
         />
       </ProductDetails.Root>
@@ -83,10 +86,10 @@ export default function PickingPickOutboundContainerScreen() {
       <Divider />
 
       <View style={[styles.wrapperWithPadding]}>
-        <Subheading style={styles.subheading}>Scan Outbound Container</Subheading>
+        <Subheading style={styles.subheading}>Scan Staging Location</Subheading>
         <Paragraph style={styles.paragraph}>
-          Point your barcode scanner at the outbound container or type the code manually, then wait a moment for it to
-          auto‐submit.
+          Point your barcode scanner at the staging location or type the ID manually, then wait a moment for it to
+          auto-submit.
         </Paragraph>
 
         <PaperTextInput
@@ -94,10 +97,10 @@ export default function PickingPickOutboundContainerScreen() {
           autoCompleteType="off"
           style={styles.marginTop}
           mode="outlined"
-          label="Outbound Container ID"
-          value={outboundContainerId}
+          label="Staging Location ID"
+          value={stagingLocationId}
           returnKeyType="done"
-          onChangeText={setOutboundContainerId}
+          onChangeText={setStagingLocationId}
           onSubmitEditing={handleSubmit}
         />
       </View>
