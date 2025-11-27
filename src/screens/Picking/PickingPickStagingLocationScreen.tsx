@@ -14,14 +14,14 @@ export default function PickingPickStagingLocationScreen() {
 
   const inputRef = React.useRef<TextInput | null>(null);
   const isFocused = useIsFocused();
-  const [stagingLocationId, setStagingLocationId] = React.useState<string>('');
+  const [stagingLocationNumber, setStagingLocationNumber] = React.useState<string>('');
 
   React.useEffect(() => {
     if (!isFocused) {
       return;
     }
 
-    setStagingLocationId('');
+    setStagingLocationNumber('');
     const t = setTimeout(() => inputRef.current?.focus(), INPUT_FOCUS_DELAY_TIME_IN_MS);
     return () => clearTimeout(t);
   }, [isFocused]);
@@ -31,21 +31,26 @@ export default function PickingPickStagingLocationScreen() {
   }
 
   function handleSubmit() {
-    if (!stagingLocationId) {
+    if (!stagingLocationNumber) {
       Alert.alert('Missing Input', 'Please scan or enter a valid Staging Location ID.');
       return;
     }
 
-    // Enforce that the scanned staging location matches the task's staging location
-    const isValid = stagingLocationId === currentTask?.stagingLocation?.id;
+    // Enforce that the scanned staging location ID matches the task's staging location
+    const isValid = stagingLocationNumber === currentTask?.stagingLocation?.locationNumber;
 
     if (!isValid) {
-      Alert.alert('Invalid Staging Location ID', 'The scanned Staging Location ID is not valid. Please try again.');
+      Alert.alert(
+        'Invalid Staging Location ID',
+        `The scanned Staging Location ID is not valid. Expecting: ${
+          currentTask?.stagingLocation?.locationNumber ?? HYPHEN
+        }. Please try again.`
+      );
       return;
     }
 
     // Here we could mark the task as staged or continue workflow
-    dropCurrentTask(stagingLocationId);
+    dropCurrentTask(stagingLocationNumber);
 
     // NOTE: Happy path - for now, just navigate to the Pick Type screen
     // TODO: In the future, we gonna navigate to the next task if exists
@@ -72,7 +77,7 @@ export default function PickingPickStagingLocationScreen() {
             {
               icon: 'pin',
               label: 'Outbound Container ID',
-              value: currentTask.outboundContainer?.id ?? HYPHEN
+              value: currentTask.outboundContainer?.locationNumber ?? HYPHEN
             },
             {
               icon: 'package',
@@ -97,10 +102,10 @@ export default function PickingPickStagingLocationScreen() {
           autoCompleteType="off"
           style={styles.marginTop}
           mode="outlined"
-          label="Staging Location ID"
-          value={stagingLocationId}
+          label="Staging Location Number"
+          value={stagingLocationNumber}
           returnKeyType="done"
-          onChangeText={setStagingLocationId}
+          onChangeText={setStagingLocationNumber}
           onSubmitEditing={handleSubmit}
         />
       </View>

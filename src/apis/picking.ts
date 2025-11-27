@@ -37,11 +37,11 @@ export function getPickTasksApi(facilityId: string, params: PickTaskParams) {
 }
 
 export function patchPickTaskApi(facilityId: string, taskId: string, params: PickTaskActionParams) {
-  return ApiClient.patch(`/api/facilities/${facilityId}/pick-tasks/${taskId}`, params);
+  return ApiClient.patch(`/facilities/${facilityId}/pick-tasks/${taskId}`, params);
 }
 
 export function dropPickTaskApi(facilityId: string, outboundContainerId: string, params: PickTaskDropParams) {
-  return ApiClient.patch(`/api/facilities/${facilityId}/pick-tasks/containers/${outboundContainerId}`, params);
+  return ApiClient.patch(`/facilities/${facilityId}/pick-tasks/containers/${outboundContainerId}`, params);
 }
 
 export function getPickTaskByIdApi(facilityId: string, taskId: string) {

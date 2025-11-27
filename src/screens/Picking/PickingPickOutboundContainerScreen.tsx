@@ -37,18 +37,14 @@ export default function PickingPickOutboundContainerScreen() {
       return;
     }
 
-    // TODO: Implement validation of outboundContainerId
-    const isValid = true;
+    pickCurrentTask(outboundContainerId, ({ errorMessage }) => {
+      if (errorMessage) {
+        Alert.alert('Pick Error', errorMessage);
+        return;
+      }
 
-    if (!isValid) {
-      Alert.alert('Invalid Outbound Container ID', 'The scanned Outbound Container ID is not valid. Please try again.');
-      return;
-    }
-
-    pickCurrentTask(outboundContainerId);
-
-    // Navigation to the staging location screen
-    navigate('PickingPickStagingLocation');
+      navigate('PickingPickStagingLocation');
+    });
   }
 
   return (

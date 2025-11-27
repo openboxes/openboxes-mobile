@@ -48,10 +48,15 @@ export function startPickTaskAction(taskId: string) {
   };
 }
 
-export function pickPickTaskAction(taskId: string, outboundContainerId: string) {
+export function pickPickTaskAction(
+  taskId: string,
+  outboundContainerId: string,
+  callback: (response: { errorMessage?: string }) => void
+) {
   return {
     type: PICK_PICK_TASK_REQUEST,
-    payload: { taskId, outboundContainerId }
+    payload: { taskId, outboundContainerId },
+    callback
   };
 }
 

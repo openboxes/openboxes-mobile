@@ -33,7 +33,7 @@ type PickingContextType = {
   /**
    * Completes the current pick task.
    */
-  pickCurrentTask: (outboundContainerId: string) => void;
+  pickCurrentTask: (outboundContainerId: string, callback: (response: { errorMessage?: string }) => void) => void;
 
   /** Resets state to initial values */
   resetSession: () => void;
@@ -70,6 +70,12 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
           return;
         }
 
+        if (!response.data || response.data.length === 0) {
+          Alert.alert('No Tasks', 'No pick tasks were found for the selected criteria.');
+          navigate('PickingPickType');
+          return;
+        }
+
         setTasks(response.data);
         setCurrentTaskIndex(0);
       })
@@ -84,12 +90,14 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
     dispatch(startPickTaskAction(currentTask.id));
   };
 
-  const pickCurrentTask = (outboundContainerId: string) => {
+  const pickCurrentTask = (outboundContainerId: string, callback: (response: { errorMessage?: string }) => void) => {
     if (!currentTask) {
       return;
     }
 
-    dispatch(pickPickTaskAction(currentTask.id, outboundContainerId));
+    dispatch(pickPickTaskAction(currentTask.id, outboundContainerId, callback));
+
+    revalidateCurrentTask();
   };
 
   const revalidateCurrentTask = (callback?: (task: PickTask) => void) => {
@@ -124,9 +132,12 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    revalidateCurrentTask((updatedTask) => {
-      dispatch(dropPickTaskAction(updatedTask.id, stagingLocationId));
-    });
+    if (!currentTask.outboundContainer) {
+      Alert.alert('Error', 'Current task does not have a valid outbound container.');
+      return;
+    }
+
+    dispatch(dropPickTaskAction(currentTask.outboundContainer.id, stagingLocationId));
   };
 
   // TODO: Implement partial pick logic

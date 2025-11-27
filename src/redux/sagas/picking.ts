@@ -32,13 +32,13 @@ function* getPickTasksAction(action: any) {
     // Call API to get pick tasks
     // @ts-ignore
     const response = yield call(api.getPickTasksApi, currentLocation.id, action.payload);
+    yield action.callback({ response });
     yield put({ type: GET_PICK_TASKS_REQUEST_SUCCESS, payload: response.data });
     yield put(hideScreenLoading());
-    yield action.callback({ response });
   } catch (error) {
-    yield put(hideScreenLoading());
-    yield put({ type: GET_PICK_TASKS_REQUEST_FAIL, payload: error instanceof Error ? error.message : 'Unknown Error' });
+    yield put({ type: GET_PICK_TASKS_REQUEST_FAIL, payload: (error as any)?.message || 'Unknown Error' });
     yield action.callback({ error });
+    yield put(hideScreenLoading());
   }
 }
 
@@ -63,11 +63,11 @@ function* startPickTaskAction(action: any) {
     yield put({ type: START_PICK_TASK_REQUEST_SUCCESS });
     yield put(hideScreenLoading());
   } catch (error) {
-    yield put(hideScreenLoading());
     yield put({
       type: START_PICK_TASK_REQUEST_FAIL,
-      payload: error instanceof Error ? error.message : 'Unknown Error'
+      payload: (error as any)?.message || 'Unknown Error'
     });
+    yield put(hideScreenLoading());
   }
 }
 
@@ -85,19 +85,24 @@ function* pickPickTaskAction(action: any) {
     }
     yield put(showScreenLoading('Picking Task...'));
     // Pick Pick Task API Call
-    yield call(api.patchPickTaskApi, currentLocation.id, action.payload.taskId, {
+    // @ts-ignore
+    const response = yield call(api.patchPickTaskApi, currentLocation.id, action.payload.taskId, {
       action: 'pick',
       outboundContainerId: action.payload.outboundContainerId,
       pickById: session.user.id
     });
+    yield action.callback(response);
     yield put({ type: PICK_PICK_TASK_REQUEST_SUCCESS });
     yield put(hideScreenLoading());
   } catch (error) {
-    yield put(hideScreenLoading());
+    // @eslint-disable-next-line
+    const errorMessage = (error as any)?.message || 'Unknown Error';
+    yield action.callback({ errorMessage });
     yield put({
       type: PICK_PICK_TASK_REQUEST_FAIL,
-      payload: error instanceof Error ? error.message : 'Unknown Error'
+      payload: errorMessage
     });
+    yield put(hideScreenLoading());
   }
 }
 
@@ -123,11 +128,11 @@ function* dropPickTaskAction(action: any) {
     yield put({ type: DROP_PICK_TASK_REQUEST_SUCCESS });
     yield put(hideScreenLoading());
   } catch (error) {
-    yield put(hideScreenLoading());
     yield put({
       type: DROP_PICK_TASK_REQUEST_FAIL,
-      payload: error instanceof Error ? error.message : 'Unknown Error'
+      payload: (error as any)?.message || 'Unknown Error'
     });
+    yield put(hideScreenLoading());
   }
 }
 
@@ -146,12 +151,12 @@ function* getPickTaskByIdAction(action: any) {
     yield put(hideScreenLoading());
     yield action.callback({ response });
   } catch (error) {
-    yield put(hideScreenLoading());
     yield put({
       type: GET_PICK_TASK_BY_ID_REQUEST_FAIL,
-      payload: error instanceof Error ? error.message : 'Unknown Error'
+      payload: (error as any)?.message || 'Unknown Error'
     });
     yield action.callback({ error });
+    yield put(hideScreenLoading());
   }
 }
 
