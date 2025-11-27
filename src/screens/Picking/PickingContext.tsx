@@ -42,7 +42,7 @@ type PickingContextType = {
   handlePartialPick: () => void;
 
   /** Start the pick task (API call) */
-  startPickTask: () => void;
+  startPickTask: (callback: (response: { errorMessage?: string }) => void) => void;
 
   /** Drop the current pick task at the staging location */
   dropCurrentTask: (stagingLocationId: string) => void;
@@ -82,12 +82,12 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
     );
   };
 
-  const startPickTask = () => {
+  const startPickTask = (callback: (response: { errorMessage?: string }) => void) => {
     if (!currentTask) {
       return;
     }
 
-    dispatch(startPickTaskAction(currentTask.id));
+    dispatch(startPickTaskAction(currentTask.id, callback));
   };
 
   const pickCurrentTask = (outboundContainerId: string, callback: (response: { errorMessage?: string }) => void) => {
@@ -96,8 +96,6 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
     }
 
     dispatch(pickPickTaskAction(currentTask.id, outboundContainerId, callback));
-
-    revalidateCurrentTask();
   };
 
   const revalidateCurrentTask = (callback?: (task: PickTask) => void) => {

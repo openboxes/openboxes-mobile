@@ -75,8 +75,14 @@ export default function PickingPickLocationScreen() {
       return;
     }
 
-    startPickTask();
-    navigate('PickingPickProduct');
+    startPickTask(({ errorMessage }) => {
+      if (errorMessage) {
+        Alert.alert('Error', errorMessage);
+        return;
+      }
+
+      navigate('PickingPickProduct');
+    });
   }
 
   return (

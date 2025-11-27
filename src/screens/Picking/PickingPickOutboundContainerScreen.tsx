@@ -10,7 +10,7 @@ import { ProductDetails } from './ProductDetails';
 import styles from './styles';
 
 export default function PickingPickOutboundContainerScreen() {
-  const { currentTask, pickCurrentTask, currentTaskIndex, allTasksCount } = usePickingContext();
+  const { currentTask, pickCurrentTask, currentTaskIndex, allTasksCount, revalidateCurrentTask } = usePickingContext();
 
   const inputRef = React.useRef<TextInput | null>(null);
   const isFocused = useIsFocused();
@@ -43,7 +43,14 @@ export default function PickingPickOutboundContainerScreen() {
         return;
       }
 
-      navigate('PickingPickStagingLocation');
+      revalidateCurrentTask((revalidatedTask) => {
+        if (!revalidatedTask) {
+          Alert.alert('Error', 'Failed to revalidate the current pick task after picking.');
+          return;
+        }
+
+        navigate('PickingPickStagingLocation');
+      });
     });
   }
 

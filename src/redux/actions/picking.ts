@@ -41,10 +41,11 @@ export function getPickTasksAction(
   };
 }
 
-export function startPickTaskAction(taskId: string) {
+export function startPickTaskAction(taskId: string, callback: (response: { errorMessage?: string }) => void) {
   return {
     type: START_PICK_TASK_REQUEST,
-    payload: { taskId }
+    payload: { taskId },
+    callback
   };
 }
 
