@@ -10,7 +10,7 @@ import { ProductDetails } from './ProductDetails';
 import styles from './styles';
 
 export default function PickingPickStagingLocationScreen() {
-  const { currentTask, dropCurrentTask, currentTaskIndex, allTasksCount } = usePickingContext();
+  const { currentTask, dropCurrentTask, currentTaskIndex, allTasksCount, resetSession } = usePickingContext();
 
   const inputRef = React.useRef<TextInput | null>(null);
   const isFocused = useIsFocused();
@@ -54,6 +54,7 @@ export default function PickingPickStagingLocationScreen() {
 
     // NOTE: Happy path - for now, just navigate to the Pick Type screen
     // TODO: In the future, we gonna navigate to the next task if exists
+    resetSession();
     navigate('PickingPickType');
   }
 

@@ -24,11 +24,8 @@ type PickingContextType = {
   /** Total number of tasks in the session */
   allTasksCount: number;
 
-  /**
-   * Initializes the picking session.
-   * Fetches tasks based on criteria.
-   */
-  startSession: (deliveryType: DeliveryType, ordersCount: number) => Promise<void>;
+  /** Starts a new picking session, returns whether it was successful */
+  startSession: (deliveryType: DeliveryType, ordersCount: number) => Promise<boolean>;
 
   /**
    * Completes the current pick task.
@@ -60,26 +57,30 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
   const allTasksCount = tasks.length;
   const currentTask = allTasksCount > 0 ? tasks[currentTaskIndex] : undefined;
 
-  const startSession = async (deliveryType: DeliveryType, ordersCount: number) => {
-    // Api call to fetch tasks based on deliveryType and ordersCount
-    dispatch(
-      getPickTasksAction({ deliveryTypeCode: deliveryType.code, ordersCount }, ({ response }) => {
-        if (response.errorCode) {
-          Alert.alert('Error', response.message ?? 'Failed to load pick tasks.');
-          navigate('PickingPickType');
-          return;
-        }
+  const startSession = async (deliveryType: DeliveryType, ordersCount: number): Promise<boolean> => {
+    return new Promise((resolve) => {
+      dispatch(
+        getPickTasksAction({ deliveryTypeCode: deliveryType.code, ordersCount }, ({ response }) => {
+          if (response.errorCode) {
+            Alert.alert('Error', response.message ?? 'Failed to load pick tasks.');
+            navigate('PickingPickType');
+            resolve(false);
+            return;
+          }
 
-        if (!response.data || response.data.length === 0) {
-          Alert.alert('No Tasks', 'No pick tasks were found for the selected criteria.');
-          navigate('PickingPickType');
-          return;
-        }
+          if (!response.data || response.data.length === 0) {
+            Alert.alert('No Tasks', 'No pick tasks were found for the selected criteria.');
+            navigate('PickingPickType');
+            resolve(false);
+            return;
+          }
 
-        setTasks(response.data);
-        setCurrentTaskIndex(0);
-      })
-    );
+          setTasks(response.data);
+          setCurrentTaskIndex(0);
+          resolve(true);
+        })
+      );
+    });
   };
 
   const startPickTask = (callback: (response: { errorMessage?: string }) => void) => {
@@ -112,10 +113,7 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
 
         const updatedTask = response.data;
         setTasks((prevTasks) => prevTasks.map((task, index) => (index === currentTaskIndex ? updatedTask : task)));
-
-        if (callback) {
-          callback(updatedTask);
-        }
+        callback?.(updatedTask);
       })
     );
   };

@@ -44,9 +44,10 @@ export default function PickingPickTypeScreen() {
     }
 
     // This function initializes the picking session with the selected parameters
-    await startSession(deliveryType, ordersCount);
+    // and returns whether the session was started successfully.
+    const isValid = await startSession(deliveryType, ordersCount);
 
-    navigate('PickingPickLocation');
+    isValid && navigate('PickingPickLocation');
   }
 
   return (

@@ -1,4 +1,4 @@
-import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { useIsFocused } from '@react-navigation/native';
 import * as React from 'react';
 import { Alert, TextInput, View } from 'react-native';
 import { Divider, TextInput as PaperTextInput, Paragraph, Subheading } from 'react-native-paper';
@@ -10,44 +10,11 @@ import { ProductDetails } from './ProductDetails';
 import styles from './styles';
 
 export default function PickingPickLocationScreen() {
-  const navigation = useNavigation();
-  const { currentTask, currentTaskIndex, allTasksCount, resetSession, startPickTask } = usePickingContext();
+  const { currentTask, currentTaskIndex, allTasksCount, startPickTask } = usePickingContext();
 
   const inputRef = React.useRef<TextInput | null>(null);
   const isFocused = useIsFocused();
   const [pickLocationBarcode, setPickLocationBarcode] = React.useState<string>('');
-
-  // Intercept back navigation to confirm discarding the session
-  React.useEffect(() => {
-    const unsubscribe = navigation.addListener('beforeRemove', (e) => {
-      // Prevent default behavior of leaving the screen
-      e.preventDefault();
-
-      // If the session was cleared (finished), allow navigation without confirmation
-      if (!currentTask) {
-        navigation.dispatch(e.data.action);
-        return;
-      }
-
-      Alert.alert(
-        'Discard Session?',
-        'Going back will end the current picking session and all progress will be lost.',
-        [
-          {
-            text: 'Discard',
-            onPress: () => {
-              // User confirmed. Clean up context and proceed with the back action.
-              resetSession();
-              navigation.dispatch(e.data.action);
-            }
-          },
-          { text: 'Stay', style: 'cancel', onPress: () => {} }
-        ]
-      );
-    });
-
-    return unsubscribe;
-  }, [currentTask, navigation, resetSession]);
 
   React.useEffect(() => {
     if (!isFocused) {
@@ -66,11 +33,10 @@ export default function PickingPickLocationScreen() {
 
   function handleSubmit() {
     const isValid = pickLocationBarcode === currentTask?.location?.locationNumber;
-
     if (!isValid) {
       Alert.alert(
         'Invalid Barcode',
-        `Incorrect location scanned. Expected location: ${currentTask?.location?.locationNumber}. Please try again.`
+        `Incorrect location scanned. Expected: ${currentTask?.location?.locationNumber}. Try again.`
       );
       return;
     }
