@@ -21,6 +21,10 @@ export const GET_PICK_TASK_BY_ID_REQUEST = 'GET_PICK_TASK_BY_ID_REQUEST';
 export const GET_PICK_TASK_BY_ID_REQUEST_SUCCESS = 'GET_PICK_TASK_BY_ID_REQUEST_SUCCESS';
 export const GET_PICK_TASK_BY_ID_REQUEST_FAIL = 'GET_PICK_TASK_BY_ID_REQUEST_FAIL';
 
+export const GET_PICKED_TASKS_BY_CONTAINER_REQUEST = 'GET_PICKED_TASKS_BY_CONTAINER_REQUEST';
+export const GET_PICKED_TASKS_BY_CONTAINER_REQUEST_SUCCESS = 'GET_PICKED_TASKS_BY_CONTAINER_REQUEST_SUCCESS';
+export const GET_PICKED_TASKS_BY_CONTAINER_REQUEST_FAIL = 'GET_PICKED_TASKS_BY_CONTAINER_REQUEST_FAIL';
+
 export function getPickTasksAction(
   params: PickTaskParams,
   callback: (response: {
@@ -61,10 +65,15 @@ export function pickPickTaskAction(
   };
 }
 
-export function dropPickTaskAction(outboundContainerId: string, stagingLocationId: string) {
+export function dropPickTaskAction(
+  outboundContainerId: string,
+  stagingLocationId: string,
+  callback?: (response: { errorMessage?: string }) => void
+) {
   return {
     type: DROP_PICK_TASK_REQUEST,
-    payload: { outboundContainerId, stagingLocationId }
+    payload: { outboundContainerId, stagingLocationId },
+    callback
   };
 }
 
@@ -81,6 +90,26 @@ export function getPickTaskByIdAction(
   return {
     type: GET_PICK_TASK_BY_ID_REQUEST,
     payload: { taskId },
+    callback
+  };
+}
+
+export function getPickedTasksByContainerAction(
+  outboundContainerId: string,
+  callback: (response: {
+    response: {
+      data: PickTask[];
+      errorCode?: string;
+      message?: string;
+      max?: number;
+      offset?: number;
+      totalCount?: number;
+    };
+  }) => void
+) {
+  return {
+    type: GET_PICKED_TASKS_BY_CONTAINER_REQUEST,
+    payload: { outboundContainerId },
     callback
   };
 }

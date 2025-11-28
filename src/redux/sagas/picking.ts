@@ -12,6 +12,9 @@ import {
   GET_PICK_TASKS_REQUEST,
   GET_PICK_TASKS_REQUEST_FAIL,
   GET_PICK_TASKS_REQUEST_SUCCESS,
+  GET_PICKED_TASKS_BY_CONTAINER_REQUEST,
+  GET_PICKED_TASKS_BY_CONTAINER_REQUEST_FAIL,
+  GET_PICKED_TASKS_BY_CONTAINER_REQUEST_SUCCESS,
   PICK_PICK_TASK_REQUEST,
   PICK_PICK_TASK_REQUEST_FAIL,
   PICK_PICK_TASK_REQUEST_SUCCESS,
@@ -137,6 +140,7 @@ function* dropPickTaskAction(action: any) {
       type: DROP_PICK_TASK_REQUEST_FAIL,
       payload: (error as any)?.message || 'Error Dropping Pick Task'
     });
+    yield action.callback({ errorMessage: (error as any)?.message || 'Error Dropping Pick Task' });
     yield put(hideScreenLoading());
   }
 }
@@ -165,10 +169,40 @@ function* getPickTaskByIdAction(action: any) {
   }
 }
 
+function* getPickedTasksByContainerAction(action: any) {
+  try {
+    // @ts-ignore
+    const currentLocation = yield select(userLocation);
+    if (!currentLocation) {
+      throw new Error('User Location Not Found');
+    }
+    yield put(showScreenLoading('Fetching Picked Tasks...'));
+    // Call API to get picked tasks by container
+    // @ts-ignore
+    const response = yield call(
+      api.getPickTasksByStatusAndContainerApi,
+      currentLocation.id,
+      action.payload.outboundContainerId,
+      'PICKED'
+    );
+    yield put({ type: GET_PICKED_TASKS_BY_CONTAINER_REQUEST_SUCCESS, payload: response.data });
+    yield action.callback({ response });
+    yield put(hideScreenLoading());
+  } catch (error) {
+    yield put({
+      type: GET_PICKED_TASKS_BY_CONTAINER_REQUEST_FAIL,
+      payload: (error as any)?.message || 'Error Fetching Picked Tasks'
+    });
+    yield action.callback({ error });
+    yield put(hideScreenLoading());
+  }
+}
+
 export default function* watcher() {
   yield takeLatest(GET_PICK_TASKS_REQUEST, getPickTasksAction);
   yield takeLatest(START_PICK_TASK_REQUEST, startPickTaskAction);
   yield takeLatest(PICK_PICK_TASK_REQUEST, pickPickTaskAction);
   yield takeLatest(DROP_PICK_TASK_REQUEST, dropPickTaskAction);
   yield takeLatest(GET_PICK_TASK_BY_ID_REQUEST, getPickTaskByIdAction);
+  yield takeLatest(GET_PICKED_TASKS_BY_CONTAINER_REQUEST, getPickedTasksByContainerAction);
 }

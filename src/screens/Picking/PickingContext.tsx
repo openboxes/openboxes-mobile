@@ -120,6 +120,7 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
 
   const dropCurrentTask = (stagingLocationId: string) => {
     if (!currentTask) {
+      Alert.alert('Task Missing', 'No current task to drop.');
       return;
     }
 

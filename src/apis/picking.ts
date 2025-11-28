@@ -47,3 +47,11 @@ export function dropPickTaskApi(facilityId: string, outboundContainerId: string,
 export function getPickTaskByIdApi(facilityId: string, taskId: string) {
   return ApiClient.get(`/facilities/${facilityId}/pick-tasks/${taskId}`);
 }
+
+export function getPickTasksByStatusAndContainerApi(facilityId: string, outboundContainerId: string, status: 'PICKED') {
+  return ApiClient.get(
+    `/facilities/${facilityId}/pick-tasks?outboundContainerId=${encodeURIComponent(
+      outboundContainerId
+    )}&status=${encodeURIComponent(status)}`
+  );
+}

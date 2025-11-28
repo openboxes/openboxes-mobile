@@ -82,20 +82,6 @@ export default function PickingPickTypeScreen() {
 
       <View style={styles.formWrapper}>
         <PaperTextInput
-          disabled
-          autoCompleteType="off"
-          label="Selected Pick Type"
-          mode="outlined"
-          value={
-            deliveryType
-              ? deliveryType.priority
-                ? `P${deliveryType.priority} - ${deliveryType.label}`
-                : deliveryType.label
-              : ''
-          }
-        />
-
-        <PaperTextInput
           autoCompleteType="off"
           style={styles.marginTopSmall}
           label="Number of Orders to Group"

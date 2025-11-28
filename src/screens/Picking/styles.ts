@@ -105,6 +105,9 @@ export default StyleSheet.create({
   marginTopSmall: {
     marginTop: Theme.spacing.small
   },
+  marginRight: {
+    marginRight: Theme.spacing.small
+  },
 
   modalOverlay: {
     flex: 1,
@@ -172,5 +175,25 @@ export default StyleSheet.create({
   dropdownContainer: {
     width: '50%',
     alignSelf: 'flex-end'
+  },
+  flex1: {
+    flex: 1
+  },
+  fullWidth: {
+    width: '100%'
+  },
+  actionsWrapper: {
+    padding: Theme.spacing.medium,
+    alignItems: 'center',
+    borderTopWidth: 1,
+    borderTopColor: '#E0E0E0',
+    backgroundColor: 'white'
+  },
+  itemCard: {
+    padding: Theme.spacing.large,
+    backgroundColor: 'white',
+    marginBottom: Theme.spacing.small,
+    borderRadius: Theme.roundness,
+    elevation: 2
   }
 });

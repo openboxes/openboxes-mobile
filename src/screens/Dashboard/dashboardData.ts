@@ -11,6 +11,7 @@ import IconReceiving from '../../assets/images/icon_receiving.svg';
 import IconScan from '../../assets/images/icon_scan.svg';
 import IconSortation from '../../assets/images/icon_sortation.svg';
 import IconPutaway from '../../assets/images/icon_putaway.svg';
+import IconGarage from '../../assets/images/icon_garage.svg';
 
 export type DashboardEntry = {
   key: string;
@@ -50,6 +51,13 @@ const dashboardEntries: DashboardEntry[] = [
     entryDescription: 'Manage packing tasks and shipments',
     icon: IconPacking,
     navigationScreenName: 'OutboundStockList'
+  },
+  {
+    key: 'moveToStaging',
+    screenName: 'Move To Staging',
+    entryDescription: 'Manage moving picked items to staging area.',
+    icon: IconGarage,
+    navigationScreenName: 'PickingMoveToStaging'
   },
   {
     key: 'loading',
