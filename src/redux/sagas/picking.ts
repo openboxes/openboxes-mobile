@@ -134,6 +134,7 @@ function* dropPickTaskAction(action: any) {
       stagedById: session.user.id
     });
     yield put({ type: DROP_PICK_TASK_REQUEST_SUCCESS });
+    yield action.callback();
     yield put(hideScreenLoading());
   } catch (error) {
     yield put({

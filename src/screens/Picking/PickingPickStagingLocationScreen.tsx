@@ -10,7 +10,8 @@ import { ProductDetails } from './ProductDetails';
 import styles from './styles';
 
 export default function PickingPickStagingLocationScreen() {
-  const { currentTask, dropCurrentTask, currentTaskIndex, allTasksCount, resetSession } = usePickingContext();
+  const { currentTask, dropCurrentTask, currentTaskIndex, allTasksCount, resetSession, goToNextTask } =
+    usePickingContext();
 
   const inputRef = React.useRef<TextInput | null>(null);
   const isFocused = useIsFocused();
@@ -49,13 +50,23 @@ export default function PickingPickStagingLocationScreen() {
       return;
     }
 
-    // Here we could mark the task as staged or continue workflow
-    dropCurrentTask(stagingLocationNumber);
+    dropCurrentTask(stagingLocationNumber, () => {
+      if (currentTaskIndex + 1 >= allTasksCount) {
+        Alert.alert('Picking Session Complete', 'You have completed all pick tasks in this session.', [
+          {
+            text: 'OK',
+            onPress: () => {
+              resetSession();
+              navigate('PickingPickType');
+            }
+          }
+        ]);
+        return;
+      }
 
-    // NOTE: Happy path - for now, just navigate to the Pick Type screen
-    // TODO: In the future, we gonna navigate to the next task if exists
-    resetSession();
-    navigate('PickingPickType');
+      goToNextTask();
+      navigate('PickingPickLocation');
+    });
   }
 
   return (
@@ -94,8 +105,7 @@ export default function PickingPickStagingLocationScreen() {
       <View style={[styles.wrapperWithPadding]}>
         <Subheading style={styles.subheading}>Scan Staging Location</Subheading>
         <Paragraph style={styles.paragraph}>
-          Point your barcode scanner at the staging location or type the ID manually, then wait a moment for it to
-          auto-submit.
+          Point your barcode scanner at the staging location or type the ID manually.
         </Paragraph>
 
         <PaperTextInput

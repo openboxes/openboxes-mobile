@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Alert } from 'react-native';
 import { useDispatch } from 'react-redux';
+
 import { navigate } from '../../NavigationService';
 import {
   dropPickTaskAction,
@@ -14,38 +15,28 @@ import { DeliveryType, PickTask } from '../../types/picking';
 type PickingContextType = {
   /** The list of all tasks for this session */
   tasks: PickTask[];
-
   /** The index of the task currently being worked on */
   currentTaskIndex: number;
-
   /** The derived object for the active task */
   currentTask: PickTask | undefined;
-
   /** Total number of tasks in the session */
   allTasksCount: number;
-
   /** Starts a new picking session, returns whether it was successful */
   startSession: (deliveryType: DeliveryType, ordersCount: number) => Promise<boolean>;
-
-  /**
-   * Completes the current pick task.
-   */
+  /** Completes the current pick task. */
   pickCurrentTask: (outboundContainerId: string, callback: (response: { errorMessage?: string }) => void) => void;
-
   /** Resets state to initial values */
   resetSession: () => void;
-
   /** Handle partial pick for the current task */
   handlePartialPick: () => void;
-
   /** Start the pick task (API call) */
   startPickTask: (callback: (response: { errorMessage?: string }) => void) => void;
-
   /** Drop the current pick task at the staging location */
-  dropCurrentTask: (stagingLocationId: string) => void;
-
+  dropCurrentTask: (stagingLocationId: string, callback?: (response: { errorMessage?: string }) => void) => void;
   /** Revalidates the current pick task details from the server */
   revalidateCurrentTask: (callback?: (task: PickTask) => void) => void;
+  /** Advances to the next task in the list */
+  goToNextTask: () => void;
 };
 
 const PickingContext = React.createContext<PickingContextType | undefined>(undefined);
@@ -70,7 +61,6 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
 
           if (!response.data || response.data.length === 0) {
             Alert.alert('No Tasks', 'No pick tasks were found for the selected criteria.');
-            navigate('PickingPickType');
             resolve(false);
             return;
           }
@@ -118,7 +108,7 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
     );
   };
 
-  const dropCurrentTask = (stagingLocationId: string) => {
+  const dropCurrentTask = (stagingLocationId: string, callback?: (response: { errorMessage?: string }) => void) => {
     if (!currentTask) {
       Alert.alert('Task Missing', 'No current task to drop.');
       return;
@@ -134,7 +124,7 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    dispatch(dropPickTaskAction(currentTask.outboundContainer.id, stagingLocationId));
+    dispatch(dropPickTaskAction(currentTask.outboundContainer.id, stagingLocationId, callback));
   };
 
   // TODO: Implement partial pick logic
@@ -143,6 +133,10 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
   const resetSession = () => {
     setTasks([]);
     setCurrentTaskIndex(0);
+  };
+
+  const goToNextTask = () => {
+    setCurrentTaskIndex((prevIndex) => prevIndex + 1);
   };
 
   return (
@@ -158,7 +152,8 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
         handlePartialPick,
         startPickTask,
         dropCurrentTask,
-        revalidateCurrentTask
+        revalidateCurrentTask,
+        goToNextTask
       }}
     >
       {children}
