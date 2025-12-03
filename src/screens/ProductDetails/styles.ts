@@ -153,8 +153,16 @@ export default StyleSheet.create({
   },
   cardContainer: { backgroundColor: Theme.colors.background },
   subheading: { fontWeight: 'bold', fontSize: 16 },
-  refreshButton: {
+  actionButtons: {
+    flexDirection: 'column',
+    justifyContent: 'space-between',
     marginTop: Theme.spacing.large
+  },
+  topSeparator: {
+    marginTop: Theme.spacing.small
+  },
+  bottomSeparator: {
+    marginBottom: Theme.spacing.small
   },
   refreshMessage: {
     fontSize: 12,
@@ -163,5 +171,19 @@ export default StyleSheet.create({
     marginTop: 2,
     textAlign: 'right'
   },
-  caption: { fontSize: 12, color: Theme.colors.text }
+  caption: { fontSize: 12, color: Theme.colors.text },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)'
+  },
+  modalContent: {
+    width: '90%',
+    backgroundColor: 'white',
+    padding: Theme.spacing.large,
+    borderRadius: Theme.roundness * 2
+  }
 });

@@ -1,6 +1,6 @@
 import React from 'react';
 import { ScrollView, TouchableOpacity, View } from 'react-native';
-import { Caption, Card, Chip, Divider, Paragraph, Subheading } from 'react-native-paper';
+import { Caption, Card, Chip, Divider, Button as PaperButton, Paragraph, Subheading } from 'react-native-paper';
 import { connect } from 'react-redux';
 
 import Button from '../../components/Button';
@@ -8,8 +8,9 @@ import showPopup from '../../components/Popup';
 import PrintModal from '../../components/PrintModal';
 import { HYPHEN } from '../../constants';
 import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
-import { getProductByIdAction } from '../../redux/actions/products';
+import { getProductByIdAction, updateProductIdentifierAction } from '../../redux/actions/products';
 import { RootState } from '../../redux/reducers';
+import EditBarcodeModal from './EditBarcodeModal';
 import styles from './styles';
 import { DispatchProps, Props, State } from './Types';
 import { vmMapper } from './VMMapper';
@@ -39,7 +40,8 @@ class ProductDetails extends React.Component<Props, State> {
     super(props);
     this.state = {
       visible: false,
-      productDetails: {}
+      productDetails: {},
+      editBarcodeVisible: false
     };
   }
 
@@ -52,10 +54,40 @@ class ProductDetails extends React.Component<Props, State> {
     this.setState({ visible: false });
   };
 
+  openEditBarcodeModal = () => {
+    this.setState({ editBarcodeVisible: true });
+  };
+
+  closeEditBarcodeModal = () => {
+    this.setState({ editBarcodeVisible: false });
+  };
+
   handleClick = () => {
     const { product } = this.props.route.params;
-    this.props.getProductByIdAction(product.id, (data) => {
+    this.props.getProductByIdAction(product.id, () => {
       this.setState({ visible: true });
+    });
+  };
+
+  handleSaveBarcode = (newBarcode: string) => {
+    const { productDetails } = this.state;
+    const id = productDetails.id;
+    if (!id) {
+      return;
+    }
+
+    this.props.updateProductIdentifierAction(id, 'upc', newBarcode, (response: any) => {
+      if (response?.error) {
+        showPopup({
+          title: 'Error',
+          message: response.errorMessage ?? 'Product Identifier update failed',
+          positiveButton: { text: 'OK' }
+        });
+        return;
+      }
+
+      this.setState({ editBarcodeVisible: false });
+      this.getProductDetails(id);
     });
   };
 
@@ -146,7 +178,7 @@ class ProductDetails extends React.Component<Props, State> {
   };
 
   render() {
-    const vm = vmMapper(this.state.productDetails, this.state);
+    const vm = vmMapper(this.state.productDetails);
     const product = this.props.selectedProduct;
     const { visible } = this.state;
     const filteredItems =
@@ -161,11 +193,17 @@ class ProductDetails extends React.Component<Props, State> {
           type={'products'}
           defaultBarcodeLabelUrl={product?.defaultBarcodeLabelUrl}
         />
+        <EditBarcodeModal
+          visible={this.state.editBarcodeVisible}
+          currentBarcode={this.state.productDetails?.upc}
+          onClose={this.closeEditBarcodeModal}
+          onSave={this.handleSaveBarcode}
+        />
         <View style={styles.contentContainer}>
           <View style={styles.header}>
             <View style={styles.headerRow}>
               <Chip icon="barcode" style={styles.chipDefault} textStyle={styles.chipText}>
-                {vm.productCode}
+                {`Product Code: ${vm.productCode || HYPHEN}`}
               </Chip>
             </View>
 
@@ -174,17 +212,23 @@ class ProductDetails extends React.Component<Props, State> {
             <Subheading style={styles.name}>{vm.name}</Subheading>
 
             <View style={styles.additionalInfoRow}>
+              <Chip icon="barcode" style={styles.chipDefault} textStyle={styles.chipText}>
+                {/* UPC (Universal Product Code) — ensures consistency if the barcode differs from the product code */}
+                {`Barcode: ${vm.upc}`}
+              </Chip>
               <Chip icon="package" style={styles.chipDefault} textStyle={styles.chipText}>
                 {`Items Available: ${filteredItems.length}`}
               </Chip>
             </View>
 
-            <Button
-              style={styles.refreshButton}
-              size="100%"
-              title="Refresh (Get Latest Stock)"
-              onPress={this.getProduct}
-            />
+            <View style={styles.actionButtons}>
+              <PaperButton icon="barcode" mode="contained" onPress={this.openEditBarcodeModal}>
+                Edit Barcode
+              </PaperButton>
+              <PaperButton style={styles.topSeparator} icon="refresh" mode="contained" onPress={this.getProduct}>
+                Refresh Availability
+              </PaperButton>
+            </View>
           </View>
           <Divider />
           <ScrollView style={styles.detailsSection}>
@@ -228,10 +272,12 @@ const mapStateToProps = (state: RootState) => ({
   selectedProduct: state.productsReducer.selectedProduct,
   productSummaryConfig: state.settingsReducer.productSummaryConfig
 });
+
 const mapDispatchToProps: DispatchProps = {
   getProductByIdAction,
   showScreenLoading,
-  hideScreenLoading
+  hideScreenLoading,
+  updateProductIdentifierAction
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProductDetails);

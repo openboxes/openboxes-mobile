@@ -59,6 +59,15 @@ import PutawayLocationScanScreen from './screens/SortationPutaway/PutawayLocatio
 import PutawayProductScanScreen from './screens/SortationPutaway/PutawayProductScanScreen';
 import PutawayQuantityScreen from './screens/SortationPutaway/PutawayQuantityScreen';
 import HeaderRight from './screens/TopBar/RightHeader';
+import PickingPickTypeScreen from './screens/Picking/PickingPickTypeScreen';
+import PickingPickLocationScreen from './screens/Picking/PickingPickLocationScreen';
+import PickingPickProductScreen from './screens/Picking/PickingPickProductScreen';
+import PickingPickQuantityScreen from './screens/Picking/PickingPickQuantityScreen';
+import PickingPickOutboundContainerScreen from './screens/Picking/PickingPickOutboundContainerScreen';
+import PickingPickStagingLocationScreen from './screens/Picking/PickingPickStagingLocationScreen';
+import PickingMoveToStagingScreen from './screens/Picking/PickingMoveToStaging';
+import PickingStagingDropScreen from './screens/Picking/PickingStagingDrop';
+import { PickingProvider } from './screens/Picking/PickingContext';
 import Transfer from './screens/Transfer';
 import Transfers from './screens/Transfers';
 import TransferDetails from './screens/TransfersDetails';
@@ -148,166 +157,216 @@ class Main extends Component<Props, State> {
     const initialRouteName = !loggedIn ? 'Login' : 'Choose Location';
     return (
       <Provider theme={Theme}>
-        <SafeAreaView style={{ flex: 1 }}>
-          <FullScreenLoadingIndicator
-            visible={this.props.fullScreenLoadingIndicator.visible}
-            message={this.props.fullScreenLoadingIndicator.message}
-          />
-          <NavigationContainer ref={NavigationService.navigationRef}>
-            <Stack.Navigator
-              initialRouteName={initialRouteName}
-              screenOptions={({ route, navigation }) => ({
-                headerRight: () => <HeaderRight route={route} navigation={navigation} />,
-                headerTintColor: Theme.colors.surface,
-                headerStyle: {
-                  backgroundColor: Theme.colors.primary,
-                  height: appConfig.APP_HEADER_HEIGHT
-                }
-              })}
-            >
-              <Stack.Screen
-                name="Login"
-                component={Login}
-                options={{
-                  headerShown: false,
-                  title: 'Login'
-                }}
-              />
-              <Stack.Screen
-                name="Drawer"
-                component={DrawerNavigator}
-                options={{
-                  headerShown: false,
-                  title: 'Home'
-                }}
-              />
-              <Stack.Screen name="Orders" component={Orders} options={{ title: 'Orders' }} />
-              <Stack.Screen name="OrderDetails" component={OrderDetails} options={{ title: 'Order Details' }} />
-              <Stack.Screen name="ProductDetails" component={ProductDetails} options={{ title: 'Product Details' }} />
-              <Stack.Screen name="PickOrderItem" component={PickOrderItem} options={{ title: 'Pick Order Item' }} />
-              <Stack.Screen name="Transfers" component={Transfers} options={{ title: 'Transfers' }} />
-              <Stack.Screen
-                name="TransferDetails"
-                component={TransferDetails}
-                options={{ title: 'Transfer Details' }}
-              />
-              <Stack.Screen name="Dashboard" component={Dashboard} options={{ title: 'Dashboard' }} />
-              <Stack.Screen name="Scan" component={Scan} options={{ title: 'Scan' }} />
-              <Stack.Screen name="Products" component={Products} options={{ title: 'Products' }} />
-              <Stack.Screen name="PutawayList" component={PutawayList} options={{ title: 'Putaway List' }} />
-              <Stack.Screen
-                name="PutawayCandidates"
-                component={PutawayCandidates}
-                options={{ title: 'Putaway Candidates' }}
-              />
-              <Stack.Screen name="PutawayItem" component={PutawayItem} options={{ title: 'Putaway Item' }} />
-              <Stack.Screen
-                name="PutawayItemDetail"
-                component={PutawayItemDetail}
-                options={{ title: 'Putaway Item Detail' }}
-              />
-              <Stack.Screen name="PutawayDetails" component={PutawayDetails} options={{ title: 'Putaway Details' }} />
-              <Stack.Screen name="InboundOrderList" component={InboundOrderList} options={{ title: 'Receiving' }} />
-              <Stack.Screen name="InboundDetails" component={InboundDetails} options={{ title: 'Inbound Details' }} />
-              <Stack.Screen name="Product Summary" component={ProductSummary} options={{ title: 'Product Summary' }} />
-              <Stack.Screen name="CreateLpn" component={CreateLpn} options={{ title: 'Create LPN' }} />
-              <Stack.Screen name="LpnDetail" component={LpnDetail} options={{ title: 'LPN Details' }} />
-              <Stack.Screen
-                name="InboundReceiveDetail"
-                component={InboundReceiveDetail}
-                options={{ title: 'Receive Detail' }}
-              />
-              <Stack.Screen name="Settings" component={Settings} options={{ title: 'Settings' }} />
-              <Stack.Screen name="OutboundStockList" component={OutboundStockList} options={{ title: 'Packing' }} />
-              <Stack.Screen
-                name="OutboundStockDetails"
-                component={OutboundStockDetails}
-                options={{ title: 'Packing Details' }}
-              />
-              <Stack.Screen name="OutboundLoadingList" component={OutboundLoadingList} options={{ title: 'Loading' }} />
-              <Stack.Screen
-                name="OutboundLoadingDetails"
-                component={OutboundLoadingDetails}
-                options={{ title: 'Loading Details' }}
-              />
-              <Stack.Screen
-                name="OutboundLoadingContainer"
-                component={OutboundLoadingContainer}
-                options={{ title: 'Load LPN' }}
-              />
-              <Stack.Screen name="AdjustStock" component={AdjustStock} options={{ title: 'Adjust Stock' }} />
-              <Stack.Screen name="Transfer" component={Transfer} options={{ title: 'Transfer' }} />
-              <Stack.Screen
-                name="ShipmentDetails"
-                component={ShipItemDetails}
-                options={{ title: 'Shipment Details' }}
-              />
-              <Stack.Screen
-                name="InternalLocationDetail"
-                component={InternalLocationDetails}
-                options={{ title: 'Location Details' }}
-              />
-              <Stack.Screen
-                name="ViewAvailableItem"
-                component={ViewAvailableItem}
-                options={{ title: 'Available Item' }}
-              />
-              <Stack.Screen name="Placeholder" component={Placeholder} options={{ title: 'Work in Progress' }} />
-              <Stack.Screen
-                name="PackingLocationPage"
-                component={PackingLocationPage}
-                options={{ title: 'Packing Location' }}
-              />
-              <Stack.Screen name="AppInfo" component={AppInfoScreen} options={{ title: 'App Info' }} />
-              <Stack.Screen
-                name="Sortation"
-                component={SortationEntryScreen}
-                options={{ title: 'Inbound Sortation' }}
-              />
-              <Stack.Screen
-                name="SortationQuantity"
-                component={SortationQuantityScreen}
-                options={{ title: 'Inbound Sortation' }}
-              />
-              <Stack.Screen
-                name="SortationContainer"
-                component={SortationContainerScreen}
-                options={{ title: 'Inbound Sortation' }}
-              />
-              <Stack.Screen
-                name="SortationTaskList"
-                component={SortationTaskSelectionListScreen}
-                options={{ title: 'Inbound Sortation' }}
-              />
-              <Stack.Screen name="SortationPutaway" component={PutawayEntryScreen} options={{ title: 'Putaway' }} />
-              <Stack.Screen
-                name="SortationPutawayLocationScan"
-                component={PutawayLocationScanScreen}
-                options={{ title: 'Putaway Details' }}
-              />
-              <Stack.Screen
-                name="SortationPutawayProductScan"
-                component={PutawayProductScanScreen}
-                options={{ title: 'Putaway Details' }}
-              />
-              <Stack.Screen
-                name="SortationPutawayQuantity"
-                component={PutawayQuantityScreen}
-                options={{ title: 'Putaway Details' }}
-              />
-              <Stack.Screen
-                name="PickUpEntryScreen"
-                component={PickUpEntryScreen}
-                options={{ title: 'Pick Up Allocation' }}
-              />
-              <Stack.Screen
-                name="PickUpOrderScreen"
-                component={PickUpOrderScreen}
-                options={{ title: 'Pick Up Allocation' }}
-              />
-            </Stack.Navigator>
-          </NavigationContainer>
-        </SafeAreaView>
+        <PickingProvider>
+          <SafeAreaView style={{ flex: 1 }}>
+            <FullScreenLoadingIndicator
+              visible={this.props.fullScreenLoadingIndicator.visible}
+              message={this.props.fullScreenLoadingIndicator.message}
+            />
+            <NavigationContainer ref={NavigationService.navigationRef}>
+              <Stack.Navigator
+                initialRouteName={initialRouteName}
+                screenOptions={({ route, navigation }) => ({
+                  headerRight: () => <HeaderRight route={route} navigation={navigation} />,
+                  headerTintColor: Theme.colors.surface,
+                  headerStyle: {
+                    backgroundColor: Theme.colors.primary,
+                    height: appConfig.APP_HEADER_HEIGHT
+                  }
+                })}
+              >
+                <Stack.Screen
+                  name="Login"
+                  component={Login}
+                  options={{
+                    headerShown: false,
+                    title: 'Login'
+                  }}
+                />
+                <Stack.Screen
+                  name="Drawer"
+                  component={DrawerNavigator}
+                  options={{
+                    headerShown: false,
+                    title: 'Home'
+                  }}
+                />
+                <Stack.Screen name="Orders" component={Orders} options={{ title: 'Orders' }} />
+                <Stack.Screen name="OrderDetails" component={OrderDetails} options={{ title: 'Order Details' }} />
+                <Stack.Screen name="ProductDetails" component={ProductDetails} options={{ title: 'Product Details' }} />
+                <Stack.Screen name="PickOrderItem" component={PickOrderItem} options={{ title: 'Pick Order Item' }} />
+                <Stack.Screen name="Transfers" component={Transfers} options={{ title: 'Transfers' }} />
+                <Stack.Screen
+                  name="TransferDetails"
+                  component={TransferDetails}
+                  options={{ title: 'Transfer Details' }}
+                />
+                <Stack.Screen name="Dashboard" component={Dashboard} options={{ title: 'Dashboard' }} />
+                <Stack.Screen name="Scan" component={Scan} options={{ title: 'Scan' }} />
+                <Stack.Screen name="Products" component={Products} options={{ title: 'Products' }} />
+                <Stack.Screen name="PutawayList" component={PutawayList} options={{ title: 'Putaway List' }} />
+                <Stack.Screen
+                  name="PutawayCandidates"
+                  component={PutawayCandidates}
+                  options={{ title: 'Putaway Candidates' }}
+                />
+                <Stack.Screen name="PutawayItem" component={PutawayItem} options={{ title: 'Putaway Item' }} />
+                <Stack.Screen
+                  name="PutawayItemDetail"
+                  component={PutawayItemDetail}
+                  options={{ title: 'Putaway Item Detail' }}
+                />
+                <Stack.Screen name="PutawayDetails" component={PutawayDetails} options={{ title: 'Putaway Details' }} />
+                <Stack.Screen name="InboundOrderList" component={InboundOrderList} options={{ title: 'Receiving' }} />
+                <Stack.Screen name="InboundDetails" component={InboundDetails} options={{ title: 'Inbound Details' }} />
+                <Stack.Screen
+                  name="Product Summary"
+                  component={ProductSummary}
+                  options={{ title: 'Product Summary' }}
+                />
+                <Stack.Screen name="CreateLpn" component={CreateLpn} options={{ title: 'Create LPN' }} />
+                <Stack.Screen name="LpnDetail" component={LpnDetail} options={{ title: 'LPN Details' }} />
+                <Stack.Screen
+                  name="InboundReceiveDetail"
+                  component={InboundReceiveDetail}
+                  options={{ title: 'Receive Detail' }}
+                />
+                <Stack.Screen name="Settings" component={Settings} options={{ title: 'Settings' }} />
+                <Stack.Screen name="OutboundStockList" component={OutboundStockList} options={{ title: 'Packing' }} />
+                <Stack.Screen
+                  name="OutboundStockDetails"
+                  component={OutboundStockDetails}
+                  options={{ title: 'Packing Details' }}
+                />
+                <Stack.Screen
+                  name="OutboundLoadingList"
+                  component={OutboundLoadingList}
+                  options={{ title: 'Loading' }}
+                />
+                <Stack.Screen
+                  name="OutboundLoadingDetails"
+                  component={OutboundLoadingDetails}
+                  options={{ title: 'Loading Details' }}
+                />
+                <Stack.Screen
+                  name="OutboundLoadingContainer"
+                  component={OutboundLoadingContainer}
+                  options={{ title: 'Load LPN' }}
+                />
+                <Stack.Screen name="AdjustStock" component={AdjustStock} options={{ title: 'Adjust Stock' }} />
+                <Stack.Screen name="Transfer" component={Transfer} options={{ title: 'Transfer' }} />
+                <Stack.Screen
+                  name="ShipmentDetails"
+                  component={ShipItemDetails}
+                  options={{ title: 'Shipment Details' }}
+                />
+                <Stack.Screen
+                  name="InternalLocationDetail"
+                  component={InternalLocationDetails}
+                  options={{ title: 'Location Details' }}
+                />
+                <Stack.Screen
+                  name="ViewAvailableItem"
+                  component={ViewAvailableItem}
+                  options={{ title: 'Available Item' }}
+                />
+                <Stack.Screen name="Placeholder" component={Placeholder} options={{ title: 'Work in Progress' }} />
+                <Stack.Screen
+                  name="PackingLocationPage"
+                  component={PackingLocationPage}
+                  options={{ title: 'Packing Location' }}
+                />
+                <Stack.Screen name="AppInfo" component={AppInfoScreen} options={{ title: 'App Info' }} />
+                <Stack.Screen
+                  name="Sortation"
+                  component={SortationEntryScreen}
+                  options={{ title: 'Inbound Sortation' }}
+                />
+                <Stack.Screen
+                  name="SortationQuantity"
+                  component={SortationQuantityScreen}
+                  options={{ title: 'Inbound Sortation' }}
+                />
+                <Stack.Screen
+                  name="SortationContainer"
+                  component={SortationContainerScreen}
+                  options={{ title: 'Inbound Sortation' }}
+                />
+                <Stack.Screen
+                  name="SortationTaskList"
+                  component={SortationTaskSelectionListScreen}
+                  options={{ title: 'Inbound Sortation' }}
+                />
+                <Stack.Screen name="SortationPutaway" component={PutawayEntryScreen} options={{ title: 'Putaway' }} />
+                <Stack.Screen
+                  name="SortationPutawayLocationScan"
+                  component={PutawayLocationScanScreen}
+                  options={{ title: 'Putaway Details' }}
+                />
+                <Stack.Screen
+                  name="SortationPutawayProductScan"
+                  component={PutawayProductScanScreen}
+                  options={{ title: 'Putaway Details' }}
+                />
+                <Stack.Screen
+                  name="SortationPutawayQuantity"
+                  component={PutawayQuantityScreen}
+                  options={{ title: 'Putaway Details' }}
+                />
+                <Stack.Screen
+                  name="PickingPickType"
+                  component={PickingPickTypeScreen}
+                  options={{ title: 'Pick Type & Grouping' }}
+                />
+                <Stack.Screen
+                  name="PickingPickLocation"
+                  component={PickingPickLocationScreen}
+                  options={{ title: 'Pick Location' }}
+                />
+                <Stack.Screen
+                  name="PickingPickProduct"
+                  component={PickingPickProductScreen}
+                  options={{ title: 'Pick Product' }}
+                />
+                <Stack.Screen
+                  name="PickingPickQuantity"
+                  component={PickingPickQuantityScreen}
+                  options={{ title: 'Pick Quantity' }}
+                />
+                <Stack.Screen
+                  name="PickingPickOutboundContainer"
+                  component={PickingPickOutboundContainerScreen}
+                  options={{ title: 'Pick Outbound Container' }}
+                />
+                <Stack.Screen
+                  name="PickingPickStagingLocation"
+                  component={PickingPickStagingLocationScreen}
+                  options={{ title: 'Pick Staging Location' }}
+                />
+                <Stack.Screen
+                  name="PickingMoveToStaging"
+                  component={PickingMoveToStagingScreen}
+                  options={{ title: 'Move To Staging' }}
+                />
+                <Stack.Screen
+                  name="PickingStagingDrop"
+                  component={PickingStagingDropScreen}
+                  options={{ title: 'Staging Location Drop' }}
+                />
+                <Stack.Screen
+                  name="PickUpEntryScreen"
+                  component={PickUpEntryScreen}
+                  options={{ title: 'Pick Up Allocation' }}
+                />
+                <Stack.Screen
+                  name="PickUpOrderScreen"
+                  component={PickUpOrderScreen}
+                  options={{ title: 'Pick Up Allocation' }}
+                />
+              </Stack.Navigator>
+            </NavigationContainer>
+          </SafeAreaView>
+        </PickingProvider>
       </Provider>
     );
   }

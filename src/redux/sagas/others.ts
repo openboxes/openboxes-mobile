@@ -5,7 +5,7 @@ import { hideScreenLoading, showScreenLoading } from '../actions/main';
 
 function* getReasonCodes(action: any) {
   try {
-    yield put(showScreenLoading('Loading reasons...'));
+    yield put(showScreenLoading('Loading Reasons...'));
 
     const response = yield call(api.getReasonCodesByActivity, action.payload.activityCode);
 

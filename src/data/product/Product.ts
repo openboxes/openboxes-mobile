@@ -23,6 +23,7 @@ interface Product {
   unitOfMeasure: string;
   image?: any;
   availableItems: any;
+  upc?: string;
 }
 
 export default Product;
