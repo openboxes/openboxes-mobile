@@ -3,19 +3,26 @@ import * as React from 'react';
 import { Alert, TextInput, View } from 'react-native';
 import { Divider, TextInput as PaperTextInput, Paragraph, Subheading } from 'react-native-paper';
 
-import { HYPHEN, INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
+import { INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
 import { navigate } from '../../NavigationService';
 import { usePickingContext } from './PickingContext';
 import { ProductDetails } from './ProductDetails';
 import styles from './styles';
 
 export default function PickingPickStagingLocationScreen() {
-  const { currentTask, dropCurrentTask, currentTaskIndex, allTasksCount, resetSession, goToNextTask } =
-    usePickingContext();
+  const { tasks, dropCurrentTask, resetSession } = usePickingContext();
+  const isFocused = useIsFocused();
 
   const inputRef = React.useRef<TextInput | null>(null);
-  const isFocused = useIsFocused();
-  const [stagingLocationNumber, setStagingLocationNumber] = React.useState<string>('');
+  const [stagingLocationNumber, setStagingLocationNumber] = React.useState('');
+  const [currentUniqueIndex, setCurrentUniqueIndex] = React.useState(0);
+
+  const uniqueTasks = React.useMemo(
+    () => Array.from(new Map(tasks.map((pickTask) => [pickTask.outboundContainer?.id, pickTask])).values()),
+    [tasks]
+  );
+
+  const currentTask = uniqueTasks[currentUniqueIndex];
 
   React.useEffect(() => {
     if (!isFocused) {
@@ -25,7 +32,7 @@ export default function PickingPickStagingLocationScreen() {
     setStagingLocationNumber('');
     const t = setTimeout(() => inputRef.current?.focus(), INPUT_FOCUS_DELAY_TIME_IN_MS);
     return () => clearTimeout(t);
-  }, [isFocused]);
+  }, [isFocused, currentUniqueIndex]);
 
   if (!currentTask) {
     return null;
@@ -37,22 +44,36 @@ export default function PickingPickStagingLocationScreen() {
       return;
     }
 
-    // Enforce that the scanned staging location ID matches the task's staging location
-    const isValid = stagingLocationNumber === currentTask?.stagingLocation?.locationNumber;
+    const expected = currentTask.stagingLocation?.locationNumber;
 
-    if (!isValid) {
+    if (!expected || stagingLocationNumber !== expected) {
       Alert.alert(
-        'Invalid Staging Location ID',
-        `The scanned Staging Location ID is not valid. Expecting: ${
-          currentTask?.stagingLocation?.locationNumber ?? HYPHEN
-        }. Please try again.`
+        'Invalid Staging Location',
+        `Expected: ${expected ?? '-'}, but got: ${stagingLocationNumber}. Please try again.`
       );
       return;
     }
 
-    dropCurrentTask(stagingLocationNumber, () => {
-      if (currentTaskIndex + 1 >= allTasksCount) {
-        Alert.alert('Picking Session Complete', 'You have completed all pick tasks in this session.', [
+    dropCurrentTask(currentTask, (response) => {
+      if (response.errorMessage) {
+        Alert.alert('Error', response.errorMessage);
+        return;
+      }
+
+      const nextIndex = currentUniqueIndex + 1;
+      if (nextIndex < uniqueTasks.length) {
+        Alert.alert('Success', 'Staging Location confirmed. Proceeding to the next container.', [
+          {
+            text: 'OK',
+            onPress: () => {
+              // Proceed to next unique task
+              setCurrentUniqueIndex(nextIndex);
+              setStagingLocationNumber('');
+            }
+          }
+        ]);
+      } else {
+        Alert.alert('Picking Session Complete', 'You have completed all staging confirmations.', [
           {
             text: 'OK',
             onPress: () => {
@@ -61,11 +82,7 @@ export default function PickingPickStagingLocationScreen() {
             }
           }
         ]);
-        return;
       }
-
-      goToNextTask();
-      navigate('PickingPickLocation');
     });
   }
 
@@ -76,8 +93,8 @@ export default function PickingPickStagingLocationScreen() {
           <ProductDetails.Badge icon="barcode" label="Product Code">
             {currentTask.product.productCode}
           </ProductDetails.Badge>
-          <ProductDetails.Badge icon="navigation" label="Pick Task">
-            {`${currentTaskIndex + 1} / ${allTasksCount}`}
+          <ProductDetails.Badge icon="navigation" label="Task Progress">
+            {`${currentUniqueIndex + 1} / ${uniqueTasks.length}`}
           </ProductDetails.Badge>
         </ProductDetails.Header>
 
@@ -88,13 +105,13 @@ export default function PickingPickStagingLocationScreen() {
           items={[
             {
               icon: 'pin',
-              label: 'Outbound Container ID',
-              value: currentTask.outboundContainer?.locationNumber ?? HYPHEN
+              label: 'Outbound Container',
+              value: currentTask.outboundContainer?.locationNumber ?? '-'
             },
             {
               icon: 'package',
               label: 'Staging Location',
-              value: currentTask.stagingLocation?.name || HYPHEN
+              value: currentTask.stagingLocation?.name ?? '-'
             }
           ]}
         />

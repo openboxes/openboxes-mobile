@@ -32,7 +32,7 @@ type PickingContextType = {
   /** Start the pick task (API call) */
   startPickTask: (callback: (response: { errorMessage?: string }) => void) => void;
   /** Drop the current pick task at the staging location */
-  dropCurrentTask: (stagingLocationId: string, callback?: (response: { errorMessage?: string }) => void) => void;
+  dropCurrentTask: (task: PickTask, callback?: (response: { errorMessage?: string }) => void) => void;
   /** Revalidates the current pick task details from the server */
   revalidateCurrentTask: (callback?: (task: PickTask) => void) => void;
   /** Advances to the next task in the list */
@@ -108,23 +108,23 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
     );
   };
 
-  const dropCurrentTask = (stagingLocationId: string, callback?: (response: { errorMessage?: string }) => void) => {
-    if (!currentTask) {
+  const dropCurrentTask = (task: PickTask, callback?: (response: { errorMessage?: string }) => void) => {
+    if (!task) {
       Alert.alert('Task Missing', 'No current task to drop.');
       return;
     }
 
-    if (!stagingLocationId) {
-      Alert.alert('Missing Input', 'Please scan or enter a valid Staging Location ID.');
+    if (!task.stagingLocation?.id) {
+      Alert.alert('Missing Input', 'Current task is missing a valid Staging Location.');
       return;
     }
 
-    if (!currentTask.outboundContainer) {
-      Alert.alert('Error', 'Current task does not have a valid outbound container.');
+    if (!task.outboundContainer?.id) {
+      Alert.alert('Error', 'Current task does not have a valid Outbound Container.');
       return;
     }
 
-    dispatch(dropPickTaskAction(currentTask.outboundContainer.id, stagingLocationId, callback));
+    dispatch(dropPickTaskAction(task.outboundContainer.id, task.stagingLocation.id, callback));
   };
 
   // TODO: Implement partial pick logic

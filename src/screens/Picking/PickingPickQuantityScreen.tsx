@@ -78,15 +78,10 @@ export default function PickingPickQuantityScreen() {
       return;
     }
 
-    // NOTE: Happy path
     if (isFullPicked) {
       navigate('PickingPickOutboundContainer');
       return;
     }
-
-    // TODO: Handle partial pick
-    // Handle partial pick
-    // handlePartialPick(qty);
 
     Alert.alert(
       'Partial Pick Recorded',
@@ -98,6 +93,10 @@ export default function PickingPickQuantityScreen() {
         }
       ]
     );
+
+    // TODO: Handle partial pick
+    // Handle partial pick
+    // handlePartialPick(qty);
   }
 
   function handleConfirmShort(reasonCode: ReasonCode) {

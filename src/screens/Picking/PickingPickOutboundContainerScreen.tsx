@@ -10,7 +10,8 @@ import { ProductDetails } from './ProductDetails';
 import styles from './styles';
 
 export default function PickingPickOutboundContainerScreen() {
-  const { currentTask, pickCurrentTask, currentTaskIndex, allTasksCount, revalidateCurrentTask } = usePickingContext();
+  const { currentTask, pickCurrentTask, currentTaskIndex, allTasksCount, revalidateCurrentTask, goToNextTask } =
+    usePickingContext();
 
   const inputRef = React.useRef<TextInput | null>(null);
   const isFocused = useIsFocused();
@@ -49,7 +50,19 @@ export default function PickingPickOutboundContainerScreen() {
           return;
         }
 
-        navigate('PickingPickStagingLocation');
+        if (currentTaskIndex + 1 >= allTasksCount) {
+          // Last Task -> Navigate to staging location drop
+          Alert.alert('All Picks Complete', 'You have completed all picks. Proceeding to staging location drop.', [
+            {
+              text: 'OK',
+              onPress: () => navigate('PickingPickStagingLocation')
+            }
+          ]);
+        } else {
+          // More Tasks -> Start over with next pick task
+          goToNextTask();
+          navigate('PickingPickLocation');
+        }
       });
     });
   }
@@ -78,7 +91,11 @@ export default function PickingPickOutboundContainerScreen() {
               label: 'Quantity Picked',
               value: currentTask.quantityPicked || currentTask.quantityRequired
             },
-            { icon: 'pin', label: 'Outbound Container ID', value: currentTask.outboundContainer?.id ?? 'New' }
+            {
+              icon: 'pin',
+              label: 'Outbound Container Id',
+              value: currentTask.outboundContainer?.locationNumber ?? 'New'
+            }
           ]}
         />
       </ProductDetails.Root>
@@ -88,8 +105,7 @@ export default function PickingPickOutboundContainerScreen() {
       <View style={[styles.wrapperWithPadding]}>
         <Subheading style={styles.subheading}>Scan Outbound Container</Subheading>
         <Paragraph style={styles.paragraph}>
-          Point your barcode scanner at the outbound container or type the code manually, then wait a moment for it to
-          auto‐submit.
+          Point your barcode scanner at the outbound container or type the code manually.
         </Paragraph>
 
         <PaperTextInput
