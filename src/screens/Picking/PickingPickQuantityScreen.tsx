@@ -56,7 +56,7 @@ export default function PickingPickQuantityScreen() {
     return null;
   }
 
-  async function handleSubmit() {
+  function handleSubmit() {
     const qty = Number(quantityPicked);
     const isValid = !isNaN(qty) && qty >= 0;
     const isFullPicked = qty === currentTask?.quantityRequired;

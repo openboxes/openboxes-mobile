@@ -34,6 +34,7 @@ export default function PickingStagingDropScreen() {
       dropPickTaskAction(outboundContainer.id, stagingLocation.id, ({ errorMessage }) => {
         if (errorMessage) {
           Alert.alert('Transfer Failed', errorMessage);
+          return;
         }
 
         Alert.alert('Transfer Successful', 'Picked items have been moved to the staging location.', [
