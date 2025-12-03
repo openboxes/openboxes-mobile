@@ -97,7 +97,7 @@ function* pickPickTaskAction(action: any) {
     const response = yield call(api.patchPickTaskApi, currentLocation.id, action.payload.taskId, {
       action: 'pick',
       outboundContainerId: action.payload.outboundContainerId,
-      pickById: session.user.id
+      pickedById: session.user.id
     });
     yield action.callback(response);
     yield put({ type: PICK_PICK_TASK_REQUEST_SUCCESS });

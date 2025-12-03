@@ -16,7 +16,7 @@ export type PickTaskActionParams =
       action: 'pick';
       outboundContainerId: string;
       // User Id
-      pickById: string;
+      pickedById: string;
     };
 
 export type PickTaskDropParams = {
