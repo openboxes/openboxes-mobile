@@ -8,10 +8,10 @@ import Theme from '../../utils/Theme';
 import styles from './styles';
 import { AllocationOrder, AllocationOrderLine } from './types';
 
-type QuantityRouteProp = RouteProp<{ PickUpOrderScreen: { order: AllocationOrder } }, 'PickUpOrderScreen'>;
+type PickUpOrderRouteProp = RouteProp<{ PickUpOrderScreen: { order: AllocationOrder } }, 'PickUpOrderScreen'>;
 
 export function PickUpOrderScreen() {
-  const { params } = useRoute<QuantityRouteProp>();
+  const { params } = useRoute<PickUpOrderRouteProp>();
   const { order } = params;
 
   const totalLines = order?.orderLines?.length ?? 0;
@@ -185,7 +185,10 @@ function OrderLineController({ onPicked, orderLine }: { onPicked: () => void; or
               placeholder="Enter Partial Qty"
               keyboardType="numeric"
               style={styles.input}
-              onChangeText={(text) => setPartialQuantity(text ? parseInt(text, 10) : null)}
+              onChangeText={(text) => {
+                const parsed = parseInt(text, 10);
+                setPartialQuantity(text && !isNaN(parsed) ? parsed : null);
+              }}
             />
           </View>
         </View>
