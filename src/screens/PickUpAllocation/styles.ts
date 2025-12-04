@@ -8,7 +8,7 @@ export default StyleSheet.create({
     padding: Theme.spacing.large
   },
   titleText: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: '600',
     marginBottom: Theme.spacing.small - 2
   },
@@ -16,7 +16,7 @@ export default StyleSheet.create({
     color: '#555'
   },
   sectionDivider: {
-    marginTop: Theme.spacing.small
+    marginTop: Theme.spacing.small - 2
   },
   itemSeparator: {
     height: Theme.spacing.small - 2
