@@ -9,10 +9,11 @@ import styles from './styles';
 type Props = {
   visible: boolean;
   onDismiss: () => void;
-  onConfirm: (reasonCode: ReasonCode) => void;
+  onConfirm: (reasonCode?: ReasonCode) => void;
   reasonCodes: ReasonCode[];
-  selectedReasonCode: ReasonCode | null;
-  setSelectedReasonCode: (reasonCode: ReasonCode | null) => void;
+  selectedReasonCode: ReasonCode | undefined;
+  setSelectedReasonCode: (reasonCode: ReasonCode | undefined) => void;
+  quantityPicked?: string;
 };
 
 export default function PickingShortAndReasonModal({
@@ -21,23 +22,20 @@ export default function PickingShortAndReasonModal({
   onConfirm,
   reasonCodes,
   selectedReasonCode,
-  setSelectedReasonCode
+  setSelectedReasonCode,
+  quantityPicked
 }: Props) {
-  const onSelectedReason = (reason: ReasonCode) => {
-    // We need this because of the AsyncModalSelect implementation
-    if (!reason.id || !reason.name) {
-      setSelectedReasonCode(null);
-      return;
-    }
+  const parsedQuantityPicked = quantityPicked ? Number(quantityPicked) : 0;
 
-    setSelectedReasonCode(reason);
-  };
+  // We need this because of the AsyncModalSelect implementation
+  const onSelectedReason = (reason?: ReasonCode) =>
+    !reason?.id || !reason?.name ? setSelectedReasonCode(undefined) : setSelectedReasonCode(reason);
 
   return (
     <Modal transparent animationType="slide" visible={visible} onRequestClose={onDismiss}>
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
-          <Subheading style={styles.modalTitleText}>Return Or Short-Pick</Subheading>
+          <Subheading style={styles.modalTitleText}>Proceed With Short-Pick</Subheading>
           <Paragraph style={styles.modalDescription}>
             Select a reason for shortage to proceed with “Short” or press “Return” to enter a correct quantity.
           </Paragraph>
@@ -58,8 +56,9 @@ export default function PickingShortAndReasonModal({
             </Button>
             <Button
               mode="contained"
-              disabled={!selectedReasonCode}
-              onPress={() => selectedReasonCode && onConfirm(selectedReasonCode)}
+              // If quantity picked is zero, reason code selection is mandatory
+              disabled={parsedQuantityPicked === 0 ? !selectedReasonCode : false}
+              onPress={() => onConfirm(selectedReasonCode)}
             >
               Short
             </Button>

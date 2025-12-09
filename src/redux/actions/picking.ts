@@ -25,6 +25,14 @@ export const GET_PICKED_TASKS_BY_CONTAINER_REQUEST = 'GET_PICKED_TASKS_BY_CONTAI
 export const GET_PICKED_TASKS_BY_CONTAINER_REQUEST_SUCCESS = 'GET_PICKED_TASKS_BY_CONTAINER_REQUEST_SUCCESS';
 export const GET_PICKED_TASKS_BY_CONTAINER_REQUEST_FAIL = 'GET_PICKED_TASKS_BY_CONTAINER_REQUEST_FAIL';
 
+export const SHORT_PICK_TASK_REQUEST = 'SHORT_PICK_TASK_REQUEST';
+export const SHORT_PICK_TASK_REQUEST_SUCCESS = 'SHORT_PICK_TASK_REQUEST_SUCCESS';
+export const SHORT_PICK_TASK_REQUEST_FAIL = 'SHORT_PICK_TASK_REQUEST_FAIL';
+
+export const GET_PICK_TASKS_BY_REQUISITION_REQUEST = 'GET_PICK_TASKS_BY_REQUISITION_REQUEST';
+export const GET_PICK_TASKS_BY_REQUISITION_REQUEST_SUCCESS = 'GET_PICK_TASKS_BY_REQUISITION_REQUEST_SUCCESS';
+export const GET_PICK_TASKS_BY_REQUISITION_REQUEST_FAIL = 'GET_PICK_TASKS_BY_REQUISITION_REQUEST_FAIL';
+
 export function getPickTasksAction(
   params: PickTaskParams,
   callback: (response: {
@@ -45,6 +53,27 @@ export function getPickTasksAction(
   };
 }
 
+export function getPickTasksByRequisitionAction(
+  requisitionId: string,
+  callback: (response: {
+    response?: {
+      data: PickTask[];
+      errorCode?: string;
+      message?: string;
+      max?: number;
+      offset?: number;
+      totalCount?: number;
+    };
+    errorMessage?: string;
+  }) => void
+) {
+  return {
+    type: GET_PICK_TASKS_BY_REQUISITION_REQUEST,
+    payload: { requisitionId },
+    callback
+  };
+}
+
 export function startPickTaskAction(taskId: string, callback: (response: { errorMessage?: string }) => void) {
   return {
     type: START_PICK_TASK_REQUEST,
@@ -61,6 +90,20 @@ export function pickPickTaskAction(
   return {
     type: PICK_PICK_TASK_REQUEST,
     payload: { taskId, outboundContainerId },
+    callback
+  };
+}
+
+export function shortPickTaskAction(
+  taskId: string,
+  outboundContainerId: string,
+  quantityPicked: number,
+  callback: (response: { errorMessage?: string }) => void,
+  reasonCode?: string
+) {
+  return {
+    type: SHORT_PICK_TASK_REQUEST,
+    payload: { taskId, quantityPicked, reasonCode, outboundContainerId },
     callback
   };
 }

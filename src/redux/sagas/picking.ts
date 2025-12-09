@@ -9,6 +9,9 @@ import {
   GET_PICK_TASK_BY_ID_REQUEST,
   GET_PICK_TASK_BY_ID_REQUEST_FAIL,
   GET_PICK_TASK_BY_ID_REQUEST_SUCCESS,
+  GET_PICK_TASKS_BY_REQUISITION_REQUEST,
+  GET_PICK_TASKS_BY_REQUISITION_REQUEST_SUCCESS,
+  GET_PICK_TASKS_BY_REQUISITION_REQUEST_FAIL,
   GET_PICK_TASKS_REQUEST,
   GET_PICK_TASKS_REQUEST_FAIL,
   GET_PICK_TASKS_REQUEST_SUCCESS,
@@ -18,6 +21,9 @@ import {
   PICK_PICK_TASK_REQUEST,
   PICK_PICK_TASK_REQUEST_FAIL,
   PICK_PICK_TASK_REQUEST_SUCCESS,
+  SHORT_PICK_TASK_REQUEST,
+  SHORT_PICK_TASK_REQUEST_FAIL,
+  SHORT_PICK_TASK_REQUEST_SUCCESS,
   START_PICK_TASK_REQUEST,
   START_PICK_TASK_REQUEST_FAIL,
   START_PICK_TASK_REQUEST_SUCCESS
@@ -114,6 +120,41 @@ function* pickPickTaskAction(action: any) {
   }
 }
 
+function* shortPickTaskAction(action: any) {
+  try {
+    // @ts-ignore
+    const currentLocation = yield select(userLocation);
+    if (!currentLocation) {
+      throw new Error('User Location Not Found');
+    }
+    // @ts-ignore
+    const session = yield select(userSession);
+    if (!session || !session.user) {
+      throw new Error('User Session Not Found');
+    }
+    yield put(showScreenLoading('Shorting Pick Task...'));
+    const { taskId, outboundContainerId, quantityPicked, reasonCode } = action.payload;
+    // Short Pick Task API Call
+    yield call(api.patchPickTaskApi, currentLocation.id, taskId, {
+      action: 'short-pick',
+      outboundContainerId,
+      quantityPicked,
+      pickedById: session.user.id,
+      reasonCode
+    });
+    yield put({ type: SHORT_PICK_TASK_REQUEST_SUCCESS });
+    yield action.callback({});
+    yield put(hideScreenLoading());
+  } catch (error) {
+    yield put({
+      type: SHORT_PICK_TASK_REQUEST_FAIL,
+      payload: (error as any)?.message || 'Error Shorting Pick Task'
+    });
+    yield action.callback({ errorMessage: (error as any)?.message || 'Error Shorting Pick Task' });
+    yield put(hideScreenLoading());
+  }
+}
+
 function* dropPickTaskAction(action: any) {
   try {
     // @ts-ignore
@@ -194,7 +235,34 @@ function* getPickedTasksByContainerAction(action: any) {
       type: GET_PICKED_TASKS_BY_CONTAINER_REQUEST_FAIL,
       payload: (error as any)?.message || 'Error Fetching Picked Tasks'
     });
-    yield action.callback({ error });
+    yield action.callback({ errorMessage: (error as any)?.message || 'Error Fetching Picked Tasks' });
+    yield put(hideScreenLoading());
+  }
+}
+
+function* getPickTasksByRequisitionAction(action: any) {
+  try {
+    // @ts-ignore
+    const currentLocation = yield select(userLocation);
+    if (!currentLocation) {
+      throw new Error('User Location Not Found');
+    }
+    yield put(showScreenLoading('Fetching Tasks...'));
+    // Call API to get pick tasks by requisition ID
+    // @ts-ignore
+    const response = yield call(api.getPickTasksByRequisitionApi, currentLocation.id, action.payload.requisitionId, [
+      'PENDING',
+      'PICKING'
+    ]);
+    yield action.callback({ response });
+    yield put({ type: GET_PICK_TASKS_BY_REQUISITION_REQUEST_SUCCESS, payload: response.data });
+    yield put(hideScreenLoading());
+  } catch (error) {
+    yield put({
+      type: GET_PICK_TASKS_BY_REQUISITION_REQUEST_FAIL,
+      payload: (error as any)?.message || 'Error Fetching Tasks By Requisition'
+    });
+    yield action.callback({ errorMessage: (error as any)?.message || 'Error Fetching Tasks By Requisition' });
     yield put(hideScreenLoading());
   }
 }
@@ -206,4 +274,6 @@ export default function* watcher() {
   yield takeLatest(DROP_PICK_TASK_REQUEST, dropPickTaskAction);
   yield takeLatest(GET_PICK_TASK_BY_ID_REQUEST, getPickTaskByIdAction);
   yield takeLatest(GET_PICKED_TASKS_BY_CONTAINER_REQUEST, getPickedTasksByContainerAction);
+  yield takeLatest(SHORT_PICK_TASK_REQUEST, shortPickTaskAction);
+  yield takeLatest(GET_PICK_TASKS_BY_REQUISITION_REQUEST, getPickTasksByRequisitionAction);
 }

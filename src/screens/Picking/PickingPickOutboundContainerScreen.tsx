@@ -1,17 +1,33 @@
-import { useIsFocused } from '@react-navigation/native';
+import { RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
 import * as React from 'react';
 import { Alert, TextInput, View } from 'react-native';
 import { Divider, TextInput as PaperTextInput, Paragraph, Subheading } from 'react-native-paper';
 
 import { INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
 import { navigate } from '../../NavigationService';
+import { ReasonCode } from '../../types/picking';
 import { usePickingContext } from './PickingContext';
 import { ProductDetails } from './ProductDetails';
 import styles from './styles';
 
+type PickingPickOutboundContainerScreenProps = RouteProp<
+  { PickingPickOutboundContainer: { reasonCode?: ReasonCode; quantityPicked?: string } },
+  'PickingPickOutboundContainer'
+>;
+
 export default function PickingPickOutboundContainerScreen() {
-  const { currentTask, pickCurrentTask, currentTaskIndex, allTasksCount, revalidateCurrentTask, goToNextTask } =
-    usePickingContext();
+  const {
+    currentTask,
+    pickCurrentTask,
+    shortPickTask,
+    currentTaskIndex,
+    allTasksCount,
+    revalidateCurrentTask,
+    goToNextTask,
+    revalidateTasksForRequisition
+  } = usePickingContext();
+  const { params } = useRoute<PickingPickOutboundContainerScreenProps>();
+  const parsedQuantityPicked = params?.quantityPicked ? Number(params.quantityPicked) : undefined;
 
   const inputRef = React.useRef<TextInput | null>(null);
   const isFocused = useIsFocused();
@@ -32,9 +48,62 @@ export default function PickingPickOutboundContainerScreen() {
     return null;
   }
 
+  function revalidateTaskAndProceed() {
+    revalidateCurrentTask((revalidatedTask) => {
+      if (!revalidatedTask) {
+        Alert.alert('Error', 'Failed to revalidate the current pick task after picking.');
+        return;
+      }
+
+      if (currentTaskIndex + 1 >= allTasksCount) {
+        // Last Task -> Navigate to staging location drop
+        Alert.alert('All Picks Complete', 'You have completed all picks. Proceeding to staging location drop.', [
+          {
+            text: 'OK',
+            onPress: () => navigate('PickingPickStagingLocation')
+          }
+        ]);
+      } else {
+        // More Tasks -> Start over with next pick task
+        goToNextTask();
+        navigate('PickingPickLocation');
+      }
+    });
+  }
+
   function handleSubmit() {
     if (!outboundContainerId) {
       Alert.alert('Missing Input', 'Please scan or enter a valid Outbound Container ID.');
+      return;
+    }
+
+    if (!currentTask) {
+      Alert.alert('Error', 'No current pick task available.');
+      return;
+    }
+
+    if (parsedQuantityPicked !== undefined && parsedQuantityPicked < currentTask.quantityRequired) {
+      // Handle Short Pick
+      shortPickTask(
+        outboundContainerId,
+        parsedQuantityPicked,
+        ({ errorMessage }) => {
+          if (errorMessage) {
+            Alert.alert('Short Pick Error', errorMessage);
+            return;
+          }
+
+          if (params?.reasonCode?.id) {
+            // Revalidate all tasks for the requisition to get updated pick tasks
+            revalidateTasksForRequisition(currentTask.requisitionId, () => {
+              navigate('PickingPickLocation');
+            });
+          } else {
+            revalidateTaskAndProceed();
+          }
+        },
+        params?.reasonCode?.name
+      );
       return;
     }
 
@@ -44,26 +113,7 @@ export default function PickingPickOutboundContainerScreen() {
         return;
       }
 
-      revalidateCurrentTask((revalidatedTask) => {
-        if (!revalidatedTask) {
-          Alert.alert('Error', 'Failed to revalidate the current pick task after picking.');
-          return;
-        }
-
-        if (currentTaskIndex + 1 >= allTasksCount) {
-          // Last Task -> Navigate to staging location drop
-          Alert.alert('All Picks Complete', 'You have completed all picks. Proceeding to staging location drop.', [
-            {
-              text: 'OK',
-              onPress: () => navigate('PickingPickStagingLocation')
-            }
-          ]);
-        } else {
-          // More Tasks -> Start over with next pick task
-          goToNextTask();
-          navigate('PickingPickLocation');
-        }
-      });
+      revalidateTaskAndProceed();
     });
   }
 
@@ -84,12 +134,10 @@ export default function PickingPickOutboundContainerScreen() {
 
         <ProductDetails.List
           items={[
-            // NOTE: For now, we assume quantity picked equals quantity required.
-            // This might change in the future if we implement partial picks.
             {
               icon: 'truck',
               label: 'Quantity Picked',
-              value: currentTask.quantityPicked || currentTask.quantityRequired
+              value: params?.quantityPicked || currentTask.quantityRequired
             },
             {
               icon: 'pin',

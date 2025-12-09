@@ -14,19 +14,14 @@ import { ProductDetails } from './ProductDetails';
 import styles from './styles';
 
 export default function PickingPickQuantityScreen() {
-  const {
-    currentTask,
-    currentTaskIndex,
-    allTasksCount
-    // handlePartialPick
-  } = usePickingContext();
+  const { currentTask, currentTaskIndex, allTasksCount } = usePickingContext();
   const dispatch = useDispatch();
   const inputRef = React.useRef<TextInput | null>(null);
   const isFocused = useIsFocused();
 
   const [quantityPicked, setQuantityPicked] = React.useState<string>('');
   const [reasonCodes, setReasonCodes] = React.useState<ReasonCode[]>([]);
-  const [selectedReasonCode, setSelectedReasonCode] = React.useState<ReasonCode | null>(null);
+  const [selectedReasonCode, setSelectedReasonCode] = React.useState<ReasonCode | undefined>(undefined);
   const [isShortModalVisible, setIsShortModalVisible] = React.useState(false);
 
   // Focus input when screen is focused
@@ -58,23 +53,18 @@ export default function PickingPickQuantityScreen() {
 
   function handleSubmit() {
     const qty = Number(quantityPicked);
-    const isValid = !isNaN(qty) && qty >= 0;
-    const isFullPicked = qty === currentTask?.quantityRequired;
-    const is0Picked = qty === 0;
-
-    if (qty > (currentTask?.quantityRequired ?? 0)) {
-      Alert.alert('Invalid Quantity', 'Picked quantity cannot exceed required quantity.');
-      return;
-    }
+    const isValid = !isNaN(qty) && qty >= 0 && currentTask?.quantityRequired;
 
     if (!isValid) {
       Alert.alert('Invalid Quantity', 'Incorrect quantity picked. Please try again.');
       return;
     }
 
-    // NOTE: Not supported yet
-    if (is0Picked) {
-      setIsShortModalVisible(true);
+    const qtyRemaining = currentTask?.quantityRequired - (currentTask?.quantityPicked || 0);
+    const isFullPicked = qty === qtyRemaining;
+
+    if (qty > qtyRemaining) {
+      Alert.alert('Invalid Quantity', `Picked quantity cannot exceed remaining quantity to pick (${qtyRemaining}).`);
       return;
     }
 
@@ -83,27 +73,14 @@ export default function PickingPickQuantityScreen() {
       return;
     }
 
-    Alert.alert(
-      'Partial Pick Recorded',
-      `You have picked ${qty} units. The remaining quantity will need to be picked later.`,
-      [
-        {
-          text: 'OK',
-          onPress: () => setQuantityPicked('')
-        }
-      ]
-    );
-
-    // TODO: Handle partial pick
-    // Handle partial pick
-    // handlePartialPick(qty);
+    // For now, if not full picked, treat as short pick
+    setIsShortModalVisible(true);
   }
 
-  function handleConfirmShort(reasonCode: ReasonCode) {
+  function handleConfirmShort(reasonCode: ReasonCode | undefined) {
     setIsShortModalVisible(false);
-    // TODO: Handle short pick with reason code
-    // eslint-disable-next-line no-restricted-syntax
-    console.log(reasonCode);
+
+    navigate('PickingPickOutboundContainer', { reasonCode, quantityPicked });
   }
 
   return (
@@ -124,7 +101,11 @@ export default function PickingPickQuantityScreen() {
 
           <ProductDetails.List
             items={[
-              { icon: 'truck', label: 'Quantity Required', value: currentTask.quantityRequired },
+              {
+                icon: 'package',
+                label: 'Quantity Picked',
+                value: `${currentTask.quantityPicked || 0} / ${currentTask.quantityRequired}`
+              },
               { icon: 'pin', label: 'Pick Location', value: currentTask.location?.name || HYPHEN }
             ]}
           />
@@ -161,6 +142,7 @@ export default function PickingPickQuantityScreen() {
         reasonCodes={reasonCodes}
         selectedReasonCode={selectedReasonCode}
         setSelectedReasonCode={setSelectedReasonCode}
+        quantityPicked={quantityPicked}
         onDismiss={() => setIsShortModalVisible(false)}
         onConfirm={handleConfirmShort}
       />

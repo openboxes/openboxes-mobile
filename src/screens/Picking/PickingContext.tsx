@@ -7,7 +7,9 @@ import {
   dropPickTaskAction,
   getPickTaskByIdAction,
   getPickTasksAction,
+  getPickTasksByRequisitionAction,
   pickPickTaskAction,
+  shortPickTaskAction,
   startPickTaskAction
 } from '../../redux/actions/picking';
 import { DeliveryType, PickTask } from '../../types/picking';
@@ -15,6 +17,8 @@ import { DeliveryType, PickTask } from '../../types/picking';
 type PickingContextType = {
   /** The list of all tasks for this session */
   tasks: PickTask[];
+  /** Setter for the list of tasks */
+  setTasks: React.Dispatch<React.SetStateAction<PickTask[]>>;
   /** The index of the task currently being worked on */
   currentTaskIndex: number;
   /** The derived object for the active task */
@@ -27,8 +31,15 @@ type PickingContextType = {
   pickCurrentTask: (outboundContainerId: string, callback: (response: { errorMessage?: string }) => void) => void;
   /** Resets state to initial values */
   resetSession: () => void;
-  /** Handle partial pick for the current task */
-  handlePartialPick: () => void;
+  /** Handles short pick for the current task */
+  shortPickTask: (
+    outboundContainerId: string,
+    parsedQuantityPicked: number,
+    callback: (response: { errorMessage?: string }) => void,
+    reasonCodeName?: string
+  ) => void;
+  /** Revalidates all tasks for a given requisition ID */
+  revalidateTasksForRequisition: (requisitionId: string | undefined, callback?: () => void) => void;
   /** Start the pick task (API call) */
   startPickTask: (callback: (response: { errorMessage?: string }) => void) => void;
   /** Drop the current pick task at the staging location */
@@ -89,6 +100,20 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
     dispatch(pickPickTaskAction(currentTask.id, outboundContainerId, callback));
   };
 
+  const shortPickTask = (
+    outboundContainerId: string,
+    parsedQuantityPicked: number,
+    callback: (response: { errorMessage?: string }) => void,
+    reasonCodeName?: string
+  ) => {
+    if (!currentTask || parsedQuantityPicked === undefined) {
+      Alert.alert('Error', 'Missing required fields for short pick.');
+      return;
+    }
+
+    dispatch(shortPickTaskAction(currentTask.id, outboundContainerId, parsedQuantityPicked, callback, reasonCodeName));
+  };
+
   const revalidateCurrentTask = (callback?: (task: PickTask) => void) => {
     if (!currentTask) {
       return;
@@ -104,6 +129,41 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
         const updatedTask = response.data;
         setTasks((prevTasks) => prevTasks.map((task, index) => (index === currentTaskIndex ? updatedTask : task)));
         callback?.(updatedTask);
+      })
+    );
+  };
+
+  const revalidateTasksForRequisition = (requisitionId: string | undefined, callback?: () => void) => {
+    if (!requisitionId) {
+      Alert.alert('Error', 'Requisition ID is required to revalidate tasks.');
+      return;
+    }
+
+    dispatch(
+      getPickTasksByRequisitionAction(requisitionId, (res) => {
+        if ('errorMessage' in res) {
+          Alert.alert('Error', 'Failed to revalidate pick tasks for the requisition.');
+          return;
+        }
+
+        const newTasks = res.response?.data ?? [];
+
+        setTasks((prevTasks) => {
+          const currentIndex = currentTaskIndex;
+          const current = prevTasks[currentIndex];
+
+          if (!current) {
+            return prevTasks;
+          }
+
+          // Remove all existing tasks belonging to this requisition
+          const filteredTasks = prevTasks.filter((task) => task.requisitionId !== requisitionId);
+
+          // Insert new tasks where the current one was
+          return [...filteredTasks.slice(0, currentIndex), ...newTasks, ...filteredTasks.slice(currentIndex)];
+        });
+
+        callback?.();
       })
     );
   };
@@ -127,9 +187,6 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
     dispatch(dropPickTaskAction(task.outboundContainer.id, task.stagingLocation.id, callback));
   };
 
-  // TODO: Implement partial pick logic
-  const handlePartialPick = () => {};
-
   const resetSession = () => {
     setTasks([]);
     setCurrentTaskIndex(0);
@@ -143,13 +200,15 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
     <PickingContext.Provider
       value={{
         tasks,
+        setTasks,
         currentTaskIndex,
         currentTask,
         allTasksCount,
         startSession,
         pickCurrentTask,
+        shortPickTask,
         resetSession,
-        handlePartialPick,
+        revalidateTasksForRequisition,
         startPickTask,
         dropCurrentTask,
         revalidateCurrentTask,

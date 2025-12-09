@@ -1,4 +1,4 @@
-import { DeliveryTypeCode } from '../types/picking';
+import { DeliveryTypeCode, ReasonCode } from '../types/picking';
 import ApiClient from '../utils/ApiClient';
 
 export type PickTaskParams = {
@@ -17,6 +17,14 @@ export type PickTaskActionParams =
       outboundContainerId: string;
       // User Id
       pickedById: string;
+    }
+  | {
+      action: 'short-pick';
+      outboundContainerId: string;
+      quantityPicked: number;
+      pickedById: string;
+      // eslint-disable-next-line no-undef
+      reasonCode?: Pick<ReasonCode, 'name'>;
     };
 
 export type PickTaskDropParams = {
@@ -53,5 +61,13 @@ export function getPickTasksByStatusAndContainerApi(facilityId: string, outbound
     `/facilities/${facilityId}/pick-tasks?outboundContainerId=${encodeURIComponent(
       outboundContainerId
     )}&status=${encodeURIComponent(status)}`
+  );
+}
+
+export function getPickTasksByRequisitionApi(facilityId: string, requisitionId: string, statuses: string[]) {
+  return ApiClient.get(
+    `/facilities/${facilityId}/pick-tasks?requisitionId=${encodeURIComponent(requisitionId)}&${statuses
+      .map((status) => `status=${encodeURIComponent(status)}`)
+      .join('&')}`
   );
 }

@@ -62,7 +62,11 @@ export default function PickingPickProductScreen() {
 
         <ProductDetails.List
           items={[
-            { icon: 'truck', label: 'Quantity Required', value: currentTask.quantityRequired },
+            {
+              icon: 'package',
+              label: 'Quantity Picked',
+              value: `${currentTask.quantityPicked || 0} / ${currentTask.quantityRequired}`
+            },
             { icon: 'pin', label: 'Pick Location', value: currentTask.location?.name || HYPHEN }
           ]}
         />
