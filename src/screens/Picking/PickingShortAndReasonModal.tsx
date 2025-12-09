@@ -54,12 +54,7 @@ export default function PickingShortAndReasonModal({
             <Button mode="text" onPress={onDismiss}>
               Return
             </Button>
-            <Button
-              mode="contained"
-              // If quantity picked is zero, reason code selection is mandatory
-              disabled={parsedQuantityPicked === 0 ? !selectedReasonCode : false}
-              onPress={() => onConfirm(selectedReasonCode)}
-            >
+            <Button mode="contained" onPress={() => onConfirm(selectedReasonCode)}>
               Short
             </Button>
           </View>
