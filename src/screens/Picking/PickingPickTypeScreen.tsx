@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { Alert, ScrollView, TouchableOpacity, View } from 'react-native';
 import { Badge, Button, TextInput as PaperTextInput, Paragraph, Subheading, Title } from 'react-native-paper';
-
 import Icon, { Name } from '../../components/Icon';
 import { navigate } from '../../NavigationService';
 import { DeliveryType } from '../../types/picking';
@@ -27,15 +26,19 @@ export default function PickingPickTypeScreen() {
   async function handleConfirmQuantity() {
     const ordersCount = Number(numberOfOrdersToGroup);
 
-    if (ordersCount > NUMBER_OF_ORDERS_THRESHOLD) {
-      Alert.alert(
-        'Max Number Exceeded',
-        `The maximum number of orders to group is ${NUMBER_OF_ORDERS_THRESHOLD}. Please adjust your input.`
-      );
+    // Validate that input is numeric and an integer within range
+    if (
+      !numberOfOrdersToGroup ||
+      isNaN(ordersCount) ||
+      !Number.isInteger(ordersCount) ||
+      ordersCount < 1 ||
+      ordersCount > NUMBER_OF_ORDERS_THRESHOLD
+    ) {
+      Alert.alert('Invalid Number', `Please enter a whole number between 1 and ${NUMBER_OF_ORDERS_THRESHOLD}.`);
       return;
     }
 
-    if (!deliveryType || !numberOfOrdersToGroup) {
+    if (!deliveryType) {
       Alert.alert(
         'Missing Information',
         'Please select a pick type and specify the number of orders to group before proceeding.'
@@ -89,6 +92,7 @@ export default function PickingPickTypeScreen() {
           keyboardType="numeric"
           value={numberOfOrdersToGroup}
           onChangeText={setNumberOfOrdersToGroup}
+          onSubmitEditing={handleConfirmQuantity}
         />
 
         <Button
