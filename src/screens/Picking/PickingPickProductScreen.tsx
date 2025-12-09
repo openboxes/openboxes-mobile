@@ -39,6 +39,7 @@ export default function PickingPickProductScreen() {
         'Invalid Barcode',
         `Incorrect product scanned. Expected: ${currentTask?.product.productCode}. Please try again.`
       );
+      setProductBarcode('');
       return;
     }
 

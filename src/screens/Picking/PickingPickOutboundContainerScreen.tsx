@@ -90,6 +90,7 @@ export default function PickingPickOutboundContainerScreen() {
         ({ errorMessage }) => {
           if (errorMessage) {
             Alert.alert('Short Pick Error', errorMessage);
+            setOutboundContainerId('');
             return;
           }
 

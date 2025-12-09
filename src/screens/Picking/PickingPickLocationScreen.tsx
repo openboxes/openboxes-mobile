@@ -38,6 +38,7 @@ export default function PickingPickLocationScreen() {
         'Invalid Barcode',
         `Incorrect location scanned. Expected: ${currentTask?.location?.locationNumber}. Try again.`
       );
+      setPickLocationBarcode('');
       return;
     }
 
