@@ -37,7 +37,7 @@ export default function PickingPickQuantityScreen() {
   // Fetch reason codes
   React.useEffect(() => {
     dispatch(
-      getReasonCodesAction('PUTAWAY_DISCREPANCY', (data: any) => {
+      getReasonCodesAction('PICKING_SHORTAGE', (data: any) => {
         if (data?.error) {
           Alert.alert('Error', 'Failed to load reason codes.');
         } else {
