@@ -112,5 +112,35 @@ export default StyleSheet.create({
   },
   confirmButton: {
     alignSelf: 'stretch'
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)'
+  },
+  modalContent: {
+    width: '90%',
+    backgroundColor: 'white',
+    padding: Theme.spacing.large,
+    borderRadius: Theme.roundness * 2
+  },
+  scrollableContent: {
+    maxHeight: 360
+  },
+  cellInput: {
+    width: 70,
+    height: 25
+  },
+  actionButtons: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginTop: Theme.spacing.large
+  },
+  leftMargin: {
+    marginLeft: Theme.spacing.small
   }
 });

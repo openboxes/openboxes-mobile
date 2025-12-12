@@ -1,7 +1,7 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
 import React from 'react';
-import { Alert, ScrollView, View } from 'react-native';
-import { Button, List, Paragraph, TextInput, Title } from 'react-native-paper';
+import { Alert, Modal, ScrollView, View } from 'react-native';
+import { Button, DataTable, Headline, List, Paragraph, TextInput, Title } from 'react-native-paper';
 
 import EmptyView from '../../components/EmptyView';
 import Theme from '../../utils/Theme';
@@ -122,6 +122,7 @@ function AllocationOrderItem({ orderLine, onPicked }: { orderLine: AllocationOrd
 
 function OrderLineController({ onPicked, orderLine }: { onPicked: () => void; orderLine: AllocationOrderLine }) {
   const [partialQuantity, setPartialQuantity] = React.useState<number | null>(null);
+  const [isStockPickOpen, setIsStockPickOpen] = React.useState(false);
 
   function handleConfirm() {
     if (
@@ -161,6 +162,10 @@ function OrderLineController({ onPicked, orderLine }: { onPicked: () => void; or
     ]);
   }
 
+  function handleStockPick() {
+    setIsStockPickOpen(true);
+  }
+
   return (
     <View>
       <View style={styles.buttonRow}>
@@ -169,6 +174,9 @@ function OrderLineController({ onPicked, orderLine }: { onPicked: () => void; or
         </Button>
         <Button mode="contained" labelStyle={styles.buttonText} style={styles.button} onPress={handleDisplayPick}>
           Full Display Pick
+        </Button>
+        <Button mode="contained" labelStyle={styles.buttonText} style={styles.button} onPress={handleStockPick}>
+          Stock Pick
         </Button>
       </View>
 
@@ -204,6 +212,114 @@ function OrderLineController({ onPicked, orderLine }: { onPicked: () => void; or
           Confirm Quantity
         </Button>
       </View>
+
+      <StockPickModal
+        visible={isStockPickOpen}
+        orderLine={orderLine}
+        onDismiss={() => setIsStockPickOpen(false)}
+        onConfirm={onPicked}
+      />
     </View>
+  );
+}
+
+type StockRow = {
+  id: string;
+  binLocation: string;
+  availableQty: number;
+  onHandQty?: number;
+  pickedQty: string;
+};
+
+const MOCK_STOCK_ROWS: StockRow[] = [
+  { id: 'A1', binLocation: 'WH-A1-01', availableQty: 12, pickedQty: '0' },
+  { id: 'A2', binLocation: 'WH-A1-02', availableQty: 8, pickedQty: '0' },
+  { id: 'B1', binLocation: 'DP-B1-01', availableQty: 5, pickedQty: '0' },
+  { id: 'B2', binLocation: 'DP-B1-02', availableQty: 3, pickedQty: '0' },
+  { id: 'C1', binLocation: 'BACK-C1', availableQty: 20, pickedQty: '0' },
+  { id: 'C2', binLocation: 'BACK-C2', availableQty: 15, pickedQty: '0' },
+  { id: 'D1', binLocation: 'FRONT-D1', availableQty: 6, pickedQty: '0' }
+];
+
+type StockPickModalProps = {
+  visible: boolean;
+  onDismiss: () => void;
+  onConfirm: () => void;
+  orderLine: AllocationOrderLine;
+};
+
+function StockPickModal({ visible, onDismiss: onClose, onConfirm: onSave, orderLine }: StockPickModalProps) {
+  const [rows, setRows] = React.useState<StockRow[]>([]);
+
+  /**
+   * Fetch available stock for the current order line item.
+   * For now, we are using mocked data until backend integration is ready.
+   */
+  function fetchAvailableStock() {
+    // TODO: Replace with real API call
+    // eslint-disable-next-line no-restricted-syntax
+    console.log(orderLine);
+    setRows(MOCK_STOCK_ROWS);
+  }
+
+  const fetchAvailableStockMemo = React.useCallback(fetchAvailableStock, [orderLine]);
+
+  React.useEffect(() => {
+    if (visible) {
+      fetchAvailableStockMemo();
+    }
+  }, [fetchAvailableStockMemo, visible]);
+
+  function updateQty(id: string, value: string) {
+    setRows((prev) => prev.map((row) => (row.id === id ? { ...row, pickedQty: value } : row)));
+  }
+
+  return (
+    <Modal transparent animationType="slide" visible={visible} onDismiss={onClose}>
+      <View style={styles.modalOverlay}>
+        <View style={styles.modalContent}>
+          <Headline>Stock Pick</Headline>
+
+          <Paragraph>
+            Product: {orderLine.product.productCode} | {orderLine.product.name}
+          </Paragraph>
+          <Paragraph>Quantity Picked: 0 / {orderLine.quantityRequired}</Paragraph>
+
+          <DataTable>
+            <DataTable.Header>
+              <DataTable.Title>Bin Location</DataTable.Title>
+              <DataTable.Title numeric>Available</DataTable.Title>
+              <DataTable.Title numeric>Picked</DataTable.Title>
+            </DataTable.Header>
+
+            <ScrollView style={styles.scrollableContent}>
+              {rows.map((row) => (
+                <DataTable.Row key={row.id}>
+                  <DataTable.Cell>{row.binLocation}</DataTable.Cell>
+                  <DataTable.Cell numeric>{row.availableQty}</DataTable.Cell>
+                  <DataTable.Cell numeric>
+                    <TextInput
+                      autoCompleteType="off"
+                      mode="outlined"
+                      keyboardType="numeric"
+                      value={row.pickedQty}
+                      style={styles.cellInput}
+                      onChangeText={(v) => updateQty(row.id, v)}
+                    />
+                  </DataTable.Cell>
+                </DataTable.Row>
+              ))}
+            </ScrollView>
+          </DataTable>
+
+          <View style={styles.actionButtons}>
+            <Button onPress={onClose}>Cancel</Button>
+            <Button mode="contained" style={styles.leftMargin} onPress={onSave}>
+              Save
+            </Button>
+          </View>
+        </View>
+      </View>
+    </Modal>
   );
 }
