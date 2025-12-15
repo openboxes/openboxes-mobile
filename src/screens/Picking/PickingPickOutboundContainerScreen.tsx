@@ -74,11 +74,13 @@ export default function PickingPickOutboundContainerScreen() {
   function handleSubmit() {
     if (!outboundContainerId) {
       Alert.alert('Missing Input', 'Please scan or enter a valid Outbound Container ID.');
+      setOutboundContainerId('');
       return;
     }
 
     if (!currentTask) {
       Alert.alert('Error', 'No current pick task available.');
+      setOutboundContainerId('');
       return;
     }
 
@@ -111,6 +113,7 @@ export default function PickingPickOutboundContainerScreen() {
     pickCurrentTask(outboundContainerId, ({ errorMessage }) => {
       if (errorMessage) {
         Alert.alert('Pick Error', errorMessage);
+        setOutboundContainerId('');
         return;
       }
 

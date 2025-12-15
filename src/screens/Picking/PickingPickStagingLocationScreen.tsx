@@ -41,6 +41,7 @@ export default function PickingPickStagingLocationScreen() {
   function handleSubmit() {
     if (!stagingLocationNumber) {
       Alert.alert('Missing Input', 'Please scan or enter a valid Staging Location ID.');
+      setStagingLocationNumber('');
       return;
     }
 
@@ -51,12 +52,14 @@ export default function PickingPickStagingLocationScreen() {
         'Invalid Staging Location',
         `Expected: ${expected ?? '-'}, but got: ${stagingLocationNumber}. Please try again.`
       );
+      setStagingLocationNumber('');
       return;
     }
 
     dropCurrentTask(currentTask, (response) => {
       if (response.errorMessage) {
         Alert.alert('Error', response.errorMessage);
+        setStagingLocationNumber('');
         return;
       }
 
