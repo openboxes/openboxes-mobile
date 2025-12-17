@@ -1,40 +1,32 @@
-import { useIsFocused } from '@react-navigation/native';
 import * as React from 'react';
 import { Alert, TextInput, View } from 'react-native';
 import { Divider, TextInput as PaperTextInput, Paragraph, Subheading } from 'react-native-paper';
 
 import { ProductDetails } from '../../components/ProductDetails';
-import { INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
+import { useInputFocus } from '../../hooks/useInputFocus';
 import { navigate } from '../../NavigationService';
-import { usePickingContext } from './PickingContext';
+import { useReplenishmentContext } from './ReplenishmentContext';
 import styles from './styles';
 
-export default function PickingPickStagingLocationScreen() {
-  const { tasks, dropCurrentTask, resetSession } = usePickingContext();
-  const isFocused = useIsFocused();
+export function ReplenishmentStagingLocationScreen() {
+  const { allTasks, dropCurrentTaskAtStagingLocation, resetReplenishmentSession } = useReplenishmentContext();
 
   const inputRef = React.useRef<TextInput | null>(null);
   const [stagingLocationNumber, setStagingLocationNumber] = React.useState('');
   const [currentUniqueIndex, setCurrentUniqueIndex] = React.useState(0);
 
   const uniqueTasks = React.useMemo(
-    () => Array.from(new Map(tasks.map((pickTask) => [pickTask.outboundContainer?.id, pickTask])).values()),
-    [tasks]
+    () => Array.from(new Map(allTasks.map((task) => [task.outboundContainer?.id, task])).values()),
+    [allTasks]
   );
 
   const currentTask = uniqueTasks[currentUniqueIndex];
 
-  React.useEffect(() => {
-    if (!isFocused) {
-      return;
-    }
-
-    setStagingLocationNumber('');
-    const t = setTimeout(() => inputRef.current?.focus(), INPUT_FOCUS_DELAY_TIME_IN_MS);
-    return () => clearTimeout(t);
-  }, [isFocused, currentUniqueIndex]);
+  useInputFocus(inputRef);
 
   if (!currentTask) {
+    Alert.alert('Error', 'No current replenishment task available.');
+    navigate('Dashboard');
     return null;
   }
 
@@ -56,8 +48,8 @@ export default function PickingPickStagingLocationScreen() {
       return;
     }
 
-    dropCurrentTask(currentTask, (response) => {
-      if (response.errorMessage) {
+    dropCurrentTaskAtStagingLocation(currentTask, (response) => {
+      if ('errorMessage' in response) {
         Alert.alert('Error', response.errorMessage);
         setStagingLocationNumber('');
         return;
@@ -80,8 +72,8 @@ export default function PickingPickStagingLocationScreen() {
           {
             text: 'OK',
             onPress: () => {
-              resetSession();
-              navigate('PickingPickType');
+              resetReplenishmentSession();
+              navigate('Dashboard');
             }
           }
         ]);

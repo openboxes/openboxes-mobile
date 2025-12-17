@@ -1,50 +1,51 @@
-import { RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { RouteProp, useRoute } from '@react-navigation/native';
 import * as React from 'react';
 import { Alert, TextInput, View } from 'react-native';
 import { Divider, TextInput as PaperTextInput, Paragraph, Subheading } from 'react-native-paper';
 
 import { ProductDetails } from '../../components/ProductDetails';
-import { INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
+import { useInputFocus } from '../../hooks/useInputFocus';
 import { navigate } from '../../NavigationService';
 import { ReasonCode } from '../../types/picking';
-import { usePickingContext } from './PickingContext';
+import { useReplenishmentContext } from './ReplenishmentContext';
 import styles from './styles';
 
-type PickingPickOutboundContainerScreenProps = RouteProp<
-  { PickingPickOutboundContainer: { reasonCode?: ReasonCode; quantityPicked?: string } },
-  'PickingPickOutboundContainer'
+type ReplenishmentOutboundContainerScreenProps = RouteProp<
+  { ReplenishmentOutboundContainer: { reasonCode?: ReasonCode; quantityPicked?: string } },
+  'ReplenishmentOutboundContainer'
 >;
 
-export default function PickingPickOutboundContainerScreen() {
+export default function ReplenishmentOutboundContainerScreen() {
   const {
     currentTask,
     pickCurrentTask,
     shortPickTask,
     currentTaskIndex,
-    allTasksCount,
+    tasksCount,
     revalidateCurrentTask,
     goToNextTask,
-    revalidateTasksForRequisition
-  } = usePickingContext();
-  const { params } = useRoute<PickingPickOutboundContainerScreenProps>();
+    revalidateTasksForOrder
+  } = useReplenishmentContext();
+  const { params } = useRoute<ReplenishmentOutboundContainerScreenProps>();
   const parsedQuantityPicked = params?.quantityPicked ? Number(params.quantityPicked) : undefined;
 
   const inputRef = React.useRef<TextInput | null>(null);
-  const isFocused = useIsFocused();
   const [outboundContainerId, setOutboundContainerId] = React.useState<string>('');
 
-  React.useEffect(() => {
-    if (!isFocused) {
-      return;
-    }
-
-    setOutboundContainerId('');
-
-    const t = setTimeout(() => inputRef.current?.focus(), INPUT_FOCUS_DELAY_TIME_IN_MS);
-    return () => clearTimeout(t);
-  }, [isFocused]);
+  // Focus input when screen is focused
+  useInputFocus(inputRef);
 
   if (!currentTask) {
+    Alert.alert('No Pick Task', 'There is no current pick task available. Try again later.', [
+      {
+        text: 'OK',
+        onPress: () => {
+          navigate('Dashboard');
+        }
+      }
+    ]);
     return null;
   }
 
@@ -55,18 +56,18 @@ export default function PickingPickOutboundContainerScreen() {
         return;
       }
 
-      if (currentTaskIndex + 1 >= allTasksCount) {
+      if (currentTaskIndex + 1 >= tasksCount) {
         // Last Task -> Navigate to staging location drop
         Alert.alert('All Picks Complete', 'You have completed all picks. Proceeding to staging location drop.', [
           {
             text: 'OK',
-            onPress: () => navigate('PickingPickStagingLocation')
+            onPress: () => navigate('ReplenishmentStagingLocation')
           }
         ]);
       } else {
         // More Tasks -> Start over with next pick task
         goToNextTask();
-        navigate('PickingPickLocation');
+        navigate('ReplenishmentPickingLocation');
       }
     });
   }
@@ -89,17 +90,17 @@ export default function PickingPickOutboundContainerScreen() {
       shortPickTask(
         outboundContainerId,
         parsedQuantityPicked,
-        ({ errorMessage }) => {
-          if (errorMessage) {
-            Alert.alert('Short Pick Error', errorMessage);
+        (response) => {
+          if ('errorMessage' in response) {
+            Alert.alert('Short Pick Error', response.errorMessage);
             setOutboundContainerId('');
             return;
           }
 
           if (params?.reasonCode?.id) {
-            // Revalidate all tasks for the requisition to get updated pick tasks
-            revalidateTasksForRequisition(currentTask.requisitionId, () => {
-              navigate('PickingPickLocation');
+            // Revalidate all tasks for the order to get updated pick tasks
+            revalidateTasksForOrder(currentTask.orderId, () => {
+              navigate('ReplenishmentPickingLocation');
             });
           } else {
             revalidateTaskAndProceed();
@@ -110,15 +111,18 @@ export default function PickingPickOutboundContainerScreen() {
       return;
     }
 
-    pickCurrentTask(outboundContainerId, ({ errorMessage }) => {
-      if (errorMessage) {
-        Alert.alert('Pick Error', errorMessage);
-        setOutboundContainerId('');
-        return;
-      }
+    // pickCurrentTask(outboundContainerId, ({ errorMessage }) => {
+    //   if (errorMessage) {
+    //     Alert.alert('Pick Error', errorMessage);
+    //     setOutboundContainerId('');
+    //     return;
+    //   }
 
-      revalidateTaskAndProceed();
-    });
+    //   revalidateTaskAndProceed();
+    // });
+
+    // TODO: Temporarily bypass picking for outbound container scanning flow
+    navigate('ReplenishmentStagingLocation');
   }
 
   return (
@@ -129,7 +133,7 @@ export default function PickingPickOutboundContainerScreen() {
             {currentTask.product.productCode}
           </ProductDetails.Badge>
           <ProductDetails.Badge icon="navigation" label="Pick Task">
-            {`${currentTaskIndex + 1} / ${allTasksCount}`}
+            {`${currentTaskIndex + 1} / ${tasksCount}`}
           </ProductDetails.Badge>
         </ProductDetails.Header>
 

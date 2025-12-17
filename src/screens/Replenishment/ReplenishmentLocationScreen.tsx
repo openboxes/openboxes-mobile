@@ -1,66 +1,73 @@
-import { useIsFocused } from '@react-navigation/native';
-import * as React from 'react';
-import { Alert, TextInput, View } from 'react-native';
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import React from 'react';
 import { Divider, TextInput as PaperTextInput, Paragraph, Subheading } from 'react-native-paper';
 
+import { Alert, TextInput, View } from 'react-native';
 import { ProductDetails } from '../../components/ProductDetails';
-import { HYPHEN, INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
+import { HYPHEN } from '../../constants';
+import { useInputFocus } from '../../hooks/useInputFocus';
 import { navigate } from '../../NavigationService';
-import { usePickingContext } from './PickingContext';
+import { DUMMY_REPLENISHMENT } from './mock-data';
+import { useReplenishmentContext } from './ReplenishmentContext';
 import styles from './styles';
 
-export default function PickingPickLocationScreen() {
-  const { currentTask, currentTaskIndex, allTasksCount, startPickTask } = usePickingContext();
+export function ReplenishmentLocationScreen() {
+  const { currentTask, currentTaskIndex, tasksCount, startReplenishment } = useReplenishmentContext();
 
   const inputRef = React.useRef<TextInput | null>(null);
-  const isFocused = useIsFocused();
-  const [pickLocationBarcode, setPickLocationBarcode] = React.useState<string>('');
+  const [locationBarcode, setLocationBarcode] = React.useState<string>('');
 
-  React.useEffect(() => {
-    if (!isFocused) {
-      return;
-    }
-
-    setPickLocationBarcode('');
-
-    const t = setTimeout(() => inputRef.current?.focus(), INPUT_FOCUS_DELAY_TIME_IN_MS);
-    return () => clearTimeout(t);
-  }, [isFocused]);
+  // Focus input when screen is focused
+  useInputFocus(inputRef);
 
   if (!currentTask) {
+    Alert.alert('No Replenishment Task', 'There is no current replenishment task available. Try again later.', [
+      {
+        text: 'OK',
+        onPress: () => {
+          navigate('Dashboard');
+        }
+      }
+    ]);
     return null;
   }
 
   function handleSubmit() {
-    const isValid = pickLocationBarcode === currentTask?.location?.locationNumber;
+    const isValid = locationBarcode === currentTask?.location?.locationNumber;
+
     if (!isValid) {
       Alert.alert(
         'Invalid Barcode',
         `Incorrect location scanned. Expected: ${currentTask?.location?.locationNumber}. Try again.`
       );
-      setPickLocationBarcode('');
+      setLocationBarcode('');
       return;
     }
 
-    startPickTask(({ errorMessage }) => {
-      if (errorMessage) {
-        Alert.alert('Error', errorMessage);
-        return;
-      }
+    // startReplenishment((response) => {
+    //   if ('errorMessage' in response) {
+    //     Alert.alert('Error', response.errorMessage);
+    //     setLocationBarcode('');
+    //     return;
+    //   }
 
-      navigate('PickingPickProduct');
-    });
+    //   navigate('ReplenishmentProduct');
+    // });
+
+    navigate('ReplenishmentProduct');
   }
 
   return (
-    <ProductDetails.Provider product={currentTask.product} status={currentTask.status}>
+    // @ts-ignore
+    <ProductDetails.Provider product={DUMMY_REPLENISHMENT.product}>
       <ProductDetails.Root>
         <ProductDetails.Header>
           <ProductDetails.Badge icon="barcode" label="Product Code">
-            {currentTask.product.productCode}
+            {DUMMY_REPLENISHMENT.product.productCode}
           </ProductDetails.Badge>
-          <ProductDetails.Badge icon="navigation" label="Pick Task">
-            {`${currentTaskIndex + 1} / ${allTasksCount || 0}`}
+          <ProductDetails.Badge icon="navigation" label="Task">
+            {`${currentTaskIndex + 1} / ${tasksCount}`}
           </ProductDetails.Badge>
         </ProductDetails.Header>
 
@@ -81,7 +88,7 @@ export default function PickingPickLocationScreen() {
 
       <Divider />
 
-      <View style={[styles.wrapperWithPadding]}>
+      <View style={styles.wrapperWithPadding}>
         <Subheading style={styles.subheading}>Scan Pick Location Barcode</Subheading>
         <Paragraph style={styles.paragraph}>
           Point your barcode scanner at the pick location barcode or type the code manually.
@@ -93,9 +100,9 @@ export default function PickingPickLocationScreen() {
           ref={inputRef}
           mode="outlined"
           label="Pick Location Barcode"
-          value={pickLocationBarcode}
+          value={locationBarcode}
           returnKeyType="done"
-          onChangeText={setPickLocationBarcode}
+          onChangeText={setLocationBarcode}
           onSubmitEditing={handleSubmit}
         />
       </View>

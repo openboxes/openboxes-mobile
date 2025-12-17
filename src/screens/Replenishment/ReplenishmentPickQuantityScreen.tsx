@@ -1,53 +1,48 @@
-import { useIsFocused } from '@react-navigation/native';
-import * as React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Alert, TextInput, View } from 'react-native';
 import { Button, Divider, TextInput as PaperTextInput, Paragraph, Subheading } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
 import PickingShortAndReasonModal from '../../components/PickingShortAndReasonModal';
 import { ProductDetails } from '../../components/ProductDetails';
-import { HYPHEN, INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
+import { HYPHEN } from '../../constants';
+import { useInputFocus } from '../../hooks/useInputFocus';
 import { navigate } from '../../NavigationService';
 import { getReasonCodesAction } from '../../redux/actions/others';
 import { ReasonCode } from '../../types/picking';
-import { usePickingContext } from './PickingContext';
+import { DUMMY_REPLENISHMENT } from './mock-data';
+import { useReplenishmentContext } from './ReplenishmentContext';
 import styles from './styles';
 
-export default function PickingPickQuantityScreen() {
-  const { currentTask, currentTaskIndex, allTasksCount } = usePickingContext();
+export default function ReplenishmentPickQuantityScreen() {
+  const { currentTask, currentTaskIndex, tasksCount } = useReplenishmentContext();
   const dispatch = useDispatch();
   const inputRef = React.useRef<TextInput | null>(null);
-  const isFocused = useIsFocused();
 
-  const [quantityPicked, setQuantityPicked] = React.useState<string>('');
-  const [reasonCodes, setReasonCodes] = React.useState<ReasonCode[]>([]);
-  const [selectedReasonCode, setSelectedReasonCode] = React.useState<ReasonCode | undefined>(undefined);
-  const [isShortModalVisible, setIsShortModalVisible] = React.useState(false);
+  const [quantityPicked, setQuantityPicked] = useState<string>('');
+  const [reasonCodes, setReasonCodes] = useState<ReasonCode[]>([]);
+  const [selectedReasonCode, setSelectedReasonCode] = useState<ReasonCode | undefined>(undefined);
+  const [isShortModalVisible, setIsShortModalVisible] = useState(false);
 
   // Focus input when screen is focused
-  React.useEffect(() => {
-    if (!isFocused) {
-      return;
-    }
-    setQuantityPicked('');
-    const t = setTimeout(() => inputRef.current?.focus(), INPUT_FOCUS_DELAY_TIME_IN_MS);
-    return () => clearTimeout(t);
-  }, [isFocused]);
+  useInputFocus(inputRef);
 
-  // Fetch reason codes
-  React.useEffect(() => {
+  useEffect(() => {
     dispatch(
       getReasonCodesAction('PICKING_SHORTAGE', (data: any) => {
-        if (data?.error) {
-          Alert.alert('Error', 'Failed to load reason codes.');
-        } else {
-          setReasonCodes(data);
+        if ('errorMessage' in data) {
+          Alert.alert('Error', data.errorMessage);
+          return;
         }
+
+        setReasonCodes(data);
       })
     );
   }, [dispatch]);
 
   if (!currentTask) {
+    Alert.alert('No Replenishment Task', 'There is no current replenishment task available. Try again later.');
+    navigate('Dashboard');
     return null;
   }
 
@@ -69,11 +64,10 @@ export default function PickingPickQuantityScreen() {
     }
 
     if (isFullPicked) {
-      navigate('PickingPickOutboundContainer');
+      navigate('ReplenishmentOutboundContainer');
       return;
     }
 
-    // For now, if not full picked, treat as short pick
     setIsShortModalVisible(true);
   }
 
@@ -85,14 +79,15 @@ export default function PickingPickQuantityScreen() {
 
   return (
     <>
-      <ProductDetails.Provider product={currentTask.product} status={currentTask.status}>
+      {/* @ts-ignore */}
+      <ProductDetails.Provider product={DUMMY_REPLENISHMENT.product}>
         <ProductDetails.Root>
           <ProductDetails.Header>
             <ProductDetails.Badge icon="barcode" label="Product Code">
               {currentTask.product.productCode}
             </ProductDetails.Badge>
             <ProductDetails.Badge icon="navigation" label="Pick Task">
-              {`${currentTaskIndex + 1} / ${allTasksCount}`}
+              {`${currentTaskIndex + 1} / ${tasksCount}`}
             </ProductDetails.Badge>
           </ProductDetails.Header>
 

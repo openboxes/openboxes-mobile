@@ -3,10 +3,10 @@ import * as React from 'react';
 import { Alert, TextInput, View } from 'react-native';
 import { Divider, TextInput as PaperTextInput, Paragraph, Subheading } from 'react-native-paper';
 
+import { ProductDetails } from '../../components/ProductDetails';
 import { HYPHEN, INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
 import { navigate } from '../../NavigationService';
 import { usePickingContext } from './PickingContext';
-import { ProductDetails } from './ProductDetails';
 import styles from './styles';
 
 export default function PickingPickProductScreen() {

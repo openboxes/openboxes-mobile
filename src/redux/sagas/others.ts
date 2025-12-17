@@ -23,9 +23,10 @@ function* getReasonCodes(action: any) {
     if (action.callback) {
       yield call(action.callback, {
         error: true,
-        errorMessage: error.message
+        errorMessage: error.message ?? 'Failed To Load Reason Codes'
       });
     }
+    yield put(hideScreenLoading());
   }
 }
 

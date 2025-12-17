@@ -74,6 +74,13 @@ const dashboardEntries: DashboardEntry[] = [
     navigationScreenName: 'InboundOrderList'
   },
   {
+    key: 'replenishment',
+    screenName: 'Replenishment',
+    entryDescription: 'Manage inventory replenishment tasks',
+    icon: IconProducts,
+    navigationScreenName: 'ReplenishmentPickingLocation'
+  },
+  {
     key: 'putawayCandidates',
     screenName: 'Putaway Candidates',
     entryDescription: 'View and manage putaway candidates',
