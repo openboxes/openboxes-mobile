@@ -1,16 +1,39 @@
-import React from 'react';
-import { FlatList, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Alert, FlatList, TouchableOpacity, View } from 'react-native';
 import { Caption, Card, Chip, Divider, Paragraph, Title } from 'react-native-paper';
 
 import { navigate } from '../../NavigationService';
-import { MOCKED_ORDERS } from './mock-data';
 import styles from './styles';
 import { AllocationOrder } from './types';
+import { getOutboundOrders } from '../../apis/pua';
+import { useFocusEffect } from '@react-navigation/native';
 
 export function PickUpEntryScreen() {
+  const [orders, setOrders] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const fetchOrders = async () => {
+    try {
+      setIsLoading(true);
+      const response = await getOutboundOrders();
+      setOrders(response.data || []);
+    } catch (error) {
+      Alert.alert('Error', 'Failed to fetch orders data');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // used useFocusEffect to refresh when screen is focused after nagivation
+  useFocusEffect(
+    useCallback(() => {
+      fetchOrders();
+    }, [])
+  );
+
   return (
     <View style={styles.screenContainer}>
-      <Title style={styles.titleText}>Outstanding Orders ({MOCKED_ORDERS.length})</Title>
+      <Title style={styles.titleText}>Outstanding Orders ({orders.length})</Title>
       <Paragraph style={styles.subtitleText}>
         Select an order from the list to start the pick-up allocation process.
       </Paragraph>
@@ -18,18 +41,20 @@ export function PickUpEntryScreen() {
       <Divider style={styles.sectionDivider} />
 
       <FlatList
-        data={MOCKED_ORDERS}
+        data={orders}
         renderItem={({ item }) => <PickUpCard order={item} />}
-        keyExtractor={(item: AllocationOrder) => item.orderNumber}
+        keyExtractor={(item: AllocationOrder) => item.id}
         numColumns={1}
         ItemSeparatorComponent={() => <View style={styles.itemSeparator} />}
+        refreshing={isLoading}
+        onRefresh={fetchOrders}
       />
     </View>
   );
 }
 
 function PickUpCard({ order }: { order: AllocationOrder }) {
-  const onPress = () => navigate('PickUpOrderScreen', { order });
+  const onPress = () => navigate('PickUpOrderScreen', { orderId: order.id });
 
   return (
     <TouchableOpacity activeOpacity={0.85} style={styles.cardTouchable} onPress={onPress}>
@@ -37,10 +62,10 @@ function PickUpCard({ order }: { order: AllocationOrder }) {
         <Card.Content>
           <View style={styles.cardHeader}>
             <Chip icon="identifier" textStyle={styles.chipText} style={styles.chip}>
-              {order.orderNumber}
+              {order.identifier}
             </Chip>
             <Chip icon="package" textStyle={styles.chipText} style={styles.chip}>
-              {`Lines: ${order.orderLines.length}`}
+              {`Lines: ${order.lineItemCount}`}
             </Chip>
           </View>
 
@@ -48,7 +73,7 @@ function PickUpCard({ order }: { order: AllocationOrder }) {
 
           <Title>{order.name}</Title>
           <Caption>
-            {`Order Date: ${new Date(order.orderDate).toLocaleDateString('en-US', {
+            {`Order Date: ${new Date(order.dateTimeCreated).toLocaleDateString('en-US', {
               year: 'numeric',
               month: 'short',
               day: '2-digit',

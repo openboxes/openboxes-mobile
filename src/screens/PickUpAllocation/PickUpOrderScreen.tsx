@@ -1,33 +1,67 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Alert, Modal, ScrollView, View } from 'react-native';
 import { Button, DataTable, Headline, List, Paragraph, TextInput, Title } from 'react-native-paper';
 
 import EmptyView from '../../components/EmptyView';
 import Theme from '../../utils/Theme';
 import styles from './styles';
-import { AllocationOrder, AllocationOrderLine } from './types';
+import { AllocationOrderLine, AllocationStrategy, AvailableItem } from './types';
+import { allocate, getOutboundOrderDetails, updateOrderStatus } from '../../apis';
+import { navigate } from '../../NavigationService';
 
-type PickUpOrderRouteProp = RouteProp<{ PickUpOrderScreen: { order: AllocationOrder } }, 'PickUpOrderScreen'>;
+type PickUpOrderRouteProp = RouteProp<{ PickUpOrderScreen: { orderId: string } }, 'PickUpOrderScreen'>;
 
 export function PickUpOrderScreen() {
   const { params } = useRoute<PickUpOrderRouteProp>();
-  const { order } = params;
+  const { orderId } = params;
 
-  const totalLines = order?.orderLines?.length ?? 0;
-  const [pickedLines, setPickedLines] = React.useState<number>(0);
-  const [allPickedAlertShown, setAllPickedAlertShown] = React.useState(false);
+  const [pickedLines, setPickedLines] = useState<number>(0);
+  const [allPickedAlertShown, setAllPickedAlertShown] = useState(false);
+
+  const [fullOrder, setFullOrder] = useState<any>(null);
 
   const handleLinePicked = React.useCallback(() => {
     setPickedLines((prev) => prev + 1);
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
+    const fetchDetails = async () => {
+      try {
+        const response = await getOutboundOrderDetails(orderId);
+        setFullOrder(response.data || []);
+      } catch (error) {
+        Alert.alert('Error', 'Failed to load order details.');
+      }
+    };
+
+    fetchDetails();
+  }, [orderId]);
+
+  const totalLines = fullOrder?.lineItems?.length ?? 0;
+
+  useEffect(() => {
     if (totalLines > 0 && pickedLines === totalLines && !allPickedAlertShown) {
       setAllPickedAlertShown(true);
       showAllPickedDialog();
     }
   }, [allPickedAlertShown, pickedLines, totalLines]);
+
+  const handleFinishAllocation = async (navigateToPicking: boolean) => {
+    try {
+      await updateOrderStatus(orderId, 'PICKING');
+
+      // 2. Przekierowanie w zależności od wyboru
+      if (navigateToPicking) {
+        navigate('PickingPickType');
+      } else {
+        navigate('PickUpEntryScreen');
+      }
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Error', 'Failed to update order status.');
+    }
+  };
 
   const showAllPickedDialog = () => {
     Alert.alert(
@@ -37,17 +71,17 @@ export function PickUpOrderScreen() {
         {
           text: 'No',
           style: 'cancel',
-          onPress: () => {}
+          onPress: () => handleFinishAllocation(false)
         },
         {
           text: 'Yes',
-          onPress: () => {}
+          onPress: () => handleFinishAllocation(true)
         }
       ]
     );
   };
 
-  if (!order || !order.orderLines) {
+  if (!fullOrder || !fullOrder.lineItems) {
     return (
       <EmptyView
         title="No Order Data Available"
@@ -58,14 +92,15 @@ export function PickUpOrderScreen() {
 
   return (
     <View style={styles.screenContainer}>
-      <Title style={styles.titleText}>Order Line Allocation ({order.orderLines.length})</Title>
+      <Title style={styles.titleText}>Order Line Allocation ({fullOrder.lineItems.length})</Title>
 
       <ScrollView>
         <List.Section>
-          {order.orderLines.map((line, index) => (
+          {fullOrder.lineItems.map((line, index) => (
             <AllocationOrderItem
               key={`${line.product.productCode}-${index}`}
               orderLine={line}
+              orderId={orderId}
               onPicked={handleLinePicked}
             />
           ))}
@@ -75,9 +110,17 @@ export function PickUpOrderScreen() {
   );
 }
 
-function AllocationOrderItem({ orderLine, onPicked }: { orderLine: AllocationOrderLine; onPicked: () => void }) {
-  const [expanded, setExpanded] = React.useState(true);
-  const [isPicked, setIsPicked] = React.useState(false);
+function AllocationOrderItem({
+  orderLine,
+  onPicked,
+  orderId
+}: {
+  orderLine: AllocationOrderLine;
+  onPicked: () => void;
+  orderId: string;
+}) {
+  const [expanded, setExpanded] = useState(true);
+  const [isPicked, setIsPicked] = useState(false);
 
   const toggleExpanded = () => {
     if (!isPicked) {
@@ -113,16 +156,45 @@ function AllocationOrderItem({ orderLine, onPicked }: { orderLine: AllocationOrd
     >
       {!isPicked && (
         <View style={[styles.accordionContent, styles.paddingZero]}>
-          <OrderLineController orderLine={orderLine} onPicked={handleMarkPicked} />
+          <OrderLineController orderLine={orderLine} orderId={orderId} onPicked={handleMarkPicked} />
         </View>
       )}
     </List.Accordion>
   );
 }
 
-function OrderLineController({ onPicked, orderLine }: { onPicked: () => void; orderLine: AllocationOrderLine }) {
-  const [partialQuantity, setPartialQuantity] = React.useState<number | null>(null);
-  const [isStockPickOpen, setIsStockPickOpen] = React.useState(false);
+function OrderLineController({
+  onPicked,
+  orderLine,
+  orderId
+}: {
+  onPicked: () => void;
+  orderId: string;
+  orderLine: AllocationOrderLine;
+}) {
+  const [partialQuantity, setPartialQuantity] = useState<number | null>(null);
+  const [isStockPickOpen, setIsStockPickOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleAutoPick = async (strategy: AllocationStrategy) => {
+    try {
+      setIsSubmitting(true);
+
+      const payload = {
+        mode: 'AUTO',
+        strategies: [strategy]
+      };
+
+      await allocate(orderId, orderLine.id, payload);
+
+      Alert.alert('Success', 'Item allocated successfully', [{ text: 'OK', onPress: onPicked }]);
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Error', 'Allocation failed');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   function handleConfirm() {
     if (
@@ -151,14 +223,14 @@ function OrderLineController({ onPicked, orderLine }: { onPicked: () => void; or
   function handleWarehousePick() {
     Alert.alert('Full Warehouse Pick', 'Confirm full warehouse pick?', [
       { text: 'Cancel', style: 'cancel' },
-      { text: 'Confirm', onPress: onPicked }
+      { text: 'Confirm', onPress: () => handleAutoPick('WAREHOUSE_PICK') }
     ]);
   }
 
   function handleDisplayPick() {
     Alert.alert('Full Display Pick', 'Confirm full display pick?', [
       { text: 'Cancel', style: 'cancel' },
-      { text: 'Confirm', onPress: onPicked }
+      { text: 'Confirm', onPress: () => handleAutoPick('DISPLAY_PICK') }
     ]);
   }
 
@@ -169,10 +241,23 @@ function OrderLineController({ onPicked, orderLine }: { onPicked: () => void; or
   return (
     <View>
       <View style={styles.buttonRow}>
-        <Button mode="contained" labelStyle={styles.buttonText} style={styles.button} onPress={handleWarehousePick}>
+        <Button
+          mode="contained"
+          labelStyle={styles.buttonText}
+          style={styles.button}
+          loading={isSubmitting}
+          disabled={isSubmitting}
+          onPress={handleWarehousePick}
+        >
           Full Warehouse Pick
         </Button>
-        <Button mode="contained" labelStyle={styles.buttonText} style={styles.button} onPress={handleDisplayPick}>
+        <Button
+          mode="contained"
+          labelStyle={styles.buttonText}
+          style={styles.button}
+          disabled={isSubmitting}
+          onPress={handleDisplayPick}
+        >
           Full Display Pick
         </Button>
         <Button mode="contained" labelStyle={styles.buttonText} style={styles.button} onPress={handleStockPick}>
@@ -223,24 +308,6 @@ function OrderLineController({ onPicked, orderLine }: { onPicked: () => void; or
   );
 }
 
-type StockRow = {
-  id: string;
-  binLocation: string;
-  availableQty: number;
-  onHandQty?: number;
-  pickedQty: string;
-};
-
-const MOCK_STOCK_ROWS: StockRow[] = [
-  { id: 'A1', binLocation: 'WH-A1-01', availableQty: 12, pickedQty: '0' },
-  { id: 'A2', binLocation: 'WH-A1-02', availableQty: 8, pickedQty: '0' },
-  { id: 'B1', binLocation: 'DP-B1-01', availableQty: 5, pickedQty: '0' },
-  { id: 'B2', binLocation: 'DP-B1-02', availableQty: 3, pickedQty: '0' },
-  { id: 'C1', binLocation: 'BACK-C1', availableQty: 20, pickedQty: '0' },
-  { id: 'C2', binLocation: 'BACK-C2', availableQty: 15, pickedQty: '0' },
-  { id: 'D1', binLocation: 'FRONT-D1', availableQty: 6, pickedQty: '0' }
-];
-
 type StockPickModalProps = {
   visible: boolean;
   onDismiss: () => void;
@@ -249,29 +316,48 @@ type StockPickModalProps = {
 };
 
 function StockPickModal({ visible, onDismiss: onClose, onConfirm: onSave, orderLine }: StockPickModalProps) {
-  const [rows, setRows] = React.useState<StockRow[]>([]);
+  const [rows, setRows] = useState<AvailableItem[]>([]);
 
-  /**
-   * Fetch available stock for the current order line item.
-   * For now, we are using mocked data until backend integration is ready.
-   */
-  function fetchAvailableStock() {
-    // TODO: Replace with real API call
-    // eslint-disable-next-line no-restricted-syntax
-    console.log(orderLine);
-    setRows(MOCK_STOCK_ROWS);
-  }
-
-  const fetchAvailableStockMemo = React.useCallback(fetchAvailableStock, [orderLine]);
-
-  React.useEffect(() => {
-    if (visible) {
-      fetchAvailableStockMemo();
+  useEffect(() => {
+    if (visible && orderLine?.availableItems) {
+      const preparedData = orderLine.availableItems.map((item, index) => ({
+        ...item,
+        _localId: `loc-${item.binLocation?.id || 'null'}-idx-${index}`,
+        quantityPicked: item.quantityPicked ? String(item.quantityPicked) : '0'
+      }));
+      setRows(preparedData);
     }
-  }, [fetchAvailableStockMemo, visible]);
+  }, [visible, orderLine]);
 
-  function updateQty(id: string, value: string) {
-    setRows((prev) => prev.map((row) => (row.id === id ? { ...row, pickedQty: value } : row)));
+  const totalPicked = rows.reduce((sum, row) => {
+    const qty = parseInt(row.quantityPicked, 10);
+    return sum + (isNaN(qty) ? 0 : qty);
+  }, 0);
+
+  const isQuantityRequiredExceeded = totalPicked > orderLine.quantityRequired;
+
+  function updateQty(localId: string, text: string) {
+    if (text === '') {
+      setRows((prev) => prev.map((row) => (row._localId === localId ? { ...row, quantityPicked: '' } : row)));
+      return;
+    }
+
+    const newValue = parseInt(text, 10);
+
+    if (isNaN(newValue)) {
+      return;
+    }
+
+    setRows((prev) =>
+      prev.map((row) => {
+        if (row._localId === localId) {
+          const cappedValue = newValue > row.quantityAvailable ? row.quantityAvailable : newValue;
+
+          return { ...row, quantityPicked: String(cappedValue) };
+        }
+        return row;
+      })
+    );
   }
 
   return (
@@ -283,7 +369,15 @@ function StockPickModal({ visible, onDismiss: onClose, onConfirm: onSave, orderL
           <Paragraph>
             Product: {orderLine.product.productCode} | {orderLine.product.name}
           </Paragraph>
-          <Paragraph>Quantity Picked: 0 / {orderLine.quantityRequired}</Paragraph>
+          <Paragraph
+            // eslint-disable-next-line react-native/no-inline-styles
+            style={{
+              fontWeight: 'bold',
+              color: isQuantityRequiredExceeded ? Theme.colors.error : Theme.colors.text
+            }}
+          >
+            Quantity Picked: {totalPicked} / {orderLine.quantityRequired}
+          </Paragraph>
 
           <DataTable>
             <DataTable.Header>
@@ -294,17 +388,17 @@ function StockPickModal({ visible, onDismiss: onClose, onConfirm: onSave, orderL
 
             <ScrollView style={styles.scrollableContent}>
               {rows.map((row) => (
-                <DataTable.Row key={row.id}>
-                  <DataTable.Cell>{row.binLocation}</DataTable.Cell>
-                  <DataTable.Cell numeric>{row.availableQty}</DataTable.Cell>
+                <DataTable.Row key={row.binLocation?.id}>
+                  <DataTable.Cell>{row.binLocation?.locationNumber ?? 'Default'}</DataTable.Cell>
+                  <DataTable.Cell numeric>{row.quantityAvailable}</DataTable.Cell>
                   <DataTable.Cell numeric>
                     <TextInput
                       autoCompleteType="off"
                       mode="outlined"
                       keyboardType="numeric"
-                      value={row.pickedQty}
+                      value={row.quantityPicked}
                       style={styles.cellInput}
-                      onChangeText={(v) => updateQty(row.id, v)}
+                      onChangeText={(v) => updateQty(row._localId, v)}
                     />
                   </DataTable.Cell>
                 </DataTable.Row>
@@ -314,7 +408,7 @@ function StockPickModal({ visible, onDismiss: onClose, onConfirm: onSave, orderL
 
           <View style={styles.actionButtons}>
             <Button onPress={onClose}>Cancel</Button>
-            <Button mode="contained" style={styles.leftMargin} onPress={onSave}>
+            <Button mode="contained" style={styles.leftMargin} disabled={isQuantityRequiredExceeded} onPress={onSave}>
               Save
             </Button>
           </View>
