@@ -16,13 +16,13 @@ export function PickUpOrderScreen() {
   const { params } = useRoute<PickUpOrderRouteProp>();
   const { orderId } = params;
 
-  const [pickedLines, setPickedLines] = useState<number>(0);
-  const [allPickedAlertShown, setAllPickedAlertShown] = useState(false);
+  const [allocatedLines, setAllocatedLines] = useState<number>(0);
+  const [allAllocatedAlertShown, setAllAllocatedAlertShown] = useState(false);
 
   const [fullOrder, setFullOrder] = useState<any>(null);
 
-  const handleLinePicked = React.useCallback(() => {
-    setPickedLines((prev) => prev + 1);
+  const handleLineAllocated = React.useCallback(() => {
+    setAllocatedLines((prev) => prev + 1);
   }, []);
 
   useEffect(() => {
@@ -41,24 +41,22 @@ export function PickUpOrderScreen() {
   const totalLines = fullOrder?.lineItems?.length ?? 0;
 
   useEffect(() => {
-    if (totalLines > 0 && pickedLines === totalLines && !allPickedAlertShown) {
-      setAllPickedAlertShown(true);
+    if (totalLines > 0 && allocatedLines === totalLines && !allAllocatedAlertShown) {
+      setAllAllocatedAlertShown(true);
       showAllPickedDialog();
     }
-  }, [allPickedAlertShown, pickedLines, totalLines]);
+  }, [allAllocatedAlertShown, allocatedLines, totalLines]);
 
   const handleFinishAllocation = async (navigateToPicking: boolean) => {
     try {
       await updateOrderStatus(orderId, 'PICKING');
 
-      // 2. Przekierowanie w zależności od wyboru
       if (navigateToPicking) {
         navigate('PickingPickType');
       } else {
         navigate('PickUpEntryScreen');
       }
     } catch (error) {
-      console.error(error);
       Alert.alert('Error', 'Failed to update order status.');
     }
   };
@@ -66,7 +64,7 @@ export function PickUpOrderScreen() {
   const showAllPickedDialog = () => {
     Alert.alert(
       'All Lines Picked',
-      'All lines for this order have been allocated.Would you like to self-pick this order?',
+      'All lines for this order have been allocated. Would you like to self-pick this order?',
       [
         {
           text: 'No',
@@ -101,7 +99,7 @@ export function PickUpOrderScreen() {
               key={`${line.product.productCode}-${index}`}
               orderLine={line}
               orderId={orderId}
-              onPicked={handleLinePicked}
+              onAllocated={handleLineAllocated}
             />
           ))}
         </List.Section>
@@ -112,51 +110,51 @@ export function PickUpOrderScreen() {
 
 function AllocationOrderItem({
   orderLine,
-  onPicked,
+  onAllocated,
   orderId
 }: {
   orderLine: AllocationOrderLine;
-  onPicked: () => void;
+  onAllocated: () => void;
   orderId: string;
 }) {
   const [expanded, setExpanded] = useState(true);
-  const [isPicked, setIsPicked] = useState(false);
+  const [isAllocated, setIsAllocated] = useState(false);
 
   const toggleExpanded = () => {
-    if (!isPicked) {
+    if (!isAllocated) {
       setExpanded(!expanded);
     }
   };
 
   const { product, quantityRequired } = orderLine;
 
-  function handleMarkPicked() {
-    setIsPicked(true);
+  function handleMarkAllocated() {
+    setIsAllocated(true);
     setExpanded(false);
-    onPicked?.();
+    onAllocated?.();
   }
 
   return (
     <List.Accordion
       title={`${product.name} (${product.productCode})`}
-      description={isPicked ? `Quantity Picked: ${quantityRequired}` : `Quantity Required: ${quantityRequired}`}
+      description={isAllocated ? `Quantity Allocated: ${quantityRequired}` : `Quantity Required: ${quantityRequired}`}
       left={(props) => (
         <List.Icon
           {...props}
-          icon={isPicked ? 'check-circle' : 'package-variant-closed'}
-          color={isPicked ? Theme.colors.success : undefined}
+          icon={isAllocated ? 'check-circle' : 'package-variant-closed'}
+          color={isAllocated ? Theme.colors.success : undefined}
         />
       )}
       expanded={expanded}
       // eslint-disable-next-line react-native/no-inline-styles
-      style={[styles.accordion, isPicked && { opacity: 0.5 }]}
+      style={[styles.accordion, isAllocated && { opacity: 0.5 }]}
       titleStyle={styles.accordionTitle}
       descriptionStyle={styles.accordionDescription}
       onPress={toggleExpanded}
     >
-      {!isPicked && (
+      {!isAllocated && (
         <View style={[styles.accordionContent, styles.paddingZero]}>
-          <OrderLineController orderLine={orderLine} orderId={orderId} onPicked={handleMarkPicked} />
+          <OrderLineController orderLine={orderLine} orderId={orderId} onAllocated={handleMarkAllocated} />
         </View>
       )}
     </List.Accordion>
@@ -164,11 +162,11 @@ function AllocationOrderItem({
 }
 
 function OrderLineController({
-  onPicked,
+  onAllocated,
   orderLine,
   orderId
 }: {
-  onPicked: () => void;
+  onAllocated: () => void;
   orderId: string;
   orderLine: AllocationOrderLine;
 }) {
@@ -187,10 +185,47 @@ function OrderLineController({
 
       await allocate(orderId, orderLine.id, payload);
 
-      Alert.alert('Success', 'Item allocated successfully', [{ text: 'OK', onPress: onPicked }]);
+      Alert.alert('Success', 'Item allocated successfully', [{ text: 'OK', onPress: onAllocated }]);
     } catch (error) {
-      console.error(error);
       Alert.alert('Error', 'Allocation failed');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleManualAllocation = async (rows: AvailableItem[]) => {
+    try {
+      setIsStockPickOpen(false);
+      setIsSubmitting(true);
+
+      const itemsToAllocate = rows.filter((row) => {
+        const qty = parseInt(row.quantityAllocated, 10);
+        return !isNaN(qty) && qty > 0;
+      });
+
+      if (itemsToAllocate.length === 0) {
+        Alert.alert('No items selected', 'Please enter a quantity to allocate.');
+        setIsSubmitting(false);
+        setIsStockPickOpen(true);
+        return;
+      }
+
+      const allocationsPayload = itemsToAllocate.map((row) => ({
+        inventoryItemId: row['inventoryItem.id'],
+        binLocationId: row.binLocation.id,
+        quantity: parseInt(row.quantityAllocated, 10)
+      }));
+
+      const payload = {
+        mode: 'MANUAL',
+        allocations: allocationsPayload
+      };
+
+      await allocate(orderId, orderLine.id, payload);
+
+      Alert.alert('Success', 'Manual allocation saved', [{ text: 'OK', onPress: onAllocated }]);
+    } catch (error) {
+      Alert.alert('Error', 'Manual allocation failed');
     } finally {
       setIsSubmitting(false);
     }
@@ -214,7 +249,7 @@ function OrderLineController({
         { text: 'Cancel', style: 'cancel' },
         {
           text: 'Confirm',
-          onPress: onPicked
+          onPress: onAllocated
         }
       ]
     );
@@ -223,14 +258,14 @@ function OrderLineController({
   function handleWarehousePick() {
     Alert.alert('Full Warehouse Pick', 'Confirm full warehouse pick?', [
       { text: 'Cancel', style: 'cancel' },
-      { text: 'Confirm', onPress: () => handleAutoPick('WAREHOUSE_PICK') }
+      { text: 'Confirm', onPress: () => handleAutoPick('WAREHOUSE_FIRST') }
     ]);
   }
 
   function handleDisplayPick() {
     Alert.alert('Full Display Pick', 'Confirm full display pick?', [
       { text: 'Cancel', style: 'cancel' },
-      { text: 'Confirm', onPress: () => handleAutoPick('DISPLAY_PICK') }
+      { text: 'Confirm', onPress: () => handleAutoPick('DISPLAY_FIRST') }
     ]);
   }
 
@@ -265,44 +300,47 @@ function OrderLineController({
         </Button>
       </View>
 
-      <View style={styles.partialInputContainer}>
-        {/* Label + Input */}
-        <View style={styles.inputRow}>
-          <Paragraph style={styles.inputLabel}>Enter Partial Quantity From Display:</Paragraph>
+      {/* Temporarily hidden because it probably won't be needed. To be removed/shown later. */}
+      {false && (
+        <View style={styles.partialInputContainer}>
+          {/* Label + Input */}
+          <View style={styles.inputRow}>
+            <Paragraph style={styles.inputLabel}>Enter Partial Quantity From Display:</Paragraph>
 
-          <View style={styles.inputWrapper}>
-            <TextInput
-              autoCompleteType="off"
-              mode="outlined"
-              value={partialQuantity !== null ? partialQuantity.toString() : ''}
-              placeholder="Enter Partial Qty"
-              keyboardType="numeric"
-              style={styles.input}
-              onChangeText={(text) => {
-                const parsed = parseInt(text, 10);
-                setPartialQuantity(text && !isNaN(parsed) ? parsed : null);
-              }}
-            />
+            <View style={styles.inputWrapper}>
+              <TextInput
+                autoCompleteType="off"
+                mode="outlined"
+                value={partialQuantity !== null ? partialQuantity?.toString() : ''}
+                placeholder="Enter Partial Qty"
+                keyboardType="numeric"
+                style={styles.input}
+                onChangeText={(text) => {
+                  const parsed = parseInt(text, 10);
+                  setPartialQuantity(text && !isNaN(parsed) ? parsed : null);
+                }}
+              />
+            </View>
           </View>
-        </View>
 
-        {/* Confirm button */}
-        <Button
-          mode="contained"
-          icon="check"
-          labelStyle={styles.buttonText}
-          style={styles.confirmButton}
-          onPress={handleConfirm}
-        >
-          Confirm Quantity
-        </Button>
-      </View>
+          {/* Confirm button */}
+          <Button
+            mode="contained"
+            icon="check"
+            labelStyle={styles.buttonText}
+            style={styles.confirmButton}
+            onPress={handleConfirm}
+          >
+            Confirm Quantity
+          </Button>
+        </View>
+      )}
 
       <StockPickModal
         visible={isStockPickOpen}
         orderLine={orderLine}
         onDismiss={() => setIsStockPickOpen(false)}
-        onConfirm={onPicked}
+        onConfirm={handleManualAllocation}
       />
     </View>
   );
@@ -311,7 +349,7 @@ function OrderLineController({
 type StockPickModalProps = {
   visible: boolean;
   onDismiss: () => void;
-  onConfirm: () => void;
+  onConfirm: (rows: AvailableItem[]) => void;
   orderLine: AllocationOrderLine;
 };
 
@@ -320,25 +358,27 @@ function StockPickModal({ visible, onDismiss: onClose, onConfirm: onSave, orderL
 
   useEffect(() => {
     if (visible && orderLine?.availableItems) {
-      const preparedData = orderLine.availableItems.map((item, index) => ({
+      const filteredItems = orderLine.availableItems.filter((item) => item.quantityAvailable > 0);
+
+      const preparedData = filteredItems.map((item, index) => ({
         ...item,
         _localId: `loc-${item.binLocation?.id || 'null'}-idx-${index}`,
-        quantityPicked: item.quantityPicked ? String(item.quantityPicked) : '0'
+        quantityPicked: item.quantityAllocated ? String(item.quantityAllocated) : '0'
       }));
       setRows(preparedData);
     }
   }, [visible, orderLine]);
 
-  const totalPicked = rows.reduce((sum, row) => {
-    const qty = parseInt(row.quantityPicked, 10);
+  const totalAllocated = rows.reduce((sum, row) => {
+    const qty = parseInt(row.quantityAllocated, 10);
     return sum + (isNaN(qty) ? 0 : qty);
   }, 0);
 
-  const isQuantityRequiredExceeded = totalPicked > orderLine.quantityRequired;
+  const isQuantityRequiredExceeded = totalAllocated > orderLine.quantityRequired;
 
   function updateQty(localId: string, text: string) {
     if (text === '') {
-      setRows((prev) => prev.map((row) => (row._localId === localId ? { ...row, quantityPicked: '' } : row)));
+      setRows((prev) => prev.map((row) => (row._localId === localId ? { ...row, quantityAllocated: '' } : row)));
       return;
     }
 
@@ -353,12 +393,36 @@ function StockPickModal({ visible, onDismiss: onClose, onConfirm: onSave, orderL
         if (row._localId === localId) {
           const cappedValue = newValue > row.quantityAvailable ? row.quantityAvailable : newValue;
 
-          return { ...row, quantityPicked: String(cappedValue) };
+          return { ...row, quantityAllocated: String(cappedValue) };
         }
         return row;
       })
     );
   }
+
+  const displayLocations = rows.filter((row) => row.binLocation?.isDisplay);
+  const warehouseLocations = rows.filter((row) => !row.binLocation?.isDisplay);
+
+  const renderRowsGroup = (items: AvailableItem[]) => {
+    return items.map((row) => (
+      <DataTable.Row key={row._localId} style={{ borderBottomWidth: 0 }}>
+        <DataTable.Cell style={{ paddingLeft: 16 }}>{row.binLocation?.locationNumber ?? 'Default'}</DataTable.Cell>
+
+        <DataTable.Cell numeric>{row.quantityAvailable}</DataTable.Cell>
+
+        <DataTable.Cell numeric>
+          <TextInput
+            autoCompleteType="off"
+            mode="outlined"
+            keyboardType="numeric"
+            value={row.quantityAllocated}
+            style={styles.cellInput}
+            onChangeText={(v) => updateQty(row._localId, v)}
+          />
+        </DataTable.Cell>
+      </DataTable.Row>
+    ));
+  };
 
   return (
     <Modal transparent animationType="slide" visible={visible} onDismiss={onClose}>
@@ -376,39 +440,56 @@ function StockPickModal({ visible, onDismiss: onClose, onConfirm: onSave, orderL
               color: isQuantityRequiredExceeded ? Theme.colors.error : Theme.colors.text
             }}
           >
-            Quantity Picked: {totalPicked} / {orderLine.quantityRequired}
+            Quantity Allocated: {totalAllocated} / {orderLine.quantityRequired}
           </Paragraph>
 
           <DataTable>
             <DataTable.Header>
               <DataTable.Title>Bin Location</DataTable.Title>
               <DataTable.Title numeric>Available</DataTable.Title>
-              <DataTable.Title numeric>Picked</DataTable.Title>
+              <DataTable.Title numeric>Allocated</DataTable.Title>
             </DataTable.Header>
 
             <ScrollView style={styles.scrollableContent}>
-              {rows.map((row) => (
-                <DataTable.Row key={row.binLocation?.id}>
-                  <DataTable.Cell>{row.binLocation?.locationNumber ?? 'Default'}</DataTable.Cell>
-                  <DataTable.Cell numeric>{row.quantityAvailable}</DataTable.Cell>
-                  <DataTable.Cell numeric>
-                    <TextInput
-                      autoCompleteType="off"
-                      mode="outlined"
-                      keyboardType="numeric"
-                      value={row.quantityPicked}
-                      style={styles.cellInput}
-                      onChangeText={(v) => updateQty(row._localId, v)}
-                    />
-                  </DataTable.Cell>
-                </DataTable.Row>
-              ))}
+              {displayLocations.length > 0 && (
+                <>
+                  <View style={{ backgroundColor: '#f0f0f0', paddingVertical: 8, paddingHorizontal: 4 }}>
+                    <Paragraph style={{ fontWeight: 'bold', color: Theme.colors.primary }}>Display</Paragraph>
+                  </View>
+                  {renderRowsGroup(displayLocations)}
+                </>
+              )}
+
+              {warehouseLocations.length > 0 && (
+                <>
+                  <View
+                    style={{
+                      backgroundColor: '#f0f0f0',
+                      paddingVertical: 8,
+                      paddingHorizontal: 4,
+                      marginTop: displayLocations.length > 0 ? 8 : 0
+                    }}
+                  >
+                    <Paragraph style={{ fontWeight: 'bold', color: Theme.colors.text }}>Warehouse</Paragraph>
+                  </View>
+                  {renderRowsGroup(warehouseLocations)}
+                </>
+              )}
+
+              {rows.length === 0 && (
+                <Paragraph style={{ textAlign: 'center', marginTop: 20 }}>No available stock found.</Paragraph>
+              )}
             </ScrollView>
           </DataTable>
 
           <View style={styles.actionButtons}>
             <Button onPress={onClose}>Cancel</Button>
-            <Button mode="contained" style={styles.leftMargin} disabled={isQuantityRequiredExceeded} onPress={onSave}>
+            <Button
+              mode="contained"
+              style={styles.leftMargin}
+              disabled={isQuantityRequiredExceeded}
+              onPress={() => onSave(rows)}
+            >
               Save
             </Button>
           </View>

@@ -24,7 +24,7 @@ export function PickUpEntryScreen() {
     }
   };
 
-  // used useFocusEffect to refresh when screen is focused after nagivation
+  // useFocusEffect usedto refresh when screen is focused after nagivation
   useFocusEffect(
     useCallback(() => {
       fetchOrders();

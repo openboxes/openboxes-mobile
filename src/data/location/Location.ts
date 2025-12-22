@@ -18,6 +18,7 @@ interface Location {
   hasPartialReceivingSupport: boolean;
   locationType: LocationType;
   locationNumber: string;
+  isDisplay: boolean;
 }
 
 export default Location;

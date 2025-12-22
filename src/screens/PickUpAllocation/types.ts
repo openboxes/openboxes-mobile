@@ -6,7 +6,7 @@ export type AvailableItem = {
   'inventoryItem.id': string;
   binLocation: Location;
   quantityAvailable: number;
-  quantityPicked: string;
+  quantityAllocated: string;
 };
 
 export type AllocationOrderLine = {
@@ -24,4 +24,4 @@ export type AllocationOrder = {
   dateTimeCreated: string;
 };
 
-export type AllocationStrategy = 'WAREHOUSE_PICK' | 'DISPLAY_PICK';
+export type AllocationStrategy = 'WAREHOUSE_FIRST' | 'DISPLAY_FIRST';
