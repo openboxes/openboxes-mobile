@@ -12,7 +12,7 @@ export default {
   colors: {
     ...DefaultTheme.colors,
     primary: '#20345c',
-    warning: '#FCFFC1',
+    warning: '#f7812d',
     warningText: '#8a6d3b',
     danger: '#FF5630',
     success: '#22bb33',

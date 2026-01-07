@@ -1,5 +1,5 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, Modal, ScrollView, View } from 'react-native';
 import { Button, DataTable, Headline, List, Paragraph, TextInput, Title } from 'react-native-paper';
 
@@ -16,52 +16,40 @@ export function PickUpOrderScreen() {
   const { params } = useRoute<PickUpOrderRouteProp>();
   const { orderId } = params;
 
-  const [allocatedLines, setAllocatedLines] = useState<number>(0);
   const [allAllocatedAlertShown, setAllAllocatedAlertShown] = useState(false);
-
   const [fullOrder, setFullOrder] = useState<any>(null);
 
-  const handleLineAllocated = React.useCallback(() => {
-    setAllocatedLines((prev) => prev + 1);
-  }, []);
-
-  useEffect(() => {
-    const fetchDetails = async () => {
-      try {
-        const response = await getOutboundOrderDetails(orderId);
-        setFullOrder(response.data || []);
-      } catch (error) {
-        Alert.alert('Error', 'Failed to load order details.');
-      }
-    };
-
-    fetchDetails();
+  const fetchDetails = useCallback(async () => {
+    try {
+      const response = await getOutboundOrderDetails(orderId);
+      setFullOrder(response.data || []);
+    } catch (error) {
+      Alert.alert('Error', 'Failed to load order details.');
+    }
   }, [orderId]);
 
-  const totalLines = fullOrder?.lineItems?.length ?? 0;
-
   useEffect(() => {
-    if (totalLines > 0 && allocatedLines === totalLines && !allAllocatedAlertShown) {
-      setAllAllocatedAlertShown(true);
-      showAllPickedDialog();
-    }
-  }, [allAllocatedAlertShown, allocatedLines, totalLines]);
+    fetchDetails();
+  }, [fetchDetails]);
 
-  const handleFinishAllocation = async (navigateToPicking: boolean) => {
-    try {
-      await updateOrderStatus(orderId, 'PICKING');
+  const handleFinishAllocation = useCallback(
+    async (navigateToPicking: boolean) => {
+      try {
+        await updateOrderStatus(orderId, 'PICKING');
 
-      if (navigateToPicking) {
-        navigate('PickingPickType');
-      } else {
-        navigate('PickUpEntryScreen');
+        if (navigateToPicking) {
+          navigate('PickingPickType');
+        } else {
+          navigate('PickUpEntryScreen');
+        }
+      } catch (error) {
+        Alert.alert('Error', 'Failed to update order status.');
       }
-    } catch (error) {
-      Alert.alert('Error', 'Failed to update order status.');
-    }
-  };
+    },
+    [orderId]
+  );
 
-  const showAllPickedDialog = () => {
+  const showAllPickedDialog = useCallback(() => {
     Alert.alert(
       'All Lines Picked',
       'All lines for this order have been allocated. Would you like to self-pick this order?',
@@ -77,7 +65,32 @@ export function PickUpOrderScreen() {
         }
       ]
     );
-  };
+  }, [handleFinishAllocation]);
+
+  const handleLineAllocated = useCallback(() => {
+    fetchDetails();
+  }, [fetchDetails]);
+
+  useEffect(() => {
+    if (!fullOrder || !fullOrder.lineItems || fullOrder.lineItems.length === 0) {
+      return;
+    }
+
+    const areAllLinesFullyAllocated = fullOrder.lineItems.every((line: any) => {
+      const allocated = line.quantityAllocated || 0;
+      const required = line.quantityRequired || 0;
+      return allocated >= required;
+    });
+
+    if (areAllLinesFullyAllocated && !allAllocatedAlertShown) {
+      setAllAllocatedAlertShown(true);
+      showAllPickedDialog();
+    }
+
+    if (!areAllLinesFullyAllocated && allAllocatedAlertShown) {
+      setAllAllocatedAlertShown(false);
+    }
+  }, [fullOrder, allAllocatedAlertShown, showAllPickedDialog]);
 
   if (!fullOrder || !fullOrder.lineItems) {
     return (
@@ -117,19 +130,24 @@ function AllocationOrderItem({
   onAllocated: () => void;
   orderId: string;
 }) {
-  const [expanded, setExpanded] = useState(true);
-  const [isAllocated, setIsAllocated] = useState(false);
+  const { product, quantityRequired, quantityAllocated } = orderLine;
+
+  const isFullyAllocated = (quantityAllocated || 0) >= (quantityRequired || 0);
+  const isPartiallyAllocated = (quantityAllocated || 0) > 0 && (quantityAllocated || 0) < (quantityRequired || 0);
+
+  const [expanded, setExpanded] = useState(!isFullyAllocated);
+
+  useEffect(() => {
+    if (isFullyAllocated) {
+      setExpanded(false);
+    }
+  }, [isFullyAllocated]);
 
   const toggleExpanded = () => {
-    if (!isAllocated) {
-      setExpanded(!expanded);
-    }
+    setExpanded(!expanded);
   };
 
-  const { product, quantityRequired } = orderLine;
-
   function handleMarkAllocated() {
-    setIsAllocated(true);
     setExpanded(false);
     onAllocated?.();
   }
@@ -137,22 +155,26 @@ function AllocationOrderItem({
   return (
     <List.Accordion
       title={`${product.name} (${product.productCode})`}
-      description={isAllocated ? `Quantity Allocated: ${quantityRequired}` : `Quantity Required: ${quantityRequired}`}
+      description={
+        isFullyAllocated || isPartiallyAllocated
+          ? `Quantity Allocated: ${quantityAllocated} / ${quantityRequired}`
+          : `Quantity Required: ${quantityRequired}`
+      }
       left={(props) => (
         <List.Icon
           {...props}
-          icon={isAllocated ? 'check-circle' : 'package-variant-closed'}
-          color={isAllocated ? Theme.colors.success : undefined}
+          icon={isFullyAllocated ? 'check-circle' : isPartiallyAllocated ? 'progress-alert' : 'package-variant-closed'}
+          color={isFullyAllocated ? Theme.colors.success : isPartiallyAllocated ? Theme.colors.warning : undefined}
         />
       )}
       expanded={expanded}
       // eslint-disable-next-line react-native/no-inline-styles
-      style={[styles.accordion, isAllocated && { opacity: 0.5 }]}
+      style={[styles.accordion, isFullyAllocated && { opacity: 0.5 }]}
       titleStyle={styles.accordionTitle}
       descriptionStyle={styles.accordionDescription}
       onPress={toggleExpanded}
     >
-      {!isAllocated && (
+      {!isFullyAllocated && (
         <View style={[styles.accordionContent, styles.paddingZero]}>
           <OrderLineController orderLine={orderLine} orderId={orderId} onAllocated={handleMarkAllocated} />
         </View>
@@ -363,13 +385,15 @@ function StockPickModal({ visible, onDismiss: onClose, onConfirm: onSave, orderL
       const preparedData = filteredItems.map((item, index) => ({
         ...item,
         _localId: `loc-${item.binLocation?.id || 'null'}-idx-${index}`,
-        quantityPicked: item.quantityAllocated ? String(item.quantityAllocated) : '0'
+        quantityAllocated: item.quantityAllocated ? String(item.quantityAllocated) : '0'
       }));
       setRows(preparedData);
     }
   }, [visible, orderLine]);
 
-  const totalAllocated = rows.reduce((sum, row) => {
+  let totalAllocated = orderLine.quantityAllocated;
+
+  totalAllocated += rows.reduce((sum, row) => {
     const qty = parseInt(row.quantityAllocated, 10);
     return sum + (isNaN(qty) ? 0 : qty);
   }, 0);
@@ -477,6 +501,7 @@ function StockPickModal({ visible, onDismiss: onClose, onConfirm: onSave, orderL
               )}
 
               {rows.length === 0 && (
+                // eslint-disable-next-line react-native/no-inline-styles
                 <Paragraph style={{ textAlign: 'center', marginTop: 20 }}>No available stock found.</Paragraph>
               )}
             </ScrollView>

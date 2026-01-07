@@ -13,7 +13,9 @@ export type AllocationOrderLine = {
   id: string;
   product: Product;
   quantityRequired: number;
+  quantityAllocated: number;
   availableItems: Array<AvailableItem>;
+  allocationStatus: AllocationStatus;
 };
 
 export type AllocationOrder = {
@@ -25,3 +27,5 @@ export type AllocationOrder = {
 };
 
 export type AllocationStrategy = 'WAREHOUSE_FIRST' | 'DISPLAY_FIRST';
+
+export type AllocationStatus = 'ALLOCATED' | 'PARTIALLY_ALLOCATED' | 'UNALLOCATED';
