@@ -209,7 +209,7 @@ function OrderLineController({
 
       Alert.alert('Success', 'Item allocated successfully', [{ text: 'OK', onPress: onAllocated }]);
     } catch (error) {
-      Alert.alert('Error', 'Allocation failed');
+      Alert.alert('Error', error.message);
     } finally {
       setIsSubmitting(false);
     }
