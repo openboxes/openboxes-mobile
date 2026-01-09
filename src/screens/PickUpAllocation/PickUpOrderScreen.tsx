@@ -233,6 +233,7 @@ function OrderLineController({
       }
 
       const allocationsPayload = itemsToAllocate.map((row) => ({
+        id: row.id,
         inventoryItemId: row['inventoryItem.id'],
         binLocationId: row.binLocation.id,
         quantity: parseInt(row.quantityAllocated, 10)
@@ -380,20 +381,49 @@ function StockPickModal({ visible, onDismiss: onClose, onConfirm: onSave, orderL
 
   useEffect(() => {
     if (visible && orderLine?.availableItems) {
-      const filteredItems = orderLine.availableItems.filter((item) => item.quantityAvailable > 0);
+      const allocationsMap = new Map();
 
-      const preparedData = filteredItems.map((item, index) => ({
-        ...item,
-        _localId: `loc-${item.binLocation?.id || 'null'}-idx-${index}`,
-        quantityAllocated: item.quantityAllocated ? String(item.quantityAllocated) : '0'
-      }));
+      if (orderLine.allocations) {
+        orderLine.allocations.forEach((allocation: any) => {
+          const invId = allocation.inventoryItemId || '';
+          const binId = allocation.binLocationId || '';
+          const key = `${invId}-${binId}`;
+          allocationsMap.set(key, allocation);
+        });
+      }
+
+      const filteredItems = orderLine.availableItems.filter((item) => {
+        const invId = item['inventoryItem.id'] || '';
+        const binId = item.binLocation?.id || '';
+        const key = `${invId}-${binId}`;
+
+        const hasAllocation = allocationsMap.has(key) && allocationsMap.get(key) > 0;
+        const hasAvailability = item.quantityAvailable > 0;
+        return hasAvailability || hasAllocation;
+      });
+
+      const preparedData = filteredItems.map((item, index) => {
+        const invId = item['inventoryItem.id'] || '';
+        const binId = item.binLocation?.id || '';
+        const key = `${invId}-${binId}`;
+
+        const existingAllocation = allocationsMap.get(key);
+        const savedQuantity = existingAllocation ? existingAllocation.quantity : 0;
+        const allocationId = existingAllocation ? existingAllocation.id : undefined;
+
+        return {
+          ...item,
+          _localId: `loc-${item.binLocation?.id || 'null'}-idx-${index}`,
+          id: allocationId,
+          quantityAllocated: savedQuantity ? String(savedQuantity) : ''
+        };
+      });
+
       setRows(preparedData);
     }
   }, [visible, orderLine]);
 
-  let totalAllocated = orderLine.quantityAllocated;
-
-  totalAllocated += rows.reduce((sum, row) => {
+  const totalAllocated = rows.reduce((sum, row) => {
     const qty = parseInt(row.quantityAllocated, 10);
     return sum + (isNaN(qty) ? 0 : qty);
   }, 0);
@@ -407,7 +437,6 @@ function StockPickModal({ visible, onDismiss: onClose, onConfirm: onSave, orderL
     }
 
     const newValue = parseInt(text, 10);
-
     if (isNaN(newValue)) {
       return;
     }
