@@ -21,6 +21,8 @@ type PickingContextType = {
   setTasks: React.Dispatch<React.SetStateAction<PickTask[]>>;
   /** The index of the task currently being worked on */
   currentTaskIndex: number;
+  /** Setter for the current task index */
+  setCurrentTaskIndex: React.Dispatch<React.SetStateAction<number>>;
   /** The derived object for the active task */
   currentTask: PickTask | undefined;
   /** Total number of tasks in the session */
@@ -33,7 +35,7 @@ type PickingContextType = {
   resetSession: () => void;
   /** Handles short pick for the current task */
   shortPickTask: (
-    outboundContainerId: string,
+    outboundContainerId: string | null,
     parsedQuantityPicked: number,
     callback: (response: { errorMessage?: string }) => void,
     reasonCodeName?: string
@@ -101,7 +103,7 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
   };
 
   const shortPickTask = (
-    outboundContainerId: string,
+    outboundContainerId: string | null,
     parsedQuantityPicked: number,
     callback: (response: { errorMessage?: string }) => void,
     reasonCodeName?: string
@@ -133,6 +135,10 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
     );
   };
 
+  const goToNextTask = () => {
+    setCurrentTaskIndex((prevIndex) => prevIndex + 1);
+  };
+
   const revalidateTasksForRequisition = (requisitionId: string | undefined, callback?: () => void) => {
     if (!requisitionId) {
       Alert.alert('Error', 'Requisition ID is required to revalidate tasks.');
@@ -141,27 +147,18 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
 
     dispatch(
       getPickTasksByRequisitionAction(requisitionId, (res) => {
-        if ('errorMessage' in res) {
+        if ('errorMessage' in res || !res.response?.data) {
           Alert.alert('Error', 'Failed to revalidate pick tasks for the requisition.');
           return;
         }
 
-        const newTasks = res.response?.data ?? [];
+        const newTasks = res.response.data;
 
         setTasks((prevTasks) => {
-          const currentIndex = currentTaskIndex;
-          const current = prevTasks[currentIndex];
-
-          if (!current) {
-            return prevTasks;
-          }
-
-          // Remove all existing tasks belonging to this requisition
-          const filteredTasks = prevTasks.filter((task) => task.requisitionId !== requisitionId);
-
-          // Insert new tasks where the current one was
-          return [...filteredTasks.slice(0, currentIndex), ...newTasks, ...filteredTasks.slice(currentIndex)];
+          return [...prevTasks, ...newTasks];
         });
+
+        goToNextTask();
 
         callback?.();
       })
@@ -192,16 +189,13 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
     setCurrentTaskIndex(0);
   };
 
-  const goToNextTask = () => {
-    setCurrentTaskIndex((prevIndex) => prevIndex + 1);
-  };
-
   return (
     <PickingContext.Provider
       value={{
         tasks,
         setTasks,
         currentTaskIndex,
+        setCurrentTaskIndex,
         currentTask,
         allTasksCount,
         startSession,

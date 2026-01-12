@@ -9,6 +9,7 @@ import { ReasonCode } from '../../types/picking';
 import { usePickingContext } from './PickingContext';
 import { ProductDetails } from './ProductDetails';
 import styles from './styles';
+import { revalidateTaskAndProceed } from './lib';
 
 type PickingPickOutboundContainerScreenProps = RouteProp<
   { PickingPickOutboundContainer: { reasonCode?: ReasonCode; quantityPicked?: string } },
@@ -48,29 +49,6 @@ export default function PickingPickOutboundContainerScreen() {
     return null;
   }
 
-  function revalidateTaskAndProceed() {
-    revalidateCurrentTask((revalidatedTask) => {
-      if (!revalidatedTask) {
-        Alert.alert('Error', 'Failed to revalidate the current pick task after picking.');
-        return;
-      }
-
-      if (currentTaskIndex + 1 >= allTasksCount) {
-        // Last Task -> Navigate to staging location drop
-        Alert.alert('All Picks Complete', 'You have completed all picks. Proceeding to staging location drop.', [
-          {
-            text: 'OK',
-            onPress: () => navigate('PickingPickStagingLocation')
-          }
-        ]);
-      } else {
-        // More Tasks -> Start over with next pick task
-        goToNextTask();
-        navigate('PickingPickLocation');
-      }
-    });
-  }
-
   function handleSubmit() {
     if (!outboundContainerId) {
       Alert.alert('Missing Input', 'Please scan or enter a valid Outbound Container ID.');
@@ -97,12 +75,14 @@ export default function PickingPickOutboundContainerScreen() {
           }
 
           if (params?.reasonCode?.id) {
-            // Revalidate all tasks for the requisition to get updated pick tasks
-            revalidateTasksForRequisition(currentTask.requisitionId, () => {
-              navigate('PickingPickLocation');
+            revalidateCurrentTask(() => {
+              // Revalidate all tasks for the requisition to get updated pick tasks
+              revalidateTasksForRequisition(currentTask.requisitionId, () => {
+                navigate('PickingPickLocation');
+              });
             });
           } else {
-            revalidateTaskAndProceed();
+            revalidateTaskAndProceed(revalidateCurrentTask, currentTaskIndex, allTasksCount, goToNextTask);
           }
         },
         params?.reasonCode?.name
@@ -117,7 +97,7 @@ export default function PickingPickOutboundContainerScreen() {
         return;
       }
 
-      revalidateTaskAndProceed();
+      revalidateTaskAndProceed(revalidateCurrentTask, currentTaskIndex, allTasksCount, goToNextTask);
     });
   }
 

@@ -20,7 +20,7 @@ export type PickTaskActionParams =
     }
   | {
       action: 'short-pick';
-      outboundContainerId: string;
+      outboundContainerId: string | null;
       quantityPicked: number;
       pickedById: string;
       // eslint-disable-next-line no-undef

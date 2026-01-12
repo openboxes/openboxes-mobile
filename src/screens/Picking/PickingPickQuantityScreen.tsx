@@ -12,9 +12,11 @@ import { usePickingContext } from './PickingContext';
 import PickingShortAndReasonModal from './PickingShortAndReasonModal';
 import { ProductDetails } from './ProductDetails';
 import styles from './styles';
+import { revalidateTaskAndProceed } from './lib';
 
 export default function PickingPickQuantityScreen() {
-  const { currentTask, currentTaskIndex, allTasksCount } = usePickingContext();
+  const { currentTask, currentTaskIndex, allTasksCount, shortPickTask, revalidateCurrentTask, goToNextTask } =
+    usePickingContext();
   const dispatch = useDispatch();
   const inputRef = React.useRef<TextInput | null>(null);
   const isFocused = useIsFocused();
@@ -79,6 +81,33 @@ export default function PickingPickQuantityScreen() {
 
   function handleConfirmShort(reasonCode: ReasonCode | undefined) {
     setIsShortModalVisible(false);
+
+    const is0Picked = Number(quantityPicked) === 0;
+
+    if (!currentTask) {
+      Alert.alert('Error', 'No current pick task found.');
+      return;
+    }
+
+    if (is0Picked) {
+      // Handle 0 Short Pick
+      // For 0 short pick, we need to provide a reason code
+      shortPickTask(
+        '',
+        0,
+        ({ errorMessage }) => {
+          if (errorMessage) {
+            Alert.alert('Short Pick Error', errorMessage);
+            setQuantityPicked('');
+            return;
+          }
+
+          revalidateTaskAndProceed(revalidateCurrentTask, currentTaskIndex, allTasksCount, goToNextTask);
+        },
+        reasonCode?.name
+      );
+      return;
+    }
 
     navigate('PickingPickOutboundContainer', { reasonCode, quantityPicked });
   }

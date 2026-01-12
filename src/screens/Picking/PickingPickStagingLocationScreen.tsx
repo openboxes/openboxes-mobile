@@ -10,33 +10,47 @@ import { ProductDetails } from './ProductDetails';
 import styles from './styles';
 
 export default function PickingPickStagingLocationScreen() {
-  const { tasks, dropCurrentTask, resetSession } = usePickingContext();
+  const { tasks, dropCurrentTask, resetSession, setCurrentTaskIndex } = usePickingContext();
   const isFocused = useIsFocused();
 
   const inputRef = React.useRef<TextInput | null>(null);
   const [stagingLocationNumber, setStagingLocationNumber] = React.useState('');
   const [currentUniqueIndex, setCurrentUniqueIndex] = React.useState(0);
 
-  const uniqueTasks = React.useMemo(
-    () => Array.from(new Map(tasks.map((pickTask) => [pickTask.outboundContainer?.id, pickTask])).values()),
-    [tasks]
-  );
+  // Memoize unique tasks based on outbound container ID
+  const uniqueTasks = React.useMemo(() => {
+    const tasksWithContainers = tasks.filter((t) => t.outboundContainer?.id);
+    return Array.from(new Map(tasksWithContainers.map((t) => [t?.outboundContainer?.id, t])).values());
+  }, [tasks]);
 
   const currentTask = uniqueTasks[currentUniqueIndex];
 
+  // Handle Navigation and Session Completion side effects
   React.useEffect(() => {
     if (!isFocused) {
       return;
     }
 
-    setStagingLocationNumber('');
-    const t = setTimeout(() => inputRef.current?.focus(), INPUT_FOCUS_DELAY_TIME_IN_MS);
-    return () => clearTimeout(t);
-  }, [isFocused, currentUniqueIndex]);
+    if (!currentTask) {
+      // No tasks left at all, return to home
+      Alert.alert('Staging', 'No more tasks available for staging drop.');
+      navigate('PickingPickType');
+    }
+  }, [currentTask, tasks.length, isFocused, setCurrentTaskIndex, uniqueTasks.length, tasks]);
 
-  if (!currentTask) {
-    return null;
-  }
+  // Handle Input Auto-focus
+  React.useEffect(() => {
+    if (!isFocused || !currentTask) {
+      return;
+    }
+
+    setStagingLocationNumber('');
+    const t = setTimeout(() => {
+      inputRef?.current?.focus();
+    }, INPUT_FOCUS_DELAY_TIME_IN_MS);
+
+    return () => clearTimeout(t);
+  }, [isFocused, currentUniqueIndex, currentTask]);
 
   function handleSubmit() {
     if (!stagingLocationNumber) {
@@ -69,7 +83,6 @@ export default function PickingPickStagingLocationScreen() {
           {
             text: 'OK',
             onPress: () => {
-              // Proceed to next unique task
               setCurrentUniqueIndex(nextIndex);
               setStagingLocationNumber('');
             }
@@ -87,6 +100,12 @@ export default function PickingPickStagingLocationScreen() {
         ]);
       }
     });
+  }
+
+  // If no task is selected yet, return null to avoid rendering
+  // ProductDetails with undefined data while useEffect runs
+  if (!currentTask) {
+    return null;
   }
 
   return (
