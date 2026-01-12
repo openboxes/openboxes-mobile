@@ -8,6 +8,7 @@ import { HYPHEN, INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
 import { navigate } from '../../NavigationService';
 import { usePickingContext } from './PickingContext';
 import styles from './styles';
+import { isProductBarcodeValid } from '../../utils/utils';
 
 export default function PickingPickProductScreen() {
   const { currentTask, currentTaskIndex, allTasksCount } = usePickingContext();
@@ -32,7 +33,7 @@ export default function PickingPickProductScreen() {
   }
 
   function handleSubmit() {
-    const isValid = productBarcode === currentTask?.product.productCode;
+    const isValid = isProductBarcodeValid(productBarcode, currentTask?.product);
 
     if (!isValid) {
       Alert.alert(

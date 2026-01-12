@@ -100,5 +100,5 @@ export type PutawayDetailsModel = {
 export type SortationPutawayScreenType = {
   taskList: PutawayDetailsModel[];
   currentTaskIndex: number;
-  isDirectPutaway: boolean;
+  isDirectPutaway?: boolean;
 };
