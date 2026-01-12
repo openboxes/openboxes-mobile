@@ -51,7 +51,7 @@ export function PickUpOrderScreen() {
 
   const showAllPickedDialog = useCallback(() => {
     Alert.alert(
-      'All Lines Picked',
+      'All Lines Allocated',
       'All lines for this order have been allocated. Would you like to self-pick this order?',
       [
         {
