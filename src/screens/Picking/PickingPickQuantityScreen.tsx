@@ -82,14 +82,12 @@ export default function PickingPickQuantityScreen() {
   function handleConfirmShort(reasonCode: ReasonCode | undefined) {
     setIsShortModalVisible(false);
 
-    const is0Picked = Number(quantityPicked) === 0;
-
     if (!currentTask) {
       Alert.alert('Error', 'No current pick task found.');
       return;
     }
 
-    if (is0Picked) {
+    if (Number(quantityPicked) === 0) {
       // Handle 0 Short Pick
       // For 0 short pick, we need to provide a reason code
       shortPickTask(
