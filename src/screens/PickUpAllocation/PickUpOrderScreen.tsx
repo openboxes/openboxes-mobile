@@ -279,14 +279,14 @@ function OrderLineController({
   }
 
   function handleWarehousePick() {
-    Alert.alert('Full Warehouse Pick', 'Confirm full warehouse pick?', [
+    Alert.alert('Allocate from warehouse', 'Confirm allocation from warehouse?', [
       { text: 'Cancel', style: 'cancel' },
       { text: 'Confirm', onPress: () => handleAutoPick('WAREHOUSE_FIRST') }
     ]);
   }
 
   function handleDisplayPick() {
-    Alert.alert('Full Display Pick', 'Confirm full display pick?', [
+    Alert.alert('Allocate from display', 'Confirm allocation from display?', [
       { text: 'Cancel', style: 'cancel' },
       { text: 'Confirm', onPress: () => handleAutoPick('DISPLAY_FIRST') }
     ]);
@@ -307,7 +307,7 @@ function OrderLineController({
           disabled={isSubmitting}
           onPress={handleWarehousePick}
         >
-          Full Warehouse Pick
+          Allocate from warehouse
         </Button>
         <Button
           mode="contained"
@@ -316,10 +316,10 @@ function OrderLineController({
           disabled={isSubmitting}
           onPress={handleDisplayPick}
         >
-          Full Display Pick
+          Allocate from display
         </Button>
         <Button mode="contained" labelStyle={styles.buttonText} style={styles.button} onPress={handleStockPick}>
-          Stock Pick
+          Allocate manually
         </Button>
       </View>
 
@@ -481,7 +481,7 @@ function StockPickModal({ visible, onDismiss: onClose, onConfirm: onSave, orderL
     <Modal transparent animationType="slide" visible={visible} onDismiss={onClose}>
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
-          <Headline>Stock Pick</Headline>
+          <Headline>Allocate manually</Headline>
 
           <Paragraph>
             Product: {orderLine.product.productCode} | {orderLine.product.name}
