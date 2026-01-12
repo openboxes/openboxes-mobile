@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import { appConfig, DEFAULT_DATE_FORMAT_OPTIONS } from '../constants';
+import Product from '../data/product/Product';
 
 export function parseResponse(data) {
   if (_.isArray(data)) {
@@ -58,4 +59,23 @@ export const parseDateToISODate = (dateStr: string): Date | string => {
  */
 export function parseFromISODateToLocaleString(dateStr: Date | string): string {
   return dateStr instanceof Date ? dateStr.toLocaleDateString(appConfig.LOCALE, DEFAULT_DATE_FORMAT_OPTIONS) : dateStr;
+}
+
+/**
+ * Checks if the scanned barcode is valid for the given product.
+ *
+ * @param scannedBarcode The barcode scanned by the user.
+ * @param product The product to validate against.
+ * @returns True if the scanned barcode is valid, false otherwise.
+ */
+export function isProductBarcodeValid(scannedBarcode: string, product: Product | null | undefined): boolean {
+  if (!scannedBarcode || !product) {
+    return false;
+  }
+
+  const scanned = scannedBarcode.trim();
+  const productCode = product.productCode.trim();
+  const upc = product.upc?.trim();
+
+  return scanned === productCode || scanned === upc;
 }

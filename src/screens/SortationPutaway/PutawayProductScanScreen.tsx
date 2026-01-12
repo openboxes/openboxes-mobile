@@ -8,6 +8,7 @@ import EmptyView from '../../components/EmptyView';
 import { EMPTY_STRING, INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
 import { navigate } from '../../NavigationService';
 import { SortationPutawayScreenType } from '../../types/sortation';
+import { isProductBarcodeValid } from '../../utils/utils';
 import PutawayDetails from './PutawayDetails';
 import { SkipButton } from './SkipButton';
 import styles from './styles';
@@ -63,17 +64,24 @@ export default function PutawayProductScanScreen() {
       return;
     }
 
-    const productCode = putawayDetails.inventoryItem?.product?.productCode;
-    if (putawayProductBarcode !== productCode) {
+    const product = putawayDetails.inventoryItem?.product;
+
+    const isValid = isProductBarcodeValid(putawayProductBarcode, product);
+
+    if (!isValid) {
       Alert.alert(
         'Invalid Product Barcode',
-        `The scanned barcode does not match the expected putaway product: ${productCode}.`
+        `The scanned barcode does not match the expected putaway product (${product?.productCode}).`
       );
       setPutawayProductBarcode(EMPTY_STRING);
       return;
     }
 
-    navigate('SortationPutawayQuantity', { taskList, currentTaskIndex, isDirectPutaway });
+    navigate('SortationPutawayQuantity', {
+      taskList,
+      currentTaskIndex,
+      isDirectPutaway
+    });
   }
 
   return (
