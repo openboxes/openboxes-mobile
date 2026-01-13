@@ -125,6 +125,10 @@ step_bundles:
           - notify_email_list: "$TESTERS"
           - notify_user_groups: owner, admins, developers
           is_always_run: false
+      - appetize-deploy@0:
+          inputs:
+            - app_path: $BITRISE_DEPLOY_DIR/openboxes_test_b$BITRISE_BUILD_NUMBER.apk
+            - appetize_token: $APPETIZE_API_TOKEN
   release-steps-ios:
     description: |-
       Assemble the iOS app and copy the *.app package to $BITRISE_DEPLOY_DIR.
