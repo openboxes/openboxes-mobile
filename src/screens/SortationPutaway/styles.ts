@@ -5,18 +5,20 @@ export default StyleSheet.create({
   screen: {
     flex: 1,
     backgroundColor: '#FFFFFF',
-    padding: Theme.spacing.large,
-    justifyContent: 'flex-start'
+    padding: Theme.spacing.large
   },
   emptyContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center'
   },
-  contentContainer: {
+  contentWrapper: {
     display: 'flex',
     flex: 1,
     flexDirection: 'column'
+  },
+  contentContainer: {
+    flexGrow: 1
   },
   productDetails: {
     backgroundColor: Theme.colors.surface,
