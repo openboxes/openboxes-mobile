@@ -1,9 +1,10 @@
-import { RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
+import { RouteProp, useRoute } from '@react-navigation/native';
 import * as React from 'react';
-import { Alert, TextInput, View } from 'react-native';
-import { Divider, TextInput as PaperTextInput, Paragraph, Subheading } from 'react-native-paper';
+import { Alert, View } from 'react-native';
+import { Divider, Paragraph, Subheading } from 'react-native-paper';
 
-import { INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
+import { ScannerInput } from '../../components/ScannerInput';
+import { EMPTY_STRING } from '../../constants';
 import { navigate } from '../../NavigationService';
 import { ReasonCode } from '../../types/picking';
 import { usePickingContext } from './PickingContext';
@@ -30,47 +31,34 @@ export default function PickingPickOutboundContainerScreen() {
   const { params } = useRoute<PickingPickOutboundContainerScreenProps>();
   const parsedQuantityPicked = params?.quantityPicked ? Number(params.quantityPicked) : undefined;
 
-  const inputRef = React.useRef<TextInput | null>(null);
-  const isFocused = useIsFocused();
-  const [outboundContainerId, setOutboundContainerId] = React.useState<string>('');
-
-  React.useEffect(() => {
-    if (!isFocused) {
-      return;
-    }
-
-    setOutboundContainerId('');
-
-    const t = setTimeout(() => inputRef.current?.focus(), INPUT_FOCUS_DELAY_TIME_IN_MS);
-    return () => clearTimeout(t);
-  }, [isFocused]);
+  const [outboundContainerId, setOutboundContainerId] = React.useState<string>(EMPTY_STRING);
 
   if (!currentTask) {
     return null;
   }
 
-  function handleSubmit() {
-    if (!outboundContainerId) {
+  function handleScan(containerId: string) {
+    if (!containerId) {
       Alert.alert('Missing Input', 'Please scan or enter a valid Outbound Container ID.');
-      setOutboundContainerId('');
+      setOutboundContainerId(EMPTY_STRING);
       return;
     }
 
     if (!currentTask) {
       Alert.alert('Error', 'No current pick task available.');
-      setOutboundContainerId('');
+      setOutboundContainerId(EMPTY_STRING);
       return;
     }
 
     if (parsedQuantityPicked !== undefined && parsedQuantityPicked < currentTask.quantityRequired) {
       // Handle Short Pick
       shortPickTask(
-        outboundContainerId,
+        containerId,
         parsedQuantityPicked,
         ({ errorMessage }) => {
           if (errorMessage) {
             Alert.alert('Short Pick Error', errorMessage);
-            setOutboundContainerId('');
+            setOutboundContainerId(EMPTY_STRING);
             return;
           }
 
@@ -90,15 +78,17 @@ export default function PickingPickOutboundContainerScreen() {
       return;
     }
 
-    pickCurrentTask(outboundContainerId, ({ errorMessage }) => {
+    pickCurrentTask(containerId, ({ errorMessage }) => {
       if (errorMessage) {
         Alert.alert('Pick Error', errorMessage);
-        setOutboundContainerId('');
+        setOutboundContainerId(EMPTY_STRING);
         return;
       }
 
       revalidateTaskAndProceed(revalidateCurrentTask, currentTaskIndex, allTasksCount, goToNextTask);
     });
+
+    setOutboundContainerId(EMPTY_STRING);
   }
 
   return (
@@ -140,16 +130,12 @@ export default function PickingPickOutboundContainerScreen() {
           Point your barcode scanner at the outbound container or type the code manually.
         </Paragraph>
 
-        <PaperTextInput
-          ref={inputRef}
-          autoCompleteType="off"
+        <ScannerInput
           style={styles.marginTop}
-          mode="outlined"
           label="Outbound Container ID"
           value={outboundContainerId}
-          returnKeyType="done"
-          onChangeText={setOutboundContainerId}
-          onSubmitEditing={handleSubmit}
+          onChange={setOutboundContainerId}
+          onSubmit={handleScan}
         />
       </View>
     </ProductDetails.Provider>

@@ -1,9 +1,9 @@
-import { useIsFocused } from '@react-navigation/native';
 import * as React from 'react';
-import { Alert, TextInput, View } from 'react-native';
-import { Divider, TextInput as PaperTextInput, Paragraph, Subheading } from 'react-native-paper';
+import { Alert, View } from 'react-native';
+import { Divider, Paragraph, Subheading } from 'react-native-paper';
 
-import { HYPHEN, INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
+import { ScannerInput } from '../../components/ScannerInput';
+import { EMPTY_STRING, HYPHEN } from '../../constants';
 import { navigate } from '../../NavigationService';
 import { usePickingContext } from './PickingContext';
 import { ProductDetails } from './ProductDetails';
@@ -11,34 +11,25 @@ import styles from './styles';
 
 export default function PickingPickLocationScreen() {
   const { currentTask, currentTaskIndex, allTasksCount, startPickTask } = usePickingContext();
-
-  const inputRef = React.useRef<TextInput | null>(null);
-  const isFocused = useIsFocused();
-  const [pickLocationBarcode, setPickLocationBarcode] = React.useState<string>('');
-
-  React.useEffect(() => {
-    if (!isFocused) {
-      return;
-    }
-
-    setPickLocationBarcode('');
-
-    const t = setTimeout(() => inputRef.current?.focus(), INPUT_FOCUS_DELAY_TIME_IN_MS);
-    return () => clearTimeout(t);
-  }, [isFocused]);
+  const [pickLocationBarcode, setPickLocationBarcode] = React.useState<string>(EMPTY_STRING);
 
   if (!currentTask) {
     return null;
   }
 
-  function handleSubmit() {
-    const isValid = pickLocationBarcode === currentTask?.location?.locationNumber;
+  function handleScan(locationBarcode: string) {
+    if (!locationBarcode) {
+      Alert.alert('Scan Required', 'Please scan the pick location barcode.');
+      return;
+    }
+
+    const isValid = locationBarcode === currentTask?.location?.locationNumber;
     if (!isValid) {
       Alert.alert(
         'Invalid Barcode',
-        `Incorrect location scanned. Expected: ${currentTask?.location?.locationNumber}. Try again.`
+        `Incorrect location scanned. Expected: ${currentTask?.location?.locationNumber}. Try again.`,
+        [{ text: 'OK', onPress: () => setPickLocationBarcode(EMPTY_STRING) }]
       );
-      setPickLocationBarcode('');
       return;
     }
 
@@ -47,6 +38,8 @@ export default function PickingPickLocationScreen() {
         Alert.alert('Error', errorMessage);
         return;
       }
+
+      setPickLocationBarcode(EMPTY_STRING);
 
       navigate('PickingPickProduct');
     });
@@ -87,16 +80,12 @@ export default function PickingPickLocationScreen() {
           Point your barcode scanner at the pick location barcode or type the code manually.
         </Paragraph>
 
-        <PaperTextInput
+        <ScannerInput
           style={styles.marginTop}
-          autoCompleteType="off"
-          ref={inputRef}
-          mode="outlined"
           label="Pick Location Barcode"
           value={pickLocationBarcode}
-          returnKeyType="done"
-          onChangeText={setPickLocationBarcode}
-          onSubmitEditing={handleSubmit}
+          onChange={setPickLocationBarcode}
+          onSubmit={handleScan}
         />
       </View>
     </ProductDetails.Provider>

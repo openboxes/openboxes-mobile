@@ -50,7 +50,7 @@ export default function PickingStagingDropScreen() {
   }
 
   return (
-    <View>
+    <View style={styles.mainWrapper}>
       <View style={styles.productDetails}>
         <Title style={styles.title}> {outboundContainer?.name} </Title>
 
@@ -68,8 +68,9 @@ export default function PickingStagingDropScreen() {
         </View>
       </View>
       <Divider />
-      <View style={styles.wrapperWithPadding}>
+      <View style={[styles.wrapperWithPadding, styles.flex1]}>
         <FlatList
+          style={styles.flex1}
           data={tasks}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (

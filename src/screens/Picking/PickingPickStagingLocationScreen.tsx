@@ -1,9 +1,9 @@
-import { useIsFocused } from '@react-navigation/native';
 import * as React from 'react';
-import { Alert, TextInput, View } from 'react-native';
-import { Divider, TextInput as PaperTextInput, Paragraph, Subheading } from 'react-native-paper';
+import { Alert, View } from 'react-native';
+import { Divider, Paragraph, Subheading } from 'react-native-paper';
 
-import { INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
+import { ScannerInput } from '../../components/ScannerInput';
+import { EMPTY_STRING } from '../../constants';
 import { navigate } from '../../NavigationService';
 import { usePickingContext } from './PickingContext';
 import { ProductDetails } from './ProductDetails';
@@ -11,10 +11,7 @@ import styles from './styles';
 
 export default function PickingPickStagingLocationScreen() {
   const { tasks, dropCurrentTask, resetSession, setCurrentTaskIndex } = usePickingContext();
-  const isFocused = useIsFocused();
-
-  const inputRef = React.useRef<TextInput | null>(null);
-  const [stagingLocationNumber, setStagingLocationNumber] = React.useState('');
+  const [stagingLocationNumber, setStagingLocationNumber] = React.useState(EMPTY_STRING);
   const [currentUniqueIndex, setCurrentUniqueIndex] = React.useState(0);
 
   // Memoize unique tasks based on outbound container ID
@@ -27,53 +24,35 @@ export default function PickingPickStagingLocationScreen() {
 
   // Handle Navigation and Session Completion side effects
   React.useEffect(() => {
-    if (!isFocused) {
-      return;
-    }
-
     if (!currentTask) {
       // No tasks left at all, return to home
       Alert.alert('Staging', 'No more tasks available for staging drop.');
       navigate('PickingPickType');
     }
-  }, [currentTask, tasks.length, isFocused, setCurrentTaskIndex, uniqueTasks.length, tasks]);
+  }, [currentTask, tasks.length, setCurrentTaskIndex, uniqueTasks.length, tasks]);
 
-  // Handle Input Auto-focus
-  React.useEffect(() => {
-    if (!isFocused || !currentTask) {
-      return;
-    }
-
-    setStagingLocationNumber('');
-    const t = setTimeout(() => {
-      inputRef?.current?.focus();
-    }, INPUT_FOCUS_DELAY_TIME_IN_MS);
-
-    return () => clearTimeout(t);
-  }, [isFocused, currentUniqueIndex, currentTask]);
-
-  function handleSubmit() {
-    if (!stagingLocationNumber) {
+  function handleScan(locationId: string) {
+    if (!locationId) {
       Alert.alert('Missing Input', 'Please scan or enter a valid Staging Location ID.');
-      setStagingLocationNumber('');
+      setStagingLocationNumber(EMPTY_STRING);
       return;
     }
 
     const expected = currentTask.stagingLocation?.locationNumber;
 
-    if (!expected || stagingLocationNumber !== expected) {
+    if (!expected || locationId !== expected) {
       Alert.alert(
         'Invalid Staging Location',
-        `Expected: ${expected ?? '-'}, but got: ${stagingLocationNumber}. Please try again.`
+        `Expected: ${expected ?? '-'}, but got: ${locationId}. Please try again.`
       );
-      setStagingLocationNumber('');
+      setStagingLocationNumber(EMPTY_STRING);
       return;
     }
 
     dropCurrentTask(currentTask, (response) => {
       if (response.errorMessage) {
         Alert.alert('Error', response.errorMessage);
-        setStagingLocationNumber('');
+        setStagingLocationNumber(EMPTY_STRING);
         return;
       }
 
@@ -84,7 +63,7 @@ export default function PickingPickStagingLocationScreen() {
             text: 'OK',
             onPress: () => {
               setCurrentUniqueIndex(nextIndex);
-              setStagingLocationNumber('');
+              setStagingLocationNumber(EMPTY_STRING);
             }
           }
         ]);
@@ -147,16 +126,12 @@ export default function PickingPickStagingLocationScreen() {
           Point your barcode scanner at the staging location or type the ID manually.
         </Paragraph>
 
-        <PaperTextInput
-          ref={inputRef}
-          autoCompleteType="off"
+        <ScannerInput
           style={styles.marginTop}
-          mode="outlined"
           label="Staging Location Number"
           value={stagingLocationNumber}
-          returnKeyType="done"
-          onChangeText={setStagingLocationNumber}
-          onSubmitEditing={handleSubmit}
+          onChange={setStagingLocationNumber}
+          onSubmit={handleScan}
         />
       </View>
     </ProductDetails.Provider>

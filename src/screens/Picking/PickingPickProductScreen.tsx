@@ -1,9 +1,9 @@
-import { useIsFocused } from '@react-navigation/native';
 import * as React from 'react';
-import { Alert, TextInput, View } from 'react-native';
-import { Divider, TextInput as PaperTextInput, Paragraph, Subheading } from 'react-native-paper';
+import { Alert, View } from 'react-native';
+import { Divider, Paragraph, Subheading } from 'react-native-paper';
 
-import { HYPHEN, INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
+import { ScannerInput } from '../../components/ScannerInput';
+import { EMPTY_STRING, HYPHEN } from '../../constants';
 import { navigate } from '../../NavigationService';
 import { usePickingContext } from './PickingContext';
 import { ProductDetails } from './ProductDetails';
@@ -12,39 +12,32 @@ import { isProductBarcodeValid } from '../../utils/utils';
 
 export default function PickingPickProductScreen() {
   const { currentTask, currentTaskIndex, allTasksCount } = usePickingContext();
-
-  const inputRef = React.useRef<TextInput | null>(null);
-  const isFocused = useIsFocused();
-  const [productBarcode, setProductBarcode] = React.useState<string>('');
-
-  React.useEffect(() => {
-    if (!isFocused) {
-      return;
-    }
-
-    setProductBarcode('');
-
-    const t = setTimeout(() => inputRef.current?.focus(), INPUT_FOCUS_DELAY_TIME_IN_MS);
-    return () => clearTimeout(t);
-  }, [isFocused]);
+  const [productBarcode, setProductBarcode] = React.useState<string>(EMPTY_STRING);
 
   if (!currentTask) {
     return null;
   }
 
-  function handleSubmit() {
-    const isValid = isProductBarcodeValid(productBarcode, currentTask?.product);
+  function handleScan(scannedBarcode: string) {
+    if (!scannedBarcode) {
+      Alert.alert('Scan Required', 'Please scan the product barcode.');
+      return;
+    }
+
+    const isValid = isProductBarcodeValid(scannedBarcode, currentTask?.product);
 
     if (!isValid) {
       Alert.alert(
         'Invalid Barcode',
-        `Incorrect product scanned. Expected: ${currentTask?.product.productCode}. Please try again.`
+        `Incorrect product scanned. Expected: ${currentTask?.product.productCode}. Please try again.`,
+        [{ text: 'OK', onPress: () => setProductBarcode(EMPTY_STRING) }]
       );
-      setProductBarcode('');
       return;
     }
 
     navigate('PickingPickQuantity');
+
+    setProductBarcode(EMPTY_STRING);
   }
 
   return (
@@ -82,16 +75,12 @@ export default function PickingPickProductScreen() {
           Point your barcode scanner at the product barcode or type the code manually.
         </Paragraph>
 
-        <PaperTextInput
+        <ScannerInput
           style={styles.marginTop}
-          autoCompleteType="off"
-          ref={inputRef}
-          mode="outlined"
           label="Product Barcode"
           value={productBarcode}
-          returnKeyType="done"
-          onChangeText={setProductBarcode}
-          onSubmitEditing={handleSubmit}
+          onChange={setProductBarcode}
+          onSubmit={handleScan}
         />
       </View>
     </ProductDetails.Provider>
