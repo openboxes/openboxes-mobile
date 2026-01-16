@@ -5,7 +5,7 @@ import { Divider, Paragraph, Subheading } from 'react-native-paper';
 
 import Button from '../../components/Button';
 import EmptyView from '../../components/EmptyView';
-import { ScannerInput } from '../../components/ScannerInput'; // Import ScannerInput
+import { ScannerInput } from '../../components/ScannerInput';
 import { EMPTY_STRING } from '../../constants';
 import { navigate } from '../../NavigationService';
 import { SortationLocation, SortationPutawayScreenType } from '../../types/sortation';
