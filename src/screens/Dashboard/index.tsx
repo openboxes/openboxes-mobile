@@ -8,6 +8,7 @@ import Button from '../../components/Button';
 import { useFilteredDashboardEntries } from '../../hooks/useFilteredDashboardEntries';
 import { useOrderedDashboardEntries } from '../../hooks/useOrderedDashboardEntries';
 import { useResponsiveColumns } from '../../hooks/useResponsiveColumns';
+import { navigateToDashboardEntry } from '../../NavigationService';
 import { RootState } from '../../redux/reducers';
 import { DashboardEntry } from './dashboardData';
 import styles from './styles';
@@ -22,22 +23,21 @@ export default function Dashboard({ navigation }: Props) {
   const visibleEntries = useFilteredDashboardEntries(orderedEntries, dashboardEntriesVisibility);
   const { columns } = useResponsiveColumns();
 
-  const renderItem = useCallback(
-    ({ item }: ListRenderItemInfo<DashboardEntry>) => {
-      const IconComponent = item.icon;
-      return (
-        <Card style={styles.cardContainer} onPress={() => navigation.navigate(item.navigationScreenName)}>
-          <Card.Content style={styles.cardContent}>
-            <View style={styles.iconWrapper}>
-              {IconComponent && <IconComponent width={styles.icon.width} height={styles.icon.height} />}
-            </View>
-            <Text style={styles.cardLabel}>{item.screenName}</Text>
-          </Card.Content>
-        </Card>
-      );
-    },
-    [navigation]
-  );
+  const renderItem = useCallback(({ item }: ListRenderItemInfo<DashboardEntry>) => {
+    const IconComponent = item.icon;
+    const onPress = () => navigateToDashboardEntry(item);
+
+    return (
+      <Card style={styles.cardContainer} onPress={onPress}>
+        <Card.Content style={styles.cardContent}>
+          <View style={styles.iconWrapper}>
+            {IconComponent && <IconComponent width={styles.icon.width} height={styles.icon.height} />}
+          </View>
+          <Text style={styles.cardLabel}>{item.screenName}</Text>
+        </Card.Content>
+      </Card>
+    );
+  }, []);
 
   return (
     <View style={styles.screenContainer}>

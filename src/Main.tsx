@@ -19,6 +19,7 @@ import { RootState } from './redux/reducers';
 import AdjustStock from './screens/AdjustStock';
 import AppInfoScreen from './screens/AppInfo/AppInfoScreen';
 import Dashboard from './screens/Dashboard';
+import SubroutesEntries from './screens/Dashboard/SubroutesEntries';
 import DrawerNavigator from './screens/DrawerNavigator';
 import InboundDetails from './screens/InboundDetails';
 import InboundOrderList from './screens/InboundOrderList';
@@ -202,6 +203,13 @@ class Main extends Component<Props, State> {
                   options={{ title: 'Transfer Details' }}
                 />
                 <Stack.Screen name="Dashboard" component={Dashboard} options={{ title: 'Dashboard' }} />
+                <Stack.Screen
+                  name="SubroutesEntries"
+                  // @ts-ignore
+                  component={SubroutesEntries}
+                  // @ts-ignore
+                  options={({ route }) => ({ title: route.params?.subroutesScreenName })}
+                />
                 <Stack.Screen name="Scan" component={Scan} options={{ title: 'Scan' }} />
                 <Stack.Screen name="Products" component={Products} options={{ title: 'Products' }} />
                 <Stack.Screen name="PutawayList" component={PutawayList} options={{ title: 'Putaway List' }} />
