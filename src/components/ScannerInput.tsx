@@ -10,6 +10,8 @@ import {
 } from 'react-native';
 import { TextInput as PaperTextInput } from 'react-native-paper';
 
+import IconScanAction from '../assets/images/icon_scan_action.svg';
+
 type ScannerInputProps = {
   value: string;
   onChange: (value: string) => void;
@@ -132,6 +134,8 @@ export const ScannerInput = forwardRef<NativeTextInput, ScannerInputProps>(
         importantForAutofill="no"
         blurOnSubmit={false}
         returnKeyType="done"
+        // @ts-ignore
+        left={<PaperTextInput.Icon name={() => <IconScanAction height={24} width={24} />} />}
         onBlur={handleBlur}
         onFocus={() => {}}
         onChangeText={handleChangeText}
