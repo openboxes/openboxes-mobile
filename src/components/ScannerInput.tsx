@@ -74,6 +74,8 @@ export const ScannerInput = forwardRef<NativeTextInput, ScannerInputProps>(
         requestFocus();
       } else {
         internalInputRef.current?.blur();
+        // Reset keyboard state when screen loses focus
+        setShowKeyboard(false);
       }
     }, [requestFocus, shouldBeFocused]);
 
