@@ -38,12 +38,6 @@ export default function PickingPickOutboundContainerScreen() {
   }
 
   function handleScan(containerId: string) {
-    if (!containerId) {
-      Alert.alert('Missing Input', 'Please scan or enter a valid Outbound Container ID.');
-      setOutboundContainerId(EMPTY_STRING);
-      return;
-    }
-
     if (!currentTask) {
       Alert.alert('Error', 'No current pick task available.');
       setOutboundContainerId(EMPTY_STRING);

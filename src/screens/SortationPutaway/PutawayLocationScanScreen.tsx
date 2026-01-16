@@ -40,8 +40,6 @@ export default function PutawayLocationScanScreen() {
     setPutawayLocationBarcode(EMPTY_STRING);
   }, []);
 
-  // ScannerInput handles focus management internally, so the focus useEffect is removed.
-
   if (!putawayDetails) {
     return (
       <View style={styles.emptyContainer}>
@@ -57,19 +55,12 @@ export default function PutawayLocationScanScreen() {
    * Unifies validation for scanner input and button press
    */
   function handleProcessing(code: string) {
-    const trimmedCode = code.trim();
-
-    if (!trimmedCode) {
-      Alert.alert('Invalid Barcode', 'Please scan a valid putaway location barcode.');
-      return;
-    }
-
     const expectedLocation = selectedAlternativeDestination?.locationNumber;
 
-    if (trimmedCode !== expectedLocation) {
+    if (code !== expectedLocation) {
       Alert.alert(
         'Wrong Location',
-        `The scanned barcode (${trimmedCode}) does not match the expected location: ${expectedLocation}.`,
+        `The scanned barcode (${code}) does not match the expected location: ${expectedLocation}.`,
         [{ text: 'OK', onPress: () => setPutawayLocationBarcode(EMPTY_STRING) }]
       );
       return;

@@ -15,14 +15,7 @@ export default function PutawayEntryScreen() {
   const dispatch = useDispatch();
 
   const performScan = useCallback(
-    (rawContainerId: string) => {
-      const containerId = rawContainerId.trim();
-
-      if (!containerId) {
-        Alert.alert('Empty Container ID', 'You must scan a container ID or enter a code manually to proceed.');
-        return;
-      }
-
+    (containerId: string) => {
       dispatch(
         getPutawayDetailsByContainerId(containerId, (response) => {
           if (response && !response.error) {

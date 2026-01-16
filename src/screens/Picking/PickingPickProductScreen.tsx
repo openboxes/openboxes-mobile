@@ -19,11 +19,6 @@ export default function PickingPickProductScreen() {
   }
 
   function handleScan(scannedBarcode: string) {
-    if (!scannedBarcode) {
-      Alert.alert('Scan Required', 'Please scan the product barcode.');
-      return;
-    }
-
     const isValid = isProductBarcodeValid(scannedBarcode, currentTask?.product);
 
     if (!isValid) {

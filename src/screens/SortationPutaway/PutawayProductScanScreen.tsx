@@ -39,15 +39,8 @@ export default function PutawayProductScanScreen() {
   }
 
   function handleProcessing(code: string) {
-    const trimmedCode = code.trim();
-
-    if (!trimmedCode) {
-      Alert.alert('Invalid Barcode', 'Please scan a valid putaway product barcode.');
-      return;
-    }
-
     const product = putawayDetails.inventoryItem?.product;
-    const isValid = isProductBarcodeValid(trimmedCode, product);
+    const isValid = isProductBarcodeValid(code, product);
 
     if (!isValid) {
       Alert.alert(

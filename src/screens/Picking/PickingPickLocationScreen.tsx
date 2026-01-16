@@ -18,11 +18,6 @@ export default function PickingPickLocationScreen() {
   }
 
   function handleScan(locationBarcode: string) {
-    if (!locationBarcode) {
-      Alert.alert('Scan Required', 'Please scan the pick location barcode.');
-      return;
-    }
-
     const isValid = locationBarcode === currentTask?.location?.locationNumber;
     if (!isValid) {
       Alert.alert(

@@ -32,12 +32,6 @@ export default function PickingPickStagingLocationScreen() {
   }, [currentTask, tasks.length, setCurrentTaskIndex, uniqueTasks.length, tasks]);
 
   function handleScan(locationId: string) {
-    if (!locationId) {
-      Alert.alert('Missing Input', 'Please scan or enter a valid Staging Location ID.');
-      setStagingLocationNumber(EMPTY_STRING);
-      return;
-    }
-
     const expected = currentTask.stagingLocation?.locationNumber;
 
     if (!expected || locationId !== expected) {

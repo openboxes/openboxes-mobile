@@ -59,19 +59,12 @@ export default function SortationContainerScreen() {
    * @param code - The barcode string to validate.
    */
   function handleProcessing(code: string) {
-    const trimmedCode = code.trim();
-
-    if (!trimmedCode) {
-      Alert.alert('Empty Barcode', 'You must scan a putaway container barcode to proceed.');
-      return;
-    }
-
     if (!isOverrideEnabled) {
       const containerLocationNumber = task?.container?.locationNumber;
-      if (trimmedCode !== containerLocationNumber) {
+      if (code !== containerLocationNumber) {
         Alert.alert(
           'Wrong container number',
-          `Scanned container number: ${trimmedCode} is different from the expected one: ${containerLocationNumber}. If you want to load into a different container please select 'Override container' option.`,
+          `Scanned container number: ${code} is different from the expected one: ${containerLocationNumber}. If you want to load into a different container please select 'Override container' option.`,
           [{ text: 'OK', onPress: () => setPutawayContainerBarcode(EMPTY_STRING) }]
         );
         return;
@@ -81,7 +74,7 @@ export default function SortationContainerScreen() {
     const payload = {
       action: 'load',
       quantity: quantitySorted,
-      container: trimmedCode,
+      container: code,
       override: isOverrideEnabled
     };
 

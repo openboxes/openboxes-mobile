@@ -65,21 +65,13 @@ export default function AlternativeLocationSelector({
 
   const handleLocationSearch = useCallback(
     (locationNumber: string) => {
-      const trimmed = locationNumber.trim();
-
-      // If user clears the input manually
-      if (!trimmed) {
-        setTempAlternativeLocation(null);
-        return;
-      }
-
       dispatch(
-        searchLocationByLocationNumber(trimmed, (data: any) => {
+        searchLocationByLocationNumber(locationNumber, (data: any) => {
           if (data && !data.error) {
             setTempAlternativeLocation(data);
           } else {
             setTempAlternativeLocation(null);
-            Alert.alert('Location Not Found', `Location "${trimmed}" could not be found.`);
+            Alert.alert('Location Not Found', `Location "${locationNumber}" could not be found.`);
           }
         })
       );

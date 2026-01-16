@@ -16,13 +16,8 @@ export default function SortationEntryScreen() {
 
   const handleScan = useCallback(
     (code: string) => {
-      const trimmedCode = code.trim();
-      if (!trimmedCode) {
-        return;
-      }
-
       dispatch(
-        getSortationDetailsByBarcode(trimmedCode, (response) => {
+        getSortationDetailsByBarcode(code, (response) => {
           if (response && !response.error) {
             const { product, tasks } = response;
             const allowedStatuses = ['PENDING', 'STARTED'];

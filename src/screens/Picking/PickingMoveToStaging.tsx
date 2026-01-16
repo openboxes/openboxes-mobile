@@ -15,11 +15,6 @@ export default function PickingMoveToStagingScreen() {
   const dispatch = useDispatch();
 
   function handleScan(containerId: string) {
-    if (!containerId) {
-      Alert.alert('Scan Required', 'Please scan the outbound container ID before proceeding.');
-      return;
-    }
-
     // Fetch pick tasks
     dispatch(
       getPickedTasksByContainerAction(containerId, ({ response }) => {
