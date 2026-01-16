@@ -1,9 +1,8 @@
 import React, { useCallback } from 'react';
-import { FlatList, ListRenderItemInfo, Text, View } from 'react-native';
-import { Card } from 'react-native-paper';
+import { FlatList, ListRenderItemInfo, View } from 'react-native';
 
 import { useResponsiveColumns } from '../../hooks/useResponsiveColumns';
-import { navigateToDashboardEntry } from '../../NavigationService';
+import { DashboardCard } from './DashboardCard';
 import { DashboardEntry } from './dashboardData';
 import styles from './styles';
 
@@ -22,21 +21,7 @@ export default function SubroutesEntries({ route }: SubroutesEntriesProps) {
   const { subroutes } = route.params || {};
   const { columns } = useResponsiveColumns();
 
-  const renderItem = useCallback(({ item }: ListRenderItemInfo<DashboardEntry>) => {
-    const IconComponent = item.icon;
-    const onPress = () => navigateToDashboardEntry(item);
-
-    return (
-      <Card style={styles.cardContainer} onPress={onPress}>
-        <Card.Content style={styles.cardContent}>
-          <View style={styles.iconWrapper}>
-            {IconComponent && <IconComponent width={styles.icon.width} height={styles.icon.height} />}
-          </View>
-          <Text style={styles.cardLabel}>{item.screenName}</Text>
-        </Card.Content>
-      </Card>
-    );
-  }, []);
+  const renderItem = useCallback(({ item }: ListRenderItemInfo<DashboardEntry>) => <DashboardCard item={item} />, []);
 
   return (
     <View style={styles.screenContainer}>
