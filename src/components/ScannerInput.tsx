@@ -1,5 +1,5 @@
 import { useIsFocused } from '@react-navigation/native';
-import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useRef } from 'react';
+import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import {
   AppState,
   InteractionManager,
@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { TextInput as PaperTextInput } from 'react-native-paper';
 
+import IconKeyboard from '../assets/images/icon_keyboard.svg';
 import IconScanAction from '../assets/images/icon_scan_action.svg';
 
 type ScannerInputProps = {
@@ -45,6 +46,7 @@ export const ScannerInput = forwardRef<NativeTextInput, ScannerInputProps>(
   ({ value, onChange, onSubmit, label = 'Scan Barcode', style, isEnabled = true }, ref) => {
     const internalInputRef = useRef<NativeTextInput | null>(null);
     const isScreenFocused = useIsFocused();
+    const [showKeyboard, setShowKeyboard] = useState(false);
 
     // We only want to be aggressive about focus if the screen is visible
     // AND the parent component hasn't explicitly disabled us.
@@ -120,6 +122,25 @@ export const ScannerInput = forwardRef<NativeTextInput, ScannerInputProps>(
       requestFocus();
     };
 
+    const handleKeyboardPress = () => {
+      setShowKeyboard((prevState) => {
+        const newShowKeyboard = !prevState;
+
+        if (newShowKeyboard) {
+          // Opening keyboard: blur and refocus to trigger showSoftInputOnFocus
+          InteractionManager.runAfterInteractions(() => {
+            internalInputRef.current?.blur();
+            internalInputRef.current?.focus();
+          });
+        } else {
+          // Closing keyboard: just dismiss it
+          Keyboard.dismiss();
+        }
+
+        return newShowKeyboard;
+      });
+    };
+
     return (
       <PaperTextInput
         ref={internalInputRef}
@@ -128,7 +149,7 @@ export const ScannerInput = forwardRef<NativeTextInput, ScannerInputProps>(
         value={value}
         style={style}
         // Keep keyboard hidden
-        showSoftInputOnFocus={false}
+        showSoftInputOnFocus={showKeyboard}
         autoCorrect={false}
         autoCompleteType="off"
         importantForAutofill="no"
@@ -136,6 +157,10 @@ export const ScannerInput = forwardRef<NativeTextInput, ScannerInputProps>(
         returnKeyType="done"
         // @ts-ignore
         left={<PaperTextInput.Icon name={() => <IconScanAction height={24} width={24} />} />}
+        right={
+          // @ts-ignore
+          <PaperTextInput.Icon name={() => <IconKeyboard height={24} width={24} />} onPress={handleKeyboardPress} />
+        }
         onBlur={handleBlur}
         onFocus={() => {}}
         onChangeText={handleChangeText}
