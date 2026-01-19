@@ -59,7 +59,7 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
   const [currentTaskIndex, setCurrentTaskIndex] = React.useState<number>(0);
   const dispatch = useDispatch();
   const allTasksCount = tasks.length;
-  const currentTask = allTasksCount > 0 ? tasks[currentTaskIndex] : undefined;
+  const currentTask = allTasksCount > 0 && currentTaskIndex < allTasksCount ? tasks[currentTaskIndex] : undefined;
 
   const startSession = async (deliveryType: DeliveryType, ordersCount: number): Promise<boolean> => {
     return new Promise((resolve) => {
@@ -154,12 +154,26 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
 
         const newTasks = res.response.data;
 
+        if (newTasks.length === 0) {
+          const hasNextExistingTask = currentTaskIndex + 1 < tasks.length;
+
+          if (hasNextExistingTask) {
+            goToNextTask();
+            callback?.();
+            return;
+          }
+
+          Alert.alert('No Additional Tasks', 'No new pick tasks were created. Proceeding to staging location drop.', [
+            { text: 'OK', onPress: () => navigate('PickingPickStagingLocation') }
+          ]);
+          return;
+        }
+
         setTasks((prevTasks) => {
           return [...prevTasks, ...newTasks];
         });
 
         goToNextTask();
-
         callback?.();
       })
     );
