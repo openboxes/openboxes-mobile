@@ -15,9 +15,8 @@ export function revalidateTaskAndProceed(
       return;
     }
 
-    const isLastTask = currentTaskIndex + 1 >= allTasksCount;
-
-    if (!isLastTask) {
+    // If it's not the last task, go to the next one
+    if (!(currentTaskIndex + 1 >= allTasksCount)) {
       goToNextTask();
       navigate('PickingPickLocation');
       return;
