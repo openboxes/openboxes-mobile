@@ -64,7 +64,16 @@ export default function PickingPickOutboundContainerScreen() {
               });
             });
           } else {
-            revalidateTaskAndProceed(revalidateCurrentTask, currentTaskIndex, allTasksCount, goToNextTask);
+            const omitStagingLocationStep =
+              currentTask.quantityPicked + parsedQuantityPicked < currentTask.quantityRequired;
+
+            revalidateTaskAndProceed(
+              revalidateCurrentTask,
+              currentTaskIndex,
+              allTasksCount,
+              goToNextTask,
+              omitStagingLocationStep
+            );
           }
         },
         params?.reasonCode?.name

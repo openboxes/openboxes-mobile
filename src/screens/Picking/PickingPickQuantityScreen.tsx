@@ -54,8 +54,8 @@ export default function PickingPickQuantityScreen() {
   }
 
   function handleSubmit() {
-    const qty = Number(quantityPicked);
-    const isValid = !isNaN(qty) && qty >= 0 && currentTask?.quantityRequired;
+    const parsedQuantityPicked = Number(quantityPicked);
+    const isValid = !isNaN(parsedQuantityPicked) && parsedQuantityPicked >= 0 && currentTask?.quantityRequired;
 
     if (!isValid) {
       Alert.alert('Invalid Quantity', 'Incorrect quantity picked. Please try again.');
@@ -63,14 +63,13 @@ export default function PickingPickQuantityScreen() {
     }
 
     const qtyRemaining = currentTask?.quantityRequired - (currentTask?.quantityPicked || 0);
-    const isFullPicked = qty === qtyRemaining;
 
-    if (qty > qtyRemaining) {
+    if (parsedQuantityPicked > qtyRemaining) {
       Alert.alert('Invalid Quantity', `Picked quantity cannot exceed remaining quantity to pick (${qtyRemaining}).`);
       return;
     }
 
-    if (isFullPicked) {
+    if (parsedQuantityPicked === currentTask.quantityRequired) {
       navigate('PickingPickOutboundContainer');
       return;
     }

@@ -6,7 +6,8 @@ export function revalidateTaskAndProceed(
   revalidateCurrentTask: (callback: (revalidatedTask: PickTask) => void) => void,
   currentTaskIndex: number,
   allTasksCount: number,
-  goToNextTask: () => void
+  goToNextTask: () => void,
+  omitStagingLocationStep?: boolean
 ) {
   revalidateCurrentTask((revalidatedTask) => {
     if (!revalidatedTask) {
@@ -14,18 +15,33 @@ export function revalidateTaskAndProceed(
       return;
     }
 
-    if (currentTaskIndex + 1 >= allTasksCount) {
-      // Last Task -> Navigate to staging location drop
-      Alert.alert('All Picks Complete', 'You have completed all picks. Proceeding to staging location drop.', [
-        {
-          text: 'OK',
-          onPress: () => navigate('PickingPickStagingLocation')
-        }
-      ]);
-    } else {
-      // More Tasks -> Start over with next pick task
+    const isLastTask = currentTaskIndex + 1 >= allTasksCount;
+
+    if (!isLastTask) {
       goToNextTask();
       navigate('PickingPickLocation');
+      return;
     }
+
+    if (omitStagingLocationStep) {
+      Alert.alert(
+        'Short Pick Without Reason Code',
+        'You have completed all picks with a short pick without a reason code. This task will remain available to pick. You will be redirected to the Pick Type screen.',
+        [
+          {
+            text: 'OK',
+            onPress: () => navigate('PickingPickType')
+          }
+        ]
+      );
+      return;
+    }
+
+    Alert.alert('All Picks Complete', 'You have completed all picks. Proceeding to staging location drop.', [
+      {
+        text: 'OK',
+        onPress: () => navigate('PickingPickStagingLocation')
+      }
+    ]);
   });
 }
