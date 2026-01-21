@@ -6,7 +6,7 @@ import { Divider, Paragraph, Subheading } from 'react-native-paper';
 import { Alert, View } from 'react-native';
 import { ProductDetails } from '../../components/ProductDetails';
 import { ScannerInput } from '../../components/ScannerInput';
-import { HYPHEN } from '../../constants';
+import { EMPTY_STRING, HYPHEN } from '../../constants';
 import { navigate } from '../../NavigationService';
 import { DUMMY_REPLENISHMENT } from './mock-data';
 import { useReplenishmentContext } from './ReplenishmentContext';
@@ -51,6 +51,7 @@ export function ReplenishmentLocationScreen() {
     //   navigate('ReplenishmentProduct');
     // });
 
+    setLocationBarcode(EMPTY_STRING);
     navigate('ReplenishmentProduct');
   }
 
