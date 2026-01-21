@@ -36,7 +36,7 @@ export function ReplenishmentStagingLocationScreen() {
       return;
     }
 
-    navigate('ReplenishmentPickType');
+    navigate('ReplenishmentPickingLocation');
 
     // TODO: Implement the staging location validation and task dropping logic
     // const expected = currentTask.stagingLocation?.locationNumber;
