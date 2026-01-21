@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import * as React from 'react';
 import { Alert, View } from 'react-native';
 import { Divider, Paragraph, Subheading } from 'react-native-paper';
@@ -34,48 +36,51 @@ export function ReplenishmentStagingLocationScreen() {
       return;
     }
 
-    const expected = currentTask.stagingLocation?.locationNumber;
+    navigate('ReplenishmentPickType');
 
-    if (!expected || stagingLocationNumber !== expected) {
-      Alert.alert(
-        'Invalid Staging Location',
-        `Expected: ${expected ?? '-'}, but got: ${stagingLocationNumber}. Please try again.`
-      );
-      setStagingLocationNumber('');
-      return;
-    }
+    // TODO: Implement the staging location validation and task dropping logic
+    // const expected = currentTask.stagingLocation?.locationNumber;
 
-    dropCurrentTaskAtStagingLocation(currentTask, (response) => {
-      if ('errorMessage' in response) {
-        Alert.alert('Error', response.errorMessage);
-        setStagingLocationNumber('');
-        return;
-      }
+    // if (!expected || stagingLocationNumber !== expected) {
+    //   Alert.alert(
+    //     'Invalid Staging Location',
+    //     `Expected: ${expected ?? '-'}, but got: ${stagingLocationNumber}. Please try again.`
+    //   );
+    //   setStagingLocationNumber('');
+    //   return;
+    // }
 
-      const nextIndex = currentUniqueIndex + 1;
-      if (nextIndex < uniqueTasks.length) {
-        Alert.alert('Success', 'Staging Location confirmed. Proceeding to the next container.', [
-          {
-            text: 'OK',
-            onPress: () => {
-              // Proceed to next unique task
-              setCurrentUniqueIndex(nextIndex);
-              setStagingLocationNumber('');
-            }
-          }
-        ]);
-      } else {
-        Alert.alert('Picking Session Complete', 'You have completed all staging confirmations.', [
-          {
-            text: 'OK',
-            onPress: () => {
-              resetReplenishmentSession();
-              navigate('Dashboard');
-            }
-          }
-        ]);
-      }
-    });
+    // dropCurrentTaskAtStagingLocation(currentTask, (response) => {
+    //   if ('errorMessage' in response) {
+    //     Alert.alert('Error', response.errorMessage);
+    //     setStagingLocationNumber('');
+    //     return;
+    //   }
+
+    //   const nextIndex = currentUniqueIndex + 1;
+    //   if (nextIndex < uniqueTasks.length) {
+    //     Alert.alert('Success', 'Staging Location confirmed. Proceeding to the next container.', [
+    //       {
+    //         text: 'OK',
+    //         onPress: () => {
+    //           // Proceed to next unique task
+    //           setCurrentUniqueIndex(nextIndex);
+    //           setStagingLocationNumber('');
+    //         }
+    //       }
+    //     ]);
+    //   } else {
+    //     Alert.alert('Picking Session Complete', 'You have completed all staging confirmations.', [
+    //       {
+    //         text: 'OK',
+    //         onPress: () => {
+    //           resetReplenishmentSession();
+    //           navigate('Dashboard');
+    //         }
+    //       }
+    //     ]);
+    //   }
+    // });
   }
 
   return (
