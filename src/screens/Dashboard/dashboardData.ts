@@ -144,7 +144,7 @@ const dashboardEntries: DashboardEntry[] = [
         screenName: 'User Directed',
         entryDescription: 'Enter a List ID to select the Cycle Count',
         icon: IconInventory,
-        navigationScreenName: 'Placeholder'
+        navigationScreenName: 'CycleCountListEntry'
       }
     ]
   },

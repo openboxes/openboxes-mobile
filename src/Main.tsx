@@ -60,6 +60,12 @@ import PutawayLocationScanScreen from './screens/SortationPutaway/PutawayLocatio
 import PutawayProductScanScreen from './screens/SortationPutaway/PutawayProductScanScreen';
 import PutawayQuantityScreen from './screens/SortationPutaway/PutawayQuantityScreen';
 import HeaderRight from './screens/TopBar/RightHeader';
+import CycleCountCompleted from './screens/CycleCount/CycleCountCompleted';
+import CycleCountCountConfirmation from './screens/CycleCount/CycleCountCountConfirmation';
+import CycleCountListEntry from './screens/CycleCount/CycleCountListEntry';
+import CycleCountLocation from './screens/CycleCount/CycleCountLocation';
+import CycleCountProduct from './screens/CycleCount/CycleCountProduct';
+import CycleCountQuantityAvailable from './screens/CycleCount/CycleCountQuantityAvailable';
 import PickingPickTypeScreen from './screens/Picking/PickingPickTypeScreen';
 import PickingPickLocationScreen from './screens/Picking/PickingPickLocationScreen';
 import PickingPickProductScreen from './screens/Picking/PickingPickProductScreen';
@@ -370,6 +376,36 @@ class Main extends Component<Props, State> {
                   name="PickUpOrderScreen"
                   component={PickUpOrderScreen}
                   options={{ title: 'Pick Up Allocation' }}
+                />
+                <Stack.Screen
+                  name="CycleCountListEntry"
+                  component={CycleCountListEntry}
+                  options={{ title: 'Cycle Count List Entry' }}
+                />
+                <Stack.Screen
+                  name="CycleCountLocation"
+                  component={CycleCountLocation}
+                  options={{ title: 'Cycle Count Location' }}
+                />
+                <Stack.Screen
+                  name="CycleCountProduct"
+                  component={CycleCountProduct}
+                  options={{ title: 'Cycle Count Product' }}
+                />
+                <Stack.Screen
+                  name="CycleCountQuantityAvailable"
+                  component={CycleCountQuantityAvailable}
+                  options={{ title: 'Cycle Count Quantity Available' }}
+                />
+                <Stack.Screen
+                  name="CycleCountCountConfirmation"
+                  component={CycleCountCountConfirmation}
+                  options={{ title: 'Cycle Count Count Confirmation' }}
+                />
+                <Stack.Screen
+                  name="CycleCountCompleted"
+                  component={CycleCountCompleted}
+                  options={{ title: 'Cycle Count Completed' }}
                 />
               </Stack.Navigator>
             </NavigationContainer>
