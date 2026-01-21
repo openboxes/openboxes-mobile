@@ -211,13 +211,13 @@ class Main extends Component<Props, State> {
                 options={{ title: 'Transfer Details' }}
               />
               <Stack.Screen name="Dashboard" component={Dashboard} options={{ title: 'Dashboard' }} />
-                <Stack.Screen
-                  name="SubroutesEntries"
-                  // @ts-ignore
-                  component={SubroutesEntries}
-                  // @ts-ignore
-                  options={({ route }) => ({ title: route.params?.subroutesScreenName })}
-                />
+              <Stack.Screen
+                name="SubroutesEntries"
+                // @ts-ignore
+                component={SubroutesEntries}
+                // @ts-ignore
+                options={({ route }) => ({ title: route.params?.subroutesScreenName })}
+              />
               <Stack.Screen name="Scan" component={Scan} options={{ title: 'Scan' }} />
               <Stack.Screen name="Products" component={Products} options={{ title: 'Products' }} />
               <Stack.Screen name="PutawayList" component={PutawayList} options={{ title: 'Putaway List' }} />
@@ -386,46 +386,46 @@ class Main extends Component<Props, State> {
                 component={ReplenishmentStagingLocationScreen}
                 options={{ title: 'Replenishment Staging Location' }}
               />
-                <Stack.Screen
-                  name="PickUpEntryScreen"
-                  component={PickUpEntryScreen}
-                  options={{ title: 'Pick Up Allocation' }}
-                />
-                <Stack.Screen
-                  name="PickUpOrderScreen"
-                  component={PickUpOrderScreen}
-                  options={{ title: 'Pick Up Allocation' }}
-                />
-                <Stack.Screen
-                  name="CycleCountListEntry"
-                  component={CycleCountListEntry}
-                  options={{ title: 'Cycle Count List Entry' }}
-                />
-                <Stack.Screen
-                  name="CycleCountLocation"
-                  component={CycleCountLocation}
-                  options={{ title: 'Cycle Count Location' }}
-                />
-                <Stack.Screen
-                  name="CycleCountProduct"
-                  component={CycleCountProduct}
-                  options={{ title: 'Cycle Count Product' }}
-                />
-                <Stack.Screen
-                  name="CycleCountQuantityAvailable"
-                  component={CycleCountQuantityAvailable}
-                  options={{ title: 'Cycle Count Quantity Available' }}
-                />
-                <Stack.Screen
-                  name="CycleCountCountConfirmation"
-                  component={CycleCountCountConfirmation}
-                  options={{ title: 'Cycle Count Count Confirmation' }}
-                />
-                <Stack.Screen
-                  name="CycleCountCompleted"
-                  component={CycleCountCompleted}
-                  options={{ title: 'Cycle Count Completed' }}
-                />
+              <Stack.Screen
+                name="PickUpEntryScreen"
+                component={PickUpEntryScreen}
+                options={{ title: 'Pick Up Allocation' }}
+              />
+              <Stack.Screen
+                name="PickUpOrderScreen"
+                component={PickUpOrderScreen}
+                options={{ title: 'Pick Up Allocation' }}
+              />
+              <Stack.Screen
+                name="CycleCountListEntry"
+                component={CycleCountListEntry}
+                options={{ title: 'Cycle Count List Entry' }}
+              />
+              <Stack.Screen
+                name="CycleCountLocation"
+                component={CycleCountLocation}
+                options={{ title: 'Cycle Count Location' }}
+              />
+              <Stack.Screen
+                name="CycleCountProduct"
+                component={CycleCountProduct}
+                options={{ title: 'Cycle Count Product' }}
+              />
+              <Stack.Screen
+                name="CycleCountQuantityAvailable"
+                component={CycleCountQuantityAvailable}
+                options={{ title: 'Cycle Count Quantity Available' }}
+              />
+              <Stack.Screen
+                name="CycleCountCountConfirmation"
+                component={CycleCountCountConfirmation}
+                options={{ title: 'Cycle Count Count Confirmation' }}
+              />
+              <Stack.Screen
+                name="CycleCountCompleted"
+                component={CycleCountCompleted}
+                options={{ title: 'Cycle Count Completed' }}
+              />
             </Stack.Navigator>
           </NavigationContainer>
         </SafeAreaView>
