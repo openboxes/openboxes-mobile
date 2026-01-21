@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { Alert, TextInput, View } from 'react-native';
-import { Divider, TextInput as PaperTextInput, Paragraph, Subheading } from 'react-native-paper';
+import { Alert, View } from 'react-native';
+import { Divider, Paragraph, Subheading } from 'react-native-paper';
 
 import { ProductDetails } from '../../components/ProductDetails';
-import { useInputFocus } from '../../hooks/useInputFocus';
+import { ScannerInput } from '../../components/ScannerInput';
 import { navigate } from '../../NavigationService';
 import { useReplenishmentContext } from './ReplenishmentContext';
 import styles from './styles';
@@ -11,7 +11,6 @@ import styles from './styles';
 export function ReplenishmentStagingLocationScreen() {
   const { allTasks, dropCurrentTaskAtStagingLocation, resetReplenishmentSession } = useReplenishmentContext();
 
-  const inputRef = React.useRef<TextInput | null>(null);
   const [stagingLocationNumber, setStagingLocationNumber] = React.useState('');
   const [currentUniqueIndex, setCurrentUniqueIndex] = React.useState(0);
 
@@ -21,8 +20,6 @@ export function ReplenishmentStagingLocationScreen() {
   );
 
   const currentTask = uniqueTasks[currentUniqueIndex];
-
-  useInputFocus(inputRef);
 
   if (!currentTask) {
     Alert.alert('Error', 'No current replenishment task available.');
@@ -120,16 +117,12 @@ export function ReplenishmentStagingLocationScreen() {
           Point your barcode scanner at the staging location or type the ID manually.
         </Paragraph>
 
-        <PaperTextInput
-          ref={inputRef}
-          autoCompleteType="off"
+        <ScannerInput
           style={styles.marginTop}
-          mode="outlined"
-          label="Staging Location Number"
+          label="Staging Location ID"
           value={stagingLocationNumber}
-          returnKeyType="done"
-          onChangeText={setStagingLocationNumber}
-          onSubmitEditing={handleSubmit}
+          onChange={setStagingLocationNumber}
+          onSubmit={handleSubmit}
         />
       </View>
     </ProductDetails.Provider>

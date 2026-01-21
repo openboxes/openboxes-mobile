@@ -2,11 +2,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { RouteProp, useRoute } from '@react-navigation/native';
 import * as React from 'react';
-import { Alert, TextInput, View } from 'react-native';
-import { Divider, TextInput as PaperTextInput, Paragraph, Subheading } from 'react-native-paper';
+import { Alert, View } from 'react-native';
+import { Divider, Paragraph, Subheading } from 'react-native-paper';
 
 import { ProductDetails } from '../../components/ProductDetails';
-import { useInputFocus } from '../../hooks/useInputFocus';
+import { ScannerInput } from '../../components/ScannerInput';
 import { navigate } from '../../NavigationService';
 import { ReasonCode } from '../../types/picking';
 import { useReplenishmentContext } from './ReplenishmentContext';
@@ -29,13 +29,9 @@ export default function ReplenishmentOutboundContainerScreen() {
     revalidateTasksForOrder
   } = useReplenishmentContext();
   const { params } = useRoute<ReplenishmentOutboundContainerScreenProps>();
+
   const parsedQuantityPicked = params?.quantityPicked ? Number(params.quantityPicked) : undefined;
-
-  const inputRef = React.useRef<TextInput | null>(null);
   const [outboundContainerId, setOutboundContainerId] = React.useState<string>('');
-
-  // Focus input when screen is focused
-  useInputFocus(inputRef);
 
   if (!currentTask) {
     Alert.alert('No Pick Task', 'There is no current pick task available. Try again later.', [
@@ -164,16 +160,12 @@ export default function ReplenishmentOutboundContainerScreen() {
           Point your barcode scanner at the outbound container or type the code manually.
         </Paragraph>
 
-        <PaperTextInput
-          ref={inputRef}
-          autoCompleteType="off"
+        <ScannerInput
           style={styles.marginTop}
-          mode="outlined"
           label="Outbound Container ID"
           value={outboundContainerId}
-          returnKeyType="done"
-          onChangeText={setOutboundContainerId}
-          onSubmitEditing={handleSubmit}
+          onChange={setOutboundContainerId}
+          onSubmit={handleSubmit}
         />
       </View>
     </ProductDetails.Provider>

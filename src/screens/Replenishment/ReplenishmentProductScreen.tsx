@@ -1,10 +1,10 @@
 import React from 'react';
-import { Divider, TextInput as PaperTextInput, Paragraph, Subheading } from 'react-native-paper';
+import { Divider, Paragraph, Subheading } from 'react-native-paper';
 
-import { Alert, TextInput, View } from 'react-native';
+import { Alert, View } from 'react-native';
 import { ProductDetails } from '../../components/ProductDetails';
+import { ScannerInput } from '../../components/ScannerInput';
 import { HYPHEN } from '../../constants';
-import { useInputFocus } from '../../hooks/useInputFocus';
 import { navigate } from '../../NavigationService';
 import { DUMMY_REPLENISHMENT } from './mock-data';
 import { useReplenishmentContext } from './ReplenishmentContext';
@@ -12,11 +12,7 @@ import styles from './styles';
 
 export function ReplenishmentProductScreen() {
   const { currentTask, currentTaskIndex, tasksCount } = useReplenishmentContext();
-
-  const inputRef = React.useRef<TextInput | null>(null);
   const [productBarcode, setProductBarcode] = React.useState<string>('');
-
-  useInputFocus(inputRef);
 
   if (!currentTask) {
     Alert.alert('No Replenishment Task', 'There is no current replenishment task available. Try again later.');
@@ -77,16 +73,12 @@ export function ReplenishmentProductScreen() {
           Point your barcode scanner at the product barcode or type the code manually.
         </Paragraph>
 
-        <PaperTextInput
+        <ScannerInput
           style={styles.marginTop}
-          autoCompleteType="off"
-          ref={inputRef}
-          mode="outlined"
-          label="Pick Product Barcode"
+          label="Product Barcode"
           value={productBarcode}
-          returnKeyType="done"
-          onChangeText={setProductBarcode}
-          onSubmitEditing={handleSubmit}
+          onChange={setProductBarcode}
+          onSubmit={handleSubmit}
         />
       </View>
     </ProductDetails.Provider>
