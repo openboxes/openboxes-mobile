@@ -19,7 +19,9 @@ export type DashboardEntry = {
   entryDescription?: string;
   icon: any;
   navigationScreenName: string;
+  subroutesScreenName?: string;
   defaultVisible?: boolean;
+  subroutes?: DashboardEntry[];
 };
 
 const dashboardEntries: DashboardEntry[] = [
@@ -44,6 +46,13 @@ const dashboardEntries: DashboardEntry[] = [
     icon: IconPicking,
     navigationScreenName: 'Orders',
     defaultVisible: false
+  },
+  {
+    key: 'pickUpAllocation',
+    screenName: 'Pick-Up Allocation',
+    entryDescription: 'Manage pick-up allocations and tasks',
+    icon: IconPicking,
+    navigationScreenName: 'PickUpEntryScreen'
   },
   {
     key: 'packing',
@@ -102,8 +111,8 @@ const dashboardEntries: DashboardEntry[] = [
     navigationScreenName: 'Products'
   },
   {
-    key: 'inventory',
-    screenName: 'Inventory',
+    key: 'legacy-inventory',
+    screenName: 'Legacy Inventory',
     entryDescription: 'View and manage the current inventory',
     icon: IconInventory,
     navigationScreenName: 'Product Summary'
@@ -121,6 +130,30 @@ const dashboardEntries: DashboardEntry[] = [
     entryDescription: 'Manage pending internal transfers',
     icon: IconPendingTransfers,
     navigationScreenName: 'Transfers'
+  },
+  {
+    key: 'inventory',
+    screenName: 'Inventory',
+    entryDescription: 'Manage inventory and cycle counts',
+    icon: IconInventory,
+    navigationScreenName: 'Inventory',
+    subroutesScreenName: 'Cycle Count Type',
+    subroutes: [
+      {
+        key: 'systemDirectedCycleCount',
+        screenName: 'System Directed',
+        entryDescription: 'Oldest Cycle Count list based on Create Date/Time',
+        icon: IconInventory,
+        navigationScreenName: 'Placeholder'
+      },
+      {
+        key: 'userDirectedCycleCount',
+        screenName: 'User Directed',
+        entryDescription: 'Enter a List ID to select the Cycle Count',
+        icon: IconInventory,
+        navigationScreenName: 'CycleCountListEntry'
+      }
+    ]
   },
   {
     key: 'scan',

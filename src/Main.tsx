@@ -18,6 +18,7 @@ import { RootState } from './redux/reducers';
 import AdjustStock from './screens/AdjustStock';
 import AppInfoScreen from './screens/AppInfo/AppInfoScreen';
 import Dashboard from './screens/Dashboard';
+import SubroutesEntries from './screens/Dashboard/SubroutesEntries';
 import DrawerNavigator from './screens/DrawerNavigator';
 import InboundDetails from './screens/InboundDetails';
 import InboundOrderList from './screens/InboundOrderList';
@@ -35,6 +36,8 @@ import OutboundStockDetails from './screens/OutboundStockDetails';
 import OutboundStockList from './screens/OutboundStockList';
 import PackingLocationPage from './screens/PackingLocationPage';
 import PickOrderItem from './screens/PickList';
+import { PickUpEntryScreen } from './screens/PickUpAllocation/PickUpEntryScreen';
+import { PickUpOrderScreen } from './screens/PickUpAllocation/PickUpOrderScreen';
 import Placeholder from './screens/Placeholder';
 import ProductDetails from './screens/ProductDetails';
 import Products from './screens/Products';
@@ -47,21 +50,21 @@ import PutawayList from './screens/PutawayList';
 import Scan from './screens/Scan';
 import Settings from './screens/Settings';
 import ShipItemDetails from './screens/ShipItemDetails';
+import SortationContainerScreen from './screens/Sortation/SortationContainerScreen';
 import SortationEntryScreen from './screens/Sortation/SortationEntryScreen';
 import SortationQuantityScreen from './screens/Sortation/SortationQuantityScreen';
-import Transfer from './screens/Transfer';
-import Transfers from './screens/Transfers';
-import TransferDetails from './screens/TransfersDetails';
-import ViewAvailableItem from './screens/ViewAvailableItem';
-import ApiClient from './utils/ApiClient';
-import Theme from './utils/Theme';
-import SortationContainerScreen from './screens/Sortation/SortationContainerScreen';
 import SortationTaskSelectionListScreen from './screens/Sortation/SortationTaskSelectionListScreen';
 import PutawayEntryScreen from './screens/SortationPutaway/PutawayEntryScreen';
 import PutawayLocationScanScreen from './screens/SortationPutaway/PutawayLocationScanScreen';
 import PutawayProductScanScreen from './screens/SortationPutaway/PutawayProductScanScreen';
 import PutawayQuantityScreen from './screens/SortationPutaway/PutawayQuantityScreen';
 import HeaderRight from './screens/TopBar/RightHeader';
+import CycleCountCompleted from './screens/CycleCount/CycleCountCompleted';
+import CycleCountCountConfirmation from './screens/CycleCount/CycleCountCountConfirmation';
+import CycleCountListEntry from './screens/CycleCount/CycleCountListEntry';
+import CycleCountLocation from './screens/CycleCount/CycleCountLocation';
+import CycleCountProduct from './screens/CycleCount/CycleCountProduct';
+import CycleCountQuantityAvailable from './screens/CycleCount/CycleCountQuantityAvailable';
 import PickingPickTypeScreen from './screens/Picking/PickingPickTypeScreen';
 import PickingPickLocationScreen from './screens/Picking/PickingPickLocationScreen';
 import PickingPickProductScreen from './screens/Picking/PickingPickProductScreen';
@@ -75,6 +78,12 @@ import { ReplenishmentProductScreen } from './screens/Replenishment/Replenishmen
 import ReplenishmentOutboundContainerScreen from './screens/Replenishment/ReplenishmentOutboundContainerScreen';
 import ReplenishmentPickQuantityScreen from './screens/Replenishment/ReplenishmentPickQuantityScreen';
 import { ReplenishmentStagingLocationScreen } from './screens/Replenishment/ReplenishmentStagingLocationScreen';
+import Transfer from './screens/Transfer';
+import Transfers from './screens/Transfers';
+import TransferDetails from './screens/TransfersDetails';
+import ViewAvailableItem from './screens/ViewAvailableItem';
+import ApiClient from './utils/ApiClient';
+import Theme from './utils/Theme';
 
 const Stack = createStackNavigator();
 export interface OwnProps {
@@ -202,6 +211,13 @@ class Main extends Component<Props, State> {
                 options={{ title: 'Transfer Details' }}
               />
               <Stack.Screen name="Dashboard" component={Dashboard} options={{ title: 'Dashboard' }} />
+                <Stack.Screen
+                  name="SubroutesEntries"
+                  // @ts-ignore
+                  component={SubroutesEntries}
+                  // @ts-ignore
+                  options={({ route }) => ({ title: route.params?.subroutesScreenName })}
+                />
               <Stack.Screen name="Scan" component={Scan} options={{ title: 'Scan' }} />
               <Stack.Screen name="Products" component={Products} options={{ title: 'Products' }} />
               <Stack.Screen name="PutawayList" component={PutawayList} options={{ title: 'Putaway List' }} />
@@ -370,6 +386,46 @@ class Main extends Component<Props, State> {
                 component={ReplenishmentStagingLocationScreen}
                 options={{ title: 'Replenishment Staging Location' }}
               />
+                <Stack.Screen
+                  name="PickUpEntryScreen"
+                  component={PickUpEntryScreen}
+                  options={{ title: 'Pick Up Allocation' }}
+                />
+                <Stack.Screen
+                  name="PickUpOrderScreen"
+                  component={PickUpOrderScreen}
+                  options={{ title: 'Pick Up Allocation' }}
+                />
+                <Stack.Screen
+                  name="CycleCountListEntry"
+                  component={CycleCountListEntry}
+                  options={{ title: 'Cycle Count List Entry' }}
+                />
+                <Stack.Screen
+                  name="CycleCountLocation"
+                  component={CycleCountLocation}
+                  options={{ title: 'Cycle Count Location' }}
+                />
+                <Stack.Screen
+                  name="CycleCountProduct"
+                  component={CycleCountProduct}
+                  options={{ title: 'Cycle Count Product' }}
+                />
+                <Stack.Screen
+                  name="CycleCountQuantityAvailable"
+                  component={CycleCountQuantityAvailable}
+                  options={{ title: 'Cycle Count Quantity Available' }}
+                />
+                <Stack.Screen
+                  name="CycleCountCountConfirmation"
+                  component={CycleCountCountConfirmation}
+                  options={{ title: 'Cycle Count Count Confirmation' }}
+                />
+                <Stack.Screen
+                  name="CycleCountCompleted"
+                  component={CycleCountCompleted}
+                  options={{ title: 'Cycle Count Completed' }}
+                />
             </Stack.Navigator>
           </NavigationContainer>
         </SafeAreaView>

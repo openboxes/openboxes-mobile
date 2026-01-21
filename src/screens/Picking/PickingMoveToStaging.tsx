@@ -1,37 +1,23 @@
 import * as React from 'react';
-import { Alert, TextInput, View } from 'react-native';
-import { TextInput as PaperTextInput, Paragraph, Title } from 'react-native-paper';
+import { Alert, View } from 'react-native';
+import { Paragraph, Title } from 'react-native-paper';
 
-import { useIsFocused } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
-import { INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
+import { ScannerInput } from '../../components/ScannerInput';
+import { EMPTY_STRING } from '../../constants';
+
+import { navigate } from '../../NavigationService';
 import { getPickedTasksByContainerAction } from '../../redux/actions/picking';
 import styles from './styles';
-import { navigate } from '../../NavigationService';
 
 export default function PickingMoveToStagingScreen() {
-  const [outboundContainerId, setOutboundContainerId] = React.useState<string>('');
-  const inputRef = React.useRef<TextInput | null>(null);
-  const isFocused = useIsFocused();
+  const [outboundContainerId, setOutboundContainerId] = React.useState<string>(EMPTY_STRING);
   const dispatch = useDispatch();
 
-  React.useEffect(() => {
-    if (!isFocused) {
-      return;
-    }
-    const t = setTimeout(() => inputRef.current?.focus(), INPUT_FOCUS_DELAY_TIME_IN_MS);
-    return () => clearTimeout(t);
-  }, [isFocused]);
-
-  function handleSubmit() {
-    if (!outboundContainerId) {
-      Alert.alert('Scan Required', 'Please scan the outbound container ID before proceeding.');
-      return;
-    }
-
+  function handleScan(containerId: string) {
     // Fetch pick tasks
     dispatch(
-      getPickedTasksByContainerAction(outboundContainerId, ({ response }) => {
+      getPickedTasksByContainerAction(containerId, ({ response }) => {
         if (response.errorCode) {
           Alert.alert('Error', response.message || 'An error occurred while fetching pick tasks.');
           return;
@@ -46,6 +32,8 @@ export default function PickingMoveToStagingScreen() {
         navigate('PickingStagingDrop', { tasks: response.data });
       })
     );
+
+    setOutboundContainerId(EMPTY_STRING);
   }
 
   return (
@@ -53,16 +41,12 @@ export default function PickingMoveToStagingScreen() {
       <Title>Scan The Container</Title>
       <Paragraph>Please scan the barcode of the outbound container you want to move to staging.</Paragraph>
 
-      <PaperTextInput
-        ref={inputRef}
-        autoCompleteType="off"
-        mode="outlined"
+      <ScannerInput
         style={styles.marginTopSmall}
         label="Outbound Container ID"
         value={outboundContainerId}
-        returnKeyType="done"
-        onChangeText={setOutboundContainerId}
-        onSubmitEditing={handleSubmit}
+        onChange={setOutboundContainerId}
+        onSubmit={handleScan}
       />
     </View>
   );

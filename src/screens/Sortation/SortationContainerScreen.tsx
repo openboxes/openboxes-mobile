@@ -1,12 +1,13 @@
-import { RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
-import React, { useEffect, useRef, useState } from 'react';
-import { Alert, ScrollView, TextInput, View } from 'react-native';
-import { Divider, TextInput as PaperTextInput, Paragraph, Subheading, Switch } from 'react-native-paper';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import React, { useState } from 'react';
+import { Alert, ScrollView, View } from 'react-native';
+import { Divider, Paragraph, Subheading, Switch } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
 import Button from '../../components/Button';
 import EmptyView from '../../components/EmptyView';
-import { EMPTY_STRING, INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
+import { ScannerInput } from '../../components/ScannerInput';
+import { EMPTY_STRING } from '../../constants';
 import { navigate } from '../../NavigationService';
 import { patchPutawayTaskAction } from '../../redux/actions/putaways';
 import { DetailChip, SortationProduct, SortationTask } from '../../types/sortation';
@@ -23,19 +24,9 @@ export default function SortationContainerScreen() {
   const { params } = useRoute<ContainerRouteProp>();
   const { product, quantitySorted, task } = params;
 
-  const inputRef = useRef<TextInput | null>(null);
-  const isFocused = useIsFocused();
   const [isOverrideEnabled, setIsOverrideEnabled] = useState<boolean>(false);
   const [putawayContainerBarcode, setPutawayContainerBarcode] = useState<string>('');
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    if (!isFocused) {
-      return;
-    }
-    const t = setTimeout(() => inputRef.current?.focus(), INPUT_FOCUS_DELAY_TIME_IN_MS);
-    return () => clearTimeout(t);
-  }, [isFocused]);
 
   if (!product) {
     return (
@@ -63,20 +54,19 @@ export default function SortationContainerScreen() {
     );
   }
 
-  function handleSubmit() {
-    if (!putawayContainerBarcode) {
-      Alert.alert('Empty Barcode', 'You must scan a putaway container barcode to proceed.');
-      return;
-    }
-
+  /**
+   * Unified logic to handle both Scanner "Enter" and "Confirm" button press.
+   * @param code - The barcode string to validate.
+   */
+  function handleProcessing(code: string) {
     if (!isOverrideEnabled) {
       const containerLocationNumber = task?.container?.locationNumber;
-      if (putawayContainerBarcode !== containerLocationNumber) {
+      if (code !== containerLocationNumber) {
         Alert.alert(
           'Wrong container number',
-          `Scanned container number: ${putawayContainerBarcode} is different from the expected one: ${containerLocationNumber}. If you want to load into different container please select 'Override container' option.`
+          `Scanned container number: ${code} is different from the expected one: ${containerLocationNumber}. If you want to load into a different container please select 'Override container' option.`,
+          [{ text: 'OK', onPress: () => setPutawayContainerBarcode(EMPTY_STRING) }]
         );
-        setPutawayContainerBarcode(EMPTY_STRING);
         return;
       }
     }
@@ -84,7 +74,7 @@ export default function SortationContainerScreen() {
     const payload = {
       action: 'load',
       quantity: quantitySorted,
-      container: putawayContainerBarcode,
+      container: code,
       override: isOverrideEnabled
     };
 
@@ -125,7 +115,7 @@ export default function SortationContainerScreen() {
   ];
 
   return (
-    <ScrollView keyboardShouldPersistTaps="handled" style={styles.contentContainer}>
+    <ScrollView keyboardShouldPersistTaps="always" style={styles.contentContainer}>
       <SortationProductDetails product={product} detailsChips={productDetailsChips} task={task} />
 
       <Divider />
@@ -136,16 +126,12 @@ export default function SortationContainerScreen() {
           Scan the barcode of the putaway container where you want to place this product.
         </Paragraph>
 
-        <PaperTextInput
-          ref={inputRef}
-          autoCompleteType="off"
+        <ScannerInput
           style={styles.topSpace}
-          mode="outlined"
           label="Container Barcode"
           value={putawayContainerBarcode}
-          returnKeyType="done"
-          onChangeText={setPutawayContainerBarcode}
-          onSubmitEditing={handleSubmit}
+          onChange={setPutawayContainerBarcode}
+          onSubmit={handleProcessing}
         />
 
         <View style={[styles.cardAnnotation, styles.cardContainer]}>
@@ -153,7 +139,13 @@ export default function SortationContainerScreen() {
           <Switch value={isOverrideEnabled} color={Theme.colors.primary} onValueChange={setIsOverrideEnabled} />
         </View>
 
-        <Button style={styles.topSpace} title="Confirm" mode="contained" size="100%" onPress={handleSubmit}>
+        <Button
+          style={styles.topSpace}
+          title="Confirm"
+          mode="contained"
+          size="100%"
+          onPress={() => handleProcessing(putawayContainerBarcode)}
+        >
           Submit
         </Button>
       </View>

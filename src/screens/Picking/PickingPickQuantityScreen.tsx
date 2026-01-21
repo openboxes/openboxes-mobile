@@ -12,9 +12,11 @@ import { getReasonCodesAction } from '../../redux/actions/others';
 import { ReasonCode } from '../../types/picking';
 import { usePickingContext } from './PickingContext';
 import styles from './styles';
+import { revalidateTaskAndProceed } from './lib';
 
 export default function PickingPickQuantityScreen() {
-  const { currentTask, currentTaskIndex, allTasksCount } = usePickingContext();
+  const { currentTask, currentTaskIndex, allTasksCount, shortPickTask, revalidateCurrentTask, goToNextTask } =
+    usePickingContext();
   const dispatch = useDispatch();
   const inputRef = React.useRef<TextInput | null>(null);
   const isFocused = useIsFocused();
@@ -52,8 +54,8 @@ export default function PickingPickQuantityScreen() {
   }
 
   function handleSubmit() {
-    const qty = Number(quantityPicked);
-    const isValid = !isNaN(qty) && qty >= 0 && currentTask?.quantityRequired;
+    const parsedQuantityPicked = Number(quantityPicked);
+    const isValid = !isNaN(parsedQuantityPicked) && parsedQuantityPicked >= 0 && currentTask?.quantityRequired;
 
     if (!isValid) {
       Alert.alert('Invalid Quantity', 'Incorrect quantity picked. Please try again.');
@@ -61,14 +63,13 @@ export default function PickingPickQuantityScreen() {
     }
 
     const qtyRemaining = currentTask?.quantityRequired - (currentTask?.quantityPicked || 0);
-    const isFullPicked = qty === qtyRemaining;
 
-    if (qty > qtyRemaining) {
+    if (parsedQuantityPicked > qtyRemaining) {
       Alert.alert('Invalid Quantity', `Picked quantity cannot exceed remaining quantity to pick (${qtyRemaining}).`);
       return;
     }
 
-    if (isFullPicked) {
+    if (parsedQuantityPicked === currentTask.quantityRequired) {
       navigate('PickingPickOutboundContainer');
       return;
     }
@@ -79,6 +80,31 @@ export default function PickingPickQuantityScreen() {
 
   function handleConfirmShort(reasonCode: ReasonCode | undefined) {
     setIsShortModalVisible(false);
+
+    if (!currentTask) {
+      Alert.alert('Error', 'No current pick task found.');
+      return;
+    }
+
+    if (Number(quantityPicked) === 0) {
+      // Handle 0 Short Pick
+      // For 0 short pick, we need to provide a reason code
+      shortPickTask(
+        '',
+        0,
+        ({ errorMessage }) => {
+          if (errorMessage) {
+            Alert.alert('Short Pick Error', errorMessage);
+            setQuantityPicked('');
+            return;
+          }
+
+          revalidateTaskAndProceed(revalidateCurrentTask, currentTaskIndex, allTasksCount, goToNextTask);
+        },
+        reasonCode?.name
+      );
+      return;
+    }
 
     navigate('PickingPickOutboundContainer', { reasonCode, quantityPicked });
   }

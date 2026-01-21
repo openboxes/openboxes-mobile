@@ -6,7 +6,7 @@ module.exports = {
     es6: true
   },
   extends: ['@react-native-community', 'eslint:recommended', 'plugin:react/recommended'],
-  parser: 'babel-eslint',
+  parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaFeatures: {
       jsx: true,

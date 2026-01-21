@@ -96,7 +96,7 @@ export function pickPickTaskAction(
 
 export function shortPickTaskAction(
   taskId: string,
-  outboundContainerId: string,
+  outboundContainerId: string | null,
   quantityPicked: number,
   callback: (response: { errorMessage?: string }) => void,
   reasonCode?: string

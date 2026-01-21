@@ -1,65 +1,52 @@
-import { useIsFocused } from '@react-navigation/native';
 import * as React from 'react';
-import { Alert, TextInput, View } from 'react-native';
-import { Divider, TextInput as PaperTextInput, Paragraph, Subheading } from 'react-native-paper';
+import { Alert, View } from 'react-native';
+import { Divider, Paragraph, Subheading } from 'react-native-paper';
 
 import { ProductDetails } from '../../components/ProductDetails';
-import { INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
+import { ScannerInput } from '../../components/ScannerInput';
+import { EMPTY_STRING } from '../../constants';
 import { navigate } from '../../NavigationService';
 import { usePickingContext } from './PickingContext';
 import styles from './styles';
 
 export default function PickingPickStagingLocationScreen() {
-  const { tasks, dropCurrentTask, resetSession } = usePickingContext();
-  const isFocused = useIsFocused();
-
-  const inputRef = React.useRef<TextInput | null>(null);
-  const [stagingLocationNumber, setStagingLocationNumber] = React.useState('');
+  const { tasks, dropCurrentTask, resetSession, setCurrentTaskIndex } = usePickingContext();
+  const [stagingLocationNumber, setStagingLocationNumber] = React.useState(EMPTY_STRING);
   const [currentUniqueIndex, setCurrentUniqueIndex] = React.useState(0);
 
-  const uniqueTasks = React.useMemo(
-    () => Array.from(new Map(tasks.map((pickTask) => [pickTask.outboundContainer?.id, pickTask])).values()),
-    [tasks]
-  );
+  // Memoize unique tasks based on outbound container ID
+  const uniqueTasks = React.useMemo(() => {
+    const tasksWithContainers = tasks.filter((t) => t.outboundContainer?.id);
+    return Array.from(new Map(tasksWithContainers.map((t) => [t?.outboundContainer?.id, t])).values());
+  }, [tasks]);
 
   const currentTask = uniqueTasks[currentUniqueIndex];
 
+  // Handle Navigation and Session Completion side effects
   React.useEffect(() => {
-    if (!isFocused) {
-      return;
+    if (!currentTask) {
+      // No tasks left at all, return to home
+      Alert.alert('Staging', 'No more tasks available for staging drop.');
+      navigate('PickingPickType');
     }
+  }, [currentTask, tasks.length, setCurrentTaskIndex, uniqueTasks.length, tasks]);
 
-    setStagingLocationNumber('');
-    const t = setTimeout(() => inputRef.current?.focus(), INPUT_FOCUS_DELAY_TIME_IN_MS);
-    return () => clearTimeout(t);
-  }, [isFocused, currentUniqueIndex]);
-
-  if (!currentTask) {
-    return null;
-  }
-
-  function handleSubmit() {
-    if (!stagingLocationNumber) {
-      Alert.alert('Missing Input', 'Please scan or enter a valid Staging Location ID.');
-      setStagingLocationNumber('');
-      return;
-    }
-
+  function handleScan(locationId: string) {
     const expected = currentTask.stagingLocation?.locationNumber;
 
-    if (!expected || stagingLocationNumber !== expected) {
+    if (!expected || locationId !== expected) {
       Alert.alert(
         'Invalid Staging Location',
-        `Expected: ${expected ?? '-'}, but got: ${stagingLocationNumber}. Please try again.`
+        `Expected: ${expected ?? '-'}, but got: ${locationId}. Please try again.`
       );
-      setStagingLocationNumber('');
+      setStagingLocationNumber(EMPTY_STRING);
       return;
     }
 
     dropCurrentTask(currentTask, (response) => {
       if (response.errorMessage) {
         Alert.alert('Error', response.errorMessage);
-        setStagingLocationNumber('');
+        setStagingLocationNumber(EMPTY_STRING);
         return;
       }
 
@@ -69,9 +56,8 @@ export default function PickingPickStagingLocationScreen() {
           {
             text: 'OK',
             onPress: () => {
-              // Proceed to next unique task
               setCurrentUniqueIndex(nextIndex);
-              setStagingLocationNumber('');
+              setStagingLocationNumber(EMPTY_STRING);
             }
           }
         ]);
@@ -87,6 +73,12 @@ export default function PickingPickStagingLocationScreen() {
         ]);
       }
     });
+  }
+
+  // If no task is selected yet, return null to avoid rendering
+  // ProductDetails with undefined data while useEffect runs
+  if (!currentTask) {
+    return null;
   }
 
   return (
@@ -128,16 +120,12 @@ export default function PickingPickStagingLocationScreen() {
           Point your barcode scanner at the staging location or type the ID manually.
         </Paragraph>
 
-        <PaperTextInput
-          ref={inputRef}
-          autoCompleteType="off"
+        <ScannerInput
           style={styles.marginTop}
-          mode="outlined"
           label="Staging Location Number"
           value={stagingLocationNumber}
-          returnKeyType="done"
-          onChangeText={setStagingLocationNumber}
-          onSubmitEditing={handleSubmit}
+          onChange={setStagingLocationNumber}
+          onSubmit={handleScan}
         />
       </View>
     </ProductDetails.Provider>

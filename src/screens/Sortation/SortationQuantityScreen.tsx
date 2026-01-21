@@ -6,12 +6,12 @@ import { Divider, TextInput as PaperTextInput, Paragraph, Subheading } from 'rea
 import { useDispatch } from 'react-redux';
 import Button from '../../components/Button';
 import EmptyView from '../../components/EmptyView';
+import { INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
 import { navigate } from '../../NavigationService';
 import { patchPutawayTaskAction } from '../../redux/actions/putaways';
 import { DetailChip, SortationProduct, SortationTask } from '../../types/sortation';
 import SortationProductDetails from './SortationProductDetails';
 import styles from './styles';
-import { INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
 
 const startedTaskIds = new Set<string>();
 

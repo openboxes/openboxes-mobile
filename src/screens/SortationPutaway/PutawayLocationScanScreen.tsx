@@ -1,11 +1,12 @@
-import { RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
-import React, { useEffect, useRef, useState } from 'react';
-import { Alert, ScrollView, TextInput, View } from 'react-native';
-import { Divider, TextInput as PaperTextInput, Paragraph, Subheading } from 'react-native-paper';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import React, { useEffect, useState } from 'react';
+import { Alert, ScrollView, View } from 'react-native';
+import { Divider, Paragraph, Subheading } from 'react-native-paper';
 
 import Button from '../../components/Button';
 import EmptyView from '../../components/EmptyView';
-import { EMPTY_STRING, INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
+import { ScannerInput } from '../../components/ScannerInput';
+import { EMPTY_STRING } from '../../constants';
 import { navigate } from '../../NavigationService';
 import { SortationLocation, SortationPutawayScreenType } from '../../types/sortation';
 import AlternativeLocationSelector from './AlternativeLocationSelector';
@@ -24,28 +25,20 @@ export default function PutawayLocationScanScreen() {
   const { params } = useRoute<PutawayLocationScanRouteProp>();
   const { taskList, currentTaskIndex, isDirectPutaway } = params;
   const putawayDetails = taskList[currentTaskIndex];
-  const inputRef = useRef<TextInput | null>(null);
-  const isFocused = useIsFocused();
-  const [putawayLocationBarcode, setPutawayLocationBarcode] = useState<string | undefined>();
+
+  const [putawayLocationBarcode, setPutawayLocationBarcode] = useState<string>(EMPTY_STRING);
   const [isDialogVisible, setIsDialogVisible] = useState(false);
   const [selectedAlternativeDestination, setSelectedAlternativeDestination] = useState<SortationLocation | null>(
-    putawayDetails.destination
+    putawayDetails?.destination
   );
 
   useEffect(() => {
-    setSelectedAlternativeDestination(putawayDetails.destination);
+    setSelectedAlternativeDestination(putawayDetails?.destination);
   }, [putawayDetails]);
 
   useEffect(() => {
-    if (!isFocused) {
-      return;
-    }
-
     setPutawayLocationBarcode(EMPTY_STRING);
-
-    const t = setTimeout(() => inputRef.current?.focus(), INPUT_FOCUS_DELAY_TIME_IN_MS);
-    return () => clearTimeout(t);
-  }, [isFocused]);
+  }, []);
 
   if (!putawayDetails) {
     return (
@@ -58,31 +51,28 @@ export default function PutawayLocationScanScreen() {
     );
   }
 
-  function handleChange(barcode: string) {
-    setPutawayLocationBarcode(barcode);
-  }
+  /**
+   * Unifies validation for scanner input and button press
+   */
+  function handleProcessing(code: string) {
+    const expectedLocation = selectedAlternativeDestination?.locationNumber;
 
-  function handleSubmit() {
-    if (!putawayLocationBarcode) {
-      Alert.alert('Invalid Location Barcode', 'Please enter a valid putaway location barcode.');
-      return;
-    }
-
-    const locationNumber = selectedAlternativeDestination?.locationNumber;
-    if (putawayLocationBarcode !== locationNumber) {
+    if (code !== expectedLocation) {
       Alert.alert(
-        'Invalid Location Barcode',
-        `The scanned barcode does not match the expected putaway location: ${locationNumber}.`
+        'Wrong Location',
+        `The scanned barcode (${code}) does not match the expected location: ${expectedLocation}.`,
+        [{ text: 'OK', onPress: () => setPutawayLocationBarcode(EMPTY_STRING) }]
       );
-      setPutawayLocationBarcode(EMPTY_STRING);
       return;
     }
 
+    // Prepare updated task
     const updatedTaskList = [...taskList];
     updatedTaskList[currentTaskIndex] = {
       ...putawayDetails,
       destination: selectedAlternativeDestination ?? putawayDetails.destination
     };
+
     navigate('SortationPutawayProductScan', {
       taskList: updatedTaskList,
       currentTaskIndex,
@@ -97,7 +87,11 @@ export default function PutawayLocationScanScreen() {
 
   return (
     <>
-      <ScrollView keyboardShouldPersistTaps="handled" style={styles.contentContainer}>
+      <ScrollView
+        keyboardShouldPersistTaps="always"
+        style={styles.contentWrapper}
+        contentContainerStyle={styles.contentContainer}
+      >
         <PutawayDetails putawayDetails={updatedPutawayDetails} />
 
         <Divider />
@@ -105,17 +99,14 @@ export default function PutawayLocationScanScreen() {
         <View style={styles.formContainer}>
           <Subheading style={styles.subheading}>Scan Putaway Location Barcode</Subheading>
 
-          <PaperTextInput
-            ref={inputRef}
-            autoCompleteType="off"
+          <ScannerInput
             style={styles.topSpace}
-            mode="outlined"
             label="Putaway Location Entry Field"
-            keyboardType="number-pad"
             value={putawayLocationBarcode}
-            returnKeyType="done"
-            onChangeText={handleChange}
-            onSubmitEditing={handleSubmit}
+            // Disable scanner logic if the alternative location modal is open
+            isEnabled={!isDialogVisible}
+            onChange={setPutawayLocationBarcode}
+            onSubmit={handleProcessing}
           />
 
           <View style={styles.topSpace}>
@@ -125,9 +116,16 @@ export default function PutawayLocationScanScreen() {
             </View>
           </View>
 
-          <Button style={styles.topSpace} title="Confirm" mode="contained" size="100%" onPress={handleSubmit}>
+          <Button
+            style={styles.topSpace}
+            title="Confirm"
+            mode="contained"
+            size="100%"
+            onPress={() => handleProcessing(putawayLocationBarcode)}
+          >
             Submit
           </Button>
+
           <SkipButton taskList={taskList} currentTaskIndex={currentTaskIndex} isDirectPutaway={isDirectPutaway} />
         </View>
       </ScrollView>

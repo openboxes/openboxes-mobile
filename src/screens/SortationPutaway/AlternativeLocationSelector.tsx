@@ -1,14 +1,14 @@
-import { debounce } from 'lodash';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, Modal, View } from 'react-native';
-import { Paragraph, Subheading, TextInput } from 'react-native-paper';
+import { Paragraph, Subheading } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
-import { appConfig } from '../../constants';
-import { getAlternativeDestinationsAction, searchLocationByLocationNumber } from '../../redux/actions/locations';
-import styles from './styles';
-import { PutawayDetailsModel, SortationLocation } from '../../types/sortation';
 import Button from '../../components/Button';
+import { ScannerInput } from '../../components/ScannerInput';
+import { EMPTY_STRING } from '../../constants';
+import { getAlternativeDestinationsAction, searchLocationByLocationNumber } from '../../redux/actions/locations';
+import { PutawayDetailsModel, SortationLocation } from '../../types/sortation';
+import styles from './styles';
 
 type Props = {
   visible: boolean;
@@ -32,14 +32,16 @@ export default function AlternativeLocationSelector({
   const [scannedLocationInput, setScannedLocationInput] = useState('');
   const [suggestionIndex, setSuggestionIndex] = useState(0);
 
+  // Reset state when modal opens
   useEffect(() => {
     if (visible) {
       setTempAlternativeLocation(initialLocation);
-      setScannedLocationInput('');
+      setScannedLocationInput(EMPTY_STRING);
       setSuggestionIndex(0);
     }
   }, [visible, initialLocation]);
 
+  // Load list of alternatives when modal opens
   useEffect(() => {
     if (!visible) {
       return;
@@ -61,19 +63,15 @@ export default function AlternativeLocationSelector({
     );
   }, [dispatch, putawayDetails.facility.id, putawayDetails.id, visible]);
 
-  const performLocationSearch = useCallback(
+  const handleLocationSearch = useCallback(
     (locationNumber: string) => {
-      const trimmed = locationNumber.trim();
-      if (!trimmed) {
-        setTempAlternativeLocation(null);
-        return;
-      }
       dispatch(
-        searchLocationByLocationNumber(trimmed, (data: any) => {
+        searchLocationByLocationNumber(locationNumber, (data: any) => {
           if (data && !data.error) {
             setTempAlternativeLocation(data);
           } else {
             setTempAlternativeLocation(null);
+            Alert.alert('Location Not Found', `Location "${locationNumber}" could not be found.`);
           }
         })
       );
@@ -81,31 +79,19 @@ export default function AlternativeLocationSelector({
     [dispatch]
   );
 
-  const debouncedLocationSearch = useMemo(
-    () => debounce(performLocationSearch, appConfig.DEFAULT_DEBOUNCE_TIME),
-    [performLocationSearch]
-  );
-
-  useEffect(() => {
-    return () => {
-      debouncedLocationSearch.cancel();
-    };
-  }, [debouncedLocationSearch]);
-
   const handleSuggestLocation = () => {
     if (alternativeLocations.length === 0) {
+      Alert.alert('No Suggestions', 'No alternative locations are available.');
       return;
     }
     const suggested = alternativeLocations[suggestionIndex];
     setTempAlternativeLocation(suggested);
-    setScannedLocationInput('');
+
+    // Clear the manual input if they choose a suggestion
+    setScannedLocationInput(EMPTY_STRING);
+
     const nextIndex = (suggestionIndex + 1) % alternativeLocations.length;
     setSuggestionIndex(nextIndex);
-  };
-
-  const handleScanLocation = (text: string) => {
-    setScannedLocationInput(text);
-    debouncedLocationSearch(text);
   };
 
   const handleConfirmAlternative = () => {
@@ -136,12 +122,13 @@ export default function AlternativeLocationSelector({
             onPress={handleSuggestLocation}
           />
 
-          <TextInput
-            autoCompleteType="off"
+          <ScannerInput
             label="Scan location number"
             value={scannedLocationInput}
-            mode="outlined"
-            onChangeText={handleScanLocation}
+            // Only fight for focus if the modal is actually visible
+            isEnabled={visible}
+            onChange={setScannedLocationInput}
+            onSubmit={handleLocationSearch}
           />
 
           <Paragraph style={styles.dialogNewLocationHeader}>

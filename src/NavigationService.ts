@@ -1,5 +1,6 @@
 import React from 'react';
 import { CommonActions, NavigationContainerRef, StackActions } from '@react-navigation/native';
+import { DashboardEntry } from './screens/Dashboard/dashboardData';
 
 type RootStackParamList = {
   Login: undefined;
@@ -29,4 +30,15 @@ export function goBack() {
 
 export function replace(name: string, params?: any) {
   navigationRef.current?.dispatch(StackActions.replace(name, params));
+}
+
+export function navigateToDashboardEntry(item: DashboardEntry) {
+  if (item.subroutes) {
+    navigate('SubroutesEntries', {
+      subroutes: item.subroutes,
+      subroutesScreenName: item.subroutesScreenName ?? item.screenName
+    });
+  } else {
+    navigate(item.navigationScreenName);
+  }
 }
