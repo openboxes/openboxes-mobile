@@ -131,8 +131,14 @@ export default StyleSheet.create({
     maxHeight: 360
   },
   cellInput: {
-    width: 70,
-    height: 25
+    width: 60,
+    height: 35,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 4,
+    textAlign: 'center',
+    padding: 0,
+    backgroundColor: '#fff'
   },
   actionButtons: {
     display: 'flex',
