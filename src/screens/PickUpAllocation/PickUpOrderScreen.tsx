@@ -465,11 +465,13 @@ function StockPickModal({ visible, onDismiss: onClose, onConfirm: onSave, orderL
 
         <DataTable.Cell numeric>
           <TextInput
+            dense
+            mode="flat"
             autoCompleteType="off"
-            mode="outlined"
             keyboardType="numeric"
             value={row.quantityAllocated}
             style={styles.cellInput}
+            underlineColor="transparent"
             onChangeText={(v) => updateQty(row._localId, v)}
           />
         </DataTable.Cell>

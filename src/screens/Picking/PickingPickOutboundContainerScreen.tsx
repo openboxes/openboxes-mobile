@@ -5,12 +5,13 @@ import { Divider, Paragraph, Subheading } from 'react-native-paper';
 
 import { ProductDetails } from '../../components/ProductDetails';
 import { ScannerInput } from '../../components/ScannerInput';
-import { EMPTY_STRING } from '../../constants';
+import { EMPTY_STRING, HYPHEN } from '../../constants';
 import { navigate } from '../../NavigationService';
 import { ReasonCode } from '../../types/picking';
+import { parseFromISODateToLocaleString } from '../../utils/utils';
+import { revalidateTaskAndProceed } from './lib';
 import { usePickingContext } from './PickingContext';
 import styles from './styles';
-import { revalidateTaskAndProceed } from './lib';
 
 type PickingPickOutboundContainerScreenProps = RouteProp<
   { PickingPickOutboundContainer: { reasonCode?: ReasonCode; quantityPicked?: string } },
@@ -108,9 +109,25 @@ export default function PickingPickOutboundContainerScreen() {
 
         <ProductDetails.Separator />
         <ProductDetails.Title />
+        <ProductDetails.Caption
+          title={currentTask.inventoryItem.lotNumber}
+          subtitle={parseFromISODateToLocaleString(currentTask.inventoryItem.expirationDate)}
+        />
 
         <ProductDetails.List
           items={[
+            {
+              icon: 'identifier',
+              label: 'Order Number',
+              value: currentTask.requisitionNumber || HYPHEN
+            },
+            {
+              icon: 'account',
+              label: 'Assignee',
+              value: currentTask?.assignee
+                ? `${currentTask?.assignee?.firstName} ${currentTask?.assignee?.lastName}`.trim()
+                : HYPHEN
+            },
             {
               icon: 'truck',
               label: 'Quantity Picked',

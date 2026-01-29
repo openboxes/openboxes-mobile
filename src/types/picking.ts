@@ -1,6 +1,7 @@
 import { Container } from '../data/container/Shipment';
 import Location from '../data/location/Location';
 import InventoryItem from '../data/picklist/InventoryItem';
+import Person from '../data/picklist/Person';
 import Product from '../data/product/Product';
 
 export type ReasonCode = {
@@ -47,9 +48,9 @@ export type PickTask = {
   quantityPicked: number;
 
   requestedBy?: string | null;
-  assignee?: string | null;
-  pickedBy?: string | null;
-  stagedBy?: string | null;
+  assignee?: Person | null;
+  pickedBy?: Person | null;
+  stagedBy?: Person | null;
 
   priority?: number;
   reasonCode?: string | null;

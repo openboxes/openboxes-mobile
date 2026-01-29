@@ -6,11 +6,12 @@ import { ProductDetails } from '../../components/ProductDetails';
 import { ScannerInput } from '../../components/ScannerInput';
 import { EMPTY_STRING, HYPHEN } from '../../constants';
 import { navigate } from '../../NavigationService';
+import { parseFromISODateToLocaleString } from '../../utils/utils';
 import { usePickingContext } from './PickingContext';
 import styles from './styles';
 
 export default function PickingPickLocationScreen() {
-  const { currentTask, currentTaskIndex, allTasksCount, startPickTask } = usePickingContext();
+  const { currentTask, currentTaskIndex, allTasksCount, startPickTask, revalidateCurrentTask } = usePickingContext();
   const [pickLocationBarcode, setPickLocationBarcode] = React.useState<string>(EMPTY_STRING);
 
   if (!currentTask) {
@@ -34,9 +35,11 @@ export default function PickingPickLocationScreen() {
         return;
       }
 
-      setPickLocationBarcode(EMPTY_STRING);
+      revalidateCurrentTask(() => {
+        setPickLocationBarcode(EMPTY_STRING);
 
-      navigate('PickingPickProduct');
+        navigate('PickingPickProduct');
+      });
     });
   }
 
@@ -54,9 +57,18 @@ export default function PickingPickLocationScreen() {
 
         <ProductDetails.Separator />
         <ProductDetails.Title />
+        <ProductDetails.Caption
+          title={currentTask.inventoryItem.lotNumber}
+          subtitle={parseFromISODateToLocaleString(currentTask.inventoryItem.expirationDate)}
+        />
 
         <ProductDetails.List
           items={[
+            {
+              icon: 'identifier',
+              label: 'Order Number',
+              value: currentTask.requisitionNumber || HYPHEN
+            },
             {
               icon: 'package',
               label: 'Quantity Picked',

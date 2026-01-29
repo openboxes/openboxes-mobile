@@ -1,6 +1,6 @@
 import React, { createContext, useContext } from 'react';
 import { View } from 'react-native';
-import { Chip, Divider, Text, Title as PaperTitle } from 'react-native-paper';
+import { Chip, Divider, Caption as PaperCaption, Title as PaperTitle, Text } from 'react-native-paper';
 
 import { HYPHEN } from '../../constants';
 import Product from '../../data/product/Product';
@@ -66,6 +66,16 @@ function Title() {
   return <PaperTitle style={styles.title}>{product.name}</PaperTitle>;
 }
 
+function Caption({ title, subtitle }: { title?: string; subtitle?: string }) {
+  return title ? (
+    <View style={styles.descriptionContainer}>
+      <PaperCaption style={styles.caption}>
+        {title} {subtitle ? `(${subtitle})` : ''}
+      </PaperCaption>
+    </View>
+  ) : null;
+}
+
 function List({ items }: { items: ProductDetailsItem[] }) {
   return (
     <View>
@@ -96,6 +106,7 @@ export const ProductDetails = {
   Header,
   Badge,
   Title,
+  Caption,
   List,
   Item,
   Separator

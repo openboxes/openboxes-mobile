@@ -10,9 +10,10 @@ import { HYPHEN, INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
 import { navigate } from '../../NavigationService';
 import { getReasonCodesAction } from '../../redux/actions/others';
 import { ReasonCode } from '../../types/picking';
+import { parseFromISODateToLocaleString } from '../../utils/utils';
+import { revalidateTaskAndProceed } from './lib';
 import { usePickingContext } from './PickingContext';
 import styles from './styles';
-import { revalidateTaskAndProceed } from './lib';
 
 export default function PickingPickQuantityScreen() {
   const { currentTask, currentTaskIndex, allTasksCount, shortPickTask, revalidateCurrentTask, goToNextTask } =
@@ -90,7 +91,7 @@ export default function PickingPickQuantityScreen() {
       // Handle 0 Short Pick
       // For 0 short pick, we need to provide a reason code
       shortPickTask(
-        '',
+        null,
         0,
         ({ errorMessage }) => {
           if (errorMessage) {
@@ -124,9 +125,25 @@ export default function PickingPickQuantityScreen() {
 
           <ProductDetails.Separator />
           <ProductDetails.Title />
+          <ProductDetails.Caption
+            title={currentTask.inventoryItem.lotNumber}
+            subtitle={parseFromISODateToLocaleString(currentTask.inventoryItem.expirationDate)}
+          />
 
           <ProductDetails.List
             items={[
+              {
+                icon: 'identifier',
+                label: 'Order Number',
+                value: currentTask.requisitionNumber || HYPHEN
+              },
+              {
+                icon: 'account',
+                label: 'Assignee',
+                value: currentTask?.assignee
+                  ? `${currentTask?.assignee?.firstName} ${currentTask?.assignee?.lastName}`.trim()
+                  : HYPHEN
+              },
               {
                 icon: 'package',
                 label: 'Quantity Picked',

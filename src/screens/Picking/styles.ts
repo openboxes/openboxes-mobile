@@ -70,6 +70,10 @@ export default StyleSheet.create({
   fontBold: {
     fontWeight: 'bold'
   },
+  descriptionContainer: {
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
 
   divider: {
     marginVertical: Theme.spacing.small

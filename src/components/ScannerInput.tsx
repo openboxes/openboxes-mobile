@@ -12,6 +12,7 @@ import { TextInput as PaperTextInput } from 'react-native-paper';
 
 import IconKeyboard from '../assets/images/icon_keyboard.svg';
 import IconScanAction from '../assets/images/icon_scan_action.svg';
+import { appConfig } from '../constants';
 
 type ScannerInputProps = {
   value: string;
@@ -24,6 +25,12 @@ type ScannerInputProps = {
    * Useful if there is a custom non-native modal open.
    */
   isEnabled?: boolean;
+  /**
+   * Time in milliseconds to wait after the last input before auto-submitting.
+   * Set to 0 or null to disable auto-submit.
+   * @default appConfig.DEFAULT_DEBOUNCE_TIME
+   */
+  autoSubmitTimeout?: number;
 };
 
 /**
@@ -43,10 +50,24 @@ type ScannerInputProps = {
  * />
  */
 export const ScannerInput = forwardRef<NativeTextInput, ScannerInputProps>(
-  ({ value, onChange, onSubmit, label = 'Scan Barcode', style, isEnabled = true }, ref) => {
+  (
+    {
+      value,
+      onChange,
+      onSubmit,
+      label = 'Scan Barcode',
+      style,
+      isEnabled = true,
+      autoSubmitTimeout = appConfig.DEFAULT_DEBOUNCE_TIME
+    },
+    ref
+  ) => {
     const internalInputRef = useRef<NativeTextInput | null>(null);
     const isScreenFocused = useIsFocused();
     const [showKeyboard, setShowKeyboard] = useState(false);
+
+    // Track the latest submitted value to prevent double submissions (one from debounce, one from Enter key)
+    const lastSubmittedValue = useRef<string>('');
 
     // We only want to be aggressive about focus if the screen is visible
     // AND the parent component hasn't explicitly disabled us.
@@ -98,6 +119,36 @@ export const ScannerInput = forwardRef<NativeTextInput, ScannerInputProps>(
       return () => hideSubscription.remove();
     }, [requestFocus, shouldBeFocused]);
 
+    // Auto-submit after timeout
+    useEffect(() => {
+      // Don't auto-submit if disabled
+      if (!autoSubmitTimeout) {
+        return;
+      }
+
+      // If the input is empty, reset last submitted value tracker
+      if (!value) {
+        lastSubmittedValue.current = '';
+        return;
+      }
+
+      // If the current value matches what we just submitted, don't trigger the timer again.
+      // This handles cases where parent component might not clear the input immediately after submit.
+      if (value === lastSubmittedValue.current) {
+        return;
+      }
+
+      const timer = setTimeout(() => {
+        const trimmed = value.trim();
+        if (trimmed && trimmed !== lastSubmittedValue.current) {
+          lastSubmittedValue.current = trimmed;
+          onSubmit(trimmed);
+        }
+      }, autoSubmitTimeout);
+
+      return () => clearTimeout(timer);
+    }, [value, autoSubmitTimeout, onSubmit]);
+
     const handleBlur = () => {
       if (shouldBeFocused) {
         requestFocus();
@@ -118,6 +169,7 @@ export const ScannerInput = forwardRef<NativeTextInput, ScannerInputProps>(
 
       const trimmed = value.trim();
       if (trimmed) {
+        lastSubmittedValue.current = trimmed;
         onSubmit(trimmed);
       }
 
@@ -130,10 +182,12 @@ export const ScannerInput = forwardRef<NativeTextInput, ScannerInputProps>(
 
         if (newShowKeyboard) {
           // Opening keyboard: blur and refocus to trigger showSoftInputOnFocus
-          InteractionManager.runAfterInteractions(() => {
-            internalInputRef.current?.blur();
-            internalInputRef.current?.focus();
-          });
+          // Add safety check here just in case ref was nulled out
+          const input = internalInputRef.current;
+          if (input) {
+            input.blur();
+            input.focus();
+          }
         } else {
           // Closing keyboard: just dismiss it
           Keyboard.dismiss();

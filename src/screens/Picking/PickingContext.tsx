@@ -170,7 +170,11 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
         }
 
         setTasks((prevTasks) => {
-          return [...prevTasks, ...newTasks];
+          const existingIds = new Set(prevTasks.map((task) => task.id));
+
+          const uniqueNewTasks = newTasks.filter((task) => !existingIds.has(task.id));
+
+          return [...prevTasks, ...uniqueNewTasks];
         });
 
         goToNextTask();

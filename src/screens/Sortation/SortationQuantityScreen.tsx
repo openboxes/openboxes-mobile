@@ -114,14 +114,14 @@ export default function SortationQuantityScreen() {
 
   const productDetailsChips: DetailChip[] = [
     {
-      icon: 'package',
-      label: 'Quantity Required',
-      value: task?.quantity
-    },
-    {
       icon: 'map-search',
       label: 'Putaway Zone',
       value: task?.destination?.zoneName
+    },
+    {
+      icon: 'package',
+      label: 'Quantity Required',
+      value: task?.quantity
     },
     {
       icon: 'human',
