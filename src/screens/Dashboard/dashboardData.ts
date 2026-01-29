@@ -33,6 +33,13 @@ const dashboardEntries: DashboardEntry[] = [
     navigationScreenName: 'Sortation'
   },
   {
+    key: 'new-sortation',
+    screenName: 'Sortation (New)',
+    entryDescription: 'Manage sortation tasks and workflows',
+    icon: IconSortation,
+    navigationScreenName: 'NewSortation'
+  },
+  {
     key: 'putaway',
     screenName: 'Putaway',
     entryDescription: 'Manage putaway tasks and workflows',

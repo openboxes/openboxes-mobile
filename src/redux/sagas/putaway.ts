@@ -101,17 +101,14 @@ function* createPutawayOder(action: any) {
 
 function* patchPutawayTask(action: any) {
   try {
-    yield put(showScreenLoading('Submitting...'));
     const { facilityId, putawayItemId, payload } = action.payload;
     const response = yield call(api.patchPutawayTask, facilityId, putawayItemId, payload);
     yield put({
       type: PATCH_PUTAWAY_TASK_REQUEST_SUCCESS,
       payload: response.data
     });
-    yield put(hideScreenLoading());
     yield action.callback({ success: true, data: response.data });
   } catch (error) {
-    yield put(hideScreenLoading());
     yield action.callback({
       error: true,
       errorMessage: error.message
@@ -121,7 +118,7 @@ function* patchPutawayTask(action: any) {
 
 function* getPutawayDetailsByContainerId(action: any) {
   try {
-    const location = yield select(userLocation)
+    const location = yield select(userLocation);
     if (!location || !location.id) {
       return;
     }

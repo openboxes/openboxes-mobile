@@ -4,15 +4,17 @@ import {
   AppState,
   InteractionManager,
   Keyboard,
+  KeyboardTypeOptions,
   TextInput as NativeTextInput,
   StyleProp,
   ViewStyle
 } from 'react-native';
 import { TextInput as PaperTextInput } from 'react-native-paper';
 
+import { IconSource } from 'react-native-paper/lib/typescript/components/Icon';
 import IconKeyboard from '../assets/images/icon_keyboard.svg';
-import IconScanAction from '../assets/images/icon_scan_action.svg';
 import { appConfig } from '../constants';
+import Theme from '../utils/Theme';
 
 type ScannerInputProps = {
   value: string;
@@ -25,12 +27,18 @@ type ScannerInputProps = {
    * Useful if there is a custom non-native modal open.
    */
   isEnabled?: boolean;
+  placeholder?: string;
   /**
    * Time in milliseconds to wait after the last input before auto-submitting.
    * Set to 0 or null to disable auto-submit.
    * @default appConfig.DEFAULT_DEBOUNCE_TIME
    */
   autoSubmitTimeout?: number;
+  left?: React.ReactNode;
+  leftIcon: IconSource;
+  right?: React.ReactNode;
+  theme?: any;
+  keyboardType?: KeyboardTypeOptions;
 };
 
 /**
@@ -55,10 +63,16 @@ export const ScannerInput = forwardRef<NativeTextInput, ScannerInputProps>(
       value,
       onChange,
       onSubmit,
-      label = 'Scan Barcode',
+      label = 'Barcode',
       style,
       isEnabled = true,
-      autoSubmitTimeout = appConfig.DEFAULT_DEBOUNCE_TIME
+      placeholder = 'Scan...',
+      leftIcon = 'barcode',
+      autoSubmitTimeout = appConfig.DEFAULT_DEBOUNCE_TIME,
+      left,
+      right,
+      theme,
+      keyboardType
     },
     ref
   ) => {
@@ -121,8 +135,8 @@ export const ScannerInput = forwardRef<NativeTextInput, ScannerInputProps>(
 
     // Auto-submit after timeout
     useEffect(() => {
-      // Don't auto-submit if disabled
-      if (!autoSubmitTimeout) {
+      // Don't auto-submit if disabled or screen not focused
+      if (!autoSubmitTimeout || !shouldBeFocused) {
         return;
       }
 
@@ -140,14 +154,14 @@ export const ScannerInput = forwardRef<NativeTextInput, ScannerInputProps>(
 
       const timer = setTimeout(() => {
         const trimmed = value.trim();
-        if (trimmed && trimmed !== lastSubmittedValue.current) {
+        if (trimmed && trimmed !== lastSubmittedValue.current && shouldBeFocused) {
           lastSubmittedValue.current = trimmed;
           onSubmit(trimmed);
         }
       }, autoSubmitTimeout);
 
       return () => clearTimeout(timer);
-    }, [value, autoSubmitTimeout, onSubmit]);
+    }, [value, autoSubmitTimeout, onSubmit, shouldBeFocused]);
 
     const handleBlur = () => {
       if (shouldBeFocused) {
@@ -204,18 +218,42 @@ export const ScannerInput = forwardRef<NativeTextInput, ScannerInputProps>(
         label={label}
         value={value}
         style={style}
+        theme={theme}
         // Keep keyboard hidden
         showSoftInputOnFocus={showKeyboard}
         autoCorrect={false}
         autoCompleteType="off"
+        placeholder={placeholder}
+        keyboardType={keyboardType}
         importantForAutofill="no"
         blurOnSubmit={false}
+        disabled={!isEnabled}
         returnKeyType="done"
-        // @ts-ignore
-        left={<PaperTextInput.Icon name={() => <IconScanAction height={24} width={24} />} />}
+        left={
+          left || (
+            // @ts-ignore
+            <PaperTextInput.Icon
+              disabled={!isEnabled}
+              name={leftIcon}
+              color={isEnabled ? theme?.colors?.primary : Theme.colors.disabled}
+            />
+          )
+        }
         right={
-          // @ts-ignore
-          <PaperTextInput.Icon name={() => <IconKeyboard height={24} width={24} />} onPress={handleKeyboardPress} />
+          right || (
+            // @ts-ignore
+            <PaperTextInput.Icon
+              disabled={!isEnabled}
+              name={({ color }) => (
+                <IconKeyboard
+                  height={24}
+                  width={24}
+                  fill={isEnabled ? theme?.colors?.primary || color : Theme.colors.disabled}
+                />
+              )}
+              onPress={handleKeyboardPress}
+            />
+          )
         }
         onBlur={handleBlur}
         onFocus={() => {}}

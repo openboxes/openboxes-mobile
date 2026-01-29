@@ -16,7 +16,9 @@ export default {
     warningText: '#8a6d3b',
     danger: '#FF5630',
     success: '#22bb33',
-    info: '#00B8D9'
+    info: '#00B8D9',
+    highlight: '#007AFF',
+    highlightBackground: '#EEF7FF'
   },
   spacing: {
     small: 8,

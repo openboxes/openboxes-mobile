@@ -81,6 +81,7 @@ import TransferDetails from './screens/TransfersDetails';
 import ViewAvailableItem from './screens/ViewAvailableItem';
 import ApiClient from './utils/ApiClient';
 import Theme from './utils/Theme';
+import EntryScreen from './screens/SortationNew/EntryScreen';
 
 const Stack = createStackNavigator();
 export interface OwnProps {
@@ -291,6 +292,7 @@ class Main extends Component<Props, State> {
                   options={{ title: 'Packing Location' }}
                 />
                 <Stack.Screen name="AppInfo" component={AppInfoScreen} options={{ title: 'App Info' }} />
+                <Stack.Screen name="NewSortation" component={EntryScreen} options={{ title: 'Sortation (New)' }} />
                 <Stack.Screen
                   name="Sortation"
                   component={SortationEntryScreen}
