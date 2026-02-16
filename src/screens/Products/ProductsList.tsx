@@ -22,6 +22,7 @@ export default function ProductsList(props: Props) {
       }
       keyExtractor={(product) => product.id}
       style={styles.list}
+      keyboardShouldPersistTaps="handled"
     />
   ) : (
     <EmptyView title="Product List" description="There are no products on the list" />
