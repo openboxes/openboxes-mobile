@@ -140,6 +140,8 @@ class Products extends React.Component<Props, State> {
             },
             error: `No search results found for product name "${query}"`
           });
+        } else if (data.length === 1) {
+          this.props.navigation.navigate('ProductDetails', { product: data[0] });
         } else {
           this.setState({
             searchByName: {
@@ -191,6 +193,8 @@ class Products extends React.Component<Props, State> {
             },
             error: `No search results found for product name "${query}"`
           });
+        } else if (data.length === 1) {
+          this.props.navigation.navigate('ProductDetails', { product: data[0] });
         } else {
           this.setState({
             searchByProductCode: {
@@ -299,7 +303,9 @@ class Products extends React.Component<Props, State> {
           negativeButtonText: 'Cancel'
         });
       } else {
-        if (data.length === 0) {
+        const productList = data?.data ?? [];
+
+        if (productList.length === 0) {
           this.setState({
             searchByProductCode: {
               query: query,
@@ -307,6 +313,8 @@ class Products extends React.Component<Props, State> {
             },
             error: `No search results found for product name "${query}"`
           });
+        } else if (productList.length === 1) {
+          this.props.navigation.navigate('ProductDetails', { product: productList[0] });
         } else {
           this.setState({
             searchByProductCode: {
