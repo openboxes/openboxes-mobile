@@ -166,7 +166,7 @@ const Settings = () => {
           style={styles.input}
           mode="outlined"
           label="Scanning Debounce [ms]"
-          placeholder="e.g., 200"
+          placeholder="e.g., 100"
           value={debounceInput}
           keyboardType="numeric"
           onChangeText={handleDebounceChange}
