@@ -3,6 +3,7 @@ export const DASHBOARD_ENTRIES_VISIBILITY_RESET = 'DASHBOARD_ENTRIES_VISIBILITY_
 export const DASHBOARD_ENTRIES_ORDER = 'DASHBOARD_ENTRIES_ORDER';
 export const GROUP_LOCATION_ENTRIES = 'GROUP_LOCATION_ENTRIES';
 export const PRODUCT_SUMMARY_CONFIG = 'PRODUCT_SUMMARY_CONFIG';
+export const BARCODE_SCAN_DEBOUNCE = 'BARCODE_SCAN_DEBOUNCE';
 
 type SetGroupLocationEntriesAction = {
   type: typeof GROUP_LOCATION_ENTRIES;
@@ -30,6 +31,11 @@ type SetDashboardEntriesOrderAction = {
   payload: string[];
 };
 
+type SetBarcodeScanDebounceAction = {
+  type: typeof BARCODE_SCAN_DEBOUNCE;
+  payload: number;
+};
+
 // Create a union type for all action types in this file.
 // e.g., export type SettingsActionTypes = SetGroupLocationEntriesAction | SetThemeAction;
 export type SettingsActionTypes =
@@ -37,7 +43,8 @@ export type SettingsActionTypes =
   | SetDashboardEntriesVisibilityAction
   | ResetDashboardEntriesVisibility
   | SetDashboardEntriesOrderAction
-  | SetProductSummaryConfigAction;
+  | SetProductSummaryConfigAction
+  | SetBarcodeScanDebounceAction;
 
 export const setGroupLocationEntries = (group: boolean): SetGroupLocationEntriesAction => {
   return {
@@ -73,5 +80,12 @@ export const setProductSummaryConfig = (key: string, visible: boolean): SetProdu
   return {
     type: PRODUCT_SUMMARY_CONFIG,
     payload: { key, visible }
+  };
+};
+
+export const setBarcodeScanDebounce = (value: number): SetBarcodeScanDebounceAction => {
+  return {
+    type: BARCODE_SCAN_DEBOUNCE,
+    payload: value
   };
 };

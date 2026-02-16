@@ -9,10 +9,12 @@ import {
   ViewStyle
 } from 'react-native';
 import { TextInput as PaperTextInput } from 'react-native-paper';
+import { useSelector } from 'react-redux';
 
 import IconKeyboard from '../assets/images/icon_keyboard.svg';
 import IconScanAction from '../assets/images/icon_scan_action.svg';
 import { appConfig } from '../constants';
+import { RootState } from '../redux/reducers';
 
 type ScannerInputProps = {
   value: string;
@@ -28,7 +30,6 @@ type ScannerInputProps = {
   /**
    * Time in milliseconds to wait after the last input before auto-submitting.
    * Set to 0 or null to disable auto-submit.
-   * @default appConfig.DEFAULT_DEBOUNCE_TIME
    */
   autoSubmitTimeout?: number;
 };
@@ -50,18 +51,10 @@ type ScannerInputProps = {
  * />
  */
 export const ScannerInput = forwardRef<NativeTextInput, ScannerInputProps>(
-  (
-    {
-      value,
-      onChange,
-      onSubmit,
-      label = 'Scan Barcode',
-      style,
-      isEnabled = true,
-      autoSubmitTimeout = appConfig.DEFAULT_DEBOUNCE_TIME
-    },
-    ref
-  ) => {
+  ({ value, onChange, onSubmit, label = 'Scan Barcode', style, isEnabled = true, autoSubmitTimeout }, ref) => {
+    const storedDebounceTime = useSelector((state: RootState) => state.settingsReducer.barcodeScanDebounceTime);
+    const defaultTimeout = storedDebounceTime ?? appConfig.DEFAULT_DEBOUNCE_TIME;
+    const timeout = autoSubmitTimeout !== undefined ? autoSubmitTimeout : defaultTimeout;
     const internalInputRef = useRef<NativeTextInput | null>(null);
     const isScreenFocused = useIsFocused();
     const [showKeyboard, setShowKeyboard] = useState(false);
@@ -122,7 +115,7 @@ export const ScannerInput = forwardRef<NativeTextInput, ScannerInputProps>(
     // Auto-submit after timeout
     useEffect(() => {
       // Don't auto-submit if disabled
-      if (!autoSubmitTimeout) {
+      if (!timeout) {
         return;
       }
 
@@ -144,10 +137,10 @@ export const ScannerInput = forwardRef<NativeTextInput, ScannerInputProps>(
           lastSubmittedValue.current = trimmed;
           onSubmit(trimmed);
         }
-      }, autoSubmitTimeout);
+      }, timeout);
 
       return () => clearTimeout(timer);
-    }, [value, autoSubmitTimeout, onSubmit]);
+    }, [value, timeout, onSubmit]);
 
     const handleBlur = () => {
       if (shouldBeFocused) {

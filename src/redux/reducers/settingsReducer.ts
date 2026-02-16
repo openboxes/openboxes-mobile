@@ -5,21 +5,25 @@ import {
   DASHBOARD_ENTRIES_VISIBILITY_RESET,
   GROUP_LOCATION_ENTRIES,
   PRODUCT_SUMMARY_CONFIG,
+  BARCODE_SCAN_DEBOUNCE,
   SettingsActionTypes
 } from '../actions/settings';
+import { appConfig } from '../../constants';
 
 type SettingsState = {
   groupLocationEntries: boolean;
   dashboardEntriesVisibility: { [key: string]: boolean };
   dashboardEntriesOrder: string[];
   productSummaryConfig: { [key: string]: boolean };
+  barcodeScanDebounceTime: number;
 };
 
 const initialState: SettingsState = {
   groupLocationEntries: false,
   dashboardEntriesOrder: getDashboardEntriesKeys(),
   dashboardEntriesVisibility: {},
-  productSummaryConfig: {}
+  productSummaryConfig: {},
+  barcodeScanDebounceTime: appConfig.DEFAULT_DEBOUNCE_TIME
 };
 
 function settingsReducer(state = initialState, action: SettingsActionTypes): SettingsState {
@@ -62,6 +66,11 @@ function settingsReducer(state = initialState, action: SettingsActionTypes): Set
       return {
         ...state,
         dashboardEntriesOrder: action.payload
+      };
+    case BARCODE_SCAN_DEBOUNCE:
+      return {
+        ...state,
+        barcodeScanDebounceTime: action.payload
       };
     default: {
       return state;

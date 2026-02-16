@@ -13,8 +13,18 @@ const styles = StyleSheet.create({
   paragraph: {
     marginBottom: Theme.spacing.large
   },
+  paragraphSmall: {
+    marginBottom: Theme.spacing.small,
+    fontSize: 12,
+    color: Theme.colors.backdrop
+  },
   input: {
     marginBottom: Theme.spacing.large
+  },
+  link: {
+    color: Theme.colors.primary,
+    textDecorationLine: 'underline',
+    fontSize: 14
   }
 });
 

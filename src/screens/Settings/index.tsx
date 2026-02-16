@@ -1,14 +1,16 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ScrollView } from 'react-native';
-import { Card, Paragraph, TextInput } from 'react-native-paper';
+import { Card, Paragraph, Text, TextInput } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Button from '../../components/Button';
 import showPopup from '../../components/Popup';
+import { appConfig } from '../../constants';
 import * as NavigationService from '../../NavigationService';
 import {
   resetDashboardEntriesVisibility,
+  setBarcodeScanDebounce,
   setDashboardEntriesOrder,
   setGroupLocationEntries,
   setProductSummaryConfig,
@@ -29,7 +31,12 @@ const API_URL_KEY = 'API_URL';
 const Settings = () => {
   const [serverUrl, setServerUrl] = useState<string>('');
   const dispatch = useDispatch();
-  const { groupLocationEntries, productSummaryConfig } = useSelector((state: RootState) => state.settingsReducer);
+  const { groupLocationEntries, productSummaryConfig, barcodeScanDebounceTime } = useSelector(
+    (state: RootState) => state.settingsReducer
+  );
+  const [debounceInput, setDebounceInput] = useState<string>(
+    barcodeScanDebounceTime?.toString() ?? appConfig.DEFAULT_DEBOUNCE_TIME.toString()
+  );
 
   useEffect(() => {
     AsyncStorage.getItem(API_URL_KEY)
@@ -72,6 +79,33 @@ const Settings = () => {
     dispatch(setGroupLocationEntries(!groupLocationEntries));
   }, [dispatch, groupLocationEntries]);
 
+  const handleDebounceChange = useCallback(
+    (text: string) => {
+      const numericValue = text.replace(/[^0-9]/g, '');
+      setDebounceInput(numericValue);
+      const value = parseInt(numericValue, 10);
+      if (!isNaN(value) && value >= 0) {
+        dispatch(setBarcodeScanDebounce(value));
+      }
+    },
+    [dispatch]
+  );
+
+  const askResetDebounce = useCallback(() => {
+    showPopup({
+      title: 'Reset Scanning Debounce',
+      message: `Are you sure you want to reset scanning debounce to default (${appConfig.DEFAULT_DEBOUNCE_TIME}ms)?`,
+      positiveButton: {
+        text: 'Reset',
+        callback: () => {
+          dispatch(setBarcodeScanDebounce(appConfig.DEFAULT_DEBOUNCE_TIME));
+          setDebounceInput(appConfig.DEFAULT_DEBOUNCE_TIME.toString());
+        }
+      },
+      negativeButtonText: 'Cancel'
+    });
+  }, [dispatch]);
+
   const isVisible = useCallback(
     (entry: DashboardEntry | ProductSummaryItem, map: { [key: string]: boolean }): boolean =>
       map?.[entry.key] !== undefined ? map[entry.key] : entry.defaultVisible ?? true,
@@ -107,6 +141,7 @@ const Settings = () => {
             label="Server URL"
             placeholder="http://localhost:8080/"
             value={serverUrl}
+            autoCompleteType="off"
             onChangeText={setServerUrl}
           />
           <Button mode="contained" size="100%" title="Save and Apply" onPress={handleServerUrlSave} />
@@ -121,6 +156,29 @@ const Settings = () => {
           value={groupLocationEntries}
           onValueChange={toggleGroup}
         />
+      </ToggleCard>
+
+      {/* Scanner Settings */}
+      <ToggleCard title="Scanner Settings">
+        <Paragraph style={styles.paragraph}>Configure barcode scanner behavior.</Paragraph>
+        <TextInput
+          autoCompleteType="off"
+          style={styles.input}
+          mode="outlined"
+          label="Scanning Debounce [ms]"
+          placeholder="e.g., 200"
+          value={debounceInput}
+          keyboardType="numeric"
+          onChangeText={handleDebounceChange}
+        />
+        <Paragraph style={styles.paragraphSmall}>
+          Time in milliseconds to wait after scanning before auto-submitting.{' '}
+          {barcodeScanDebounceTime !== undefined && barcodeScanDebounceTime !== appConfig.DEFAULT_DEBOUNCE_TIME && (
+            <Text style={styles.link} onPress={askResetDebounce}>
+              Reset to default.
+            </Text>
+          )}
+        </Paragraph>
       </ToggleCard>
 
       <ToggleCard title="Menu Entries" subtitle="Toggle & reorder dashboard entries." onReset={askResetDashboard}>
