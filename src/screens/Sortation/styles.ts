@@ -83,6 +83,7 @@ export default StyleSheet.create({
   },
   topSpace: { marginTop: Theme.spacing.small },
   bottomSpace: { marginBottom: Theme.spacing.small },
+  rightSpace: { marginRight: Theme.spacing.small },
   cardAnnotation: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -143,5 +144,26 @@ export default StyleSheet.create({
   },
   dialogButton: {
     flex: 1
+  },
+  successBanner: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  successText: {
+    fontSize: 14,
+    marginBottom: Theme.spacing.medium,
+    textAlign: 'center'
+  },
+  successHeader: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: Theme.spacing.medium
+  },
+  link: {
+    fontSize: 14,
+    color: Theme.colors.primary,
+    textDecorationLine: 'underline'
   }
 });

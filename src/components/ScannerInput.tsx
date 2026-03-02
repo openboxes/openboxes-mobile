@@ -11,11 +11,11 @@ import {
 import { TextInput as PaperTextInput } from 'react-native-paper';
 import { useSelector } from 'react-redux';
 
-import IconKeyboard from '../assets/images/icon_keyboard.svg';
-import IconScanAction from '../assets/images/icon_scan_action.svg';
+import { isString } from 'lodash';
 import { appConfig } from '../constants';
 import { RootState } from '../redux/reducers';
-import { isString } from 'lodash';
+import Theme from '../utils/Theme';
+import { KeyboardIcon, ScanIcon } from './Icons';
 
 type ScannerInputProps = {
   value: string;
@@ -46,6 +46,10 @@ type ScannerInputProps = {
    */
   keyboardType?: 'default' | 'number-pad' | 'email-address';
   placeholder?: string;
+  /**
+   * If true, shows error styling (red border) - uses PaperTextInput error color (#B00020)
+   */
+  danger?: boolean;
 };
 
 /**
@@ -77,7 +81,8 @@ export const ScannerInput = forwardRef<NativeTextInput, ScannerInputProps>(
       leftIcon,
       showKeyboardOnMount,
       keyboardType,
-      placeholder
+      placeholder,
+      danger = false
     },
     ref
   ) => {
@@ -233,14 +238,23 @@ export const ScannerInput = forwardRef<NativeTextInput, ScannerInputProps>(
         autoCompleteType="off"
         importantForAutofill="no"
         placeholder={placeholder}
+        placeholderTextColor={danger ? Theme.colors.danger : Theme.colors.disabled}
         blurOnSubmit={false}
         returnKeyType="done"
         keyboardType={keyboardType || 'default'}
-        // @ts-ignore
-        left={<PaperTextInput.Icon name={() => leftIcon || <IconScanAction height={24} width={24} />} />}
+        error={danger}
+        left={
+          // @ts-ignore
+          <PaperTextInput.Icon
+            name={() => leftIcon || <ScanIcon size={24} color={danger ? Theme.colors.danger : undefined} />}
+          />
+        }
         right={
           // @ts-ignore
-          <PaperTextInput.Icon name={() => <IconKeyboard height={24} width={24} />} onPress={handleKeyboardPress} />
+          <PaperTextInput.Icon
+            name={() => <KeyboardIcon size={24} color={danger ? Theme.colors.danger : undefined} />}
+            onPress={handleKeyboardPress}
+          />
         }
         onBlur={handleBlur}
         onFocus={() => {}}

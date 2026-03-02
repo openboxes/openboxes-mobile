@@ -95,8 +95,12 @@ export default function SortationContainerScreen() {
     dispatch(
       patchPutawayTaskAction(task.facility.id, task.id, payload, (response) => {
         if (response && !response.error) {
-          Alert.alert('Sortation Successful', 'The product has been sorted successfully.');
-          navigate('Sortation');
+          navigate('Sortation', {
+            sortedProduct: {
+              name: product.name,
+              productCode: product.productCode
+            }
+          });
         } else {
           Alert.alert('Sortation Failed', response.errorMessage || 'An error occurred while sorting the product.');
           setPutawayContainerBarcode(EMPTY_STRING);

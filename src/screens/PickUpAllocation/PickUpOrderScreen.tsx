@@ -492,7 +492,7 @@ function StockPickModal({ visible, onDismiss: onClose, onConfirm: onSave, orderL
             // eslint-disable-next-line react-native/no-inline-styles
             style={{
               fontWeight: 'bold',
-              color: isQuantityRequiredExceeded ? Theme.colors.error : Theme.colors.text
+              color: isQuantityRequiredExceeded ? Theme.colors.danger : Theme.colors.text
             }}
           >
             Quantity Allocated: {totalAllocated} / {orderLine.quantityRequired}

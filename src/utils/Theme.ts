@@ -12,9 +12,11 @@ export default {
   colors: {
     ...DefaultTheme.colors,
     primary: '#20345c',
+    secondaryBackground: '#e9ecef',
+    secondaryForeground: '#495057',
     warning: '#FCFFC1',
     warningText: '#8a6d3b',
-    danger: '#FF5630',
+    danger: '#B00020',
     success: '#22bb33',
     info: '#00B8D9'
   },

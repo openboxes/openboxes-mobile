@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import { Modal, View } from 'react-native';
 import { Text } from 'react-native-paper';
 
-import { ScannerInput } from '../../components/ScannerInput';
-import { ContainerIcon } from '../../components/Icons';
-import { HYPHEN, EMPTY_STRING } from '../../constants';
 import Button from '../../components/Button';
+import { ContainerIcon } from '../../components/Icons';
+import { ScannerInput } from '../../components/ScannerInput';
+import { EMPTY_STRING, HYPHEN } from '../../constants';
+import Theme from '../../utils/Theme';
 import styles from './styles';
 
-type Props = {
+type ContainerMismatchDialogProps = {
   visible: boolean;
   scannedContainer: string;
   expectedContainer: string | null | undefined;
@@ -16,25 +17,31 @@ type Props = {
   onScan: (code: string) => void;
 };
 
-export function ContainerMismatchDialog({ visible, scannedContainer, expectedContainer, onDismiss, onScan }: Props) {
+export function ContainerMismatchDialog({
+  visible,
+  scannedContainer,
+  expectedContainer,
+  onDismiss,
+  onScan
+}: ContainerMismatchDialogProps) {
   const [dialogInput, setDialogInput] = useState<string>(EMPTY_STRING);
 
-  function handleDismiss() {
+  const handleDismiss = () => {
     setDialogInput(EMPTY_STRING);
     onDismiss();
-  }
+  };
 
-  function handleOverride() {
+  const handleOverride = () => {
     handleDismiss();
     onScan(scannedContainer);
-  }
+  };
 
-  function handleScanSubmit() {
+  const handleScanSubmit = () => {
     if (dialogInput && dialogInput.trim()) {
       handleDismiss();
       onScan(dialogInput.trim());
     }
-  }
+  };
 
   const displayExpectedContainer = expectedContainer || HYPHEN;
 
@@ -49,7 +56,8 @@ export function ContainerMismatchDialog({ visible, scannedContainer, expectedCon
           </Text>
           <View style={styles.bottomSpace}>
             <ScannerInput
-              leftIcon={<ContainerIcon size={24} />}
+              danger
+              leftIcon={<ContainerIcon size={24} color={Theme.colors.danger} />}
               label="Container"
               placeholder="Scan or type the container"
               value={dialogInput}
@@ -59,8 +67,22 @@ export function ContainerMismatchDialog({ visible, scannedContainer, expectedCon
             />
           </View>
           <View style={[styles.dialogActions, styles.topSpace]}>
-            <Button style={styles.dialogButton} title="Cancel" mode="text" onPress={handleDismiss} />
-            <Button style={styles.dialogButton} title="Override" mode="contained" onPress={handleOverride} />
+            <Button
+              icon="close"
+              variant="secondary"
+              style={[styles.dialogButton, styles.rightSpace]}
+              title="Cancel"
+              mode="contained"
+              onPress={handleDismiss}
+            />
+            <Button
+              icon="check"
+              variant="danger"
+              style={styles.dialogButton}
+              title="Override"
+              mode="contained"
+              onPress={handleOverride}
+            />
           </View>
         </View>
       </View>
