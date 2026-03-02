@@ -2,6 +2,7 @@ import React from 'react';
 import { View } from 'react-native';
 import { Chip, Divider, Paragraph, Switch, Text, Title } from 'react-native-paper';
 
+import { ProductIcon } from '../../components/Icons';
 import { EMPTY_FALLBACK } from '../../constants';
 import { DetailChip, SortationProduct, SortationTask } from '../../types/sortation';
 import Theme from '../../utils/Theme';
@@ -12,7 +13,7 @@ export type SortationProductDetailsProps = {
   detailsChips: DetailChip[];
   showDirectPutawayRequired?: boolean;
   directPutawayRequired?: boolean;
-  task: SortationTask;
+  task?: SortationTask;
   onToggleDirectPutaway?: (value: boolean) => void;
 };
 
@@ -21,7 +22,6 @@ export default function SortationProductDetails({
   detailsChips,
   showDirectPutawayRequired = false,
   directPutawayRequired = false,
-  task,
   onToggleDirectPutaway
 }: SortationProductDetailsProps) {
   const { productCode, name } = product;
@@ -29,11 +29,12 @@ export default function SortationProductDetails({
   return (
     <View style={styles.productDetails}>
       <View style={styles.headerRow}>
-        <Chip icon="barcode" style={styles.chipDefault} textStyle={styles.chipText}>
-          {`Product Code: ${productCode}`}
-        </Chip>
-        <Chip style={[styles.chipWarning]} textStyle={styles.chipText}>
-          {`${task.type ?? EMPTY_FALLBACK}`}
+        <Chip
+          icon={() => <ProductIcon size={16} color="#000" />}
+          style={styles.chipDefault}
+          textStyle={styles.chipText}
+        >
+          {productCode}
         </Chip>
       </View>
 
@@ -41,8 +42,10 @@ export default function SortationProductDetails({
 
       <Title style={styles.title}>{name}</Title>
 
-      {detailsChips.map(({ icon, value, label }) => (
-        <Chip key={label} icon={icon} style={[styles.chipDefault, styles.topSpace]}>
+      {product.description ? <Paragraph style={[styles.paragraphMuted]}>{product.description}</Paragraph> : null}
+
+      {detailsChips.map(({ icon, value, label, isActive }) => (
+        <Chip key={label} icon={icon} style={[styles.chipDefault, styles.topSpace, isActive && styles.chipActive]}>
           <Text style={styles.chipText}>
             {label}: <Text style={[styles.bold, styles.chipText]}>{value ?? EMPTY_FALLBACK}</Text>
           </Text>

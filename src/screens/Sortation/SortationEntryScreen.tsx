@@ -1,8 +1,9 @@
 import React, { useCallback, useState } from 'react';
 import { Alert, ScrollView } from 'react-native';
-import { Paragraph, Title } from 'react-native-paper';
+import { Title } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
+import IconProducts from '../../assets/images/icon_products.svg';
 import { ScannerInput } from '../../components/ScannerInput';
 import { EMPTY_STRING } from '../../constants';
 import { navigate } from '../../NavigationService';
@@ -42,13 +43,14 @@ export default function SortationEntryScreen() {
 
   return (
     <ScrollView keyboardShouldPersistTaps="always" style={styles.screen}>
-      <Title>Scan Product Barcode</Title>
-      <Paragraph>Point your barcode scanner at the product.</Paragraph>
+      <Title style={styles.title}>Scan or type the product's barcode</Title>
 
       <ScannerInput
         style={styles.topSpace}
-        label="Product Barcode"
+        label="Product"
+        placeholder="Scan or type the product's barcode"
         value={barcode}
+        leftIcon={<IconProducts height={24} width={24} />}
         onChange={setBarcode}
         onSubmit={handleScan}
       />

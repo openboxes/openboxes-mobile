@@ -1,12 +1,14 @@
 import { RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
-import React, { useEffect, useRef, useState } from 'react';
-import { Alert, ScrollView, TextInput, View } from 'react-native';
-import { Divider, TextInput as PaperTextInput, Paragraph, Subheading } from 'react-native-paper';
+import React, { useEffect, useState } from 'react';
+import { Alert, ScrollView, View } from 'react-native';
+import { Divider } from 'react-native-paper';
 
 import { useDispatch } from 'react-redux';
 import Button from '../../components/Button';
 import EmptyView from '../../components/EmptyView';
-import { INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
+import { ContainerIcon, LocationIcon, QuantityIcon } from '../../components/Icons';
+import { ScannerInput } from '../../components/ScannerInput';
+import { EMPTY_FALLBACK } from '../../constants';
 import { navigate } from '../../NavigationService';
 import { patchPutawayTaskAction } from '../../redux/actions/putaways';
 import { DetailChip, SortationProduct, SortationTask } from '../../types/sortation';
@@ -24,7 +26,6 @@ export default function SortationQuantityScreen() {
   const { params } = useRoute<QuantityRouteProp>();
   const { product, task } = params;
 
-  const inputRef = useRef<TextInput | null>(null);
   const isFocused = useIsFocused();
   const dispatch = useDispatch();
 
@@ -47,9 +48,6 @@ export default function SortationQuantityScreen() {
     }
 
     setQuantitySorted(undefined);
-
-    const t = setTimeout(() => inputRef.current?.focus(), INPUT_FOCUS_DELAY_TIME_IN_MS);
-    return () => clearTimeout(t);
   }, [isFocused]);
 
   useEffect(() => {
@@ -114,29 +112,23 @@ export default function SortationQuantityScreen() {
 
   const productDetailsChips: DetailChip[] = [
     {
-      icon: 'map-search',
-      label: 'Putaway Zone',
-      value: task?.destination?.zoneName
-    },
-    {
-      icon: 'package',
+      icon: () => <QuantityIcon size={16} color="#000" />,
       label: 'Quantity Required',
-      value: task?.quantity
+      value: task?.quantity,
+      isActive: true
     },
     {
-      icon: 'human',
-      label: 'Assignee',
-      value: task?.assignee ? `${task.assignee.firstName} ${task.assignee.lastName}`.trim() : undefined
-    },
-    {
-      icon: 'package',
+      icon: () => <ContainerIcon size={16} color="#000" />,
       label: 'Container',
       value: task?.container?.locationNumber
     },
     {
-      icon: 'map-marker',
-      label: 'Final Storage Location',
-      value: task?.destination?.name
+      icon: () => <LocationIcon size={16} color="#000" />,
+      label: 'Storage Location',
+      value:
+        task?.destination?.zoneName && task?.destination?.name
+          ? `${task.destination.zoneName} \u2022 ${task.destination.name}`
+          : task?.destination?.zoneName || task?.destination?.name
     }
   ];
 
@@ -154,22 +146,16 @@ export default function SortationQuantityScreen() {
       <Divider />
 
       <View style={styles.formContainer}>
-        <Subheading style={styles.subheading}>Enter Quantity for Sortation</Subheading>
-        <Paragraph style={styles.paragraph}>
-          Enter the quantity of this product that you want to sort. This will be used to update the inventory records.
-        </Paragraph>
-
-        <PaperTextInput
-          ref={inputRef}
-          autoCompleteType="off"
-          style={styles.topSpace}
-          mode="outlined"
-          label="Sortation Quantity"
+        <ScannerInput
+          showKeyboardOnMount
+          autoSubmitTimeout={0}
+          leftIcon={<QuantityIcon size={24} />}
+          placeholder={task?.quantity?.toString() ?? EMPTY_FALLBACK}
           keyboardType="number-pad"
+          label="Quantity"
           value={quantitySorted?.toString() ?? ''}
-          returnKeyType="done"
-          onChangeText={handleChange}
-          onSubmitEditing={handleSubmit}
+          onChange={handleChange}
+          onSubmit={handleSubmit}
         />
 
         <Button style={styles.topSpace} title="Confirm" mode="contained" size="100%" onPress={handleSubmit}>

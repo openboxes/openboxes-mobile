@@ -1,17 +1,18 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { Alert, ScrollView, View } from 'react-native';
-import { Divider, Paragraph, Subheading, Switch } from 'react-native-paper';
+import { Divider } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
 import Button from '../../components/Button';
 import EmptyView from '../../components/EmptyView';
+import { ContainerIcon, LocationIcon, QuantityIcon } from '../../components/Icons';
 import { ScannerInput } from '../../components/ScannerInput';
-import { EMPTY_STRING } from '../../constants';
+import { EMPTY_FALLBACK, EMPTY_STRING } from '../../constants';
 import { navigate } from '../../NavigationService';
 import { patchPutawayTaskAction } from '../../redux/actions/putaways';
 import { DetailChip, SortationProduct, SortationTask } from '../../types/sortation';
-import Theme from '../../utils/Theme';
+import { ContainerMismatchDialog } from './ContainerMismatchDialog';
 import SortationProductDetails from './SortationProductDetails';
 import styles from './styles';
 
@@ -24,8 +25,9 @@ export default function SortationContainerScreen() {
   const { params } = useRoute<ContainerRouteProp>();
   const { product, quantitySorted, task } = params;
 
-  const [isOverrideEnabled, setIsOverrideEnabled] = useState<boolean>(false);
   const [putawayContainerBarcode, setPutawayContainerBarcode] = useState<string>('');
+  const [isDialogVisible, setIsDialogVisible] = useState<boolean>(false);
+  const [pendingContainerCode, setPendingContainerCode] = useState<string>('');
   const dispatch = useDispatch();
 
   if (!product) {
@@ -59,23 +61,35 @@ export default function SortationContainerScreen() {
    * @param code - The barcode string to validate.
    */
   function handleProcessing(code: string) {
-    if (!isOverrideEnabled) {
-      const containerLocationNumber = task?.container?.locationNumber;
-      if (code !== containerLocationNumber) {
-        Alert.alert(
-          'Wrong container number',
-          `Scanned container number: ${code} is different from the expected one: ${containerLocationNumber}. If you want to load into a different container please select 'Override container' option.`,
-          [{ text: 'OK', onPress: () => setPutawayContainerBarcode(EMPTY_STRING) }]
-        );
-        return;
-      }
+    if (!code || code.trim() === '') {
+      Alert.alert('Scan Required', 'Please scan the container barcode.');
+      return;
     }
 
+    const expectedContainer = task?.container?.locationNumber;
+
+    if (code !== expectedContainer) {
+      setPendingContainerCode(code);
+      setIsDialogVisible(true);
+      return;
+    }
+
+    confirmContainer(code, false);
+  }
+
+  function handleDialogScan(resolvedCode: string) {
+    setIsDialogVisible(false);
+    confirmContainer(resolvedCode, true);
+    setPutawayContainerBarcode(EMPTY_STRING);
+    setPendingContainerCode('');
+  }
+
+  function confirmContainer(code: string, override: boolean) {
     const payload = {
       action: 'load',
       quantity: quantitySorted,
       container: code,
-      override: isOverrideEnabled
+      override
     };
 
     dispatch(
@@ -84,7 +98,7 @@ export default function SortationContainerScreen() {
           Alert.alert('Sortation Successful', 'The product has been sorted successfully.');
           navigate('Sortation');
         } else {
-          Alert.alert('Sortation Failed', response.errorMessage || 'Sortation Failed');
+          Alert.alert('Sortation Failed', response.errorMessage || 'An error occurred while sorting the product.');
           setPutawayContainerBarcode(EMPTY_STRING);
         }
       })
@@ -93,24 +107,23 @@ export default function SortationContainerScreen() {
 
   const productDetailsChips: DetailChip[] = [
     {
-      icon: 'package',
-      label: 'Quantity Sorted',
+      icon: () => <QuantityIcon size={16} color="#000" />,
+      label: 'Quantity',
       value: quantitySorted
     },
     {
-      icon: 'map-search',
-      label: 'Putaway Zone',
-      value: task?.destination?.zoneName
-    },
-    {
-      icon: 'package',
+      icon: () => <ContainerIcon size={16} color="#000" />,
       label: 'Container',
-      value: task?.container?.locationNumber
+      value: task?.container?.locationNumber,
+      isActive: true
     },
     {
-      icon: 'map-marker',
-      label: 'Final Storage Location',
-      value: task?.destination?.name
+      icon: () => <LocationIcon size={16} color="#000" />,
+      label: 'Storage Location',
+      value:
+        task?.destination?.zoneName && task?.destination?.name
+          ? `${task.destination.zoneName} \u2022 ${task.destination.name}`
+          : task?.destination?.zoneName || task?.destination?.name
     }
   ];
 
@@ -121,23 +134,14 @@ export default function SortationContainerScreen() {
       <Divider />
 
       <View style={styles.formContainer}>
-        <Subheading style={styles.subheading}>Scan Putaway Container ID</Subheading>
-        <Paragraph style={styles.paragraph}>
-          Scan the barcode of the putaway container where you want to place this product.
-        </Paragraph>
-
         <ScannerInput
-          style={styles.topSpace}
-          label="Container Barcode"
+          leftIcon={<ContainerIcon size={24} />}
+          placeholder={task?.container?.locationNumber ?? EMPTY_FALLBACK}
+          label="Container"
           value={putawayContainerBarcode}
           onChange={setPutawayContainerBarcode}
           onSubmit={handleProcessing}
         />
-
-        <View style={[styles.cardAnnotation, styles.cardContainer]}>
-          <Paragraph style={[styles.paragraph, styles.bold]}>Override container</Paragraph>
-          <Switch value={isOverrideEnabled} color={Theme.colors.primary} onValueChange={setIsOverrideEnabled} />
-        </View>
 
         <Button
           style={styles.topSpace}
@@ -149,6 +153,14 @@ export default function SortationContainerScreen() {
           Submit
         </Button>
       </View>
+
+      <ContainerMismatchDialog
+        visible={isDialogVisible}
+        scannedContainer={pendingContainerCode}
+        expectedContainer={task?.container?.locationNumber ?? ''}
+        onDismiss={() => setIsDialogVisible(false)}
+        onScan={handleDialogScan}
+      />
     </ScrollView>
   );
 }

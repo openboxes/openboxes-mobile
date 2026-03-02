@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 import LocationType from '../data/location/LocationType';
 import InventoryItem from '../data/picklist/InventoryItem';
 import Person from '../data/picklist/Person';
@@ -79,9 +78,10 @@ export type SortationTask = {
 };
 
 export type DetailChip = {
-  icon: string;
+  icon: string | (() => JSX.Element);
   label: string;
   value: string | null | number | undefined;
+  isActive?: boolean;
 };
 
 export type PutawayDetailsModel = {

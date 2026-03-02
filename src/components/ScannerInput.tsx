@@ -15,6 +15,7 @@ import IconKeyboard from '../assets/images/icon_keyboard.svg';
 import IconScanAction from '../assets/images/icon_scan_action.svg';
 import { appConfig } from '../constants';
 import { RootState } from '../redux/reducers';
+import { isString } from 'lodash';
 
 type ScannerInputProps = {
   value: string;
@@ -32,6 +33,19 @@ type ScannerInputProps = {
    * Set to 0 or null to disable auto-submit.
    */
   autoSubmitTimeout?: number;
+  /**
+   * Custom left icon component. Defaults to scan icon.
+   */
+  leftIcon?: React.ReactNode;
+  /**
+   * If true, shows the keyboard on mount instead of hiding it.
+   */
+  showKeyboardOnMount?: boolean;
+  /**
+   * Keyboard type (e.g., 'number-pad', 'default')
+   */
+  keyboardType?: 'default' | 'number-pad' | 'email-address';
+  placeholder?: string;
 };
 
 /**
@@ -51,13 +65,29 @@ type ScannerInputProps = {
  * />
  */
 export const ScannerInput = forwardRef<NativeTextInput, ScannerInputProps>(
-  ({ value, onChange, onSubmit, label = 'Scan Barcode', style, isEnabled = true, autoSubmitTimeout }, ref) => {
+  (
+    {
+      value,
+      onChange,
+      onSubmit,
+      label,
+      style,
+      isEnabled = true,
+      autoSubmitTimeout,
+      leftIcon,
+      showKeyboardOnMount,
+      keyboardType,
+      placeholder
+    },
+    ref
+  ) => {
     const storedDebounceTime = useSelector((state: RootState) => state.settingsReducer.barcodeScanDebounceTime);
     const defaultTimeout = storedDebounceTime ?? appConfig.DEFAULT_DEBOUNCE_TIME;
     const timeout = autoSubmitTimeout !== undefined ? autoSubmitTimeout : defaultTimeout;
     const internalInputRef = useRef<NativeTextInput | null>(null);
     const isScreenFocused = useIsFocused();
-    const [showKeyboard, setShowKeyboard] = useState(false);
+    const [showKeyboard, setShowKeyboard] = useState(showKeyboardOnMount ?? false);
+    const formattedLabel = label && isString(label) ? label.toUpperCase() : 'SCAN BARCODE';
 
     // Track the latest submitted value to prevent double submissions (one from debounce, one from Enter key)
     const lastSubmittedValue = useRef<string>('');
@@ -194,7 +224,7 @@ export const ScannerInput = forwardRef<NativeTextInput, ScannerInputProps>(
       <PaperTextInput
         ref={internalInputRef}
         mode="outlined"
-        label={label}
+        label={formattedLabel}
         value={value}
         style={style}
         // Keep keyboard hidden
@@ -202,10 +232,12 @@ export const ScannerInput = forwardRef<NativeTextInput, ScannerInputProps>(
         autoCorrect={false}
         autoCompleteType="off"
         importantForAutofill="no"
+        placeholder={placeholder}
         blurOnSubmit={false}
         returnKeyType="done"
+        keyboardType={keyboardType || 'default'}
         // @ts-ignore
-        left={<PaperTextInput.Icon name={() => <IconScanAction height={24} width={24} />} />}
+        left={<PaperTextInput.Icon name={() => leftIcon || <IconScanAction height={24} width={24} />} />}
         right={
           // @ts-ignore
           <PaperTextInput.Icon name={() => <IconKeyboard height={24} width={24} />} onPress={handleKeyboardPress} />
