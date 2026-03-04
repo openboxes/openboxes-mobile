@@ -69,5 +69,15 @@ export default StyleSheet.create({
   },
   resetButton: {
     marginRight: Theme.spacing.small
+  },
+  groupSection: {
+    marginBottom: Theme.spacing.medium
+  },
+  groupHeader: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: Theme.colors.disabled,
+    paddingHorizontal: Theme.spacing.small,
+    paddingTop: Theme.spacing.small
   }
 });

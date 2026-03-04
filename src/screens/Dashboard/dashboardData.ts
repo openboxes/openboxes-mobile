@@ -1,4 +1,5 @@
 import IconCreateLPN from '../../assets/images/icon_create_lpn.svg';
+import IconGarage from '../../assets/images/icon_garage.svg';
 import IconInventory from '../../assets/images/icon_inventory.svg';
 import IconLoading from '../../assets/images/icon_loading.svg';
 import IconPacking from '../../assets/images/icon_packing.svg';
@@ -6,12 +7,11 @@ import IconPendingPutaways from '../../assets/images/icon_pending_putaways.svg';
 import IconPendingTransfers from '../../assets/images/icon_pending_transfers.svg';
 import IconPicking from '../../assets/images/icon_picking.svg';
 import IconProducts from '../../assets/images/icon_products.svg';
+import IconPutaway from '../../assets/images/icon_putaway.svg';
 import IconPutawayCandidates from '../../assets/images/icon_putaway_candidates.svg';
 import IconReceiving from '../../assets/images/icon_receiving.svg';
 import IconScan from '../../assets/images/icon_scan.svg';
 import IconSortation from '../../assets/images/icon_sortation.svg';
-import IconPutaway from '../../assets/images/icon_putaway.svg';
-import IconGarage from '../../assets/images/icon_garage.svg';
 
 export type DashboardEntry = {
   key: string;
@@ -22,7 +22,10 @@ export type DashboardEntry = {
   subroutesScreenName?: string;
   defaultVisible?: boolean;
   subroutes?: DashboardEntry[];
+  group: DashboardGroup;
 };
+
+export type DashboardGroup = 'INBOUND' | 'OUTBOUND' | 'INVENTORY' | 'MISCELLANEOUS';
 
 const dashboardEntries: DashboardEntry[] = [
   {
@@ -30,144 +33,145 @@ const dashboardEntries: DashboardEntry[] = [
     screenName: 'Sortation',
     entryDescription: 'Manage sortation tasks and workflows',
     icon: IconSortation,
-    navigationScreenName: 'Sortation'
+    navigationScreenName: 'Sortation',
+    group: 'INBOUND'
   },
   {
-    key: 'putaway',
-    screenName: 'Putaway',
+    key: 'sorted-putaway',
+    screenName: 'Sorted Putaway',
     entryDescription: 'Manage putaway tasks and workflows',
     icon: IconPutaway,
-    navigationScreenName: 'SortationPutaway'
+    navigationScreenName: 'SortationPutaway',
+    group: 'INBOUND'
   },
   {
-    key: 'orders',
-    screenName: 'Orders Picking',
+    key: 'legacy-picking',
+    screenName: 'Legacy Picking',
     entryDescription: 'Manage orders and picking tasks',
     icon: IconPicking,
     navigationScreenName: 'Orders',
-    defaultVisible: false
+    defaultVisible: false,
+    group: 'OUTBOUND'
   },
   {
     key: 'pickUpAllocation',
-    screenName: 'Pick-Up Allocation',
+    screenName: 'Allocation',
     entryDescription: 'Manage pick-up allocations and tasks',
     icon: IconPicking,
-    navigationScreenName: 'PickUpEntryScreen'
+    navigationScreenName: 'PickUpEntryScreen',
+    group: 'OUTBOUND'
   },
   {
     key: 'packing',
     screenName: 'Packing',
     entryDescription: 'Manage packing tasks and shipments',
     icon: IconPacking,
-    navigationScreenName: 'OutboundStockList'
+    navigationScreenName: 'OutboundStockList',
+    group: 'OUTBOUND'
   },
   {
     key: 'moveToStaging',
     screenName: 'Move To Staging',
     entryDescription: 'Manage moving picked items to staging area.',
     icon: IconGarage,
-    navigationScreenName: 'PickingMoveToStaging'
+    navigationScreenName: 'PickingMoveToStaging',
+    group: 'OUTBOUND'
   },
   {
     key: 'loading',
     screenName: 'Loading',
     entryDescription: 'Manage loading tasks and shipments',
     icon: IconLoading,
-    navigationScreenName: 'OutboundLoadingList'
+    navigationScreenName: 'OutboundLoadingList',
+    group: 'OUTBOUND'
   },
   {
     key: 'receiving',
     screenName: 'Receiving',
     entryDescription: 'Manage inbound orders and receiving tasks',
     icon: IconReceiving,
-    navigationScreenName: 'InboundOrderList'
+    navigationScreenName: 'InboundOrderList',
+    group: 'INBOUND'
   },
   {
     key: 'putawayCandidates',
     screenName: 'Putaway Candidates',
     entryDescription: 'View and manage putaway candidates',
     icon: IconPutawayCandidates,
-    navigationScreenName: 'PutawayCandidates'
+    navigationScreenName: 'PutawayCandidates',
+    group: 'INBOUND'
   },
   {
     key: 'pendingPutaways',
-    screenName: 'Pending Putaways',
+    screenName: 'Direct Putaway',
     entryDescription: 'View and manage pending putaway tasks',
     icon: IconPendingPutaways,
-    navigationScreenName: 'PutawayList'
+    navigationScreenName: 'PutawayList',
+    group: 'INBOUND'
   },
   {
     key: 'products',
-    screenName: 'Products',
+    screenName: 'Search Products',
     entryDescription: 'Manage products and product details',
     icon: IconProducts,
-    navigationScreenName: 'Products'
+    navigationScreenName: 'Products',
+    group: 'INVENTORY'
   },
   {
     key: 'legacy-inventory',
-    screenName: 'Legacy Inventory',
+    screenName: 'Search Inventory',
     entryDescription: 'View and manage the current inventory',
     icon: IconInventory,
-    navigationScreenName: 'Product Summary'
+    navigationScreenName: 'Product Summary',
+    group: 'INVENTORY'
   },
   {
     key: 'createLPN',
     screenName: 'Create LPN',
     entryDescription: 'Create a new License Plate Number (LPN)',
     icon: IconCreateLPN,
-    navigationScreenName: 'CreateLpn'
+    navigationScreenName: 'CreateLpn',
+    group: 'OUTBOUND'
   },
   {
     key: 'transfers',
-    screenName: 'Transfers',
+    screenName: 'Transfer Stock',
     entryDescription: 'Manage pending internal transfers',
     icon: IconPendingTransfers,
-    navigationScreenName: 'Transfers'
+    navigationScreenName: 'Transfers',
+    group: 'INVENTORY'
   },
   {
-    key: 'inventory',
-    screenName: 'Inventory',
-    entryDescription: 'Manage inventory and cycle counts',
+    key: 'cycleCount',
+    screenName: 'Cycle Count',
+    entryDescription: 'Manage inventory cycle counts',
     icon: IconInventory,
-    navigationScreenName: 'Inventory',
-    subroutesScreenName: 'Cycle Count Type',
-    subroutes: [
-      {
-        key: 'systemDirectedCycleCount',
-        screenName: 'System Directed',
-        entryDescription: 'Oldest Cycle Count list based on Create Date/Time',
-        icon: IconInventory,
-        navigationScreenName: 'Placeholder'
-      },
-      {
-        key: 'userDirectedCycleCount',
-        screenName: 'User Directed',
-        entryDescription: 'Enter a List ID to select the Cycle Count',
-        icon: IconInventory,
-        navigationScreenName: 'CycleCountListEntry'
-      },
-      {
-        key: 'replenishment',
-        screenName: 'Replenishment',
-        entryDescription: 'Manage inventory replenishment tasks',
-        icon: IconProducts,
-        navigationScreenName: 'ReplenishmentPickingLocation'
-      }
-    ]
+    navigationScreenName: 'CycleCountListEntry',
+    group: 'INVENTORY'
+  },
+  {
+    key: 'replenishment',
+    screenName: 'Replenishment',
+    entryDescription: 'Manage inventory replenishment tasks',
+    icon: IconProducts,
+    navigationScreenName: 'ReplenishmentPickingLocation',
+    group: 'INVENTORY'
   },
   {
     key: 'scan',
     screenName: 'Scan',
     entryDescription: 'Scan barcodes and QR codes for quick access',
     icon: IconScan,
-    navigationScreenName: 'Scan'
+    navigationScreenName: 'Scan',
+    group: 'MISCELLANEOUS'
   },
   {
     key: 'picking',
     screenName: 'Picking',
     entryDescription: 'Manage and group picking tasks',
     icon: IconPicking,
-    navigationScreenName: 'PickingPickType'
+    navigationScreenName: 'PickingPickType',
+    group: 'OUTBOUND'
   }
 ];
 
@@ -178,3 +182,19 @@ export function getDashboardEntries() {
 export function getDashboardEntriesKeys() {
   return dashboardEntries.map((entry) => entry.key);
 }
+
+export function getGroupDisplayName(group: DashboardGroup): string {
+  const groupNames: Record<DashboardGroup, string> = {
+    INBOUND: 'INBOUND',
+    OUTBOUND: 'OUTBOUND',
+    INVENTORY: 'INVENTORY',
+    MISCELLANEOUS: 'MISCELLANEOUS'
+  };
+  return groupNames[group];
+}
+
+export function getDashboardEntriesByGroup(group: DashboardGroup): DashboardEntry[] {
+  return dashboardEntries.filter((entry) => entry.group === group);
+}
+
+export const GROUP_ORDER: DashboardGroup[] = ['INBOUND', 'OUTBOUND', 'INVENTORY', 'MISCELLANEOUS'];
