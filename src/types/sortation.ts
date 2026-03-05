@@ -101,4 +101,6 @@ export type SortationPutawayScreenType = {
   taskList: PutawayDetailsModel[];
   currentTaskIndex: number;
   isDirectPutaway?: boolean;
+  isUserDirected?: boolean;
+  containerId?: string;
 };

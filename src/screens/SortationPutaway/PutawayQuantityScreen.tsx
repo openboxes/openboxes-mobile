@@ -19,7 +19,13 @@ import styles from './styles';
 
 type PutawayQuantityRouteProp = RouteProp<
   {
-    SortationPutawayQuantity: { taskList: PutawayDetailsModel[]; currentTaskIndex: number; isDirectPutaway?: boolean };
+    SortationPutawayQuantity: {
+      taskList: PutawayDetailsModel[];
+      currentTaskIndex: number;
+      isDirectPutaway?: boolean;
+      isUserDirected?: boolean;
+      containerId?: string;
+    };
   },
   'SortationPutawayQuantity'
 >;
@@ -31,7 +37,7 @@ type ReasonCode = {
 
 export default function PutawayQuantityScreen() {
   const { params } = useRoute<PutawayQuantityRouteProp>();
-  const { taskList, currentTaskIndex, isDirectPutaway } = params;
+  const { taskList, currentTaskIndex, isDirectPutaway, isUserDirected, containerId } = params;
   const putawayDetails = taskList[currentTaskIndex];
   const dispatch = useDispatch();
 
@@ -164,7 +170,9 @@ export default function PutawayQuantityScreen() {
           replace('SortationPutawayQuantity', {
             taskList: [remainingTask],
             currentTaskIndex: 0,
-            isDirectPutaway
+            isDirectPutaway,
+            isUserDirected,
+            containerId
           });
         }
       })
@@ -180,15 +188,22 @@ export default function PutawayQuantityScreen() {
   function handleResponseAfterComplete(response: any) {
     if (response && !response.error) {
       Alert.alert('Putaway Successful', 'The putaway was successful.');
-      const nextIndex = currentTaskIndex + 1;
-      if (nextIndex < taskList.length) {
-        navigate('SortationPutawayLocationScan', {
-          taskList,
-          currentTaskIndex: nextIndex,
-          isDirectPutaway
-        });
+
+      if (isUserDirected && containerId) {
+        navigate('SortationPutawayTaskList', { containerId });
       } else {
-        navigate(isDirectPutaway ? 'Sortation' : 'SortationPutaway');
+        const nextIndex = currentTaskIndex + 1;
+        if (nextIndex < taskList.length) {
+          navigate('SortationPutawayLocationScan', {
+            taskList,
+            currentTaskIndex: nextIndex,
+            isDirectPutaway,
+            isUserDirected,
+            containerId
+          });
+        } else {
+          navigate(isDirectPutaway ? 'Sortation' : 'SortationPutaway');
+        }
       }
     } else {
       Alert.alert('Putaway Failed', response?.errorMessage || 'Putaway failed.');
@@ -205,7 +220,12 @@ export default function PutawayQuantityScreen() {
   return (
     <Portal.Host>
       <ScrollView keyboardShouldPersistTaps="handled" style={styles.contentContainer}>
-        <PutawayDetails putawayDetails={updatedPutawayDetails} />
+        <PutawayDetails
+          putawayDetails={updatedPutawayDetails}
+          taskIndex={currentTaskIndex}
+          totalTasks={taskList.length}
+          showTaskCounter={!isUserDirected}
+        />
         <Divider />
 
         <View style={styles.formContainer}>
@@ -256,9 +276,7 @@ export default function PutawayQuantityScreen() {
         </View>
 
         <View style={styles.bottomActionContainer}>
-          <Button style={styles.topSpace} title="Confirm" mode="contained" size="100%" onPress={handleConfirm}>
-            Submit
-          </Button>
+          <Button style={styles.topSpace} title="Submit" mode="contained" size="100%" onPress={handleConfirm} />
         </View>
       </ScrollView>
 

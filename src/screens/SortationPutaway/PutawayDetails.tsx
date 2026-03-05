@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, View } from 'react-native';
-import { Caption, Chip, Divider, Title } from 'react-native-paper';
+import { Chip, Divider, Title } from 'react-native-paper';
 
 import { EMPTY_FALLBACK } from '../../constants';
 import { DetailChip, PutawayDetailsModel } from '../../types/sortation';
@@ -8,10 +8,18 @@ import styles from './styles';
 
 type PutawayDetailsProps = {
   putawayDetails: PutawayDetailsModel;
+  taskIndex?: number;
+  totalTasks?: number;
+  showTaskCounter?: boolean;
 };
 
-export default function PutawayDetails({ putawayDetails }: PutawayDetailsProps) {
-  const { inventoryItem, quantity, container, destination, type } = putawayDetails;
+export default function PutawayDetails({
+  putawayDetails,
+  taskIndex,
+  totalTasks,
+  showTaskCounter = true
+}: PutawayDetailsProps) {
+  const { inventoryItem, quantity, container, destination } = putawayDetails;
 
   const detailsChips: DetailChip[] = [
     {
@@ -39,9 +47,14 @@ export default function PutawayDetails({ putawayDetails }: PutawayDetailsProps) 
             Product Code: <Text style={styles.bold}>{inventoryItem?.product?.productCode}</Text>
           </Text>
         </Chip>
-        <Chip style={[styles.chipWarning]} textStyle={styles.chipText}>
-          {`${type ?? EMPTY_FALLBACK}`}
-        </Chip>
+        {showTaskCounter && taskIndex !== undefined && totalTasks !== undefined && (
+          <Chip icon="navigation" style={styles.chipDefault} textStyle={styles.chipText}>
+            Tasks:{' '}
+            <Text style={styles.bold}>
+              {taskIndex + 1} / {totalTasks}
+            </Text>
+          </Chip>
+        )}
       </View>
 
       <Divider style={styles.contentDivider} />

@@ -4,14 +4,16 @@ import React, { useMemo } from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { Avatar, Chip, Divider, Paragraph, Subheading } from 'react-native-paper';
 
+import Icon from '../../components/Icon';
 import { SortationTask } from '../../types/sortation';
 import styles from './styles';
-import Icon from '../../components/Icon';
 
 type RootStackParamList = {
   SortationPutawayLocationScan: {
     taskList: SortationTask[];
     currentTaskIndex: number;
+    isUserDirected?: boolean;
+    containerId?: string;
   };
   SortationPutawayTaskList: {
     containerId: string;
@@ -19,7 +21,7 @@ type RootStackParamList = {
   };
 };
 
-type NavigationProp = StackNavigationProp<RootStackParamList>;
+type NavigationProp = StackNavigationProp<RootStackParamList, any>;
 
 type PutawayModeScreenProps = {
   route: {
@@ -43,7 +45,7 @@ function ModeCard({
 }) {
   return (
     <TouchableOpacity style={styles.modeCardContainer} activeOpacity={0.8} onPress={onPress}>
-      <View style={styles.modeCardLeft}>
+      <View style={styles.modeCardLeft} focusable={false}>
         <Avatar.Icon size={40} icon={icon} style={styles.modeCardAvatar} />
       </View>
       <View style={styles.modeCardContent}>
@@ -51,7 +53,7 @@ function ModeCard({
         <Text style={styles.modeCardDescription}>{description}</Text>
       </View>
       <View style={styles.modeCardRight} focusable={false}>
-        <Icon name={7} focusable={false} />
+        <Icon name={7} />
       </View>
     </TouchableOpacity>
   );
@@ -72,7 +74,9 @@ export default function PutawayModeScreen({ route }: PutawayModeScreenProps) {
   const handleSystemDirected = () => {
     navigation.navigate('SortationPutawayLocationScan', {
       taskList,
-      currentTaskIndex: 0
+      currentTaskIndex: 0,
+      isUserDirected: false,
+      containerId
     });
   };
 
@@ -91,11 +95,11 @@ export default function PutawayModeScreen({ route }: PutawayModeScreenProps) {
     >
       <View style={styles.productDetails}>
         <View style={styles.headerRow}>
-          <Chip icon="identifier" style={styles.chipDefault} textStyle={styles.chipText} focusable={false}>
-            Container Id: {containerId}
+          <Chip icon="identifier" style={styles.chipDefault} textStyle={styles.chipText}>
+            Container Id: <Text style={styles.bold}>{containerId}</Text>
           </Chip>
-          <Chip icon="package" style={styles.chipDefault} textStyle={styles.chipText} focusable={false}>
-            Tasks: {taskSummary.totalItems}
+          <Chip icon="package" style={styles.chipDefault} textStyle={styles.chipText}>
+            Tasks: <Text style={styles.bold}>{taskSummary.totalItems}</Text>
           </Chip>
         </View>
       </View>

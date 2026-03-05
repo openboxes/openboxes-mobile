@@ -23,7 +23,7 @@ type PutawayProductScanRouteProp = RouteProp<
 
 export default function PutawayProductScanScreen() {
   const { params } = useRoute<PutawayProductScanRouteProp>();
-  const { taskList, currentTaskIndex, isDirectPutaway } = params;
+  const { taskList, currentTaskIndex, isDirectPutaway, isUserDirected, containerId } = params;
   const putawayDetails = taskList[currentTaskIndex];
   const [putawayProductBarcode, setPutawayProductBarcode] = useState<string>(EMPTY_STRING);
 
@@ -46,7 +46,6 @@ export default function PutawayProductScanScreen() {
       Alert.alert(
         'Wrong Product',
         `The scanned barcode does not match the expected putaway product (${product?.productCode}).`,
-        // Clear input on error to allow retry
         [{ text: 'OK', onPress: () => setPutawayProductBarcode(EMPTY_STRING) }]
       );
       return;
@@ -55,7 +54,9 @@ export default function PutawayProductScanScreen() {
     navigate('SortationPutawayQuantity', {
       taskList,
       currentTaskIndex,
-      isDirectPutaway
+      isDirectPutaway,
+      isUserDirected,
+      containerId
     });
   }
 
@@ -65,7 +66,12 @@ export default function PutawayProductScanScreen() {
       style={styles.contentWrapper}
       contentContainerStyle={styles.contentContainer}
     >
-      <PutawayDetails putawayDetails={putawayDetails} />
+      <PutawayDetails
+        putawayDetails={putawayDetails}
+        taskIndex={currentTaskIndex}
+        totalTasks={taskList.length}
+        showTaskCounter={!isUserDirected}
+      />
 
       <Divider />
 
@@ -82,15 +88,15 @@ export default function PutawayProductScanScreen() {
 
         <Button
           style={styles.topSpace}
-          title="Confirm"
+          title="Submit"
           mode="contained"
           size="100%"
           onPress={() => handleProcessing(putawayProductBarcode)}
-        >
-          Submit
-        </Button>
+        />
 
-        <SkipButton taskList={taskList} currentTaskIndex={currentTaskIndex} isDirectPutaway={isDirectPutaway} />
+        {!isUserDirected && (
+          <SkipButton taskList={taskList} currentTaskIndex={currentTaskIndex} isDirectPutaway={isDirectPutaway} />
+        )}
       </View>
     </ScrollView>
   );

@@ -13,7 +13,9 @@ export enum Name {
   Search,
   Category,
   Check,
-  ChevronRight
+  ChevronRight,
+  ChevronDown,
+  ChevronUp
 }
 
 export interface Props {
@@ -51,6 +53,12 @@ export default function Icon(props: Props) {
       break;
     case Name.ChevronRight:
       content = <Entypo name="chevron-right" style={props.style} size={props.size} color={props.color} />;
+      break;
+    case Name.ChevronDown:
+      content = <Entypo name="chevron-down" style={props.style} size={props.size} color={props.color} />;
+      break;
+    case Name.ChevronUp:
+      content = <Entypo name="chevron-up" style={props.style} size={props.size} color={props.color} />;
       break;
   }
 
