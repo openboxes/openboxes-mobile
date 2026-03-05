@@ -2,13 +2,15 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { Alert, ScrollView, View } from 'react-native';
 import { Divider, Subheading } from 'react-native-paper';
+import { useSelector } from 'react-redux';
 
 import Button from '../../components/Button';
 import EmptyView from '../../components/EmptyView';
 import { ScannerInput } from '../../components/ScannerInput';
 import { EMPTY_STRING } from '../../constants';
 import { navigate } from '../../NavigationService';
-import { SortationPutawayScreenType } from '../../types/sortation';
+import { RootState } from '../../redux/reducers';
+import { SortationTask } from '../../types/sortation';
 import { isProductBarcodeValid } from '../../utils/utils';
 import PutawayDetails from './PutawayDetails';
 import { SkipButton } from './SkipButton';
@@ -16,15 +18,21 @@ import styles from './styles';
 
 type PutawayProductScanRouteProp = RouteProp<
   {
-    SortationPutawayProductScan: SortationPutawayScreenType;
+    SortationPutawayProductScan: {
+      currentTaskIndex: number;
+      isDirectPutaway?: boolean;
+      isUserDirected?: boolean;
+      containerId?: string;
+    };
   },
   'SortationPutawayProductScan'
 >;
 
 export default function PutawayProductScanScreen() {
   const { params } = useRoute<PutawayProductScanRouteProp>();
-  const { taskList, currentTaskIndex, isDirectPutaway, isUserDirected, containerId } = params;
-  const putawayDetails = taskList[currentTaskIndex];
+  const { currentTaskIndex, isDirectPutaway, isUserDirected, containerId } = params;
+  const putawayTasks = useSelector((state: RootState) => state.putawayReducer.putawayTasks) as SortationTask[];
+  const putawayDetails = putawayTasks?.[currentTaskIndex];
   const [putawayProductBarcode, setPutawayProductBarcode] = useState<string>(EMPTY_STRING);
 
   if (!putawayDetails) {
@@ -52,7 +60,6 @@ export default function PutawayProductScanScreen() {
     }
 
     navigate('SortationPutawayQuantity', {
-      taskList,
       currentTaskIndex,
       isDirectPutaway,
       isUserDirected,
@@ -69,7 +76,7 @@ export default function PutawayProductScanScreen() {
       <PutawayDetails
         putawayDetails={putawayDetails}
         taskIndex={currentTaskIndex}
-        totalTasks={taskList.length}
+        totalTasks={putawayTasks.length}
         showTaskCounter={!isUserDirected}
       />
 
@@ -95,7 +102,7 @@ export default function PutawayProductScanScreen() {
         />
 
         {!isUserDirected && (
-          <SkipButton taskList={taskList} currentTaskIndex={currentTaskIndex} isDirectPutaway={isDirectPutaway} />
+          <SkipButton taskList={putawayTasks} currentTaskIndex={currentTaskIndex} isDirectPutaway={isDirectPutaway} />
         )}
       </View>
     </ScrollView>

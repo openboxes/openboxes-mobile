@@ -1,24 +1,24 @@
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { Button, Chip, Divider, Paragraph } from 'react-native-paper';
+import { useSelector } from 'react-redux';
 
 import Icon, { Name } from '../../components/Icon';
 import { ScannerInput } from '../../components/ScannerInput';
+import { RootState } from '../../redux/reducers';
 import { SortationTask } from '../../types/sortation';
 import styles from './styles';
 
 type RootStackParamList = {
   SortationPutawayLocationScan: {
-    taskList: SortationTask[];
     currentTaskIndex: number;
     isUserDirected?: boolean;
     containerId?: string;
   };
   SortationPutawayTaskList: {
     containerId: string;
-    taskList: SortationTask[];
   };
 };
 
@@ -59,7 +59,7 @@ function ZoneSection({ zoneName, tasks, onTaskPress, isExpanded, onToggle, taskC
     <View style={styles.zoneSection}>
       <TouchableOpacity style={styles.zoneHeader} activeOpacity={0.7} onPress={onToggle}>
         <View style={styles.zoneHeaderContent}>
-          <Text style={styles.zoneHeaderLabel}>Zone:</Text>
+          <Text style={styles.zoneHeaderLabel}>Zone</Text>
           <Text style={styles.zoneHeaderText}>
             {zoneName || 'Not Defined'} ({taskCount} Task{taskCount !== 1 ? 's' : ''})
           </Text>
@@ -76,30 +76,31 @@ type PutawayTaskListScreenProps = {
   route: {
     params: {
       containerId: string;
-      taskList: SortationTask[];
+      taskList?: SortationTask[];
     };
   };
 };
 
 export default function PutawayTaskListScreen({ route }: PutawayTaskListScreenProps) {
-  const { containerId, taskList: initialTaskList = [] } = route.params;
+  const { containerId } = route.params;
   const navigation = useNavigation<NavigationProp>();
+  const putawayTasks = useSelector((state: RootState) => state.putawayReducer.putawayTasks) as SortationTask[];
   const [searchTerm, setSearchTerm] = useState('');
   const [expandedZones, setExpandedZones] = useState<{ [key: string]: boolean }>({});
 
   const filteredTasks = useMemo(() => {
-    if (!initialTaskList) {
+    if (!putawayTasks) {
       return [];
     }
     if (!searchTerm.trim()) {
-      return initialTaskList;
+      return putawayTasks;
     }
     const term = searchTerm.toLowerCase().trim();
-    return initialTaskList.filter((task) => {
+    return putawayTasks.filter((task) => {
       const productCode = task.inventoryItem?.product?.productCode?.toLowerCase() || '';
       return productCode.includes(term);
     });
-  }, [initialTaskList, searchTerm]);
+  }, [searchTerm, putawayTasks]);
 
   const groupedTasks = useMemo(() => {
     if (!filteredTasks) {
@@ -120,6 +121,17 @@ export default function PutawayTaskListScreen({ route }: PutawayTaskListScreenPr
       tasks
     }));
   }, [filteredTasks]);
+
+  useEffect(() => {
+    if (searchTerm.trim() && filteredTasks.length === 1) {
+      setSearchTerm('');
+      navigation.navigate('SortationPutawayLocationScan', {
+        currentTaskIndex: 0,
+        isUserDirected: true,
+        containerId
+      });
+    }
+  }, [searchTerm, filteredTasks, navigation, containerId]);
 
   const isSearching = searchTerm.trim().length > 0;
 
@@ -143,8 +155,9 @@ export default function PutawayTaskListScreen({ route }: PutawayTaskListScreenPr
       return;
     }
 
+    setSearchTerm('');
+
     navigation.navigate('SortationPutawayLocationScan', {
-      taskList: filteredTasks,
       currentTaskIndex: filteredTasks.findIndex((t) => t.id === zoneTasks.tasks[taskIndex].id),
       isUserDirected: true,
       containerId

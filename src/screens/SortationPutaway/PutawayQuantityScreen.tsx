@@ -2,7 +2,7 @@ import { RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
 import React, { useEffect, useRef, useState } from 'react';
 import { Alert, ScrollView, TextInput, View } from 'react-native';
 import { Divider, TextInput as PaperTextInput, Paragraph, Portal, Subheading, Switch } from 'react-native-paper';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import AsyncModalSelect from '../../components/AsyncModalSelect';
 import Button from '../../components/Button';
@@ -11,7 +11,8 @@ import { INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
 import { navigate, replace } from '../../NavigationService';
 import { getReasonCodesAction } from '../../redux/actions/others';
 import { patchPutawayTaskAction } from '../../redux/actions/putaways';
-import { PutawayDetailsModel, SortationLocation } from '../../types/sortation';
+import { RootState } from '../../redux/reducers';
+import { SortationLocation, SortationTask } from '../../types/sortation';
 import Theme from '../../utils/Theme';
 import AlternativeLocationSelector from './AlternativeLocationSelector';
 import PutawayDetails from './PutawayDetails';
@@ -20,7 +21,6 @@ import styles from './styles';
 type PutawayQuantityRouteProp = RouteProp<
   {
     SortationPutawayQuantity: {
-      taskList: PutawayDetailsModel[];
       currentTaskIndex: number;
       isDirectPutaway?: boolean;
       isUserDirected?: boolean;
@@ -37,8 +37,9 @@ type ReasonCode = {
 
 export default function PutawayQuantityScreen() {
   const { params } = useRoute<PutawayQuantityRouteProp>();
-  const { taskList, currentTaskIndex, isDirectPutaway, isUserDirected, containerId } = params;
-  const putawayDetails = taskList[currentTaskIndex];
+  const { currentTaskIndex, isDirectPutaway, isUserDirected, containerId } = params;
+  const putawayTasks = useSelector((state: RootState) => state.putawayReducer.putawayTasks) as SortationTask[];
+  const putawayDetails = putawayTasks?.[currentTaskIndex];
   const dispatch = useDispatch();
 
   const inputRef = useRef<TextInput | null>(null);
@@ -46,7 +47,7 @@ export default function PutawayQuantityScreen() {
 
   const [putawayQuantity, setPutawayQuantity] = useState<number | undefined>();
   const [selectedAlternativeDestination, setSelectedAlternativeDestination] = useState<SortationLocation | null>(
-    putawayDetails.destination
+    putawayDetails?.destination
   );
   const [reasonCodes, setReasonCodes] = useState<ReasonCode[]>([]);
   const [selectedReasonCode, setSelectedReasonCode] = useState<ReasonCode | null>(null);
@@ -168,7 +169,6 @@ export default function PutawayQuantityScreen() {
         } else {
           // Cancel Remaining False - Navigate to Quantity Screen with new task
           replace('SortationPutawayQuantity', {
-            taskList: [remainingTask],
             currentTaskIndex: 0,
             isDirectPutaway,
             isUserDirected,
@@ -193,9 +193,8 @@ export default function PutawayQuantityScreen() {
         navigate('SortationPutawayTaskList', { containerId });
       } else {
         const nextIndex = currentTaskIndex + 1;
-        if (nextIndex < taskList.length) {
+        if (nextIndex < putawayTasks?.length) {
           navigate('SortationPutawayLocationScan', {
-            taskList,
             currentTaskIndex: nextIndex,
             isDirectPutaway,
             isUserDirected,
@@ -223,7 +222,7 @@ export default function PutawayQuantityScreen() {
         <PutawayDetails
           putawayDetails={updatedPutawayDetails}
           taskIndex={currentTaskIndex}
-          totalTasks={taskList.length}
+          totalTasks={putawayTasks?.length || 0}
           showTaskCounter={!isUserDirected}
         />
         <Divider />

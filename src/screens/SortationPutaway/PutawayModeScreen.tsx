@@ -3,21 +3,21 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import React, { useMemo } from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { Avatar, Chip, Divider, Paragraph, Subheading } from 'react-native-paper';
+import { useSelector } from 'react-redux';
 
-import Icon from '../../components/Icon';
+import Icon, { Name } from '../../components/Icon';
+import { RootState } from '../../redux/reducers';
 import { SortationTask } from '../../types/sortation';
 import styles from './styles';
 
 type RootStackParamList = {
   SortationPutawayLocationScan: {
-    taskList: SortationTask[];
     currentTaskIndex: number;
     isUserDirected?: boolean;
     containerId?: string;
   };
   SortationPutawayTaskList: {
     containerId: string;
-    taskList: SortationTask[];
   };
 };
 
@@ -27,7 +27,6 @@ type PutawayModeScreenProps = {
   route: {
     params: {
       containerId: string;
-      taskList: SortationTask[];
     };
   };
 };
@@ -53,27 +52,27 @@ function ModeCard({
         <Text style={styles.modeCardDescription}>{description}</Text>
       </View>
       <View style={styles.modeCardRight} focusable={false}>
-        <Icon name={7} />
+        <Icon name={Name.ChevronRight} />
       </View>
     </TouchableOpacity>
   );
 }
 
 export default function PutawayModeScreen({ route }: PutawayModeScreenProps) {
-  const { containerId, taskList } = route.params;
+  const { containerId } = route.params;
   const navigation = useNavigation<NavigationProp>();
+  const putawayTasks = useSelector((state: RootState) => state.putawayReducer.putawayTasks) as SortationTask[];
 
   const taskSummary = useMemo(() => {
-    const zones = new Set(taskList.map((task) => task.destination?.zoneName).filter(Boolean));
+    const zones = new Set(putawayTasks?.map((task) => task.destination?.zoneName).filter(Boolean) || []);
     return {
-      totalItems: taskList.length,
+      totalItems: putawayTasks?.length || 0,
       totalZones: zones.size
     };
-  }, [taskList]);
+  }, [putawayTasks]);
 
   const handleSystemDirected = () => {
     navigation.navigate('SortationPutawayLocationScan', {
-      taskList,
       currentTaskIndex: 0,
       isUserDirected: false,
       containerId
@@ -82,8 +81,7 @@ export default function PutawayModeScreen({ route }: PutawayModeScreenProps) {
 
   const handleUserDirected = () => {
     navigation.navigate('SortationPutawayTaskList', {
-      containerId,
-      taskList
+      containerId
     });
   };
 

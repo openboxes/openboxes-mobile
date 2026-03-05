@@ -3,10 +3,16 @@ import { Alert } from 'react-native';
 
 import Button from '../../components/Button';
 import { navigate } from '../../NavigationService';
-import { SortationPutawayScreenType } from '../../types/sortation';
+import { SortationTask } from '../../types/sortation';
 import styles from './styles';
 
-export function SkipButton({ taskList, currentTaskIndex, isDirectPutaway = false }: SortationPutawayScreenType) {
+type SkipButtonProps = {
+  taskList: SortationTask[];
+  currentTaskIndex: number;
+  isDirectPutaway?: boolean;
+};
+
+export function SkipButton({ taskList, currentTaskIndex, isDirectPutaway = false }: SkipButtonProps) {
   function handleSkip() {
     Alert.alert(
       'Skip Putaway',

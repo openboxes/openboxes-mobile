@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import { appConfig, DEFAULT_DATE_FORMAT_OPTIONS } from '../constants';
 import Product from '../data/product/Product';
+import { SortationProduct } from '../types/sortation';
 
 export function parseResponse(data) {
   if (_.isArray(data)) {
@@ -68,7 +69,10 @@ export function parseFromISODateToLocaleString(dateStr: Date | string): string {
  * @param product The product to validate against.
  * @returns True if the scanned barcode is valid, false otherwise.
  */
-export function isProductBarcodeValid(scannedBarcode: string, product: Product | null | undefined): boolean {
+export function isProductBarcodeValid(
+  scannedBarcode: string,
+  product: Product | SortationProduct | null | undefined
+): boolean {
   if (!scannedBarcode || !product) {
     return false;
   }

@@ -253,9 +253,14 @@ export default StyleSheet.create({
     marginTop: Theme.spacing.large
   },
   zoneHeader: {
-    backgroundColor: '#F5F5F5',
-    paddingVertical: Theme.spacing.small,
-    paddingHorizontal: Theme.spacing.large
+    backgroundColor: '#E8EDF2',
+    paddingVertical: Theme.spacing.medium,
+    paddingHorizontal: Theme.spacing.large,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#D0D0D0'
   },
   zoneHeaderText: {
     fontSize: 14,
@@ -288,50 +293,6 @@ export default StyleSheet.create({
     flex: 1,
     textAlign: 'right'
   },
-  taskRow: {
-    backgroundColor: '#FFFFFF',
-    paddingVertical: Theme.spacing.large,
-    paddingHorizontal: Theme.spacing.large,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0',
-    flexDirection: 'row',
-    alignItems: 'center'
-  },
-  taskRowContent: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center'
-  },
-  taskRowProduct: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: Theme.colors.primary,
-    flex: 1
-  },
-  taskRowLocation: {
-    fontSize: 14,
-    color: Theme.colors.text,
-    flex: 1,
-    textAlign: 'center'
-  },
-  taskRowQuantity: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: Theme.colors.text,
-    flex: 1,
-    textAlign: 'right'
-  },
-  zoneSection: {
-    marginTop: Theme.spacing.small
-  },
-  zoneHeader: {
-    backgroundColor: '#E8EDF2',
-    paddingVertical: Theme.spacing.medium,
-    paddingHorizontal: Theme.spacing.large,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center'
-  },
   zoneHeaderContent: {
     flexDirection: 'column'
   },
@@ -340,11 +301,6 @@ export default StyleSheet.create({
     fontWeight: '500',
     color: '#666666',
     marginBottom: 2
-  },
-  zoneHeaderText: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#333333'
   },
   zoneHeaderIcon: {
     color: '#666666'

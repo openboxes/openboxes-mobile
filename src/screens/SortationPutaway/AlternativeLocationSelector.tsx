@@ -7,14 +7,14 @@ import Button from '../../components/Button';
 import { ScannerInput } from '../../components/ScannerInput';
 import { EMPTY_STRING } from '../../constants';
 import { getAlternativeDestinationsAction, searchLocationByLocationNumber } from '../../redux/actions/locations';
-import { PutawayDetailsModel, SortationLocation } from '../../types/sortation';
+import { SortationLocation, SortationTask } from '../../types/sortation';
 import styles from './styles';
 
 type Props = {
   visible: boolean;
   onDismiss: () => void;
   onConfirm: (location: SortationLocation) => void;
-  putawayDetails: PutawayDetailsModel;
+  putawayDetails: SortationTask;
   initialLocation: SortationLocation | null;
 };
 

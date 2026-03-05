@@ -24,8 +24,7 @@ export default function PutawayEntryScreen() {
 
             if (filteredTasks.length > 0) {
               navigate('SortationPutawayMode', {
-                containerId,
-                taskList: filteredTasks
+                containerId
               });
             } else {
               Alert.alert('No Valid Tasks Found', `No IN_PROGRESS tasks found for container ${containerId}`);

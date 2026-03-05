@@ -3,11 +3,11 @@ import { Text, View } from 'react-native';
 import { Chip, Divider, Title } from 'react-native-paper';
 
 import { EMPTY_FALLBACK } from '../../constants';
-import { DetailChip, PutawayDetailsModel } from '../../types/sortation';
+import { DetailChip, SortationTask } from '../../types/sortation';
 import styles from './styles';
 
 type PutawayDetailsProps = {
-  putawayDetails: PutawayDetailsModel;
+  putawayDetails: SortationTask;
   taskIndex?: number;
   totalTasks?: number;
   showTaskCounter?: boolean;
