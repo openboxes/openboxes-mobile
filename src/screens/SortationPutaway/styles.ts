@@ -158,5 +158,58 @@ export default StyleSheet.create({
   },
   dialogActionButton: {
     marginLeft: Theme.spacing.small
+  },
+  modeCard: {
+    marginTop: Theme.spacing.large,
+    backgroundColor: Theme.colors.surface
+  },
+  modeCardContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    padding: Theme.spacing.large,
+    marginTop: Theme.spacing.large,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2
+  },
+  modeCardLeft: {
+    marginRight: Theme.spacing.large
+  },
+  modeCardAvatar: {
+    backgroundColor: '#EEF2F7'
+  },
+  modeCardContent: {
+    flex: 1
+  },
+  modeCardRight: {
+    marginLeft: Theme.spacing.small
+  },
+  modeCardTitle: {
+    fontWeight: 'bold',
+    fontSize: 16,
+    color: Theme.colors.primary
+  },
+  modeCardDescription: {
+    fontSize: 14,
+    color: Theme.colors.text,
+    marginTop: 4
+  },
+  modeCardChevron: {
+    fontSize: 24,
+    color: '#888888'
+  },
+  modeTitle: {
+    fontWeight: 'bold',
+    color: Theme.colors.primary
+  },
+  modeDescription: {
+    color: Theme.colors.text,
+    marginTop: 4
   }
 });

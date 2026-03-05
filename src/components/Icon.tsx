@@ -12,7 +12,8 @@ export enum Name {
   Cross,
   Search,
   Category,
-  Check
+  Check,
+  ChevronRight
 }
 
 export interface Props {
@@ -21,6 +22,7 @@ export interface Props {
   onPress?: () => void;
   color?: string;
   style?: StyleProp<TextStyle>;
+  focusable?: boolean;
 }
 
 export default function Icon(props: Props) {
@@ -47,6 +49,10 @@ export default function Icon(props: Props) {
     case Name.Check:
       content = <Entypo name="check" style={props.style} size={props.size} color={props.color} />;
       break;
+    case Name.ChevronRight:
+      content = <Entypo name="chevron-right" style={props.style} size={props.size} color={props.color} />;
+      break;
   }
-  return <TouchableOpacity onPress={props.onPress}>{content}</TouchableOpacity>;
+
+  return props.onPress ? <TouchableOpacity onPress={props.onPress}>{content}</TouchableOpacity> : content;
 }

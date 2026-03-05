@@ -55,6 +55,8 @@ import SortationEntryScreen from './screens/Sortation/SortationEntryScreen';
 import SortationQuantityScreen from './screens/Sortation/SortationQuantityScreen';
 import SortationTaskSelectionListScreen from './screens/Sortation/SortationTaskSelectionListScreen';
 import PutawayEntryScreen from './screens/SortationPutaway/PutawayEntryScreen';
+import PutawayModeScreen from './screens/SortationPutaway/PutawayModeScreen';
+import PutawayTaskListScreen from './screens/SortationPutaway/PutawayTaskListScreen';
 import PutawayLocationScanScreen from './screens/SortationPutaway/PutawayLocationScanScreen';
 import PutawayProductScanScreen from './screens/SortationPutaway/PutawayProductScanScreen';
 import PutawayQuantityScreen from './screens/SortationPutaway/PutawayQuantityScreen';
@@ -306,6 +308,16 @@ class Main extends Component<Props, State> {
                 options={{ title: 'Inbound Sortation' }}
               />
               <Stack.Screen name="SortationPutaway" component={PutawayEntryScreen} options={{ title: 'Putaway' }} />
+              <Stack.Screen
+                name="SortationPutawayMode"
+                component={PutawayModeScreen}
+                options={{ title: 'Putaway Mode' }}
+              />
+              <Stack.Screen
+                name="SortationPutawayTaskList"
+                component={PutawayTaskListScreen}
+                options={{ title: 'Putaway Tasks' }}
+              />
               <Stack.Screen
                 name="SortationPutawayLocationScan"
                 component={PutawayLocationScanScreen}
