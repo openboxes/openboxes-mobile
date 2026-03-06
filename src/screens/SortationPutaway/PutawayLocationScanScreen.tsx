@@ -46,7 +46,7 @@ export default function PutawayLocationScanScreen() {
 
   useEffect(() => {
     setPutawayLocationBarcode(EMPTY_STRING);
-  }, []);
+  }, [currentTaskIndex]);
 
   if (!putawayDetails) {
     return (

@@ -101,7 +101,7 @@ export default function PutawayQuantityScreen() {
   }
 
   function handleConfirm() {
-    const totalQty = putawayDetails.quantity;
+    const totalQty = Number(putawayDetails.quantity);
 
     if (putawayQuantity === undefined || putawayQuantity < 0 || putawayQuantity > putawayDetails.quantity) {
       Alert.alert(
@@ -222,7 +222,7 @@ export default function PutawayQuantityScreen() {
 
   return (
     <Portal.Host>
-      <ScrollView keyboardShouldPersistTaps="handled" style={styles.contentContainer}>
+      <ScrollView keyboardShouldPersistTaps="always" style={styles.contentContainer}>
         <PutawayDetails
           putawayDetails={updatedPutawayDetails}
           taskIndex={currentTaskIndex}

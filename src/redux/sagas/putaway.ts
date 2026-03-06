@@ -132,13 +132,17 @@ function* getPutawayDetailsByContainerId(action: any) {
       payload: response.data
     });
     yield put(hideScreenLoading());
-    yield action.callback({ response, message: 'Putaway details fetched successfully' });
+    if (action.callback) {
+      yield action.callback({ response, message: 'Putaway details fetched successfully' });
+    }
   } catch (error) {
     yield put(hideScreenLoading());
-    yield action.callback({
-      error: true,
-      errorMessage: error.message
-    });
+    if (action.callback) {
+      yield action.callback({
+        error: true,
+        errorMessage: error.message
+      });
+    }
   }
 }
 
