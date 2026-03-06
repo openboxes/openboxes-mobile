@@ -102,7 +102,12 @@ export default function PutawayProductScanScreen() {
         />
 
         {!isUserDirected && (
-          <SkipButton taskList={putawayTasks} currentTaskIndex={currentTaskIndex} isDirectPutaway={isDirectPutaway} />
+          <SkipButton
+            taskList={putawayTasks}
+            currentTaskIndex={currentTaskIndex}
+            isDirectPutaway={isDirectPutaway}
+            containerId={containerId}
+          />
         )}
       </View>
     </ScrollView>

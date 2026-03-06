@@ -10,9 +10,10 @@ type SkipButtonProps = {
   taskList: SortationTask[];
   currentTaskIndex: number;
   isDirectPutaway?: boolean;
+  containerId?: string;
 };
 
-export function SkipButton({ taskList, currentTaskIndex, isDirectPutaway = false }: SkipButtonProps) {
+export function SkipButton({ taskList, currentTaskIndex, isDirectPutaway = false, containerId }: SkipButtonProps) {
   function handleSkip() {
     Alert.alert(
       'Skip Putaway',
@@ -27,9 +28,9 @@ export function SkipButton({ taskList, currentTaskIndex, isDirectPutaway = false
             const currentIndex = nextIndex < taskList.length ? nextIndex : 0;
 
             navigate('SortationPutawayLocationScan', {
-              taskList,
               currentTaskIndex: currentIndex,
-              isDirectPutaway
+              isDirectPutaway,
+              containerId
             });
           }
         }

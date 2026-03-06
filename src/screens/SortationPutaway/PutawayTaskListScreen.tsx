@@ -1,12 +1,13 @@
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { Button, Chip, Divider, Paragraph } from 'react-native-paper';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import Icon, { Name } from '../../components/Icon';
 import { ScannerInput } from '../../components/ScannerInput';
+import { getPutawayDetailsByContainerId } from '../../redux/actions/putaways';
 import { RootState } from '../../redux/reducers';
 import { SortationTask } from '../../types/sortation';
 import styles from './styles';
@@ -84,9 +85,20 @@ type PutawayTaskListScreenProps = {
 export default function PutawayTaskListScreen({ route }: PutawayTaskListScreenProps) {
   const { containerId } = route.params;
   const navigation = useNavigation<NavigationProp>();
+  const dispatch = useDispatch();
   const putawayTasks = useSelector((state: RootState) => state.putawayReducer.putawayTasks) as SortationTask[];
   const [searchTerm, setSearchTerm] = useState('');
   const [expandedZones, setExpandedZones] = useState<{ [key: string]: boolean }>({});
+
+  const fetchTasks = useCallback(() => {
+    dispatch(getPutawayDetailsByContainerId(containerId));
+  }, [dispatch, containerId]);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchTasks();
+    }, [fetchTasks])
+  );
 
   const filteredTasks = useMemo(() => {
     if (!putawayTasks) {
@@ -124,14 +136,16 @@ export default function PutawayTaskListScreen({ route }: PutawayTaskListScreenPr
 
   useEffect(() => {
     if (searchTerm.trim() && filteredTasks.length === 1) {
+      const matchedTask = filteredTasks[0];
+      const globalIndex = putawayTasks.findIndex((t) => t.id === matchedTask.id);
       setSearchTerm('');
       navigation.navigate('SortationPutawayLocationScan', {
-        currentTaskIndex: 0,
+        currentTaskIndex: globalIndex >= 0 ? globalIndex : 0,
         isUserDirected: true,
         containerId
       });
     }
-  }, [searchTerm, filteredTasks, navigation, containerId]);
+  }, [searchTerm, filteredTasks, putawayTasks, navigation, containerId]);
 
   const isSearching = searchTerm.trim().length > 0;
 
@@ -145,7 +159,7 @@ export default function PutawayTaskListScreen({ route }: PutawayTaskListScreenPr
   const toggleZone = (zoneName: string) => {
     setExpandedZones((prev) => ({
       ...prev,
-      [zoneName]: !prev[zoneName]
+      [zoneName]: !(prev[zoneName] ?? true)
     }));
   };
 
@@ -155,10 +169,13 @@ export default function PutawayTaskListScreen({ route }: PutawayTaskListScreenPr
       return;
     }
 
+    const selectedTask = zoneTasks.tasks[taskIndex];
+    const globalIndex = putawayTasks.findIndex((t) => t.id === selectedTask.id);
+
     setSearchTerm('');
 
     navigation.navigate('SortationPutawayLocationScan', {
-      currentTaskIndex: filteredTasks.findIndex((t) => t.id === zoneTasks.tasks[taskIndex].id),
+      currentTaskIndex: globalIndex >= 0 ? globalIndex : 0,
       isUserDirected: true,
       containerId
     });

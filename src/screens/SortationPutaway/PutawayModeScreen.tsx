@@ -97,7 +97,11 @@ export default function PutawayModeScreen({ route }: PutawayModeScreenProps) {
             Container Id: <Text style={styles.bold}>{containerId}</Text>
           </Chip>
           <Chip icon="package" style={styles.chipDefault} textStyle={styles.chipText}>
-            Tasks: <Text style={styles.bold}>{taskSummary.totalItems}</Text>
+            Tasks:{' '}
+            <Text style={styles.bold}>
+              {taskSummary.totalItems} item{taskSummary.totalItems !== 1 ? 's' : ''} across {taskSummary.totalZones}{' '}
+              zone{taskSummary.totalZones !== 1 ? 's' : ''}
+            </Text>
           </Chip>
         </View>
       </View>

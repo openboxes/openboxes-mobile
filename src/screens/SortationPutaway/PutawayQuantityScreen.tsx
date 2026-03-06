@@ -10,7 +10,7 @@ import EmptyView from '../../components/EmptyView';
 import { INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
 import { navigate, replace } from '../../NavigationService';
 import { getReasonCodesAction } from '../../redux/actions/others';
-import { patchPutawayTaskAction } from '../../redux/actions/putaways';
+import { getPutawayDetailsByContainerId, patchPutawayTaskAction } from '../../redux/actions/putaways';
 import { RootState } from '../../redux/reducers';
 import { SortationLocation, SortationTask } from '../../types/sortation';
 import Theme from '../../utils/Theme';
@@ -168,6 +168,7 @@ export default function PutawayQuantityScreen() {
           );
         } else {
           // Cancel Remaining False - Navigate to Quantity Screen with new task
+          dispatch(getPutawayDetailsByContainerId(containerId!, () => {}));
           replace('SortationPutawayQuantity', {
             currentTaskIndex: 0,
             isDirectPutaway,
@@ -192,10 +193,13 @@ export default function PutawayQuantityScreen() {
       if (isUserDirected && containerId) {
         navigate('SortationPutawayTaskList', { containerId });
       } else {
-        const nextIndex = currentTaskIndex + 1;
-        if (nextIndex < putawayTasks?.length) {
+        // Re-fetch removes the completed task, so remaining tasks shift down.
+        // Use index 0 to start at the new first task after re-fetch.
+        const hasMoreTasks = putawayTasks?.length > 1;
+        if (hasMoreTasks) {
+          dispatch(getPutawayDetailsByContainerId(containerId!));
           navigate('SortationPutawayLocationScan', {
-            currentTaskIndex: nextIndex,
+            currentTaskIndex: 0,
             isDirectPutaway,
             isUserDirected,
             containerId
