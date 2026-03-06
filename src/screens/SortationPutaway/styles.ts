@@ -48,13 +48,6 @@ export default StyleSheet.create({
     alignItems: 'center',
     backgroundColor: Theme.colors.warning
   },
-  chipInfo: {
-    height: 28,
-    justifyContent: 'flex-start',
-    borderRadius: 4,
-    alignItems: 'center',
-    backgroundColor: Theme.colors.primary
-  },
   contentDivider: {
     marginVertical: 8
   },
@@ -166,10 +159,6 @@ export default StyleSheet.create({
   dialogActionButton: {
     marginLeft: Theme.spacing.small
   },
-  modeCard: {
-    marginTop: Theme.spacing.large,
-    backgroundColor: Theme.colors.surface
-  },
   modeCardContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -204,18 +193,6 @@ export default StyleSheet.create({
   },
   modeCardDescription: {
     fontSize: 14,
-    color: Theme.colors.text,
-    marginTop: 4
-  },
-  modeCardChevron: {
-    fontSize: 24,
-    color: '#888888'
-  },
-  modeTitle: {
-    fontWeight: 'bold',
-    color: Theme.colors.primary
-  },
-  modeDescription: {
     color: Theme.colors.text,
     marginTop: 4
   },
@@ -313,12 +290,6 @@ export default StyleSheet.create({
   emptyText: {
     fontSize: 14,
     color: Theme.colors.text,
-    textAlign: 'center'
-  },
-  resultsCount: {
-    fontSize: 14,
-    color: Theme.colors.text,
-    marginTop: Theme.spacing.medium,
     textAlign: 'center'
   }
 });

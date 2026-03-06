@@ -24,7 +24,6 @@ export interface Props {
   onPress?: () => void;
   color?: string;
   style?: StyleProp<TextStyle>;
-  focusable?: boolean;
 }
 
 export default function Icon(props: Props) {

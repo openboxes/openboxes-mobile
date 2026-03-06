@@ -34,8 +34,8 @@ class _ApiClient {
     return await this.client.delete(endpoint, config);
   }
 
-  async patch(endpoint: string, config = this.client.defaults) {
-    return await this.client.patch(endpoint, config);
+  async patch(endpoint: string, data: any, config = this.client.defaults) {
+    return await this.client.patch(endpoint, data, config);
   }
 
   handleApiSuccess = (response: AxiosResponse) => {

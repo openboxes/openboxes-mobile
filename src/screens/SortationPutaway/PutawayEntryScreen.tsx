@@ -1,33 +1,31 @@
 import React, { useCallback, useState } from 'react';
 import { Alert, ScrollView } from 'react-native';
 import { Paragraph, Title } from 'react-native-paper';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { ScannerInput } from '../../components/ScannerInput';
 import { EMPTY_STRING } from '../../constants';
 import { navigate } from '../../NavigationService';
 import { getPutawayDetailsByContainerId } from '../../redux/actions/putaways';
-import { SortationTask } from '../../types/sortation';
+import { RootState } from '../../redux/reducers';
 import styles from './styles';
 
 export default function PutawayEntryScreen() {
   const [putawayContainerId, setPutawayContainerId] = useState<string>(EMPTY_STRING);
   const dispatch = useDispatch();
+  const putawayTasks = useSelector((state: RootState) => state.putawayReducer.putawayTasks);
 
   const performScan = useCallback(
     (containerId: string) => {
       dispatch(
         getPutawayDetailsByContainerId(containerId, (response) => {
           if (response && !response.error) {
-            const allTasks: SortationTask[] = response?.response?.data || [];
-            const filteredTasks = allTasks.filter((task) => task.status === 'IN_PROGRESS' || task.status === 'PENDING');
-
-            if (filteredTasks.length > 0) {
+            if (putawayTasks.length > 0) {
               navigate('SortationPutawayMode', {
                 containerId
               });
             } else {
-              Alert.alert('No Valid Tasks Found', `No IN_PROGRESS tasks found for container ${containerId}`);
+              Alert.alert('No Valid Tasks Found', `No open tasks found for container ${containerId}`);
             }
           } else {
             Alert.alert('Error', `Error while fetching putaway tasks: ${response?.errorMessage}`);
@@ -37,7 +35,7 @@ export default function PutawayEntryScreen() {
         })
       );
     },
-    [dispatch]
+    [dispatch, putawayTasks]
   );
 
   return (

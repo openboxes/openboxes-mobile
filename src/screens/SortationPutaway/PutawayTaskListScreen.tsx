@@ -77,7 +77,6 @@ type PutawayTaskListScreenProps = {
   route: {
     params: {
       containerId: string;
-      taskList?: SortationTask[];
     };
   };
 };
