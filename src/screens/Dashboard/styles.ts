@@ -30,7 +30,6 @@ export default StyleSheet.create({
     padding: Theme.spacing.small / 2
   },
   cardContainer: {
-    flex: 1,
     margin: Theme.spacing.small / 2
   },
   cardContent: {

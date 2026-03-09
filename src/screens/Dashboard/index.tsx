@@ -26,7 +26,10 @@ type DashboardGroupSectionProps = {
 };
 
 function DashboardGroupSection({ group, entries, columns }: DashboardGroupSectionProps) {
-  const renderItem = useCallback(({ item }: ListRenderItemInfo<DashboardEntry>) => <DashboardCard item={item} />, []);
+  const renderItem = useCallback(
+    ({ item }: ListRenderItemInfo<DashboardEntry>) => <DashboardCard item={item} columns={columns} />,
+    [columns]
+  );
 
   if (entries.length === 0) {
     return null;

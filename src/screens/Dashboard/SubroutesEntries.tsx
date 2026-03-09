@@ -21,7 +21,10 @@ export default function SubroutesEntries({ route }: SubroutesEntriesProps) {
   const { subroutes } = route.params || {};
   const { columns } = useResponsiveColumns();
 
-  const renderItem = useCallback(({ item }: ListRenderItemInfo<DashboardEntry>) => <DashboardCard item={item} />, []);
+  const renderItem = useCallback(
+    ({ item }: ListRenderItemInfo<DashboardEntry>) => <DashboardCard item={item} columns={columns} />,
+    [columns]
+  );
 
   return (
     <View style={styles.screenContainer}>

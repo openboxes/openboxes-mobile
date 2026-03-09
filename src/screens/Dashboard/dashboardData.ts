@@ -11,6 +11,7 @@ import IconPutaway from '../../assets/images/icon_putaway.svg';
 import IconPutawayCandidates from '../../assets/images/icon_putaway_candidates.svg';
 import IconReceiving from '../../assets/images/icon_receiving.svg';
 import IconScan from '../../assets/images/icon_scan.svg';
+import IconSettings from '../../assets/images/icon_settings.svg';
 import IconSortation from '../../assets/images/icon_sortation.svg';
 
 export type DashboardEntry = {
@@ -29,6 +30,14 @@ export type DashboardGroup = 'INBOUND' | 'OUTBOUND' | 'INVENTORY' | 'MISCELLANEO
 
 const dashboardEntries: DashboardEntry[] = [
   {
+    key: 'receiving',
+    screenName: 'Receiving',
+    entryDescription: 'Manage inbound orders and receiving tasks',
+    icon: IconReceiving,
+    navigationScreenName: 'InboundOrderList',
+    group: 'INBOUND'
+  },
+  {
     key: 'sortation',
     screenName: 'Sortation',
     entryDescription: 'Manage sortation tasks and workflows',
@@ -45,13 +54,20 @@ const dashboardEntries: DashboardEntry[] = [
     group: 'INBOUND'
   },
   {
-    key: 'legacy-picking',
-    screenName: 'Legacy Picking',
-    entryDescription: 'Manage orders and picking tasks',
-    icon: IconPicking,
-    navigationScreenName: 'Orders',
-    defaultVisible: false,
-    group: 'OUTBOUND'
+    key: 'pendingPutaways',
+    screenName: 'Direct Putaway',
+    entryDescription: 'View and manage pending putaway tasks',
+    icon: IconPendingPutaways,
+    navigationScreenName: 'PutawayList',
+    group: 'INBOUND'
+  },
+  {
+    key: 'putawayCandidates',
+    screenName: 'Putaway Candidates',
+    entryDescription: 'View and manage putaway candidates',
+    icon: IconPutawayCandidates,
+    navigationScreenName: 'PutawayCandidates',
+    group: 'INBOUND'
   },
   {
     key: 'pickUpAllocation',
@@ -62,11 +78,27 @@ const dashboardEntries: DashboardEntry[] = [
     group: 'OUTBOUND'
   },
   {
+    key: 'picking',
+    screenName: 'Picking',
+    entryDescription: 'Manage and group picking tasks',
+    icon: IconPicking,
+    navigationScreenName: 'PickingPickType',
+    group: 'OUTBOUND'
+  },
+  {
     key: 'packing',
     screenName: 'Packing',
     entryDescription: 'Manage packing tasks and shipments',
     icon: IconPacking,
     navigationScreenName: 'OutboundStockList',
+    group: 'OUTBOUND'
+  },
+  {
+    key: 'createLPN',
+    screenName: 'Create LPN',
+    entryDescription: 'Create a new License Plate Number (LPN)',
+    icon: IconCreateLPN,
+    navigationScreenName: 'CreateLpn',
     group: 'OUTBOUND'
   },
   {
@@ -86,28 +118,13 @@ const dashboardEntries: DashboardEntry[] = [
     group: 'OUTBOUND'
   },
   {
-    key: 'receiving',
-    screenName: 'Receiving',
-    entryDescription: 'Manage inbound orders and receiving tasks',
-    icon: IconReceiving,
-    navigationScreenName: 'InboundOrderList',
-    group: 'INBOUND'
-  },
-  {
-    key: 'putawayCandidates',
-    screenName: 'Putaway Candidates',
-    entryDescription: 'View and manage putaway candidates',
-    icon: IconPutawayCandidates,
-    navigationScreenName: 'PutawayCandidates',
-    group: 'INBOUND'
-  },
-  {
-    key: 'pendingPutaways',
-    screenName: 'Direct Putaway',
-    entryDescription: 'View and manage pending putaway tasks',
-    icon: IconPendingPutaways,
-    navigationScreenName: 'PutawayList',
-    group: 'INBOUND'
+    key: 'legacy-picking',
+    screenName: 'Legacy Picking',
+    entryDescription: 'Manage orders and picking tasks',
+    icon: IconPicking,
+    navigationScreenName: 'Orders',
+    defaultVisible: false,
+    group: 'OUTBOUND'
   },
   {
     key: 'products',
@@ -124,14 +141,6 @@ const dashboardEntries: DashboardEntry[] = [
     icon: IconInventory,
     navigationScreenName: 'Product Summary',
     group: 'INVENTORY'
-  },
-  {
-    key: 'createLPN',
-    screenName: 'Create LPN',
-    entryDescription: 'Create a new License Plate Number (LPN)',
-    icon: IconCreateLPN,
-    navigationScreenName: 'CreateLpn',
-    group: 'OUTBOUND'
   },
   {
     key: 'transfers',
@@ -166,12 +175,12 @@ const dashboardEntries: DashboardEntry[] = [
     group: 'MISCELLANEOUS'
   },
   {
-    key: 'picking',
-    screenName: 'Picking',
-    entryDescription: 'Manage and group picking tasks',
-    icon: IconPicking,
-    navigationScreenName: 'PickingPickType',
-    group: 'OUTBOUND'
+    key: 'settings',
+    screenName: 'Settings',
+    entryDescription: 'Manage application settings and preferences',
+    icon: IconSettings,
+    navigationScreenName: 'Settings',
+    group: 'MISCELLANEOUS'
   }
 ];
 
