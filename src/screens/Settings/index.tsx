@@ -10,6 +10,7 @@ import { appConfig } from '../../constants';
 import * as NavigationService from '../../NavigationService';
 import {
   resetDashboardEntriesVisibility,
+  setAllowReallocationDuringPicking,
   setBarcodeScanDebounce,
   setDashboardEntriesOrder,
   setGroupLocationEntries,
@@ -31,9 +32,8 @@ const API_URL_KEY = 'API_URL';
 const Settings = () => {
   const [serverUrl, setServerUrl] = useState<string>('');
   const dispatch = useDispatch();
-  const { groupLocationEntries, productSummaryConfig, barcodeScanDebounceTime } = useSelector(
-    (state: RootState) => state.settingsReducer
-  );
+  const { groupLocationEntries, allowReallocationDuringPicking, productSummaryConfig, barcodeScanDebounceTime } =
+    useSelector((state: RootState) => state.settingsReducer);
   const [debounceInput, setDebounceInput] = useState<string>(
     barcodeScanDebounceTime?.toString() ?? appConfig.DEFAULT_DEBOUNCE_TIME.toString()
   );
@@ -78,6 +78,10 @@ const Settings = () => {
   const toggleGroup = useCallback(() => {
     dispatch(setGroupLocationEntries(!groupLocationEntries));
   }, [dispatch, groupLocationEntries]);
+
+  const toggleAllowReallocationDuringPicking = useCallback(() => {
+    dispatch(setAllowReallocationDuringPicking(!allowReallocationDuringPicking));
+  }, [dispatch, allowReallocationDuringPicking]);
 
   const handleDebounceChange = useCallback(
     (text: string) => {
@@ -155,6 +159,12 @@ const Settings = () => {
           description="Displays locations from the same organization in a collapsible list."
           value={groupLocationEntries}
           onValueChange={toggleGroup}
+        />
+        <ToggleRow
+          title="Allow Reallocation During Picking"
+          description="Enables reallocation during the picking process, allowing users to change the source location of items while picking."
+          value={allowReallocationDuringPicking}
+          onValueChange={toggleAllowReallocationDuringPicking}
         />
       </ToggleCard>
 

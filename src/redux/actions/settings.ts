@@ -4,6 +4,14 @@ export const DASHBOARD_ENTRIES_ORDER = 'DASHBOARD_ENTRIES_ORDER';
 export const GROUP_LOCATION_ENTRIES = 'GROUP_LOCATION_ENTRIES';
 export const PRODUCT_SUMMARY_CONFIG = 'PRODUCT_SUMMARY_CONFIG';
 export const BARCODE_SCAN_DEBOUNCE = 'BARCODE_SCAN_DEBOUNCE';
+export const ALLOW_REALLOCATION_DURING_PICKING = 'ALLOW_REALLOCATION_DURING_PICKING';
+
+type SetAllowReallocationDuringPickingAction = {
+  type: typeof ALLOW_REALLOCATION_DURING_PICKING;
+  payload: {
+    allow: boolean;
+  };
+};
 
 type SetGroupLocationEntriesAction = {
   type: typeof GROUP_LOCATION_ENTRIES;
@@ -44,7 +52,8 @@ export type SettingsActionTypes =
   | ResetDashboardEntriesVisibility
   | SetDashboardEntriesOrderAction
   | SetProductSummaryConfigAction
-  | SetBarcodeScanDebounceAction;
+  | SetBarcodeScanDebounceAction
+  | SetAllowReallocationDuringPickingAction;
 
 export const setGroupLocationEntries = (group: boolean): SetGroupLocationEntriesAction => {
   return {
@@ -87,5 +96,12 @@ export const setBarcodeScanDebounce = (value: number): SetBarcodeScanDebounceAct
   return {
     type: BARCODE_SCAN_DEBOUNCE,
     payload: value
+  };
+};
+
+export const setAllowReallocationDuringPicking = (allow: boolean): SetAllowReallocationDuringPickingAction => {
+  return {
+    type: ALLOW_REALLOCATION_DURING_PICKING,
+    payload: { allow }
   };
 };

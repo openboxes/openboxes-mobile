@@ -6,11 +6,13 @@ import {
   GROUP_LOCATION_ENTRIES,
   PRODUCT_SUMMARY_CONFIG,
   BARCODE_SCAN_DEBOUNCE,
-  SettingsActionTypes
+  SettingsActionTypes,
+  ALLOW_REALLOCATION_DURING_PICKING
 } from '../actions/settings';
 import { appConfig } from '../../constants';
 
 type SettingsState = {
+  allowReallocationDuringPicking: boolean;
   groupLocationEntries: boolean;
   dashboardEntriesVisibility: { [key: string]: boolean };
   dashboardEntriesOrder: string[];
@@ -19,6 +21,7 @@ type SettingsState = {
 };
 
 const initialState: SettingsState = {
+  allowReallocationDuringPicking: false,
   groupLocationEntries: false,
   dashboardEntriesOrder: getDashboardEntriesKeys(),
   dashboardEntriesVisibility: {},
@@ -28,6 +31,11 @@ const initialState: SettingsState = {
 
 function settingsReducer(state = initialState, action: SettingsActionTypes): SettingsState {
   switch (action.type) {
+    case ALLOW_REALLOCATION_DURING_PICKING:
+      return {
+        ...state,
+        allowReallocationDuringPicking: action.payload.allow
+      };
     case GROUP_LOCATION_ENTRIES: {
       return {
         ...state,
