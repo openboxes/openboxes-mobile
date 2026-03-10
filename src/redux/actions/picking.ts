@@ -1,5 +1,5 @@
 import { PickTaskParams } from '../../apis';
-import { PickTask } from '../../types/picking';
+import { PickPageItem, PickTask, ReallocatePicklistItem } from '../../types/picking';
 
 export const GET_PICK_TASKS_REQUEST = 'GET_PICK_TASKS_REQUEST';
 export const GET_PICK_TASKS_REQUEST_SUCCESS = 'GET_PICK_TASKS_REQUEST_SUCCESS';
@@ -32,6 +32,14 @@ export const SHORT_PICK_TASK_REQUEST_FAIL = 'SHORT_PICK_TASK_REQUEST_FAIL';
 export const GET_PICK_TASKS_BY_REQUISITION_REQUEST = 'GET_PICK_TASKS_BY_REQUISITION_REQUEST';
 export const GET_PICK_TASKS_BY_REQUISITION_REQUEST_SUCCESS = 'GET_PICK_TASKS_BY_REQUISITION_REQUEST_SUCCESS';
 export const GET_PICK_TASKS_BY_REQUISITION_REQUEST_FAIL = 'GET_PICK_TASKS_BY_REQUISITION_REQUEST_FAIL';
+
+export const GET_STOCK_MOVEMENT_ITEM_DETAILS_REQUEST = 'GET_STOCK_MOVEMENT_ITEM_DETAILS_REQUEST';
+export const GET_STOCK_MOVEMENT_ITEM_DETAILS_REQUEST_SUCCESS = 'GET_STOCK_MOVEMENT_ITEM_DETAILS_REQUEST_SUCCESS';
+export const GET_STOCK_MOVEMENT_ITEM_DETAILS_REQUEST_FAIL = 'GET_STOCK_MOVEMENT_ITEM_DETAILS_REQUEST_FAIL';
+
+export const REALLOCATE_PICK_TASK_REQUEST = 'REALLOCATE_PICK_TASK_REQUEST';
+export const REALLOCATE_PICK_TASK_REQUEST_SUCCESS = 'REALLOCATE_PICK_TASK_REQUEST_SUCCESS';
+export const REALLOCATE_PICK_TASK_REQUEST_FAIL = 'REALLOCATE_PICK_TASK_REQUEST_FAIL';
 
 export function getPickTasksAction(
   params: PickTaskParams,
@@ -153,6 +161,43 @@ export function getPickedTasksByContainerAction(
   return {
     type: GET_PICKED_TASKS_BY_CONTAINER_REQUEST,
     payload: { outboundContainerId },
+    callback
+  };
+}
+
+export function getStockMovementItemDetailsAction(
+  requisitionItemId: string,
+  callback: (response: {
+    response?: {
+      data: PickPageItem;
+      errorCode?: string;
+      message?: string;
+    };
+    errorMessage?: string;
+  }) => void
+) {
+  return {
+    type: GET_STOCK_MOVEMENT_ITEM_DETAILS_REQUEST,
+    payload: { requisitionItemId },
+    callback
+  };
+}
+
+export function reallocatePickTaskAction(
+  taskId: string,
+  picklistItems: ReallocatePicklistItem[],
+  callback: (response: {
+    response?: {
+      data: PickTask[];
+      errorCode?: string;
+      message?: string;
+    };
+    errorMessage?: string;
+  }) => void
+) {
+  return {
+    type: REALLOCATE_PICK_TASK_REQUEST,
+    payload: { taskId, picklistItems },
     callback
   };
 }

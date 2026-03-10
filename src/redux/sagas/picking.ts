@@ -6,6 +6,9 @@ import {
   DROP_PICK_TASK_REQUEST,
   DROP_PICK_TASK_REQUEST_FAIL,
   DROP_PICK_TASK_REQUEST_SUCCESS,
+  GET_STOCK_MOVEMENT_ITEM_DETAILS_REQUEST,
+  GET_STOCK_MOVEMENT_ITEM_DETAILS_REQUEST_FAIL,
+  GET_STOCK_MOVEMENT_ITEM_DETAILS_REQUEST_SUCCESS,
   GET_PICK_TASK_BY_ID_REQUEST,
   GET_PICK_TASK_BY_ID_REQUEST_FAIL,
   GET_PICK_TASK_BY_ID_REQUEST_SUCCESS,
@@ -24,6 +27,9 @@ import {
   SHORT_PICK_TASK_REQUEST,
   SHORT_PICK_TASK_REQUEST_FAIL,
   SHORT_PICK_TASK_REQUEST_SUCCESS,
+  REALLOCATE_PICK_TASK_REQUEST,
+  REALLOCATE_PICK_TASK_REQUEST_FAIL,
+  REALLOCATE_PICK_TASK_REQUEST_SUCCESS,
   START_PICK_TASK_REQUEST,
   START_PICK_TASK_REQUEST_FAIL,
   START_PICK_TASK_REQUEST_SUCCESS
@@ -267,6 +273,54 @@ function* getPickTasksByRequisitionAction(action: any) {
   }
 }
 
+function* getStockMovementItemDetailsAction(action: any) {
+  try {
+    yield put(showScreenLoading('Fetching Available Items...'));
+    // @ts-ignore
+    const response = yield call(api.getStockMovementItemDetailsApi, action.payload.requisitionItemId);
+    yield put({ type: GET_STOCK_MOVEMENT_ITEM_DETAILS_REQUEST_SUCCESS, payload: response.data });
+    yield action.callback({ response });
+    yield put(hideScreenLoading());
+  } catch (error) {
+    const errorMessage = (error as any)?.message || 'Error Fetching Available Items';
+    yield put({
+      type: GET_STOCK_MOVEMENT_ITEM_DETAILS_REQUEST_FAIL,
+      payload: errorMessage
+    });
+    yield action.callback({ errorMessage });
+    yield put(hideScreenLoading());
+  }
+}
+
+function* reallocatePickTaskAction(action: any) {
+  try {
+    // @ts-ignore
+    const currentLocation = yield select(userLocation);
+    if (!currentLocation) {
+      throw new Error('User Location Not Found');
+    }
+    yield put(showScreenLoading('Reallocating...'));
+    // @ts-ignore
+    const response = yield call(
+      api.reallocatePickTaskApi,
+      currentLocation.id,
+      action.payload.taskId,
+      action.payload.picklistItems
+    );
+    yield put({ type: REALLOCATE_PICK_TASK_REQUEST_SUCCESS, payload: response.data });
+    yield action.callback({ response });
+    yield put(hideScreenLoading());
+  } catch (error) {
+    const errorMessage = (error as any)?.message || 'Error Reallocating Pick Task';
+    yield put({
+      type: REALLOCATE_PICK_TASK_REQUEST_FAIL,
+      payload: errorMessage
+    });
+    yield action.callback({ errorMessage });
+    yield put(hideScreenLoading());
+  }
+}
+
 export default function* watcher() {
   yield takeLatest(GET_PICK_TASKS_REQUEST, getPickTasksAction);
   yield takeLatest(START_PICK_TASK_REQUEST, startPickTaskAction);
@@ -276,4 +330,6 @@ export default function* watcher() {
   yield takeLatest(GET_PICKED_TASKS_BY_CONTAINER_REQUEST, getPickedTasksByContainerAction);
   yield takeLatest(SHORT_PICK_TASK_REQUEST, shortPickTaskAction);
   yield takeLatest(GET_PICK_TASKS_BY_REQUISITION_REQUEST, getPickTasksByRequisitionAction);
+  yield takeLatest(GET_STOCK_MOVEMENT_ITEM_DETAILS_REQUEST, getStockMovementItemDetailsAction);
+  yield takeLatest(REALLOCATE_PICK_TASK_REQUEST, reallocatePickTaskAction);
 }

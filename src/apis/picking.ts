@@ -1,4 +1,4 @@
-import { DeliveryTypeCode, ReasonCode } from '../types/picking';
+import { DeliveryTypeCode, ReallocatePicklistItem, ReasonCode } from '../types/picking';
 import ApiClient from '../utils/ApiClient';
 
 export type PickTaskParams = {
@@ -23,7 +23,6 @@ export type PickTaskActionParams =
       outboundContainerId: string | null;
       quantityPicked: number;
       pickedById: string;
-      // eslint-disable-next-line no-undef
       reasonCode?: Pick<ReasonCode, 'name'>;
     };
 
@@ -70,4 +69,14 @@ export function getPickTasksByRequisitionApi(facilityId: string, requisitionId: 
       .map((status) => `status=${encodeURIComponent(status)}`)
       .join('&')}`
   );
+}
+
+export function getStockMovementItemDetailsApi(requisitionItemId: string) {
+  return ApiClient.get(`/stockMovementItems/${requisitionItemId}/details`, {
+    params: { stepNumber: 4, refreshPicklistItems: false }
+  });
+}
+
+export function reallocatePickTaskApi(facilityId: string, taskId: string, picklistItems: ReallocatePicklistItem[]) {
+  return ApiClient.post(`/facilities/${facilityId}/pick-tasks/${taskId}/reallocate`, { picklistItems });
 }

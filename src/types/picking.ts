@@ -30,6 +30,7 @@ export type PickTask = {
   identifier: string;
 
   requisitionId?: string;
+  requisitionItemId?: string;
   requisitionNumber?: string;
   requisitionStatus?: string;
   requisitionType?: string;
@@ -69,4 +70,68 @@ export type DeliveryType = {
   priority: number;
   label: string;
   code: DeliveryTypeCode;
+};
+
+export type AvailableItem = {
+  'inventoryItem.id': string | null;
+  'product.name': string | null;
+  product: Product;
+  productCode: string | null;
+  lotNumber: string | null;
+  expirationDate: string | null;
+  'binLocation.id': string | null;
+  'binLocation.name': string | null;
+  binLocation: Location | null;
+  quantityAvailable: number;
+  quantityOnHand: number;
+  status: string;
+  pickedRequisitionNumbers: string;
+};
+
+export type PicklistItem = {
+  id: string;
+  status: string | null;
+  'requisitionItem.id': string | null;
+  'inventoryItem.id': string | null;
+  'binLocation.id': string | null;
+  'binLocation.name': string | null;
+  'binLocation.zoneName': string | null;
+  'binLocation.locationNumber': string | null;
+  quantity: number;
+  quantityPicked: number;
+  quantityToPick: number;
+  quantityRemaining: number;
+  reasonCode: string | null;
+  lotNumber: string | null;
+  expirationDate: string | null;
+};
+
+export type PickPageItem = {
+  'requisitionItem.id': string;
+  productCode: string;
+  productId: string;
+  product: Product;
+  quantityRequired: number;
+  quantityAllocated: number;
+  quantityPicked: number;
+  quantityAvailable: number | null;
+  quantityRemaining: number;
+  availableItems: AvailableItem[];
+  picklistItems: PicklistItem[];
+  reasonCode: string | null;
+  pickStatusCode: string;
+  requestStatusCode: string;
+};
+
+export type ReallocationItem = AvailableItem & {
+  _localId: string;
+  id?: string;
+  quantityAllocated: string;
+  quantityPicked: string;
+};
+
+export type ReallocatePicklistItem = {
+  inventoryItem: { id: string };
+  binLocation: { id: string };
+  quantity: number;
 };

@@ -1,18 +1,24 @@
 import * as React from 'react';
 import { Alert, View } from 'react-native';
-import { Divider, Paragraph, Subheading } from 'react-native-paper';
+import { Button, Divider, Paragraph, Subheading } from 'react-native-paper';
+import { useSelector } from 'react-redux';
 
 import { ProductDetails } from '../../components/ProductDetails';
 import { ScannerInput } from '../../components/ScannerInput';
 import { EMPTY_STRING, HYPHEN } from '../../constants';
 import { navigate } from '../../NavigationService';
+import { RootState } from '../../redux/reducers';
 import { parseFromISODateToLocaleString } from '../../utils/utils';
 import { usePickingContext } from './PickingContext';
+import { ReallocateModal } from './ReallocateModal';
 import styles from './styles';
 
 export default function PickingPickLocationScreen() {
-  const { currentTask, currentTaskIndex, allTasksCount, startPickTask, revalidateCurrentTask } = usePickingContext();
+  const { currentTask, currentTaskIndex, allTasksCount, startPickTask, revalidateCurrentTask, resetSession } =
+    usePickingContext();
   const [pickLocationBarcode, setPickLocationBarcode] = React.useState<string>(EMPTY_STRING);
+  const [isReallocateModalOpen, setIsReallocateModalOpen] = React.useState(false);
+  const { allowReallocationDuringPicking } = useSelector((state: RootState) => state.settingsReducer);
 
   if (!currentTask) {
     return null;
@@ -94,7 +100,31 @@ export default function PickingPickLocationScreen() {
           onChange={setPickLocationBarcode}
           onSubmit={handleScan}
         />
+
+        {allowReallocationDuringPicking && (
+          <Button
+            mode="contained"
+            icon="swap-horizontal"
+            style={styles.marginTop}
+            onPress={() => setIsReallocateModalOpen(true)}
+          >
+            Reallocate
+          </Button>
+        )}
       </View>
+
+      {allowReallocationDuringPicking && (
+        <ReallocateModal
+          visible={isReallocateModalOpen}
+          currentTask={currentTask}
+          onDismiss={() => setIsReallocateModalOpen(false)}
+          onAllocated={() => {
+            setIsReallocateModalOpen(false);
+            resetSession();
+            navigate('PickingPickType');
+          }}
+        />
+      )}
     </ProductDetails.Provider>
   );
 }
