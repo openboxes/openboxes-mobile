@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, View } from 'react-native';
+import { Alert, Modal, View } from 'react-native';
 import { Text } from 'react-native-paper';
 
 import Button from '../../components/Button';
@@ -32,15 +32,26 @@ export function ContainerMismatchDialog({
   };
 
   const handleOverride = () => {
-    handleDismiss();
+    setDialogInput(EMPTY_STRING);
     onScan(scannedContainer);
   };
 
   const handleScanSubmit = () => {
-    if (dialogInput && dialogInput.trim()) {
-      handleDismiss();
-      onScan(dialogInput.trim());
+    const trimmedInput = dialogInput?.trim();
+    if (!trimmedInput) {
+      return;
     }
+
+    if (trimmedInput !== scannedContainer) {
+      Alert.alert(
+        'Container Mismatch',
+        'The scanned container does not match. Please scan the same container to confirm the override.'
+      );
+      setDialogInput(EMPTY_STRING);
+      return;
+    }
+
+    onScan(trimmedInput);
   };
 
   const displayExpectedContainer = expectedContainer || HYPHEN;

@@ -79,9 +79,9 @@ export default function SortationContainerScreen() {
 
   function handleDialogScan(resolvedCode: string) {
     setIsDialogVisible(false);
-    confirmContainer(resolvedCode, true);
     setPutawayContainerBarcode(EMPTY_STRING);
     setPendingContainerCode('');
+    confirmContainer(resolvedCode, true);
   }
 
   function confirmContainer(code: string, override: boolean) {
@@ -162,7 +162,11 @@ export default function SortationContainerScreen() {
         visible={isDialogVisible}
         scannedContainer={pendingContainerCode}
         expectedContainer={task?.container?.locationNumber ?? ''}
-        onDismiss={() => setIsDialogVisible(false)}
+        onDismiss={() => {
+          setIsDialogVisible(false);
+          setPutawayContainerBarcode(EMPTY_STRING);
+          setPendingContainerCode('');
+        }}
         onScan={handleDialogScan}
       />
     </ScrollView>
