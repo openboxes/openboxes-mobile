@@ -9,8 +9,10 @@ trigger_map:
 - push_branch: develop
   workflow: android-only
 - pull_request_target_branch: develop
+  enabled: false
   workflow: android-only
 - pull_request_source_branch: "*"
+  enabled: false
   workflow: android-only
 
 _dependency_versions:
@@ -127,7 +129,7 @@ step_bundles:
       - deploy-to-bitrise-io@2:
           inputs:
           - deploy_path: "$BITRISE_DEPLOY_DIR/openboxes_test_b$BITRISE_BUILD_NUMBER.apk"
-          - notify_email_list: "$TESTERS"
+          - notify_email_list: "$UAT_TESTERS"
           - notify_user_groups: owner, admins, developers
           is_always_run: false
       - appetize-deploy@0:
@@ -164,7 +166,7 @@ step_bundles:
       - deploy-to-bitrise-io@2:
           inputs:
           - deploy_path: "$BITRISE_APP_DIR_PATH"
-          - notify_email_list: "$TESTERS"
+          - notify_email_list: "$UAT_TESTERS"
           - notify_user_groups: owner, admins, developers
           is_always_run: false
 workflows:
