@@ -1,26 +1,27 @@
 import React, { useCallback, useState } from 'react';
 import { Alert, ScrollView } from 'react-native';
 import { Paragraph, Title } from 'react-native-paper';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 import { ScannerInput } from '../../components/ScannerInput';
 import { EMPTY_STRING } from '../../constants';
 import { navigate } from '../../NavigationService';
 import { getPutawayDetailsByContainerId } from '../../redux/actions/putaways';
-import { RootState } from '../../redux/reducers';
+import { SortationTask } from '../../types/sortation';
 import styles from './styles';
 
 export default function PutawayEntryScreen() {
   const [putawayContainerId, setPutawayContainerId] = useState<string>(EMPTY_STRING);
   const dispatch = useDispatch();
-  const putawayTasks = useSelector((state: RootState) => state.putawayReducer.putawayTasks);
 
   const performScan = useCallback(
     (containerId: string) => {
       dispatch(
         getPutawayDetailsByContainerId(containerId, (response) => {
           if (response && !response.error) {
-            if (putawayTasks.length > 0) {
+            const allTasks: SortationTask[] = response?.response?.data || [];
+
+            if (allTasks.length > 0) {
               navigate('SortationPutawayMode', {
                 containerId
               });
@@ -35,7 +36,7 @@ export default function PutawayEntryScreen() {
         })
       );
     },
-    [dispatch, putawayTasks]
+    [dispatch]
   );
 
   return (
