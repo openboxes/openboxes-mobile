@@ -211,7 +211,7 @@ export default StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: Theme.colors.primary,
-    flex: 2
+    flex: 1
   },
   taskRowLocation: {
     fontSize: 14,
@@ -223,7 +223,7 @@ export default StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
     color: Theme.colors.text,
-    flex: 0.5,
+    flex: 1,
     textAlign: 'right'
   },
   zoneSection: {

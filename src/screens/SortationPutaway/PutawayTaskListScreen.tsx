@@ -38,8 +38,12 @@ function TaskRow({ task, onPress }: TaskRowProps) {
   return (
     <TouchableOpacity style={styles.taskRow} activeOpacity={0.7} onPress={onPress}>
       <View style={styles.taskRowContent}>
-        <Text style={styles.taskRowProduct}>{productCode}</Text>
-        <Text style={styles.taskRowLocation}>{location}</Text>
+        <Text style={styles.taskRowProduct} numberOfLines={1}>
+          {productCode}
+        </Text>
+        <Text style={styles.taskRowLocation} numberOfLines={1}>
+          {location}
+        </Text>
         <Text style={styles.taskRowQuantity}>{quantity}</Text>
       </View>
     </TouchableOpacity>
