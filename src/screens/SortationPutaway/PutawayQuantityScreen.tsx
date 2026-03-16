@@ -166,8 +166,11 @@ export default function PutawayQuantityScreen() {
               handleResponseAfterComplete
             )
           );
+        } else if (isUserDirected && containerId) {
+          // User-Directed: go back to task list after partial putaway
+          navigate('SortationPutawayTaskList', { containerId });
         } else {
-          // Cancel Remaining False - Navigate to Quantity Screen with new task
+          // System-Directed: navigate to Quantity Screen with remaining task
           dispatch(getPutawayDetailsByContainerId(containerId!, () => {}));
           replace('SortationPutawayQuantity', {
             currentTaskIndex: 0,
