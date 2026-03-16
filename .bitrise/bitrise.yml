@@ -73,6 +73,10 @@ step_bundles:
       - set-java-version@1:
           inputs:
           - set_java_version: *java_version
+      - change-android-versioncode-and-versionname@1:
+          inputs:
+            - new_version_code: $BITRISE_BUILD_NUMBER
+            - new_version_name: '"1.0.0"'
   setup-steps-ios:
     description: |-
       Install iOS-specific dependencies.
