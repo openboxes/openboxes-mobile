@@ -23,6 +23,7 @@ type PutawayLocationScanRouteProp = RouteProp<
       isDirectPutaway?: boolean;
       isUserDirected?: boolean;
       containerId?: string;
+      task?: SortationTask;
     };
   },
   'SortationPutawayLocationScan'
@@ -30,9 +31,9 @@ type PutawayLocationScanRouteProp = RouteProp<
 
 export default function PutawayLocationScanScreen() {
   const { params } = useRoute<PutawayLocationScanRouteProp>();
-  const { currentTaskIndex, isDirectPutaway, isUserDirected, containerId } = params;
+  const { currentTaskIndex, isDirectPutaway, isUserDirected, containerId, task } = params;
   const putawayTasks = useSelector((state: RootState) => state.putawayReducer.putawayTasks) as SortationTask[];
-  const putawayDetails = putawayTasks?.[currentTaskIndex];
+  const putawayDetails = task ?? putawayTasks?.[currentTaskIndex];
 
   const [putawayLocationBarcode, setPutawayLocationBarcode] = useState<string>(EMPTY_STRING);
   const [isDialogVisible, setIsDialogVisible] = useState(false);
@@ -75,7 +76,8 @@ export default function PutawayLocationScanScreen() {
       currentTaskIndex,
       isDirectPutaway,
       isUserDirected,
-      containerId
+      containerId,
+      task
     });
   }
 
@@ -130,7 +132,7 @@ export default function PutawayLocationScanScreen() {
             Submit
           </Button>
 
-          {isUserDirected ? (
+          {task ? null : isUserDirected ? (
             <Button
               style={styles.topSpace}
               title="Back To List"

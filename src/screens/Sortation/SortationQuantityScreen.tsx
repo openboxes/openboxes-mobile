@@ -35,9 +35,10 @@ export default function SortationQuantityScreen() {
   useEffect(() => {
     if (directPutawayRequired) {
       navigate('SortationPutawayLocationScan', {
-        taskList: [task],
         currentTaskIndex: 0,
-        isDirectPutaway: true
+        isDirectPutaway: true,
+        isUserDirected: true,
+        task
       });
     }
   }, [directPutawayRequired, product, task]);

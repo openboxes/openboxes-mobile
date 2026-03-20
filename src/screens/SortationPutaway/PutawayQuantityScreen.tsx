@@ -25,6 +25,7 @@ type PutawayQuantityRouteProp = RouteProp<
       isDirectPutaway?: boolean;
       isUserDirected?: boolean;
       containerId?: string;
+      task?: SortationTask;
     };
   },
   'SortationPutawayQuantity'
@@ -37,9 +38,9 @@ type ReasonCode = {
 
 export default function PutawayQuantityScreen() {
   const { params } = useRoute<PutawayQuantityRouteProp>();
-  const { currentTaskIndex, isDirectPutaway, isUserDirected, containerId } = params;
+  const { currentTaskIndex, isDirectPutaway, isUserDirected, containerId, task } = params;
   const putawayTasks = useSelector((state: RootState) => state.putawayReducer.putawayTasks) as SortationTask[];
-  const putawayDetails = putawayTasks?.[currentTaskIndex];
+  const putawayDetails = task ?? putawayTasks?.[currentTaskIndex];
   const dispatch = useDispatch();
 
   const inputRef = useRef<TextInput | null>(null);
@@ -166,6 +167,9 @@ export default function PutawayQuantityScreen() {
               handleResponseAfterComplete
             )
           );
+        } else if (task) {
+          // Direct Putaway: partial done, remaining task lives on backend
+          navigate('Sortation');
         } else if (isUserDirected && containerId) {
           // User-Directed: go back to task list after partial putaway
           navigate('SortationPutawayTaskList', { containerId });
@@ -196,7 +200,10 @@ export default function PutawayQuantityScreen() {
     if (response && !response.error) {
       Alert.alert('Putaway Successful', 'The putaway was successful.');
 
-      if (isUserDirected && containerId) {
+      if (task) {
+        // Direct Putaway: single task done, go back to Sortation
+        navigate('Sortation');
+      } else if (isUserDirected && containerId) {
         navigate('SortationPutawayTaskList', { containerId });
       } else {
         // Re-fetch removes the completed task, so remaining tasks shift down.

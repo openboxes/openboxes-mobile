@@ -23,6 +23,7 @@ type PutawayProductScanRouteProp = RouteProp<
       isDirectPutaway?: boolean;
       isUserDirected?: boolean;
       containerId?: string;
+      task?: SortationTask;
     };
   },
   'SortationPutawayProductScan'
@@ -30,9 +31,9 @@ type PutawayProductScanRouteProp = RouteProp<
 
 export default function PutawayProductScanScreen() {
   const { params } = useRoute<PutawayProductScanRouteProp>();
-  const { currentTaskIndex, isDirectPutaway, isUserDirected, containerId } = params;
+  const { currentTaskIndex, isDirectPutaway, isUserDirected, containerId, task } = params;
   const putawayTasks = useSelector((state: RootState) => state.putawayReducer.putawayTasks) as SortationTask[];
-  const putawayDetails = putawayTasks?.[currentTaskIndex];
+  const putawayDetails = task ?? putawayTasks?.[currentTaskIndex];
   const [putawayProductBarcode, setPutawayProductBarcode] = useState<string>(EMPTY_STRING);
 
   if (!putawayDetails) {
@@ -63,7 +64,8 @@ export default function PutawayProductScanScreen() {
       currentTaskIndex,
       isDirectPutaway,
       isUserDirected,
-      containerId
+      containerId,
+      task
     });
   }
 
