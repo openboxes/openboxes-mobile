@@ -171,13 +171,16 @@ export default function PutawayQuantityScreen() {
           navigate('SortationPutawayTaskList', { containerId });
         } else {
           // System-Directed: navigate to Quantity Screen with remaining task
-          dispatch(getPutawayDetailsByContainerId(containerId!, () => {}));
-          replace('SortationPutawayQuantity', {
-            currentTaskIndex: 0,
-            isDirectPutaway,
-            isUserDirected,
-            containerId
-          });
+          dispatch(
+            getPutawayDetailsByContainerId(containerId!, () => {
+              replace('SortationPutawayLocationScan', {
+                currentTaskIndex: 0,
+                isDirectPutaway,
+                isUserDirected,
+                containerId
+              });
+            })
+          );
         }
       })
     );
