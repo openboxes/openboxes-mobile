@@ -1,12 +1,14 @@
 import { useIsFocused } from '@react-navigation/native';
 import * as React from 'react';
-import { Alert, TextInput, View } from 'react-native';
-import { Button, Divider, TextInput as PaperTextInput, Paragraph, Subheading } from 'react-native-paper';
+import { Alert, View } from 'react-native';
+import { Button, Divider, Paragraph, Subheading } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
+import { QuantityIcon } from '../../components/Icons';
 import PickingShortAndReasonModal from '../../components/PickingShortAndReasonModal';
 import { ProductDetails } from '../../components/ProductDetails';
-import { HYPHEN, INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
+import { ScannerInput } from '../../components/ScannerInput';
+import { HYPHEN } from '../../constants';
 import { navigate } from '../../NavigationService';
 import { getReasonCodesAction } from '../../redux/actions/others';
 import { ReasonCode } from '../../types/picking';
@@ -19,7 +21,6 @@ export default function PickingPickQuantityScreen() {
   const { currentTask, currentTaskIndex, allTasksCount, shortPickTask, revalidateCurrentTask, goToNextTask } =
     usePickingContext();
   const dispatch = useDispatch();
-  const inputRef = React.useRef<TextInput | null>(null);
   const isFocused = useIsFocused();
 
   const [quantityPicked, setQuantityPicked] = React.useState<string>('');
@@ -27,14 +28,12 @@ export default function PickingPickQuantityScreen() {
   const [selectedReasonCode, setSelectedReasonCode] = React.useState<ReasonCode | undefined>(undefined);
   const [isShortModalVisible, setIsShortModalVisible] = React.useState(false);
 
-  // Focus input when screen is focused
+  // Reset quantity when screen is focused
   React.useEffect(() => {
     if (!isFocused) {
       return;
     }
     setQuantityPicked('');
-    const t = setTimeout(() => inputRef.current?.focus(), INPUT_FOCUS_DELAY_TIME_IN_MS);
-    return () => clearTimeout(t);
   }, [isFocused]);
 
   // Fetch reason codes
@@ -162,16 +161,16 @@ export default function PickingPickQuantityScreen() {
             Please enter the quantity of the product that you have picked from the location.
           </Paragraph>
 
-          <PaperTextInput
-            style={styles.marginTop}
-            autoCompleteType="off"
-            ref={inputRef}
-            mode="outlined"
+          <ScannerInput
+            showKeyboardOnMount
+            autoSubmitTimeout={0}
+            keyboardType="number-pad"
+            leftIcon={<QuantityIcon size={24} />}
             label="Quantity Picked"
             value={quantityPicked}
-            keyboardType="numeric"
-            returnKeyType="done"
-            onChangeText={setQuantityPicked}
+            isEnabled={!isShortModalVisible}
+            onChange={setQuantityPicked}
+            onSubmit={handleSubmit}
           />
 
           <Button mode="contained" style={styles.marginTop} onPress={handleSubmit}>

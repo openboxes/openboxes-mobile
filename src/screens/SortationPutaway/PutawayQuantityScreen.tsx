@@ -1,13 +1,14 @@
 import { RouteProp, useIsFocused, useRoute } from '@react-navigation/native';
-import React, { useEffect, useRef, useState } from 'react';
-import { Alert, ScrollView, TextInput, View } from 'react-native';
-import { Divider, TextInput as PaperTextInput, Paragraph, Portal, Subheading, Switch } from 'react-native-paper';
+import React, { useEffect, useState } from 'react';
+import { Alert, ScrollView, View } from 'react-native';
+import { Divider, Paragraph, Portal, Subheading, Switch } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 
 import AsyncModalSelect from '../../components/AsyncModalSelect';
 import Button from '../../components/Button';
 import EmptyView from '../../components/EmptyView';
-import { INPUT_FOCUS_DELAY_TIME_IN_MS } from '../../constants';
+import { QuantityIcon } from '../../components/Icons';
+import { ScannerInput } from '../../components/ScannerInput';
 import { navigate, replace } from '../../NavigationService';
 import { getReasonCodesAction } from '../../redux/actions/others';
 import { getPutawayDetailsByContainerId, patchPutawayTaskAction } from '../../redux/actions/putaways';
@@ -43,7 +44,6 @@ export default function PutawayQuantityScreen() {
   const putawayDetails = task ?? putawayTasks?.[currentTaskIndex];
   const dispatch = useDispatch();
 
-  const inputRef = useRef<TextInput | null>(null);
   const isFocused = useIsFocused();
 
   const [putawayQuantity, setPutawayQuantity] = useState<number | undefined>();
@@ -76,8 +76,7 @@ export default function PutawayQuantityScreen() {
     if (!isFocused) {
       return;
     }
-    const t = setTimeout(() => inputRef.current?.focus(), INPUT_FOCUS_DELAY_TIME_IN_MS);
-    return () => clearTimeout(t);
+    setPutawayQuantity(undefined);
   }, [isFocused]);
 
   if (!putawayDetails) {
@@ -246,16 +245,16 @@ export default function PutawayQuantityScreen() {
 
         <View style={styles.formContainer}>
           <Subheading style={styles.subheading}>Enter Putaway Quantity</Subheading>
-          <PaperTextInput
-            ref={inputRef}
-            autoCompleteType="off"
-            style={styles.topSpace}
-            mode="outlined"
-            label="Putaway Quantity Entry Field"
+          <ScannerInput
+            showKeyboardOnMount
+            autoSubmitTimeout={0}
             keyboardType="number-pad"
-            value={putawayQuantity?.toString() || ''}
-            returnKeyType="done"
-            onChangeText={handleChange}
+            leftIcon={<QuantityIcon size={24} />}
+            label="Putaway Quantity"
+            value={putawayQuantity?.toString() ?? ''}
+            isEnabled={!isDialogVisible}
+            onChange={handleChange}
+            onSubmit={handleConfirm}
           />
 
           <View style={styles.topSpace}>

@@ -1,6 +1,13 @@
 import { useIsFocused } from '@react-navigation/native';
 import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
-import { AppState, Keyboard, TextInput as NativeTextInput, StyleProp, ViewStyle } from 'react-native';
+import {
+  AppState,
+  InteractionManager,
+  Keyboard,
+  TextInput as NativeTextInput,
+  StyleProp,
+  ViewStyle
+} from 'react-native';
 import { TextInput as PaperTextInput } from 'react-native-paper';
 import { useSelector } from 'react-redux';
 
@@ -9,6 +16,8 @@ import { appConfig } from '../constants';
 import { RootState } from '../redux/reducers';
 import Theme from '../utils/Theme';
 import { KeyboardIcon, ScanIcon } from './Icons';
+
+const POST_TRANSITION_FOCUS_DELAY = 300;
 
 type ScannerInputProps = {
   value: string;
@@ -104,10 +113,15 @@ export const ScannerInput = forwardRef<NativeTextInput, ScannerInputProps>(
       }
     }, [shouldBeFocused]);
 
-    // Focus once on mount
+    // Focus once on mount if the screen is focused, and whenever focus state changes
+    // Wait for navigation/animation transitions to complete, then delay slightly
+    // to ensure the native view has fully laid out before requesting focus
     useEffect(() => {
       if (shouldBeFocused) {
-        requestFocus();
+        const handle = InteractionManager.runAfterInteractions(() => {
+          setTimeout(requestFocus, POST_TRANSITION_FOCUS_DELAY);
+        });
+        return () => handle.cancel();
       }
     }, [requestFocus, shouldBeFocused]);
 

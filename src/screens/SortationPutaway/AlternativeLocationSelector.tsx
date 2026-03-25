@@ -101,6 +101,12 @@ export default function AlternativeLocationSelector({
     onDismiss();
   };
 
+  // Don't render anything if not visible
+  // This ensures we do not fight for focus with the scanner input when the modal is closed
+  if (!visible) {
+    return null;
+  }
+
   return (
     <Modal transparent visible={visible} animationType="slide" onRequestClose={onDismiss}>
       <View style={styles.modalOverlay}>
@@ -125,8 +131,6 @@ export default function AlternativeLocationSelector({
           <ScannerInput
             label="Scan location number"
             value={scannedLocationInput}
-            // Only fight for focus if the modal is actually visible
-            isEnabled={visible}
             onChange={setScannedLocationInput}
             onSubmit={handleLocationSearch}
           />
