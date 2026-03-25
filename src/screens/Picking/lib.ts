@@ -1,5 +1,5 @@
 import { Alert } from 'react-native';
-import { navigate } from '../../NavigationService';
+import { navigate, resetToRoutes } from '../../NavigationService';
 import { PickTask } from '../../types/picking';
 
 export function revalidateTaskAndProceed(
@@ -39,7 +39,7 @@ export function revalidateTaskAndProceed(
     Alert.alert('All Picks Complete', 'You have completed all picks. Proceeding to staging location drop.', [
       {
         text: 'OK',
-        onPress: () => navigate('PickingPickStagingLocation')
+        onPress: () => resetToRoutes([{ name: 'PickingPickType' }, { name: 'PickingPickStagingLocation' }])
       }
     ]);
   });

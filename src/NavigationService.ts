@@ -24,6 +24,15 @@ export function reset(routeName: string) {
   );
 }
 
+export function resetToRoutes(routes: { name: string; params?: any }[]) {
+  navigationRef.current?.dispatch(
+    CommonActions.reset({
+      index: routes.length - 1,
+      routes
+    })
+  );
+}
+
 export function goBack() {
   navigationRef.current?.dispatch(CommonActions.goBack());
 }
