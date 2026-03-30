@@ -1,5 +1,4 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { ScrollView } from 'react-native';
 import { Card, Paragraph, Text, TextInput } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
@@ -18,8 +17,6 @@ import {
   SettingsActionTypes
 } from '../../redux/actions/settings';
 import { RootState } from '../../redux/reducers';
-import ApiClient from '../../utils/ApiClient';
-import { environment } from '../../utils/Environment';
 import { DashboardEntry } from '../Dashboard/dashboardData';
 import { DashboardEntriesList } from '../Dashboard/DashboardEntriesList';
 import { ToggleCard } from '../Dashboard/ToggleCard';
@@ -27,38 +24,13 @@ import { ToggleRow } from '../Dashboard/ToggleRow';
 import { getProductSummaryConfig, ProductSummaryItem } from './productSummaryConfig';
 import styles from './styles';
 
-const API_URL_KEY = 'API_URL';
-
 const Settings = () => {
-  const [serverUrl, setServerUrl] = useState<string>('');
   const dispatch = useDispatch();
   const { groupLocationEntries, allowReallocationDuringPicking, productSummaryConfig, barcodeScanDebounceTime } =
     useSelector((state: RootState) => state.settingsReducer);
   const [debounceInput, setDebounceInput] = useState<string>(
     barcodeScanDebounceTime?.toString() ?? appConfig.DEFAULT_DEBOUNCE_TIME.toString()
   );
-
-  useEffect(() => {
-    AsyncStorage.getItem(API_URL_KEY)
-      .then((url) => {
-        setServerUrl(url ?? environment.API_BASE_URL);
-      })
-      .catch((err) => {
-        console.warn('Failed to load API_URL:', err);
-        setServerUrl(environment.API_BASE_URL);
-      });
-  }, []);
-
-  const handleServerUrlSave = useCallback(() => {
-    ApiClient.setBaseUrl(serverUrl);
-    AsyncStorage.setItem(API_URL_KEY, serverUrl)
-      .then(() => {
-        NavigationService.goBack();
-      })
-      .catch((err) => {
-        console.warn('Failed to save API_URL:', err);
-      });
-  }, [serverUrl]);
 
   const askResetDashboard = useCallback(() => {
     showPopup({
@@ -132,23 +104,19 @@ const Settings = () => {
 
   return (
     <ScrollView style={styles.container}>
-      {/* Server Connection */}
+      {/* Server Profiles */}
       <Card style={styles.card}>
-        <Card.Title title="Server Connection" />
+        <Card.Title title="Server Profiles" />
         <Card.Content>
           <Paragraph style={styles.paragraph}>
-            Set the server URL that will serve as the backend for the mobile application.
+            Manage server connection profiles. Switch between different servers at login.
           </Paragraph>
-          <TextInput
-            style={styles.input}
-            mode="outlined"
-            label="Server URL"
-            placeholder="http://localhost:8080/"
-            value={serverUrl}
-            autoCompleteType="off"
-            onChangeText={setServerUrl}
+          <Button
+            mode="contained"
+            size="100%"
+            title="Manage Profiles"
+            onPress={() => NavigationService.navigate('Profiles')}
           />
-          <Button mode="contained" size="100%" title="Save and Apply" onPress={handleServerUrlSave} />
         </Card.Content>
       </Card>
 

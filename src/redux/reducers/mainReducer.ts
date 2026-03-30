@@ -3,7 +3,7 @@ import Location from '../../data/location/Location';
 import { Session } from '../../data/auth/Session';
 import { SHOW_SCREEN_LOADING, HIDE_SCREEN_LOADING, GET_SESSION_REQUEST_SUCCESS, REFRESH_SCREEN } from '../actions/main';
 import { SET_CURRENT_LOCATION_REQUEST_SUCCESS } from '../actions/locations';
-import { LOGIN_REQUEST_SUCCESS } from '../actions/auth';
+import { LOGIN_REQUEST_SUCCESS, LOGOUT_REQUEST_SUCCESS } from '../actions/auth';
 import { GET_PUTAWAY_CANDIDATES_REQUEST_SUCCESS } from '../actions/putaways';
 import { GET_PRODUCT_BY_ID_REQUEST_SUCCESS, GET_PRODUCTS_REQUEST_SUCCESS } from '../actions/products';
 import { FETCH_STOCK_TRANSFERS_SUCCESS } from '../actions/transfers';
@@ -50,6 +50,11 @@ function reducer(state = initialState, action: any) {
       return {
         ...state,
         loggedIn: true
+      };
+    }
+    case LOGOUT_REQUEST_SUCCESS: {
+      return {
+        ...initialState
       };
     }
     case SHOW_SCREEN_LOADING: {

@@ -1,5 +1,4 @@
 /* eslint-disable react-native/no-inline-styles */
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { Component } from 'react';
@@ -13,6 +12,7 @@ import { appConfig } from './constants';
 import { Session } from './data/auth/Session';
 import Location from './data/location/Location';
 import * as NavigationService from './NavigationService';
+import { migrate } from './components/ProfileStorage';
 import { getSessionAction } from './redux/actions/main';
 import { RootState } from './redux/reducers';
 import AdjustStock from './screens/AdjustStock';
@@ -47,6 +47,7 @@ import PutawayDetails from './screens/PutawayDetails';
 import PutawayItem from './screens/PutawayItem';
 import PutawayItemDetail from './screens/PutawayItemDetail';
 import PutawayList from './screens/PutawayList';
+import ProfilesScreen from './screens/Profiles';
 import Scan from './screens/Scan';
 import Settings from './screens/Settings';
 import ShipItemDetails from './screens/ShipItemDetails';
@@ -121,16 +122,6 @@ class Main extends Component<Props, State> {
     };
   }
 
-  UNSAFE_componentWillMount() {
-    AsyncStorage.getItem('API_URL').then((value) => {
-      if (!value) {
-        NavigationService.navigate('Settings');
-      } else {
-        ApiClient.setBaseUrl(value);
-      }
-    });
-  }
-
   shouldComponentUpdate(nextProps: Props) {
     return (
       this.props.fullScreenLoadingIndicator.visible !== nextProps.fullScreenLoadingIndicator.visible ||
@@ -161,8 +152,21 @@ class Main extends Component<Props, State> {
 
   componentDidMount() {
     SplashScreen.hide();
-    AsyncStorage.setItem('launched', 'true');
   }
+
+  onNavigatorReady = () => {
+    migrate()
+      .then((serverUrl) => {
+        if (serverUrl) {
+          ApiClient.setBaseUrl(serverUrl);
+        } else {
+          NavigationService.navigate('Profiles');
+        }
+      })
+      .catch(() => {
+        NavigationService.navigate('Profiles');
+      });
+  };
 
   render() {
     const { loggedIn } = this.props;
@@ -174,7 +178,7 @@ class Main extends Component<Props, State> {
             visible={this.props.fullScreenLoadingIndicator.visible}
             message={this.props.fullScreenLoadingIndicator.message}
           />
-          <NavigationContainer ref={NavigationService.navigationRef}>
+          <NavigationContainer ref={NavigationService.navigationRef} onReady={this.onNavigatorReady}>
             <Stack.Navigator
               initialRouteName={initialRouteName}
               screenOptions={({ route, navigation }) => ({
@@ -246,6 +250,7 @@ class Main extends Component<Props, State> {
                 options={{ title: 'Receive Detail' }}
               />
               <Stack.Screen name="Settings" component={Settings} options={{ title: 'Settings' }} />
+              <Stack.Screen name="Profiles" component={ProfilesScreen} options={{ title: 'Server Profiles' }} />
               <Stack.Screen name="OutboundStockList" component={OutboundStockList} options={{ title: 'Packing' }} />
               <Stack.Screen
                 name="OutboundStockDetails"

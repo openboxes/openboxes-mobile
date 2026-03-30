@@ -1,7 +1,8 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, { useState } from 'react';
-import { Image, ScrollView, View } from 'react-native';
-import { TextInput } from 'react-native-paper';
+import { Image, ScrollView, TouchableOpacity, View } from 'react-native';
+import { Caption, Paragraph, TextInput } from 'react-native-paper';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useDispatch } from 'react-redux';
 
 import EyeIcon from '../../assets/images/icon_eye.svg';
@@ -9,12 +10,14 @@ import EyeSlashIcon from '../../assets/images/icon_eye_slash.svg';
 import Button from '../../components/Button';
 import showPopup from '../../components/Popup';
 import * as NavigationService from '../../NavigationService';
+import { useProfiles } from '../../hooks/useProfiles';
 import { login } from '../../redux/actions/auth';
 import Theme from '../../utils/Theme';
 import styles from './styles';
 
 const Login = () => {
   const dispatch = useDispatch();
+  const { activeProfile } = useProfiles();
   const [state, setState] = useState<any>({
     username: '',
     password: '',
@@ -77,6 +80,29 @@ const Login = () => {
       <View style={styles.welcomeContainer}>
         <Image source={require('../../assets/images/logo.png')} style={styles.logo} resizeMode="contain" />
       </View>
+      {activeProfile && (
+        <TouchableOpacity
+          style={styles.profileCard}
+          activeOpacity={0.7}
+          onPress={() => NavigationService.navigate('Profiles')}
+        >
+          <View style={styles.profileCardOuter}>
+            <View style={styles.profileCardInner}>
+              <Caption style={styles.profileCardTitle}>CONNECTED TO</Caption>
+              <View style={styles.profileCardContent}>
+                <Icon name="server" size={22} color={Theme.colors.primary} style={styles.profileCardServerIcon} />
+                <View style={styles.profileCardText}>
+                  <Paragraph style={styles.profileCardLabel}>{activeProfile.label}</Paragraph>
+                  <Caption style={styles.profileCardUrl} numberOfLines={1}>
+                    {activeProfile.serverUrl}
+                  </Caption>
+                </View>
+              </View>
+            </View>
+            <Icon name="chevron-right" size={20} color={Theme.colors.disabled} />
+          </View>
+        </TouchableOpacity>
+      )}
       <View style={styles.inputsContainer}>
         <TextInput mode="flat" label={'Username'} placeholder="Username" onChangeText={onUsernameChange} />
         <TextInput
