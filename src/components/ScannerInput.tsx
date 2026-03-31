@@ -1,5 +1,5 @@
 import { useIsFocused } from '@react-navigation/native';
-import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   AppState,
   InteractionManager,
@@ -14,10 +14,9 @@ import { useSelector } from 'react-redux';
 import { isString } from 'lodash';
 import { appConfig } from '../constants';
 import { RootState } from '../redux/reducers';
+import { hideSoftKeyboard, showSoftKeyboard } from '../utils/KeyboardUtils';
 import Theme from '../utils/Theme';
 import { KeyboardIcon, ScanIcon } from './Icons';
-
-const POST_TRANSITION_FOCUS_DELAY = 300;
 
 type ScannerInputProps = {
   value: string;
@@ -60,6 +59,9 @@ type ScannerInputProps = {
  *
  * This component is designed to work with hardware barcode scanners. It ensures that the input
  * is focused and ready for scanning. It also prevents the on-screen keyboard from appearing.
+ * Keyboard visibility is controlled explicitly via a native Android module (KeyboardModule)
+ * rather than the unreliable showSoftInputOnFocus prop.
+ *
  * IMPORTANT: Ensure there is one scanner input per screen.
  *
  * @example
@@ -70,196 +72,179 @@ type ScannerInputProps = {
  *   onSubmit={handleBarcodeSubmit}
  * />
  */
-export const ScannerInput = forwardRef<NativeTextInput, ScannerInputProps>(
-  (
-    {
-      value,
-      onChange,
-      onSubmit,
-      label,
-      style,
-      isEnabled = true,
-      autoSubmitTimeout,
-      leftIcon,
-      showKeyboardOnMount,
-      keyboardType,
-      placeholder,
-      danger = false
-    },
-    ref
-  ) => {
-    const storedDebounceTime = useSelector((state: RootState) => state.settingsReducer.barcodeScanDebounceTime);
-    const defaultTimeout = storedDebounceTime ?? appConfig.DEFAULT_DEBOUNCE_TIME;
-    const timeout = autoSubmitTimeout !== undefined ? autoSubmitTimeout : defaultTimeout;
-    const internalInputRef = useRef<NativeTextInput | null>(null);
-    const isScreenFocused = useIsFocused();
-    const [showKeyboard, setShowKeyboard] = useState(showKeyboardOnMount ?? false);
-    const formattedLabel = label && isString(label) ? label.toUpperCase() : 'SCAN BARCODE';
+export function ScannerInput({
+  value,
+  onChange,
+  onSubmit,
+  label,
+  style,
+  isEnabled = true,
+  autoSubmitTimeout,
+  leftIcon,
+  showKeyboardOnMount,
+  keyboardType,
+  placeholder,
+  danger = false
+}: ScannerInputProps) {
+  const storedDebounceTime = useSelector((state: RootState) => state.settingsReducer.barcodeScanDebounceTime);
+  const defaultTimeout = storedDebounceTime ?? appConfig.DEFAULT_DEBOUNCE_TIME;
+  const timeout = autoSubmitTimeout !== undefined ? autoSubmitTimeout : defaultTimeout;
+  const inputRef = useRef<NativeTextInput | null>(null);
+  const isScreenFocused = useIsFocused();
+  const [showKeyboard, setShowKeyboard] = useState(showKeyboardOnMount ?? false);
+  const formattedLabel = label && isString(label) ? label.toUpperCase() : 'SCAN BARCODE';
 
-    // Track the latest submitted value to prevent double submissions
-    const lastSubmittedValue = useRef<string>('');
-    const shouldBeFocused = isScreenFocused && isEnabled;
+  // Track the latest submitted value to prevent double submissions
+  const lastSubmittedValue = useRef<string>('');
+  const shouldBeFocused = isScreenFocused && isEnabled;
 
-    useImperativeHandle(ref, () => internalInputRef.current!);
+  // Focus the input — keyboard is handled via onFocus callback
+  const requestFocus = useCallback(() => {
+    if (!shouldBeFocused) {
+      return;
+    }
+    const input = inputRef.current;
+    if (input && !input.isFocused()) {
+      input.focus();
+    }
+  }, [shouldBeFocused]);
 
-    // Simple focus - just focus without all the complex logic
-    const requestFocus = useCallback(() => {
-      if (!shouldBeFocused) {
-        return;
-      }
-      const input = internalInputRef.current;
-      if (input && !input.isFocused()) {
-        input.focus();
-      }
-    }, [shouldBeFocused]);
+  // Focus on mount after navigation transitions complete
+  useEffect(() => {
+    if (shouldBeFocused) {
+      const handle = InteractionManager.runAfterInteractions(requestFocus);
+      return () => handle.cancel();
+    }
+  }, [requestFocus, shouldBeFocused]);
 
-    // Focus once on mount if the screen is focused, and whenever focus state changes
-    // Wait for navigation/animation transitions to complete, then delay slightly
-    // to ensure the native view has fully laid out before requesting focus
-    useEffect(() => {
-      if (shouldBeFocused) {
-        const handle = InteractionManager.runAfterInteractions(() => {
-          setTimeout(requestFocus, POST_TRANSITION_FOCUS_DELAY);
-        });
-        return () => handle.cancel();
-      }
-    }, [requestFocus, shouldBeFocused]);
-
-    // Handle app state changes
-    useEffect(() => {
-      const subscription = AppState.addEventListener('change', (nextAppState) => {
-        if (nextAppState === 'active' && shouldBeFocused) {
-          requestFocus();
-        }
-      });
-      return () => subscription.remove();
-    }, [requestFocus, shouldBeFocused]);
-
-    // Keyboard Dismissal (Hardware scanner often hides soft keyboard)
-    useEffect(() => {
-      if (!shouldBeFocused) {
-        return;
-      }
-      const hideSubscription = Keyboard.addListener('keyboardDidHide', requestFocus);
-      return () => hideSubscription.remove();
-    }, [requestFocus, shouldBeFocused]);
-
-    // Auto-submit after timeout
-    useEffect(() => {
-      // Don't auto-submit if disabled
-      if (!timeout) {
-        return;
-      }
-
-      // If the input is empty, reset last submitted value tracker
-      if (!value) {
-        lastSubmittedValue.current = '';
-        return;
-      }
-
-      // If the current value matches what we just submitted, don't trigger the timer again.
-      // This handles cases where parent component might not clear the input immediately after submit.
-      if (value === lastSubmittedValue.current) {
-        return;
-      }
-
-      const timer = setTimeout(() => {
-        const trimmed = value.trim();
-        if (trimmed && trimmed !== lastSubmittedValue.current) {
-          lastSubmittedValue.current = trimmed;
-          onSubmit(trimmed);
-        }
-      }, timeout);
-
-      return () => clearTimeout(timer);
-    }, [value, timeout, onSubmit]);
-
-    const handleBlur = () => {
-      if (shouldBeFocused) {
+  // Handle app state changes
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextAppState) => {
+      if (nextAppState === 'active' && shouldBeFocused) {
         requestFocus();
       }
-    };
+    });
+    return () => subscription.remove();
+  }, [requestFocus, shouldBeFocused]);
 
-    const handleChangeText = (text: string) => {
-      if (!shouldBeFocused) {
-        return;
-      }
-      onChange(text);
-    };
+  // Re-focus after hardware scanner dismisses keyboard (scanner mode only)
+  useEffect(() => {
+    if (!shouldBeFocused || showKeyboard) {
+      return;
+    }
+    const hideSubscription = Keyboard.addListener('keyboardDidHide', requestFocus);
+    return () => hideSubscription.remove();
+  }, [requestFocus, shouldBeFocused, showKeyboard]);
 
-    const handleSubmitEditing = () => {
-      if (!shouldBeFocused) {
-        return;
-      }
+  // Auto-submit after timeout
+  useEffect(() => {
+    if (!timeout) {
+      return;
+    }
 
+    if (!value) {
+      lastSubmittedValue.current = '';
+      return;
+    }
+
+    if (value === lastSubmittedValue.current) {
+      return;
+    }
+
+    const timer = setTimeout(() => {
       const trimmed = value.trim();
-      if (trimmed) {
+      if (trimmed && trimmed !== lastSubmittedValue.current) {
         lastSubmittedValue.current = trimmed;
         onSubmit(trimmed);
       }
+    }, timeout);
 
+    return () => clearTimeout(timer);
+  }, [value, timeout, onSubmit]);
+
+  const handleFocus = useCallback(() => {
+    if (showKeyboard) {
+      showSoftKeyboard();
+    }
+  }, [showKeyboard]);
+
+  const handleBlur = () => {
+    if (shouldBeFocused && !showKeyboard) {
       requestFocus();
-    };
+    }
+  };
 
-    const handleKeyboardPress = () => {
-      setShowKeyboard((prevState) => {
-        const newShowKeyboard = !prevState;
+  const handleChangeText = (text: string) => {
+    if (!shouldBeFocused) {
+      return;
+    }
+    onChange(text);
+  };
 
-        if (newShowKeyboard) {
-          // Opening keyboard: blur and refocus to trigger showSoftInputOnFocus
-          // Add safety check here just in case ref was nulled out
-          const input = internalInputRef.current;
-          if (input) {
-            input.blur();
-            input.focus();
-          }
-        } else {
-          // Closing keyboard: just dismiss it
-          Keyboard.dismiss();
-        }
+  const handleSubmitEditing = () => {
+    if (!shouldBeFocused) {
+      return;
+    }
 
-        return newShowKeyboard;
-      });
-    };
+    const trimmed = value.trim();
+    if (trimmed) {
+      lastSubmittedValue.current = trimmed;
+      onSubmit(trimmed);
+    }
 
-    return (
-      <PaperTextInput
-        ref={internalInputRef}
-        mode="outlined"
-        label={formattedLabel}
-        value={value}
-        style={style}
-        // Keep keyboard hidden
-        showSoftInputOnFocus={showKeyboard}
-        autoCorrect={false}
-        autoCompleteType="off"
-        importantForAutofill="no"
-        placeholder={placeholder}
-        placeholderTextColor={danger ? Theme.colors.danger : Theme.colors.disabled}
-        blurOnSubmit={false}
-        returnKeyType="done"
-        keyboardType={keyboardType || 'default'}
-        error={danger}
-        left={
-          // @ts-ignore
-          <PaperTextInput.Icon
-            name={() => leftIcon || <ScanIcon size={24} color={danger ? Theme.colors.danger : undefined} />}
-          />
-        }
-        right={
-          // @ts-ignore
-          <PaperTextInput.Icon
-            name={() => <KeyboardIcon size={24} color={danger ? Theme.colors.danger : undefined} />}
-            onPress={handleKeyboardPress}
-          />
-        }
-        onBlur={handleBlur}
-        onFocus={() => {}}
-        onChangeText={handleChangeText}
-        onSubmitEditing={handleSubmitEditing}
-      />
-    );
-  }
-);
+    requestFocus();
+  };
+
+  const handleKeyboardPress = () => {
+    setShowKeyboard((prevState) => {
+      const newShowKeyboard = !prevState;
+
+      if (newShowKeyboard) {
+        showSoftKeyboard();
+      } else {
+        hideSoftKeyboard();
+      }
+
+      return newShowKeyboard;
+    });
+  };
+
+  return (
+    <PaperTextInput
+      ref={inputRef}
+      mode="outlined"
+      label={formattedLabel}
+      value={value}
+      style={style}
+      showSoftInputOnFocus={showKeyboard}
+      autoCorrect={false}
+      autoCompleteType="off"
+      importantForAutofill="no"
+      placeholder={placeholder}
+      placeholderTextColor={danger ? Theme.colors.danger : Theme.colors.disabled}
+      blurOnSubmit={false}
+      returnKeyType="done"
+      keyboardType={keyboardType || 'default'}
+      error={danger}
+      left={
+        // @ts-ignore
+        <PaperTextInput.Icon
+          name={() => leftIcon || <ScanIcon size={24} color={danger ? Theme.colors.danger : undefined} />}
+        />
+      }
+      right={
+        // @ts-ignore
+        <PaperTextInput.Icon
+          name={() => <KeyboardIcon size={24} color={danger ? Theme.colors.danger : undefined} />}
+          onPress={handleKeyboardPress}
+        />
+      }
+      onFocus={handleFocus}
+      onBlur={handleBlur}
+      onChangeText={handleChangeText}
+      onSubmitEditing={handleSubmitEditing}
+    />
+  );
+}
 
 ScannerInput.displayName = 'ScannerInput';
