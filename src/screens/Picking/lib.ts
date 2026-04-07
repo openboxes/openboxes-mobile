@@ -39,7 +39,8 @@ export function revalidateTaskAndProceed(
     Alert.alert('All Picks Complete', 'You have completed all picks. Proceeding to staging location drop.', [
       {
         text: 'OK',
-        onPress: () => resetToRoutes([{ name: 'PickingPickType' }, { name: 'PickingPickStagingLocation' }])
+        onPress: () =>
+          resetToRoutes([{ name: 'Dashboard' }, { name: 'PickingPickType' }, { name: 'PickingPickStagingLocation' }])
       }
     ]);
   });

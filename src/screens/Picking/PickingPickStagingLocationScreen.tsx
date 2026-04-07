@@ -5,7 +5,7 @@ import { Divider, Paragraph, Subheading } from 'react-native-paper';
 import { ProductDetails } from '../../components/ProductDetails';
 import { ScannerInput } from '../../components/ScannerInput';
 import { EMPTY_STRING, HYPHEN } from '../../constants';
-import { navigate } from '../../NavigationService';
+import { resetToRoutes } from '../../NavigationService';
 import { usePickingContext } from './PickingContext';
 import styles from './styles';
 import { parseFromISODateToLocaleString } from '../../utils/utils';
@@ -28,7 +28,7 @@ export default function PickingPickStagingLocationScreen() {
     if (!currentTask) {
       // No tasks left at all, return to home
       Alert.alert('Staging', 'No more tasks available for staging drop.');
-      navigate('PickingPickType');
+      resetToRoutes([{ name: 'Dashboard' }, { name: 'PickingPickType' }]);
     }
   }, [currentTask, tasks.length, setCurrentTaskIndex, uniqueTasks.length, tasks]);
 
@@ -68,7 +68,7 @@ export default function PickingPickStagingLocationScreen() {
             text: 'OK',
             onPress: () => {
               resetSession();
-              navigate('PickingPickType');
+              resetToRoutes([{ name: 'Dashboard' }, { name: 'PickingPickType' }]);
             }
           }
         ]);

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Alert } from 'react-native';
 import { useDispatch } from 'react-redux';
 
-import { navigate } from '../../NavigationService';
+import { navigate, resetToRoutes } from '../../NavigationService';
 import {
   dropPickTaskAction,
   getPickTaskByIdAction,
@@ -164,7 +164,10 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
           }
 
           Alert.alert('No Additional Tasks', 'No new pick tasks were created. Proceeding to staging location drop.', [
-            { text: 'OK', onPress: () => navigate('PickingPickStagingLocation') }
+            {
+              text: 'OK',
+              onPress: () => resetToRoutes([{ name: 'Dashboard' }, { name: 'PickingPickStagingLocation' }])
+            }
           ]);
           return;
         }
