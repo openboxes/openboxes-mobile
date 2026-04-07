@@ -148,7 +148,7 @@ export default function PickingPickQuantityScreen() {
                 label: 'Quantity Picked',
                 value: `${currentTask.quantityPicked || 0} / ${currentTask.quantityRequired}`
               },
-              { icon: 'pin', label: 'Pick Location', value: currentTask.location?.name || HYPHEN }
+              { icon: 'pin', label: 'Pick Location', value: currentTask.location?.name || 'Default' }
             ]}
           />
         </ProductDetails.Root>

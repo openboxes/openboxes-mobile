@@ -24,17 +24,7 @@ export default function PickingPickLocationScreen() {
     return null;
   }
 
-  function handleScan(locationBarcode: string) {
-    const isValid = locationBarcode === currentTask?.location?.locationNumber;
-    if (!isValid) {
-      Alert.alert(
-        'Invalid Barcode',
-        `Incorrect location scanned. Expected: ${currentTask?.location?.locationNumber}. Try again.`,
-        [{ text: 'OK', onPress: () => setPickLocationBarcode(EMPTY_STRING) }]
-      );
-      return;
-    }
-
+  function proceedToProduct() {
     startPickTask(({ errorMessage }) => {
       if (errorMessage) {
         Alert.alert('Error', errorMessage);
@@ -43,10 +33,34 @@ export default function PickingPickLocationScreen() {
 
       revalidateCurrentTask(() => {
         setPickLocationBarcode(EMPTY_STRING);
-
         navigate('PickingPickProduct');
       });
     });
+  }
+
+  function handleScan(locationBarcode: string) {
+    if (!currentTask?.location?.locationNumber) {
+      Alert.alert(
+        'No Bin Location',
+        'There is no bin location assigned to this task. Do you want to continue and fallback to default?',
+        [
+          { text: 'Cancel', style: 'cancel', onPress: () => setPickLocationBarcode(EMPTY_STRING) },
+          { text: 'Continue', onPress: proceedToProduct }
+        ]
+      );
+      return;
+    }
+
+    if (locationBarcode !== currentTask.location.locationNumber) {
+      Alert.alert(
+        'Invalid Barcode',
+        `Incorrect location scanned. Expected: ${currentTask.location.locationNumber}. Try again.`,
+        [{ text: 'OK', onPress: () => setPickLocationBarcode(EMPTY_STRING) }]
+      );
+      return;
+    }
+
+    proceedToProduct();
   }
 
   return (
