@@ -68,6 +68,14 @@ export default StyleSheet.create({
     color: Theme.colors.text,
     fontWeight: 'normal'
   },
+  scannerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: Theme.spacing.small
+  },
+  scannerInput: {
+    flex: 1
+  },
   topSpace: { marginTop: Theme.spacing.small },
   bottomSpace: { marginBottom: Theme.spacing.small },
   formContainer: {

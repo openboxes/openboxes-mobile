@@ -19,6 +19,10 @@ export default function PutawayDetails({
   totalTasks,
   showTaskCounter = true
 }: PutawayDetailsProps) {
+  if (!putawayDetails) {
+    return null;
+  }
+
   const { inventoryItem, quantity, container, destination } = putawayDetails;
 
   const detailsChips: DetailChip[] = [

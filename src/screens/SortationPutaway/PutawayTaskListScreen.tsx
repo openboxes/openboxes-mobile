@@ -7,6 +7,8 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import Icon, { Name } from '../../components/Icon';
 import { ScannerInput } from '../../components/ScannerInput';
+import { SearchButton } from '../../components/SearchButton';
+import { useSearchButton } from '../../components/SearchButton/useSearchButton';
 import { getPutawayDetailsByContainerId } from '../../redux/actions/putaways';
 import { RootState } from '../../redux/reducers';
 import { SortationTask } from '../../types/sortation';
@@ -92,6 +94,7 @@ export default function PutawayTaskListScreen({ route }: PutawayTaskListScreenPr
   const putawayTasks = useSelector((state: RootState) => state.putawayReducer.putawayTasks) as SortationTask[];
   const [searchTerm, setSearchTerm] = useState('');
   const [expandedZones, setExpandedZones] = useState<{ [key: string]: boolean }>({});
+  const { isSearchOpen, searchButtonProps } = useSearchButton({ onSelect: setSearchTerm });
 
   const fetchTasks = useCallback(() => {
     dispatch(getPutawayDetailsByContainerId(containerId));
@@ -200,13 +203,17 @@ export default function PutawayTaskListScreen({ route }: PutawayTaskListScreenPr
             Container: <Text style={styles.bold}>{containerId}</Text>
           </Chip>
         </View>
-        <ScannerInput
-          value={searchTerm}
-          label="Product"
-          style={styles.topSpace}
-          onChange={setSearchTerm}
-          onSubmit={setSearchTerm}
-        />
+        <View style={styles.scannerRow}>
+          <ScannerInput
+            value={searchTerm}
+            label="Product"
+            style={styles.scannerInput}
+            isEnabled={!isSearchOpen}
+            onChange={setSearchTerm}
+            onSubmit={setSearchTerm}
+          />
+          <SearchButton searchType="product" {...searchButtonProps} />
+        </View>
         {searchTerm.length > 0 && (
           <Button mode="contained" style={styles.clearButton} onPress={handleClearSearch}>
             Clear

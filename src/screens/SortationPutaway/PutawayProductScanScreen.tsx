@@ -7,6 +7,8 @@ import { useSelector } from 'react-redux';
 import Button from '../../components/Button';
 import EmptyView from '../../components/EmptyView';
 import { ScannerInput } from '../../components/ScannerInput';
+import { SearchButton } from '../../components/SearchButton';
+import { useSearchButton } from '../../components/SearchButton/useSearchButton';
 import { EMPTY_STRING } from '../../constants';
 import { navigate } from '../../NavigationService';
 import { RootState } from '../../redux/reducers';
@@ -35,6 +37,7 @@ export default function PutawayProductScanScreen() {
   const putawayTasks = useSelector((state: RootState) => state.putawayReducer.putawayTasks) as SortationTask[];
   const putawayDetails = task ?? putawayTasks?.[currentTaskIndex];
   const [putawayProductBarcode, setPutawayProductBarcode] = useState<string>(EMPTY_STRING);
+  const { isSearchOpen, searchButtonProps } = useSearchButton({ onSelect: setPutawayProductBarcode });
 
   if (!putawayDetails) {
     return (
@@ -85,15 +88,19 @@ export default function PutawayProductScanScreen() {
       <Divider />
 
       <View style={styles.formContainer}>
-        <Subheading style={styles.subheading}>Scan Putaway Product Barcode</Subheading>
+        <Subheading style={styles.subheading}>Scan putaway product or use search to find it</Subheading>
 
-        <ScannerInput
-          style={styles.topSpace}
-          label="Putaway Product Entry Field"
-          value={putawayProductBarcode}
-          onChange={setPutawayProductBarcode}
-          onSubmit={handleProcessing}
-        />
+        <View style={styles.scannerRow}>
+          <ScannerInput
+            style={styles.scannerInput}
+            label="Putaway Product Entry Field"
+            value={putawayProductBarcode}
+            isEnabled={!isSearchOpen}
+            onChange={setPutawayProductBarcode}
+            onSubmit={handleProcessing}
+          />
+          <SearchButton searchType="product" {...searchButtonProps} />
+        </View>
 
         <Button
           style={styles.topSpace}

@@ -7,6 +7,8 @@ import { useSelector } from 'react-redux';
 import Button from '../../components/Button';
 import EmptyView from '../../components/EmptyView';
 import { ScannerInput } from '../../components/ScannerInput';
+import { SearchButton } from '../../components/SearchButton';
+import { useSearchButton } from '../../components/SearchButton/useSearchButton';
 import { EMPTY_STRING } from '../../constants';
 import { navigate } from '../../NavigationService';
 import { RootState } from '../../redux/reducers';
@@ -37,6 +39,7 @@ export default function PutawayLocationScanScreen() {
 
   const [putawayLocationBarcode, setPutawayLocationBarcode] = useState<string>(EMPTY_STRING);
   const [isDialogVisible, setIsDialogVisible] = useState(false);
+  const { isSearchOpen, searchButtonProps } = useSearchButton({ onSelect: setPutawayLocationBarcode });
   const [selectedAlternativeDestination, setSelectedAlternativeDestination] = useState<SortationLocation | null>(
     putawayDetails?.destination
   );
@@ -103,17 +106,19 @@ export default function PutawayLocationScanScreen() {
         <Divider />
 
         <View style={styles.formContainer}>
-          <Subheading style={styles.subheading}>Scan Putaway Location Barcode</Subheading>
+          <Subheading style={styles.subheading}>Scan putaway location or use search to find it</Subheading>
 
-          <ScannerInput
-            style={styles.topSpace}
-            label="Putaway Location Entry Field"
-            value={putawayLocationBarcode}
-            // Disable scanner logic if the alternative location modal is open
-            isEnabled={!isDialogVisible}
-            onChange={setPutawayLocationBarcode}
-            onSubmit={handleProcessing}
-          />
+          <View style={styles.scannerRow}>
+            <ScannerInput
+              style={styles.scannerInput}
+              label="Putaway Location Entry Field"
+              value={putawayLocationBarcode}
+              isEnabled={!isDialogVisible && !isSearchOpen}
+              onChange={setPutawayLocationBarcode}
+              onSubmit={handleProcessing}
+            />
+            <SearchButton searchType="location" {...searchButtonProps} />
+          </View>
 
           <View style={styles.topSpace}>
             <View style={[styles.headerRow, styles.bottomSpace]}>
