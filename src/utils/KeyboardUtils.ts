@@ -1,4 +1,4 @@
-import { NativeModules, Platform } from 'react-native';
+import { Keyboard, NativeModules, Platform } from 'react-native';
 
 const { KeyboardModule } = NativeModules;
 
@@ -21,5 +21,7 @@ export function showSoftKeyboard(): void {
 export function hideSoftKeyboard(): void {
   if (Platform.OS === 'android' && KeyboardModule) {
     KeyboardModule.hideKeyboard();
+  } else {
+    Keyboard.dismiss();
   }
 }

@@ -196,17 +196,18 @@ export function ScannerInput({
   };
 
   const handleKeyboardPress = () => {
-    setShowKeyboard((prevState) => {
-      const newShowKeyboard = !prevState;
+    const newShowKeyboard = !showKeyboard;
+    setShowKeyboard(newShowKeyboard);
 
-      if (newShowKeyboard) {
-        showSoftKeyboard();
-      } else {
-        hideSoftKeyboard();
+    if (newShowKeyboard) {
+      const input = inputRef.current;
+      if (input && !input.isFocused()) {
+        input.focus();
       }
-
-      return newShowKeyboard;
-    });
+      showSoftKeyboard();
+    } else {
+      hideSoftKeyboard();
+    }
   };
 
   return (

@@ -50,14 +50,19 @@ public class KeyboardModule extends ReactContextBaseJavaModule {
                         }
                     });
                 } else {
-                    final ViewTreeObserver.OnWindowFocusChangeListener[] listenerHolder =
+                    final View.OnAttachStateChangeListener[] attachListenerHolder =
+                            new View.OnAttachStateChangeListener[1];
+                    final ViewTreeObserver.OnWindowFocusChangeListener[] focusListenerHolder =
                             new ViewTreeObserver.OnWindowFocusChangeListener[1];
 
-                    listenerHolder[0] = new ViewTreeObserver.OnWindowFocusChangeListener() {
+                    focusListenerHolder[0] = new ViewTreeObserver.OnWindowFocusChangeListener() {
                         @Override
                         public void onWindowFocusChanged(boolean hasFocus) {
-                            focusedView.getViewTreeObserver()
-                                    .removeOnWindowFocusChangeListener(this);
+                            ViewTreeObserver vto = focusedView.getViewTreeObserver();
+                            if (vto.isAlive()) {
+                                vto.removeOnWindowFocusChangeListener(this);
+                            }
+                            focusedView.removeOnAttachStateChangeListener(attachListenerHolder[0]);
                             if (hasFocus) {
                                 focusedView.post(new Runnable() {
                                     @Override
@@ -70,21 +75,23 @@ public class KeyboardModule extends ReactContextBaseJavaModule {
                         }
                     };
 
-                    focusedView.getViewTreeObserver().addOnWindowFocusChangeListener(listenerHolder[0]);
+                    // Clean up focus listener if the view is detached before window focus arrives
+                    attachListenerHolder[0] = new View.OnAttachStateChangeListener() {
+                        @Override
+                        public void onViewAttachedToWindow(View v) {}
 
-                    // Clean up listener if the view is detached before window focus arrives
-                    focusedView.addOnAttachStateChangeListener(
-                            new View.OnAttachStateChangeListener() {
-                                @Override
-                                public void onViewAttachedToWindow(View v) {}
+                        @Override
+                        public void onViewDetachedFromWindow(View v) {
+                            ViewTreeObserver vto = focusedView.getViewTreeObserver();
+                            if (vto.isAlive()) {
+                                vto.removeOnWindowFocusChangeListener(focusListenerHolder[0]);
+                            }
+                            focusedView.removeOnAttachStateChangeListener(this);
+                        }
+                    };
 
-                                @Override
-                                public void onViewDetachedFromWindow(View v) {
-                                    focusedView.getViewTreeObserver()
-                                            .removeOnWindowFocusChangeListener(listenerHolder[0]);
-                                    focusedView.removeOnAttachStateChangeListener(this);
-                                }
-                            });
+                    focusedView.getViewTreeObserver().addOnWindowFocusChangeListener(focusListenerHolder[0]);
+                    focusedView.addOnAttachStateChangeListener(attachListenerHolder[0]);
                 }
             }
         });
