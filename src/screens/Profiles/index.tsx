@@ -6,8 +6,7 @@ import { useDispatch } from 'react-redux';
 import showPopup from '../../components/Popup';
 import * as ProfileStorage from '../../components/ProfileStorage';
 import { useProfiles } from '../../hooks/useProfiles';
-import * as NavigationService from '../../NavigationService';
-import { LOGOUT_REQUEST_SUCCESS } from '../../redux/actions/auth';
+import { logout } from '../../redux/actions/auth';
 import { Profile } from '../../types/profile';
 import ApiClient from '../../utils/ApiClient';
 import Theme from '../../utils/Theme';
@@ -59,12 +58,16 @@ export default function ProfilesScreen() {
           ApiClient.setBaseUrl(serverUrl);
         }
       } else {
+        const isFirstProfile = profiles.length === 0;
         await addProfile(label, serverUrl);
+        if (isFirstProfile) {
+          ApiClient.setBaseUrl(serverUrl);
+        }
       }
 
       setDialogVisible(false);
     },
-    [editingProfile, activeProfileId, updateProfile, addProfile]
+    [editingProfile, activeProfileId, updateProfile, addProfile, profiles.length]
   );
 
   const handleDelete = useCallback(
@@ -104,10 +107,9 @@ export default function ProfilesScreen() {
         positiveButton: {
           text: 'Switch',
           callback: async () => {
+            dispatch(logout());
             await setActive(profile.id);
             ApiClient.setBaseUrl(profile.serverUrl);
-            dispatch({ type: LOGOUT_REQUEST_SUCCESS });
-            NavigationService.reset('Login');
           }
         },
         negativeButtonText: 'Cancel'

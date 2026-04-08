@@ -16,19 +16,26 @@ type UseProfilesResult = {
   setActive: (id: string) => Promise<void>;
 };
 
+const DEFAULT_DATA: ProfileStorageData = {
+  version: 1,
+  activeProfileId: null,
+  profiles: []
+};
+
 export function useProfiles(): UseProfilesResult {
-  const [data, setData] = useState<ProfileStorageData>({
-    version: 1,
-    activeProfileId: null,
-    profiles: []
-  });
+  const [data, setData] = useState<ProfileStorageData>(DEFAULT_DATA);
   const [loading, setLoading] = useState(true);
   const isFocused = useIsFocused();
 
   const refresh = useCallback(async () => {
-    const stored = await ProfileStorage.getProfiles();
-    setData(stored);
-    setLoading(false);
+    try {
+      const stored = await ProfileStorage.getProfiles();
+      setData(stored);
+    } catch {
+      setData(DEFAULT_DATA);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => {

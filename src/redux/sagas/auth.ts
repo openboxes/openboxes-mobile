@@ -74,13 +74,13 @@ function* login(action: any) {
 }
 function* logout(action: any) {
   try {
-    yield put(showScreenLoading('Logging out'));
+    yield put(showScreenLoading('Logging Out...'));
     const data = yield call(api.logout, action.payload.data);
     yield put({
       type: LOGOUT_REQUEST_SUCCESS,
       payload: data
     });
-    yield NavigationService.navigate('Login');
+    yield NavigationService.reset('Login');
     yield put(hideScreenLoading());
   } catch (e) {
     yield put(hideScreenLoading());

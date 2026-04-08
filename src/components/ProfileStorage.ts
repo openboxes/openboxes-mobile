@@ -88,8 +88,14 @@ export async function migrate(): Promise<string | null> {
   const data = await readStorage();
 
   if (data.profiles.length > 0) {
-    const active = data.profiles.find((p) => p.id === data.activeProfileId);
-    return active?.serverUrl ?? data.profiles[0]?.serverUrl ?? null;
+    let active = data.profiles.find((p) => p.id === data.activeProfileId);
+
+    if (!active && data.profiles[0]) {
+      active = data.profiles[0];
+      await writeStorage({ ...data, activeProfileId: active.id });
+    }
+
+    return active?.serverUrl ?? null;
   }
 
   const legacyUrl = await AsyncStorage.getItem(LEGACY_API_URL_KEY);

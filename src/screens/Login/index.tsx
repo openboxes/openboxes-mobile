@@ -4,7 +4,6 @@ import { Image, ScrollView, TouchableOpacity, View } from 'react-native';
 import { Caption, Paragraph, TextInput } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useDispatch } from 'react-redux';
-
 import EyeIcon from '../../assets/images/icon_eye.svg';
 import EyeSlashIcon from '../../assets/images/icon_eye_slash.svg';
 import Button from '../../components/Button';
