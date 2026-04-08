@@ -6,6 +6,8 @@ import { useDispatch } from 'react-redux';
 
 import IconProducts from '../../assets/images/icon_products.svg';
 import { ScannerInput } from '../../components/ScannerInput';
+import { SearchButton } from '../../components/SearchButton';
+import { useSearchButton } from '../../components/SearchButton/useSearchButton';
 import { EMPTY_STRING } from '../../constants';
 import { navigate, replace } from '../../NavigationService';
 import { getSortationDetailsByBarcode } from '../../redux/actions/products';
@@ -22,6 +24,7 @@ type SortationEntryRouteProp = RouteProp<{ Sortation: { sortedProduct?: SortedPr
 export default function SortationEntryScreen() {
   const [barcode, setBarcode] = useState<string>(EMPTY_STRING);
   const dispatch = useDispatch();
+  const { isSearchOpen, searchButtonProps } = useSearchButton({ onSelect: setBarcode });
   const { params } = useRoute<SortationEntryRouteProp>();
   const sortedProduct = params?.sortedProduct;
 
@@ -72,17 +75,21 @@ export default function SortationEntryScreen() {
         </View>
       )}
 
-      <Title style={styles.title}>Scan or type the product's barcode</Title>
+      <Title style={styles.title}>Scan product barcode or use search to find it</Title>
 
-      <ScannerInput
-        style={styles.topSpace}
-        label="Product"
-        placeholder="Scan or type the product's barcode"
-        value={barcode}
-        leftIcon={<IconProducts height={24} width={24} />}
-        onChange={setBarcode}
-        onSubmit={handleScan}
-      />
+      <View style={styles.scannerRow}>
+        <ScannerInput
+          style={styles.scannerInput}
+          label="Product"
+          placeholder="Scan product barcode"
+          value={barcode}
+          leftIcon={<IconProducts height={24} width={24} />}
+          isEnabled={!isSearchOpen}
+          onChange={setBarcode}
+          onSubmit={handleScan}
+        />
+        <SearchButton searchType="product" {...searchButtonProps} />
+      </View>
     </ScrollView>
   );
 }

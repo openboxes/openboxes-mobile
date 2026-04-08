@@ -8,6 +8,8 @@ import Button from '../../components/Button';
 import EmptyView from '../../components/EmptyView';
 import { ContainerIcon, LocationIcon, QuantityIcon } from '../../components/Icons';
 import { ScannerInput } from '../../components/ScannerInput';
+import { SearchButton } from '../../components/SearchButton';
+import { useSearchButton } from '../../components/SearchButton/useSearchButton';
 import { EMPTY_FALLBACK, EMPTY_STRING } from '../../constants';
 import { navigate } from '../../NavigationService';
 import { patchPutawayTaskAction } from '../../redux/actions/putaways';
@@ -27,6 +29,7 @@ export default function SortationContainerScreen() {
 
   const [putawayContainerBarcode, setPutawayContainerBarcode] = useState<string>('');
   const [isDialogVisible, setIsDialogVisible] = useState<boolean>(false);
+  const { isSearchOpen, searchButtonProps } = useSearchButton({ onSelect: setPutawayContainerBarcode });
   const [pendingContainerCode, setPendingContainerCode] = useState<string>('');
   const dispatch = useDispatch();
 
@@ -138,14 +141,19 @@ export default function SortationContainerScreen() {
       <Divider />
 
       <View style={styles.formContainer}>
-        <ScannerInput
-          leftIcon={<ContainerIcon size={24} />}
-          placeholder={task?.container?.locationNumber ?? EMPTY_FALLBACK}
-          label="Container"
-          value={putawayContainerBarcode}
-          onChange={setPutawayContainerBarcode}
-          onSubmit={handleProcessing}
-        />
+        <View style={styles.scannerRow}>
+          <ScannerInput
+            style={styles.scannerInput}
+            leftIcon={<ContainerIcon size={24} />}
+            placeholder={task?.container?.locationNumber ?? EMPTY_FALLBACK}
+            label="Container"
+            value={putawayContainerBarcode}
+            isEnabled={!isDialogVisible && !isSearchOpen}
+            onChange={setPutawayContainerBarcode}
+            onSubmit={handleProcessing}
+          />
+          <SearchButton searchType="container" {...searchButtonProps} />
+        </View>
 
         <Button
           style={styles.topSpace}
