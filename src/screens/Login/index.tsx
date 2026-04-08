@@ -4,6 +4,7 @@ import { Image, ScrollView, TouchableOpacity, View } from 'react-native';
 import { Caption, Paragraph, TextInput } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useDispatch } from 'react-redux';
+import ProfileCardSkeleton from '../../components/ProfileCardSkeleton';
 import EyeIcon from '../../assets/images/icon_eye.svg';
 import EyeSlashIcon from '../../assets/images/icon_eye_slash.svg';
 import Button from '../../components/Button';
@@ -16,7 +17,7 @@ import styles from './styles';
 
 const Login = () => {
   const dispatch = useDispatch();
-  const { activeProfile } = useProfiles();
+  const { activeProfile, loading } = useProfiles();
   const [state, setState] = useState<any>({
     username: '',
     password: '',
@@ -79,7 +80,9 @@ const Login = () => {
       <View style={styles.welcomeContainer}>
         <Image source={require('../../assets/images/logo.png')} style={styles.logo} resizeMode="contain" />
       </View>
-      {activeProfile && (
+      {loading ? (
+        <ProfileCardSkeleton />
+      ) : activeProfile ? (
         <TouchableOpacity
           style={styles.profileCard}
           activeOpacity={0.7}
@@ -101,7 +104,7 @@ const Login = () => {
             <Icon name="chevron-right" size={20} color={Theme.colors.disabled} />
           </View>
         </TouchableOpacity>
-      )}
+      ) : null}
       <View style={styles.inputsContainer}>
         <TextInput mode="flat" label={'Username'} placeholder="Username" onChangeText={onUsernameChange} />
         <TextInput

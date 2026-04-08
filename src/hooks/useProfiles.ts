@@ -16,14 +16,8 @@ type UseProfilesResult = {
   setActive: (id: string) => Promise<void>;
 };
 
-const DEFAULT_DATA: ProfileStorageData = {
-  version: 1,
-  activeProfileId: null,
-  profiles: []
-};
-
 export function useProfiles(): UseProfilesResult {
-  const [data, setData] = useState<ProfileStorageData>(DEFAULT_DATA);
+  const [data, setData] = useState<ProfileStorageData>(ProfileStorage.createDefaultStorage);
   const [loading, setLoading] = useState(true);
   const isFocused = useIsFocused();
 
@@ -32,7 +26,7 @@ export function useProfiles(): UseProfilesResult {
       const stored = await ProfileStorage.getProfiles();
       setData(stored);
     } catch {
-      setData(DEFAULT_DATA);
+      setData(ProfileStorage.createDefaultStorage());
     } finally {
       setLoading(false);
     }
@@ -44,44 +38,29 @@ export function useProfiles(): UseProfilesResult {
     }
   }, [isFocused, refresh]);
 
+  useEffect(() => {
+    return ProfileStorage.subscribe(refresh);
+  }, [refresh]);
+
   const activeProfile = data.profiles.find((p) => p.id === data.activeProfileId) ?? data.profiles[0] ?? null;
 
-  const addProfile = useCallback(
-    async (label: string, serverUrl: string): Promise<Profile> => {
-      const profile = ProfileStorage.createProfile(label, serverUrl);
-      await ProfileStorage.saveProfile(profile);
-      await refresh();
-      return profile;
-    },
-    [refresh]
-  );
+  const addProfile = useCallback(async (label: string, serverUrl: string): Promise<Profile> => {
+    const profile = ProfileStorage.createProfile(label, serverUrl);
+    await ProfileStorage.saveProfile(profile);
+    return profile;
+  }, []);
 
-  const updateProfile = useCallback(
-    async (profile: Profile) => {
-      await ProfileStorage.saveProfile(profile);
-      await refresh();
-    },
-    [refresh]
-  );
+  const updateProfile = useCallback(async (profile: Profile) => {
+    await ProfileStorage.saveProfile(profile);
+  }, []);
 
-  const removeProfile = useCallback(
-    async (id: string): Promise<boolean> => {
-      const success = await ProfileStorage.deleteProfile(id);
-      if (success) {
-        await refresh();
-      }
-      return success;
-    },
-    [refresh]
-  );
+  const removeProfile = useCallback(async (id: string): Promise<boolean> => {
+    return ProfileStorage.deleteProfile(id);
+  }, []);
 
-  const setActive = useCallback(
-    async (id: string) => {
-      await ProfileStorage.setActiveProfileId(id);
-      await refresh();
-    },
-    [refresh]
-  );
+  const setActive = useCallback(async (id: string) => {
+    await ProfileStorage.setActiveProfileId(id);
+  }, []);
 
   return {
     profiles: data.profiles,

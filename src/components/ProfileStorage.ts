@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { Profile, ProfileStorageData } from '../types/profile';
+import { createEventEmitter } from '../utils/EventEmitter';
 
 function generateId(): string {
   return Date.now().toString(36) + Math.random().toString(36).slice(2);
@@ -10,7 +11,10 @@ const PROFILES_KEY = 'PROFILES';
 const LEGACY_API_URL_KEY = 'API_URL';
 const CURRENT_VERSION = 1;
 
-function createDefaultStorage(): ProfileStorageData {
+const emitter = createEventEmitter();
+export const subscribe = emitter.subscribe;
+
+export function createDefaultStorage(): ProfileStorageData {
   return {
     version: CURRENT_VERSION,
     activeProfileId: null,
@@ -50,6 +54,7 @@ async function readStorage(): Promise<ProfileStorageData> {
 
 async function writeStorage(data: ProfileStorageData): Promise<void> {
   await AsyncStorage.setItem(PROFILES_KEY, JSON.stringify(data));
+  emitter.emit();
 }
 
 export function createProfile(label: string, serverUrl: string): Profile {
@@ -112,7 +117,15 @@ export async function migrate(): Promise<string | null> {
     return profile.serverUrl;
   }
 
-  return null;
+  const defaultProfile = createProfile('Staging', 'https://vvg.openboxes.com/openboxes/api');
+  const defaultData: ProfileStorageData = {
+    version: CURRENT_VERSION,
+    activeProfileId: defaultProfile.id,
+    profiles: [defaultProfile]
+  };
+  await writeStorage(defaultData);
+
+  return defaultProfile.serverUrl;
 }
 
 export async function getProfiles(): Promise<ProfileStorageData> {
