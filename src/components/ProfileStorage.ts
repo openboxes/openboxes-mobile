@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { Profile, ProfileStorageData } from '../types/profile';
+import { environment } from '../utils/Environment';
 import { createEventEmitter } from '../utils/EventEmitter';
 
 function generateId(): string {
@@ -117,7 +118,7 @@ export async function migrate(): Promise<string | null> {
     return profile.serverUrl;
   }
 
-  const defaultProfile = createProfile('Staging', 'https://vvg.openboxes.com/openboxes/api');
+  const defaultProfile = createProfile('Staging', environment.API_BASE_URL);
   const defaultData: ProfileStorageData = {
     version: CURRENT_VERSION,
     activeProfileId: defaultProfile.id,

@@ -6,7 +6,9 @@ import { useDispatch } from 'react-redux';
 import showPopup from '../../components/Popup';
 import * as ProfileStorage from '../../components/ProfileStorage';
 import { useProfiles } from '../../hooks/useProfiles';
-import { logout } from '../../redux/actions/auth';
+import * as NavigationService from '../../NavigationService';
+import { logout as logoutApi } from '../../apis/auth';
+import { LOGOUT_REQUEST_SUCCESS } from '../../redux/actions/auth';
 import { Profile } from '../../types/profile';
 import ApiClient from '../../utils/ApiClient';
 import Theme from '../../utils/Theme';
@@ -86,17 +88,20 @@ export default function ProfilesScreen() {
             const wasActive = profile.id === activeProfileId;
             const success = await removeProfile(profile.id);
             if (success && wasActive) {
+              await logoutApi(null).catch(() => {});
               const newActive = await ProfileStorage.getActiveProfile();
               if (newActive) {
                 ApiClient.setBaseUrl(newActive.serverUrl);
               }
+              dispatch({ type: LOGOUT_REQUEST_SUCCESS });
+              NavigationService.reset('Login');
             }
           }
         },
         negativeButtonText: 'Cancel'
       });
     },
-    [profiles.length, activeProfileId, removeProfile]
+    [profiles.length, activeProfileId, removeProfile, dispatch]
   );
 
   const handleActivate = useCallback(
@@ -107,9 +112,12 @@ export default function ProfilesScreen() {
         positiveButton: {
           text: 'Switch',
           callback: async () => {
-            dispatch(logout());
+            // Log out directly from the API to ensure the token is revoked, but ignore any errors since we want to switch regardless
+            await logoutApi(null).catch(() => {});
             await setActive(profile.id);
             ApiClient.setBaseUrl(profile.serverUrl);
+            dispatch({ type: LOGOUT_REQUEST_SUCCESS });
+            NavigationService.reset('Login');
           }
         },
         negativeButtonText: 'Cancel'
