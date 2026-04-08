@@ -40,7 +40,7 @@ export function revalidateTaskAndProceed(
       {
         text: 'OK',
         onPress: () =>
-          resetToRoutes([{ name: 'Dashboard' }, { name: 'PickingPickType' }, { name: 'PickingPickStagingLocation' }])
+          resetToRoutes([{ name: 'Drawer', params: { screen: 'Dashboard' } }, { name: 'PickingPickType' }, { name: 'PickingPickStagingLocation' }])
       }
     ]);
   });

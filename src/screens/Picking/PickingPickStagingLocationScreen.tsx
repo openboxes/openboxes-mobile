@@ -31,7 +31,7 @@ export default function PickingPickStagingLocationScreen() {
     if (!currentTask) {
       // No tasks left at all, return to home
       Alert.alert('Staging', 'No more tasks available for staging drop.');
-      resetToRoutes([{ name: 'Dashboard' }, { name: 'PickingPickType' }]);
+      resetToRoutes([{ name: 'Drawer', params: { screen: 'Dashboard' } }, { name: 'PickingPickType' }]);
     }
   }, [currentTask, tasks.length, setCurrentTaskIndex, uniqueTasks.length, tasks]);
 
@@ -71,7 +71,7 @@ export default function PickingPickStagingLocationScreen() {
             text: 'OK',
             onPress: () => {
               resetSession();
-              resetToRoutes([{ name: 'Dashboard' }, { name: 'PickingPickType' }]);
+              resetToRoutes([{ name: 'Drawer', params: { screen: 'Dashboard' } }, { name: 'PickingPickType' }]);
             }
           }
         ]);

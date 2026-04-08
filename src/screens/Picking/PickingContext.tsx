@@ -166,7 +166,11 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
           Alert.alert('No Additional Tasks', 'No new pick tasks were created. Proceeding to staging location drop.', [
             {
               text: 'OK',
-              onPress: () => resetToRoutes([{ name: 'Dashboard' }, { name: 'PickingPickStagingLocation' }])
+              onPress: () =>
+                resetToRoutes([
+                  { name: 'Drawer', params: { screen: 'Dashboard' } },
+                  { name: 'PickingPickStagingLocation' }
+                ])
             }
           ]);
           return;
