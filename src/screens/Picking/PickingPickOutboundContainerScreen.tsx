@@ -1,6 +1,6 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
 import * as React from 'react';
-import { Alert, View } from 'react-native';
+import { Alert, ScrollView, View } from 'react-native';
 import { Divider, Paragraph, Subheading } from 'react-native-paper';
 
 import { ProductDetails } from '../../components/ProductDetails';
@@ -99,72 +99,74 @@ export default function PickingPickOutboundContainerScreen() {
   }
 
   return (
-    <ProductDetails.Provider product={currentTask.product} status={currentTask.status}>
-      <ProductDetails.Root>
-        <ProductDetails.Header>
-          <ProductDetails.Badge icon="barcode" label="Product Code">
-            {currentTask.product.productCode}
-          </ProductDetails.Badge>
-          <ProductDetails.Badge icon="navigation" label="Pick Task">
-            {`${currentTaskIndex + 1} / ${allTasksCount}`}
-          </ProductDetails.Badge>
-        </ProductDetails.Header>
+    <ScrollView style={styles.flex1} keyboardShouldPersistTaps="handled">
+      <ProductDetails.Provider product={currentTask.product} status={currentTask.status}>
+        <ProductDetails.Root>
+          <ProductDetails.Header>
+            <ProductDetails.Badge icon="barcode" label="Product Code">
+              {currentTask.product.productCode}
+            </ProductDetails.Badge>
+            <ProductDetails.Badge icon="navigation" label="Pick Task">
+              {`${currentTaskIndex + 1} / ${allTasksCount}`}
+            </ProductDetails.Badge>
+          </ProductDetails.Header>
 
-        <ProductDetails.Separator />
-        <ProductDetails.Title />
-        <ProductDetails.Caption
-          title={currentTask.inventoryItem.lotNumber}
-          subtitle={parseFromISODateToLocaleString(currentTask.inventoryItem.expirationDate)}
-        />
-
-        <ProductDetails.List
-          items={[
-            {
-              icon: 'identifier',
-              label: 'Order Number',
-              value: currentTask.requisitionNumber || HYPHEN
-            },
-            {
-              icon: 'account',
-              label: 'Assignee',
-              value: currentTask?.assignee
-                ? `${currentTask?.assignee?.firstName} ${currentTask?.assignee?.lastName}`.trim()
-                : HYPHEN
-            },
-            {
-              icon: 'truck',
-              label: 'Quantity Picked',
-              value: params?.quantityPicked || currentTask.quantityRequired
-            },
-            {
-              icon: 'pin',
-              label: 'Outbound Container Id',
-              value: currentTask.outboundContainer?.locationNumber ?? 'New'
-            }
-          ]}
-        />
-      </ProductDetails.Root>
-
-      <Divider />
-
-      <View style={[styles.wrapperWithPadding]}>
-        <Subheading style={styles.subheading}>Scan Outbound Container</Subheading>
-        <Paragraph style={styles.paragraph}>
-          Point your barcode scanner at the outbound container or type the code manually.
-        </Paragraph>
-
-        <View style={styles.scannerRow}>
-          <ScannerInput
-            style={styles.scannerInput}
-            label="Outbound Container ID"
-            value={outboundContainerId}
-            isEnabled={!isSearchOpen}
-            onChange={setOutboundContainerId}
-            onSubmit={handleScan}
+          <ProductDetails.Separator />
+          <ProductDetails.Title />
+          <ProductDetails.Caption
+            title={currentTask.inventoryItem.lotNumber}
+            subtitle={parseFromISODateToLocaleString(currentTask.inventoryItem.expirationDate)}
           />
-          <SearchButton searchType="container" {...searchButtonProps} />
+
+          <ProductDetails.List
+            items={[
+              {
+                icon: 'identifier',
+                label: 'Order Number',
+                value: currentTask.requisitionNumber || HYPHEN
+              },
+              {
+                icon: 'account',
+                label: 'Assignee',
+                value: currentTask?.assignee
+                  ? `${currentTask?.assignee?.firstName} ${currentTask?.assignee?.lastName}`.trim()
+                  : HYPHEN
+              },
+              {
+                icon: 'truck',
+                label: 'Quantity Picked',
+                value: params?.quantityPicked || currentTask.quantityRequired
+              },
+              {
+                icon: 'pin',
+                label: 'Outbound Container Id',
+                value: currentTask.outboundContainer?.locationNumber ?? 'New'
+              }
+            ]}
+          />
+        </ProductDetails.Root>
+
+        <Divider />
+
+        <View style={[styles.wrapperWithPadding]}>
+          <Subheading style={styles.subheading}>Scan Outbound Container</Subheading>
+          <Paragraph style={styles.paragraph}>
+            Point your barcode scanner at the outbound container or type the code manually.
+          </Paragraph>
+
+          <View style={styles.scannerRow}>
+            <ScannerInput
+              style={styles.scannerInput}
+              label="Outbound Container ID"
+              value={outboundContainerId}
+              isEnabled={!isSearchOpen}
+              onChange={setOutboundContainerId}
+              onSubmit={handleScan}
+            />
+            <SearchButton searchType="container" {...searchButtonProps} />
+          </View>
         </View>
-      </View>
-    </ProductDetails.Provider>
+      </ProductDetails.Provider>
+    </ScrollView>
   );
 }

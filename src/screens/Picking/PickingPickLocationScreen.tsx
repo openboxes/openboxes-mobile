@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Alert, View } from 'react-native';
+import { Alert, ScrollView, View } from 'react-native';
 import { Button, Divider, Paragraph, Subheading } from 'react-native-paper';
 import { useSelector } from 'react-redux';
 
@@ -67,85 +67,87 @@ export default function PickingPickLocationScreen() {
   }
 
   return (
-    <ProductDetails.Provider product={currentTask.product} status={currentTask.status}>
-      <ProductDetails.Root>
-        <ProductDetails.Header>
-          <ProductDetails.Badge icon="barcode" label="Product Code">
-            {currentTask.product.productCode}
-          </ProductDetails.Badge>
-          <ProductDetails.Badge icon="navigation" label="Pick Task">
-            {`${currentTaskIndex + 1} / ${allTasksCount || 0}`}
-          </ProductDetails.Badge>
-        </ProductDetails.Header>
+    <ScrollView style={styles.flex1} keyboardShouldPersistTaps="handled">
+      <ProductDetails.Provider product={currentTask.product} status={currentTask.status}>
+        <ProductDetails.Root>
+          <ProductDetails.Header>
+            <ProductDetails.Badge icon="barcode" label="Product Code">
+              {currentTask.product.productCode}
+            </ProductDetails.Badge>
+            <ProductDetails.Badge icon="navigation" label="Pick Task">
+              {`${currentTaskIndex + 1} / ${allTasksCount || 0}`}
+            </ProductDetails.Badge>
+          </ProductDetails.Header>
 
-        <ProductDetails.Separator />
-        <ProductDetails.Title />
-        <ProductDetails.Caption
-          title={currentTask.inventoryItem.lotNumber}
-          subtitle={parseFromISODateToLocaleString(currentTask.inventoryItem.expirationDate)}
-        />
-
-        <ProductDetails.List
-          items={[
-            {
-              icon: 'identifier',
-              label: 'Order Number',
-              value: currentTask.requisitionNumber || HYPHEN
-            },
-            {
-              icon: 'package',
-              label: 'Quantity Picked',
-              value: `${currentTask.quantityPicked || 0} / ${currentTask.quantityRequired}`
-            },
-            { icon: 'pin', label: 'Pick Location', value: currentTask.location?.name || HYPHEN }
-          ]}
-        />
-      </ProductDetails.Root>
-
-      <Divider />
-
-      <View style={[styles.wrapperWithPadding]}>
-        <Subheading style={styles.subheading}>Scan Pick Location Barcode</Subheading>
-        <Paragraph style={styles.paragraph}>
-          Point your barcode scanner at the pick location barcode or type the code manually.
-        </Paragraph>
-
-        <View style={styles.scannerRow}>
-          <ScannerInput
-            style={styles.scannerInput}
-            label="Pick Location Barcode"
-            value={pickLocationBarcode}
-            isEnabled={!isReallocateModalOpen && !isSearchOpen}
-            onChange={setPickLocationBarcode}
-            onSubmit={handleScan}
+          <ProductDetails.Separator />
+          <ProductDetails.Title />
+          <ProductDetails.Caption
+            title={currentTask.inventoryItem.lotNumber}
+            subtitle={parseFromISODateToLocaleString(currentTask.inventoryItem.expirationDate)}
           />
-          <SearchButton searchType="location" {...searchButtonProps} />
+
+          <ProductDetails.List
+            items={[
+              {
+                icon: 'identifier',
+                label: 'Order Number',
+                value: currentTask.requisitionNumber || HYPHEN
+              },
+              {
+                icon: 'package',
+                label: 'Quantity Picked',
+                value: `${currentTask.quantityPicked || 0} / ${currentTask.quantityRequired}`
+              },
+              { icon: 'pin', label: 'Pick Location', value: currentTask.location?.name || HYPHEN }
+            ]}
+          />
+        </ProductDetails.Root>
+
+        <Divider />
+
+        <View style={[styles.wrapperWithPadding]}>
+          <Subheading style={styles.subheading}>Scan Pick Location Barcode</Subheading>
+          <Paragraph style={styles.paragraph}>
+            Point your barcode scanner at the pick location barcode or type the code manually.
+          </Paragraph>
+
+          <View style={styles.scannerRow}>
+            <ScannerInput
+              style={styles.scannerInput}
+              label="Pick Location Barcode"
+              value={pickLocationBarcode}
+              isEnabled={!isReallocateModalOpen && !isSearchOpen}
+              onChange={setPickLocationBarcode}
+              onSubmit={handleScan}
+            />
+            <SearchButton searchType="location" {...searchButtonProps} />
+          </View>
+
+          {allowReallocationDuringPicking && (
+            <Button
+              mode="contained"
+              icon="swap-horizontal"
+              style={styles.marginTop}
+              onPress={() => setIsReallocateModalOpen(true)}
+            >
+              Reallocate
+            </Button>
+          )}
         </View>
 
         {allowReallocationDuringPicking && (
-          <Button
-            mode="contained"
-            icon="swap-horizontal"
-            style={styles.marginTop}
-            onPress={() => setIsReallocateModalOpen(true)}
-          >
-            Reallocate
-          </Button>
+          <ReallocateModal
+            visible={isReallocateModalOpen}
+            currentTask={currentTask}
+            onDismiss={() => setIsReallocateModalOpen(false)}
+            onAllocated={() => {
+              setIsReallocateModalOpen(false);
+              resetSession();
+              navigate('PickingPickType');
+            }}
+          />
         )}
-      </View>
-
-      {allowReallocationDuringPicking && (
-        <ReallocateModal
-          visible={isReallocateModalOpen}
-          currentTask={currentTask}
-          onDismiss={() => setIsReallocateModalOpen(false)}
-          onAllocated={() => {
-            setIsReallocateModalOpen(false);
-            resetSession();
-            navigate('PickingPickType');
-          }}
-        />
-      )}
-    </ProductDetails.Provider>
+      </ProductDetails.Provider>
+    </ScrollView>
   );
 }

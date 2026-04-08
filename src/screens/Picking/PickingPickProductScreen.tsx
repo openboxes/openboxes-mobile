@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Alert, View } from 'react-native';
+import { Alert, ScrollView, View } from 'react-native';
 import { Divider, Paragraph, Subheading } from 'react-native-paper';
 
 import { ProductDetails } from '../../components/ProductDetails';
@@ -39,68 +39,70 @@ export default function PickingPickProductScreen() {
   }
 
   return (
-    <ProductDetails.Provider product={currentTask.product} status={currentTask.status}>
-      <ProductDetails.Root>
-        <ProductDetails.Header>
-          <ProductDetails.Badge icon="barcode" label="Product Code">
-            {currentTask.product.productCode}
-          </ProductDetails.Badge>
-          <ProductDetails.Badge icon="navigation" label="Pick Task">
-            {`${currentTaskIndex + 1} / ${allTasksCount}`}
-          </ProductDetails.Badge>
-        </ProductDetails.Header>
+    <ScrollView style={styles.flex1} keyboardShouldPersistTaps="handled">
+      <ProductDetails.Provider product={currentTask.product} status={currentTask.status}>
+        <ProductDetails.Root>
+          <ProductDetails.Header>
+            <ProductDetails.Badge icon="barcode" label="Product Code">
+              {currentTask.product.productCode}
+            </ProductDetails.Badge>
+            <ProductDetails.Badge icon="navigation" label="Pick Task">
+              {`${currentTaskIndex + 1} / ${allTasksCount}`}
+            </ProductDetails.Badge>
+          </ProductDetails.Header>
 
-        <ProductDetails.Separator />
-        <ProductDetails.Title />
-        <ProductDetails.Caption
-          title={currentTask.inventoryItem.lotNumber}
-          subtitle={parseFromISODateToLocaleString(currentTask.inventoryItem.expirationDate)}
-        />
-
-        <ProductDetails.List
-          items={[
-            {
-              icon: 'identifier',
-              label: 'Order Number',
-              value: currentTask.requisitionNumber || HYPHEN
-            },
-            {
-              icon: 'account',
-              label: 'Assignee',
-              value: currentTask?.assignee
-                ? `${currentTask?.assignee?.firstName} ${currentTask?.assignee?.lastName}`.trim()
-                : HYPHEN
-            },
-            {
-              icon: 'package',
-              label: 'Quantity Picked',
-              value: `${currentTask.quantityPicked || 0} / ${currentTask.quantityRequired}`
-            },
-            { icon: 'pin', label: 'Pick Location', value: currentTask.location?.name || 'Default' }
-          ]}
-        />
-      </ProductDetails.Root>
-
-      <Divider />
-
-      <View style={[styles.wrapperWithPadding]}>
-        <Subheading style={styles.subheading}>Scan Product Barcode</Subheading>
-        <Paragraph style={styles.paragraph}>
-          Point your barcode scanner at the product barcode or type the code manually.
-        </Paragraph>
-
-        <View style={styles.scannerRow}>
-          <ScannerInput
-            style={styles.scannerInput}
-            label="Product Barcode"
-            value={productBarcode}
-            isEnabled={!isSearchOpen}
-            onChange={setProductBarcode}
-            onSubmit={handleScan}
+          <ProductDetails.Separator />
+          <ProductDetails.Title />
+          <ProductDetails.Caption
+            title={currentTask.inventoryItem.lotNumber}
+            subtitle={parseFromISODateToLocaleString(currentTask.inventoryItem.expirationDate)}
           />
-          <SearchButton searchType="product" {...searchButtonProps} />
+
+          <ProductDetails.List
+            items={[
+              {
+                icon: 'identifier',
+                label: 'Order Number',
+                value: currentTask.requisitionNumber || HYPHEN
+              },
+              {
+                icon: 'account',
+                label: 'Assignee',
+                value: currentTask?.assignee
+                  ? `${currentTask?.assignee?.firstName} ${currentTask?.assignee?.lastName}`.trim()
+                  : HYPHEN
+              },
+              {
+                icon: 'package',
+                label: 'Quantity Picked',
+                value: `${currentTask.quantityPicked || 0} / ${currentTask.quantityRequired}`
+              },
+              { icon: 'pin', label: 'Pick Location', value: currentTask.location?.name || 'Default' }
+            ]}
+          />
+        </ProductDetails.Root>
+
+        <Divider />
+
+        <View style={[styles.wrapperWithPadding]}>
+          <Subheading style={styles.subheading}>Scan Product Barcode</Subheading>
+          <Paragraph style={styles.paragraph}>
+            Point your barcode scanner at the product barcode or type the code manually.
+          </Paragraph>
+
+          <View style={styles.scannerRow}>
+            <ScannerInput
+              style={styles.scannerInput}
+              label="Product Barcode"
+              value={productBarcode}
+              isEnabled={!isSearchOpen}
+              onChange={setProductBarcode}
+              onSubmit={handleScan}
+            />
+            <SearchButton searchType="product" {...searchButtonProps} />
+          </View>
         </View>
-      </View>
-    </ProductDetails.Provider>
+      </ProductDetails.Provider>
+    </ScrollView>
   );
 }

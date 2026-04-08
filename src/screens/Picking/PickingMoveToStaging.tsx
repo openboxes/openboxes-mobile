@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Alert, View } from 'react-native';
+import { Alert, ScrollView, View } from 'react-native';
 import { Paragraph, Title } from 'react-native-paper';
 
 import { useDispatch } from 'react-redux';
@@ -37,17 +37,19 @@ export default function PickingMoveToStagingScreen() {
   }
 
   return (
-    <View style={styles.wrapperWithPadding}>
-      <Title>Scan The Container</Title>
-      <Paragraph>Please scan the barcode of the outbound container you want to move to staging.</Paragraph>
+    <ScrollView style={styles.flex1} keyboardShouldPersistTaps="handled">
+      <View style={styles.wrapperWithPadding}>
+        <Title>Scan The Container</Title>
+        <Paragraph>Please scan the barcode of the outbound container you want to move to staging.</Paragraph>
 
-      <ScannerInput
-        style={styles.marginTopSmall}
-        label="Outbound Container ID"
-        value={outboundContainerId}
-        onChange={setOutboundContainerId}
-        onSubmit={handleScan}
-      />
-    </View>
+        <ScannerInput
+          style={styles.marginTopSmall}
+          label="Outbound Container ID"
+          value={outboundContainerId}
+          onChange={setOutboundContainerId}
+          onSubmit={handleScan}
+        />
+      </View>
+    </ScrollView>
   );
 }

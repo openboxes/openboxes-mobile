@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Alert, View } from 'react-native';
+import { Alert, ScrollView, View } from 'react-native';
 import { Divider, Paragraph, Subheading } from 'react-native-paper';
 
 import { ProductDetails } from '../../components/ProductDetails';
@@ -86,72 +86,74 @@ export default function PickingPickStagingLocationScreen() {
   }
 
   return (
-    <ProductDetails.Provider product={currentTask.product} status={currentTask.status}>
-      <ProductDetails.Root>
-        <ProductDetails.Header>
-          <ProductDetails.Badge icon="barcode" label="Product Code">
-            {currentTask.product.productCode}
-          </ProductDetails.Badge>
-          <ProductDetails.Badge icon="navigation" label="Task Progress">
-            {`${currentUniqueIndex + 1} / ${uniqueTasks.length}`}
-          </ProductDetails.Badge>
-        </ProductDetails.Header>
+    <ScrollView style={styles.flex1} keyboardShouldPersistTaps="handled">
+      <ProductDetails.Provider product={currentTask.product} status={currentTask.status}>
+        <ProductDetails.Root>
+          <ProductDetails.Header>
+            <ProductDetails.Badge icon="barcode" label="Product Code">
+              {currentTask.product.productCode}
+            </ProductDetails.Badge>
+            <ProductDetails.Badge icon="navigation" label="Task Progress">
+              {`${currentUniqueIndex + 1} / ${uniqueTasks.length}`}
+            </ProductDetails.Badge>
+          </ProductDetails.Header>
 
-        <ProductDetails.Separator />
-        <ProductDetails.Title />
-        <ProductDetails.Caption
-          title={currentTask.inventoryItem.lotNumber}
-          subtitle={parseFromISODateToLocaleString(currentTask.inventoryItem.expirationDate)}
-        />
-
-        <ProductDetails.List
-          items={[
-            {
-              icon: 'identifier',
-              label: 'Order Number',
-              value: currentTask.requisitionNumber || HYPHEN
-            },
-            {
-              icon: 'account',
-              label: 'Assignee',
-              value: currentTask?.assignee
-                ? `${currentTask?.assignee?.firstName} ${currentTask?.assignee?.lastName}`.trim()
-                : HYPHEN
-            },
-            {
-              icon: 'pin',
-              label: 'Outbound Container',
-              value: currentTask.outboundContainer?.locationNumber ?? '-'
-            },
-            {
-              icon: 'package',
-              label: 'Staging Location',
-              value: currentTask.stagingLocation?.name ?? '-'
-            }
-          ]}
-        />
-      </ProductDetails.Root>
-
-      <Divider />
-
-      <View style={[styles.wrapperWithPadding]}>
-        <Subheading style={styles.subheading}>Scan Staging Location</Subheading>
-        <Paragraph style={styles.paragraph}>
-          Point your barcode scanner at the staging location or type the ID manually.
-        </Paragraph>
-
-        <View style={styles.scannerRow}>
-          <ScannerInput
-            style={styles.scannerInput}
-            label="Staging Location Number"
-            value={stagingLocationNumber}
-            isEnabled={!isSearchOpen}
-            onChange={setStagingLocationNumber}
-            onSubmit={handleScan}
+          <ProductDetails.Separator />
+          <ProductDetails.Title />
+          <ProductDetails.Caption
+            title={currentTask.inventoryItem.lotNumber}
+            subtitle={parseFromISODateToLocaleString(currentTask.inventoryItem.expirationDate)}
           />
-          <SearchButton searchType="location" {...searchButtonProps} />
+
+          <ProductDetails.List
+            items={[
+              {
+                icon: 'identifier',
+                label: 'Order Number',
+                value: currentTask.requisitionNumber || HYPHEN
+              },
+              {
+                icon: 'account',
+                label: 'Assignee',
+                value: currentTask?.assignee
+                  ? `${currentTask?.assignee?.firstName} ${currentTask?.assignee?.lastName}`.trim()
+                  : HYPHEN
+              },
+              {
+                icon: 'pin',
+                label: 'Outbound Container',
+                value: currentTask.outboundContainer?.locationNumber ?? '-'
+              },
+              {
+                icon: 'package',
+                label: 'Staging Location',
+                value: currentTask.stagingLocation?.name ?? '-'
+              }
+            ]}
+          />
+        </ProductDetails.Root>
+
+        <Divider />
+
+        <View style={[styles.wrapperWithPadding]}>
+          <Subheading style={styles.subheading}>Scan Staging Location</Subheading>
+          <Paragraph style={styles.paragraph}>
+            Point your barcode scanner at the staging location or type the ID manually.
+          </Paragraph>
+
+          <View style={styles.scannerRow}>
+            <ScannerInput
+              style={styles.scannerInput}
+              label="Staging Location Number"
+              value={stagingLocationNumber}
+              isEnabled={!isSearchOpen}
+              onChange={setStagingLocationNumber}
+              onSubmit={handleScan}
+            />
+            <SearchButton searchType="location" {...searchButtonProps} />
+          </View>
         </View>
-      </View>
-    </ProductDetails.Provider>
+      </ProductDetails.Provider>
+    </ScrollView>
   );
 }
