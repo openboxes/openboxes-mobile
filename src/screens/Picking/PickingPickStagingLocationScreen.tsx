@@ -138,7 +138,7 @@ export default function PickingPickStagingLocationScreen() {
         <View style={[styles.wrapperWithPadding]}>
           <Subheading style={styles.subheading}>Scan Staging Location</Subheading>
           <Paragraph style={styles.paragraph}>
-            Point your barcode scanner at the staging location or type the ID manually.
+            Point your barcode scanner at the staging location or use search to find it.
           </Paragraph>
 
           <View style={styles.scannerRow}>

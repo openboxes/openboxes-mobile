@@ -151,7 +151,7 @@ export default function PickingPickOutboundContainerScreen() {
         <View style={[styles.wrapperWithPadding]}>
           <Subheading style={styles.subheading}>Scan Outbound Container</Subheading>
           <Paragraph style={styles.paragraph}>
-            Point your barcode scanner at the outbound container or type the code manually.
+            Point your barcode scanner at the outbound container or use search to find it.
           </Paragraph>
 
           <View style={styles.scannerRow}>

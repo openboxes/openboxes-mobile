@@ -108,7 +108,7 @@ export default function PickingPickLocationScreen() {
         <View style={[styles.wrapperWithPadding]}>
           <Subheading style={styles.subheading}>Scan Pick Location Barcode</Subheading>
           <Paragraph style={styles.paragraph}>
-            Point your barcode scanner at the pick location barcode or type the code manually.
+            Point your barcode scanner at the pick location barcode or use search to find it.
           </Paragraph>
 
           <View style={styles.scannerRow}>

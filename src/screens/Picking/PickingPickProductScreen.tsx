@@ -87,7 +87,7 @@ export default function PickingPickProductScreen() {
         <View style={[styles.wrapperWithPadding]}>
           <Subheading style={styles.subheading}>Scan Product Barcode</Subheading>
           <Paragraph style={styles.paragraph}>
-            Point your barcode scanner at the product barcode or type the code manually.
+            Point your barcode scanner at the product barcode or use search to find it.
           </Paragraph>
 
           <View style={styles.scannerRow}>
