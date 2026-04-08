@@ -1,7 +1,6 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
 // import {logout} from '../redux/Dispatchers';
 import { createLogger } from './Logger';
-// import {environment} from './Environment';
 import * as NavigationService from '../NavigationService';
 import { store } from '../../App';
 import { hideScreenLoading } from '../redux/actions/main';

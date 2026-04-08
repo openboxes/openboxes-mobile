@@ -11,7 +11,7 @@ import styles from './styles';
 type ProfileFormDialogProps = {
   visible: boolean;
   profile: Profile | null;
-  onSave: (label: string, serverUrl: string) => void;
+  onSave: (label: string, serverUrl: string) => Promise<void>;
   onDismiss: () => void;
 };
 
@@ -28,13 +28,17 @@ export default function ProfileFormDialog({ visible, profile, onSave, onDismiss 
     }
   }, [visible, profile]);
 
-  const handleSave = useCallback(() => {
+  const handleSave = useCallback(async () => {
     const error = validateProfile(formLabel, formUrl);
     if (error) {
       setFormError(error);
       return;
     }
-    onSave(formLabel.trim(), formUrl.trim());
+    try {
+      await onSave(formLabel.trim(), formUrl.trim());
+    } catch (e: any) {
+      setFormError(e?.message || 'Failed to save profile.');
+    }
   }, [formLabel, formUrl, onSave]);
 
   return (

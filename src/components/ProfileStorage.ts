@@ -1,7 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { Profile, ProfileStorageData } from '../types/profile';
-import { environment } from '../utils/Environment';
 import { createEventEmitter } from '../utils/EventEmitter';
 
 function generateId(): string {
@@ -12,20 +11,25 @@ const PROFILES_KEY = 'PROFILES';
 const LEGACY_API_URL_KEY = 'API_URL';
 const CURRENT_VERSION = 1;
 
+const DEFAULT_SERVERS = [
+  { label: 'Staging Server', serverUrl: 'http://stag.vtc.openboxes.com/' },
+  { label: 'Test Server', serverUrl: 'https://vvg.openboxes.com/openboxes/api' }
+];
+
 const emitter = createEventEmitter();
 export const subscribe = emitter.subscribe;
 
-export function createDefaultStorage(): ProfileStorageData {
+export function createStorage(profiles: Profile[] = [], activeProfileId?: string): ProfileStorageData {
   return {
     version: CURRENT_VERSION,
-    activeProfileId: null,
-    profiles: []
+    activeProfileId: activeProfileId ?? profiles[0]?.id ?? null,
+    profiles
   };
 }
 
 function parseStorageData(raw: string | null): ProfileStorageData {
   if (!raw) {
-    return createDefaultStorage();
+    return createStorage();
   }
 
   try {
@@ -44,7 +48,7 @@ function parseStorageData(raw: string | null): ProfileStorageData {
         : []
     };
   } catch {
-    return createDefaultStorage();
+    return createStorage();
   }
 }
 
@@ -67,6 +71,10 @@ export function createProfile(label: string, serverUrl: string): Profile {
   };
 }
 
+function normalizeUrl(url: string): string {
+  return url.trim().toLowerCase().replace(/\/+$/, '');
+}
+
 export function validateUrl(url: string): string | null {
   const trimmed = url.trim();
   if (!trimmed) {
@@ -86,47 +94,50 @@ export function validateProfile(label: string, serverUrl: string): string | null
 }
 
 /**
- * Migrates from the legacy single API_URL key to the profiles system.
- * If profiles already exist, this is a no-op.
- * Returns the active profile's server URL (or null if no profiles exist).
+ * Initializes profiles and returns the active server URL.
+ * 1. Profiles exist → use them as-is
+ * 2. No profiles, legacy API_URL exists → create Default (from legacy) + default servers
+ * 3. No profiles, no legacy → create default servers
  */
 export async function migrate(): Promise<string | null> {
   const data = await readStorage();
 
+  // Path 1: profiles already exist
   if (data.profiles.length > 0) {
     let active = data.profiles.find((p) => p.id === data.activeProfileId);
 
-    if (!active && data.profiles[0]) {
+    if (!active) {
       active = data.profiles[0];
-      await writeStorage({ ...data, activeProfileId: active.id });
+      await writeStorage(createStorage(data.profiles, active.id));
     }
 
-    return active?.serverUrl ?? null;
+    return active.serverUrl;
   }
 
+  // Path 2: legacy API_URL migration
   const legacyUrl = await AsyncStorage.getItem(LEGACY_API_URL_KEY);
 
   if (legacyUrl) {
-    const profile = createProfile('Default', legacyUrl);
-    const newData: ProfileStorageData = {
-      version: CURRENT_VERSION,
-      activeProfileId: profile.id,
-      profiles: [profile]
-    };
-    await writeStorage(newData);
+    const legacyProfile = createProfile('Default', legacyUrl);
+    const normalizedLegacy = normalizeUrl(legacyUrl);
+    const profiles = [legacyProfile];
+
+    for (const server of DEFAULT_SERVERS) {
+      if (normalizeUrl(server.serverUrl) !== normalizedLegacy) {
+        profiles.push(createProfile(server.label, server.serverUrl));
+      }
+    }
+
+    await writeStorage(createStorage(profiles, legacyProfile.id));
     await AsyncStorage.removeItem(LEGACY_API_URL_KEY);
-    return profile.serverUrl;
+    return legacyProfile.serverUrl;
   }
 
-  const defaultProfile = createProfile('Staging', environment.API_BASE_URL);
-  const defaultData: ProfileStorageData = {
-    version: CURRENT_VERSION,
-    activeProfileId: defaultProfile.id,
-    profiles: [defaultProfile]
-  };
-  await writeStorage(defaultData);
+  // Path 3: fresh install
+  const profiles = DEFAULT_SERVERS.map((s) => createProfile(s.label, s.serverUrl));
+  await writeStorage(createStorage(profiles));
 
-  return defaultProfile.serverUrl;
+  return profiles[0].serverUrl;
 }
 
 export async function getProfiles(): Promise<ProfileStorageData> {
@@ -160,7 +171,7 @@ export async function saveProfile(profile: Profile): Promise<void> {
     data.profiles.push(profile);
   }
 
-  if (!data.activeProfileId && data.profiles.length === 1) {
+  if (!data.activeProfileId) {
     data.activeProfileId = profile.id;
   }
 

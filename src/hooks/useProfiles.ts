@@ -17,7 +17,7 @@ type UseProfilesResult = {
 };
 
 export function useProfiles(): UseProfilesResult {
-  const [data, setData] = useState<ProfileStorageData>(ProfileStorage.createDefaultStorage);
+  const [data, setData] = useState<ProfileStorageData>(() => ProfileStorage.createStorage());
   const [loading, setLoading] = useState(true);
   const isFocused = useIsFocused();
 
@@ -26,7 +26,7 @@ export function useProfiles(): UseProfilesResult {
       const stored = await ProfileStorage.getProfiles();
       setData(stored);
     } catch {
-      setData(ProfileStorage.createDefaultStorage());
+      setData(ProfileStorage.createStorage());
     } finally {
       setLoading(false);
     }
