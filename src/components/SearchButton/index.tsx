@@ -30,6 +30,8 @@ export function SearchButton({ searchType, onSelect, onOpen, onClose }: SearchBu
   const performSearch = (term: string) => {
     if (!term.trim()) {
       setResults([]);
+      setLoading(false);
+      setHasSearched(false);
       return;
     }
 

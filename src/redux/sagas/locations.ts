@@ -114,13 +114,22 @@ function* getInternalLocations(action: any) {
 
 function* searchInternalLocations(action: any) {
   try {
+    if (!action.suppressLoading) {
+      yield put(showScreenLoading('Fetching Locations...'));
+    }
     const response = yield call(api.searchInternalLocations, action.payload.searchTerm, action.payload.additionalParams);
     yield put({
       type: GET_INTERNAL_LOCATION_SEARCH_SUCCESS,
       payload: response.data
     });
     yield action.callback(response);
+    if (!action.suppressLoading) {
+      yield put(hideScreenLoading());
+    }
   } catch (e) {
+    if (!action.suppressLoading) {
+      yield put(hideScreenLoading());
+    }
     yield action.callback({
       error: true,
       errorMessage: e.message

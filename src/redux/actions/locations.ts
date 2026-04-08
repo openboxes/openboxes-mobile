@@ -65,11 +65,17 @@ export function getInternalLocations(location: string, callback: (data: any) => 
   };
 }
 
-export function searchInternalLocations(searchTerm: string, additionalParams: any, callback: (data: any) => void) {
+export function searchInternalLocations(
+  searchTerm: string,
+  additionalParams: any,
+  callback: (data: any) => void,
+  suppressLoading?: boolean
+) {
   return {
     type: GET_INTERNAL_LOCATION_SEARCH_REQUEST,
     payload: { searchTerm, additionalParams },
-    callback
+    callback,
+    suppressLoading
   };
 }
 

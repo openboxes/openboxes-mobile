@@ -60,11 +60,16 @@ export function searchProductByCodeAction(productCode: string, callback: (search
   };
 }
 
-export function searchProductGloballyAction(value: string, callback: (searchedProducts: any) => void) {
+export function searchProductGloballyAction(
+  value: string,
+  callback: (searchedProducts: any) => void,
+  suppressLoading?: boolean
+) {
   return {
     type: SEARCH_PRODUCT_GLOBALY_REQUEST,
     payload: { value },
-    callback
+    callback,
+    suppressLoading
   };
 }
 

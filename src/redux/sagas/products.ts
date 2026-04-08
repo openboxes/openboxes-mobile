@@ -90,13 +90,22 @@ function* searchProductByCode(action: any) {
 
 function* searchProductGlobally(action: any) {
   try {
+    if (!action.suppressLoading) {
+      yield put(showScreenLoading('Fetching Products..'));
+    }
     const data = yield call(api.searchProductGlobally, action.payload.value);
     yield put({
       type: SEARCH_PRODUCT_GLOBALY_REQUEST_SUCCESS,
       payload: data
     });
     yield action.callback(data);
+    if (!action.suppressLoading) {
+      yield put(hideScreenLoading());
+    }
   } catch (error) {
+    if (!action.suppressLoading) {
+      yield put(hideScreenLoading());
+    }
     if (error.code != 401) {
       yield action.callback({
         error: true,
