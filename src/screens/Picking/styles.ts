@@ -78,6 +78,14 @@ export default StyleSheet.create({
   divider: {
     marginVertical: Theme.spacing.small
   },
+  scannerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: Theme.spacing.medium
+  },
+  scannerInput: {
+    flex: 1
+  },
   marginTop: {
     marginTop: Theme.spacing.medium
   },

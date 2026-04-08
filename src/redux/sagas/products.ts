@@ -90,14 +90,12 @@ function* searchProductByCode(action: any) {
 
 function* searchProductGlobally(action: any) {
   try {
-    yield showScreenLoading('Please wait..');
     const data = yield call(api.searchProductGlobally, action.payload.value);
     yield put({
       type: SEARCH_PRODUCT_GLOBALY_REQUEST_SUCCESS,
       payload: data
     });
     yield action.callback(data);
-    yield put(hideScreenLoading());
   } catch (error) {
     if (error.code != 401) {
       yield action.callback({

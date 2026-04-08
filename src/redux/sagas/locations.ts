@@ -114,16 +114,13 @@ function* getInternalLocations(action: any) {
 
 function* searchInternalLocations(action: any) {
   try {
-    yield put(showScreenLoading('Please wait...'));
     const response = yield call(api.searchInternalLocations, action.payload.searchTerm, action.payload.additionalParams);
     yield put({
       type: GET_INTERNAL_LOCATION_SEARCH_SUCCESS,
       payload: response.data
     });
     yield action.callback(response);
-    yield put(hideScreenLoading());
   } catch (e) {
-    yield put(hideScreenLoading());
     yield action.callback({
       error: true,
       errorMessage: e.message

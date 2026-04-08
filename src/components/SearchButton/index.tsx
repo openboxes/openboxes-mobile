@@ -1,0 +1,160 @@
+import _ from 'lodash';
+import React, { useRef, useState } from 'react';
+import { Alert, FlatList, Modal, Text, TouchableOpacity, View } from 'react-native';
+import { TextInput as PaperTextInput } from 'react-native-paper';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useDispatch } from 'react-redux';
+
+import { appConfig } from '../../constants';
+import Theme from '../../utils/Theme';
+import { SkeletonList } from './SkeletonList';
+import { SearchResult, SearchType, searchProviders } from './searchProviders';
+import styles from './styles';
+
+export type SearchButtonProps = {
+  searchType: SearchType;
+  onSelect: (value: string) => void;
+  onOpen?: () => void;
+  onClose?: () => void;
+};
+
+export function SearchButton({ searchType, onSelect, onOpen, onClose }: SearchButtonProps) {
+  const [visible, setVisible] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [results, setResults] = useState<SearchResult[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
+  const dispatch = useDispatch();
+  const provider = searchProviders[searchType];
+
+  const performSearch = (term: string) => {
+    if (!term.trim()) {
+      setResults([]);
+      return;
+    }
+
+    setLoading(true);
+
+    dispatch(
+      provider.createAction(term, ({ results: searchResults, error }) => {
+        setLoading(false);
+        setHasSearched(true);
+
+        if (error) {
+          Alert.alert('Search Error', error);
+          return;
+        }
+
+        setResults(searchResults || []);
+      })
+    );
+  };
+
+  const debouncedSearch = useRef(
+    _.debounce((term: string) => performSearch(term), appConfig.DEFAULT_SEARCH_DEBOUNCE_TIME)
+  ).current;
+
+  const handleChangeText = (text: string) => {
+    setSearchTerm(text);
+    setHasSearched(false);
+    debouncedSearch(text);
+  };
+
+  const handleSelect = (item: SearchResult) => {
+    setVisible(false);
+    setSearchTerm('');
+    setResults([]);
+    debouncedSearch.cancel();
+    onClose?.();
+    onSelect(item.value);
+  };
+
+  const handleOpen = () => {
+    setSearchTerm('');
+    setResults([]);
+    setHasSearched(false);
+    setVisible(true);
+    onOpen?.();
+  };
+
+  const handleClose = () => {
+    setVisible(false);
+    setSearchTerm('');
+    setResults([]);
+    setHasSearched(false);
+    debouncedSearch.cancel();
+    onClose?.();
+  };
+
+  return (
+    <>
+      <TouchableOpacity style={styles.button} onPress={handleOpen}>
+        <MaterialCommunityIcons name="text-search" size={24} color="#FFFFFF" />
+      </TouchableOpacity>
+
+      <Modal transparent visible={visible} animationType="slide" onRequestClose={handleClose}>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.title}>{provider.title}</Text>
+
+            <PaperTextInput
+              autoFocus
+              mode="outlined"
+              label={provider.inputLabel}
+              placeholder={provider.placeholder}
+              value={searchTerm}
+              autoCorrect={false}
+              autoCompleteType="off"
+              onChangeText={handleChangeText}
+            />
+
+            {loading ? (
+              <SkeletonList />
+            ) : (
+              <>
+                {searchTerm.trim() === '' && results.length === 0 && (
+                  <Text style={styles.hintText}>Start typing to search...</Text>
+                )}
+
+                {results.length > 0 && (
+                  <Text style={styles.resultCount}>
+                    {results.length} result{results.length !== 1 ? 's' : ''} found.
+                  </Text>
+                )}
+
+                {hasSearched && results.length === 0 && <Text style={styles.emptyText}>No results found.</Text>}
+              </>
+            )}
+
+            {!loading && (
+              <FlatList
+                style={styles.resultsList}
+                data={results}
+                keyExtractor={(item) => item.id}
+                keyboardShouldPersistTaps="handled"
+                renderItem={({ item }) => (
+                  <TouchableOpacity style={styles.resultItem} onPress={() => handleSelect(item)}>
+                    <View style={styles.resultAccent} />
+                    <View style={styles.resultContent}>
+                      <Text style={styles.resultLabel}>{item.label}</Text>
+                      {item.subtitle !== item.label && (
+                        <Text style={styles.resultSubtitle} numberOfLines={1}>
+                          {item.subtitle}
+                        </Text>
+                      )}
+                    </View>
+                    <MaterialCommunityIcons name="chevron-right" size={20} color={Theme.colors.secondaryForeground} />
+                  </TouchableOpacity>
+                )}
+              />
+            )}
+
+            <TouchableOpacity style={styles.cancelButton} onPress={handleClose}>
+              <Text style={styles.cancelText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+    </>
+  );
+}

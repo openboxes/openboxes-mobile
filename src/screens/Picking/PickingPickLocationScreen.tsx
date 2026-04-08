@@ -5,6 +5,8 @@ import { useSelector } from 'react-redux';
 
 import { ProductDetails } from '../../components/ProductDetails';
 import { ScannerInput } from '../../components/ScannerInput';
+import { SearchButton } from '../../components/SearchButton';
+import { useSearchButton } from '../../components/SearchButton/useSearchButton';
 import { EMPTY_STRING, HYPHEN } from '../../constants';
 import { navigate } from '../../NavigationService';
 import { RootState } from '../../redux/reducers';
@@ -19,6 +21,7 @@ export default function PickingPickLocationScreen() {
   const [pickLocationBarcode, setPickLocationBarcode] = React.useState<string>(EMPTY_STRING);
   const [isReallocateModalOpen, setIsReallocateModalOpen] = React.useState(false);
   const { allowReallocationDuringPicking } = useSelector((state: RootState) => state.settingsReducer);
+  const { isSearchOpen, searchButtonProps } = useSearchButton({ onSelect: setPickLocationBarcode });
 
   if (!currentTask) {
     return null;
@@ -107,13 +110,17 @@ export default function PickingPickLocationScreen() {
           Point your barcode scanner at the pick location barcode or type the code manually.
         </Paragraph>
 
-        <ScannerInput
-          style={styles.marginTop}
-          label="Pick Location Barcode"
-          value={pickLocationBarcode}
-          onChange={setPickLocationBarcode}
-          onSubmit={handleScan}
-        />
+        <View style={styles.scannerRow}>
+          <ScannerInput
+            style={styles.scannerInput}
+            label="Pick Location Barcode"
+            value={pickLocationBarcode}
+            isEnabled={!isReallocateModalOpen && !isSearchOpen}
+            onChange={setPickLocationBarcode}
+            onSubmit={handleScan}
+          />
+          <SearchButton searchType="location" {...searchButtonProps} />
+        </View>
 
         {allowReallocationDuringPicking && (
           <Button

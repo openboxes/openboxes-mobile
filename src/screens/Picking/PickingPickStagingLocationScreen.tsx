@@ -4,16 +4,19 @@ import { Divider, Paragraph, Subheading } from 'react-native-paper';
 
 import { ProductDetails } from '../../components/ProductDetails';
 import { ScannerInput } from '../../components/ScannerInput';
+import { SearchButton } from '../../components/SearchButton';
+import { useSearchButton } from '../../components/SearchButton/useSearchButton';
 import { EMPTY_STRING, HYPHEN } from '../../constants';
 import { resetToRoutes } from '../../NavigationService';
+import { parseFromISODateToLocaleString } from '../../utils/utils';
 import { usePickingContext } from './PickingContext';
 import styles from './styles';
-import { parseFromISODateToLocaleString } from '../../utils/utils';
 
 export default function PickingPickStagingLocationScreen() {
   const { tasks, dropCurrentTask, resetSession, setCurrentTaskIndex } = usePickingContext();
   const [stagingLocationNumber, setStagingLocationNumber] = React.useState(EMPTY_STRING);
   const [currentUniqueIndex, setCurrentUniqueIndex] = React.useState(0);
+  const { isSearchOpen, searchButtonProps } = useSearchButton({ onSelect: setStagingLocationNumber });
 
   // Memoize unique tasks based on outbound container ID
   const uniqueTasks = React.useMemo(() => {
@@ -137,13 +140,17 @@ export default function PickingPickStagingLocationScreen() {
           Point your barcode scanner at the staging location or type the ID manually.
         </Paragraph>
 
-        <ScannerInput
-          style={styles.marginTop}
-          label="Staging Location Number"
-          value={stagingLocationNumber}
-          onChange={setStagingLocationNumber}
-          onSubmit={handleScan}
-        />
+        <View style={styles.scannerRow}>
+          <ScannerInput
+            style={styles.scannerInput}
+            label="Staging Location Number"
+            value={stagingLocationNumber}
+            isEnabled={!isSearchOpen}
+            onChange={setStagingLocationNumber}
+            onSubmit={handleScan}
+          />
+          <SearchButton searchType="location" {...searchButtonProps} />
+        </View>
       </View>
     </ProductDetails.Provider>
   );

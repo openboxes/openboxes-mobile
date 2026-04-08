@@ -4,6 +4,8 @@ import { Divider, Paragraph, Subheading } from 'react-native-paper';
 
 import { ProductDetails } from '../../components/ProductDetails';
 import { ScannerInput } from '../../components/ScannerInput';
+import { SearchButton } from '../../components/SearchButton';
+import { useSearchButton } from '../../components/SearchButton/useSearchButton';
 import { EMPTY_STRING, HYPHEN } from '../../constants';
 import { navigate } from '../../NavigationService';
 import { isProductBarcodeValid, parseFromISODateToLocaleString } from '../../utils/utils';
@@ -13,6 +15,7 @@ import styles from './styles';
 export default function PickingPickProductScreen() {
   const { currentTask, currentTaskIndex, allTasksCount } = usePickingContext();
   const [productBarcode, setProductBarcode] = React.useState<string>(EMPTY_STRING);
+  const { isSearchOpen, searchButtonProps } = useSearchButton({ onSelect: setProductBarcode });
 
   if (!currentTask) {
     return null;
@@ -86,13 +89,17 @@ export default function PickingPickProductScreen() {
           Point your barcode scanner at the product barcode or type the code manually.
         </Paragraph>
 
-        <ScannerInput
-          style={styles.marginTop}
-          label="Product Barcode"
-          value={productBarcode}
-          onChange={setProductBarcode}
-          onSubmit={handleScan}
-        />
+        <View style={styles.scannerRow}>
+          <ScannerInput
+            style={styles.scannerInput}
+            label="Product Barcode"
+            value={productBarcode}
+            isEnabled={!isSearchOpen}
+            onChange={setProductBarcode}
+            onSubmit={handleScan}
+          />
+          <SearchButton searchType="product" {...searchButtonProps} />
+        </View>
       </View>
     </ProductDetails.Provider>
   );

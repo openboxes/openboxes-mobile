@@ -5,6 +5,8 @@ import { Divider, Paragraph, Subheading } from 'react-native-paper';
 
 import { ProductDetails } from '../../components/ProductDetails';
 import { ScannerInput } from '../../components/ScannerInput';
+import { SearchButton } from '../../components/SearchButton';
+import { useSearchButton } from '../../components/SearchButton/useSearchButton';
 import { EMPTY_STRING, HYPHEN } from '../../constants';
 import { navigate } from '../../NavigationService';
 import { ReasonCode } from '../../types/picking';
@@ -33,6 +35,7 @@ export default function PickingPickOutboundContainerScreen() {
   const parsedQuantityPicked = params?.quantityPicked ? Number(params.quantityPicked) : undefined;
 
   const [outboundContainerId, setOutboundContainerId] = React.useState<string>(EMPTY_STRING);
+  const { isSearchOpen, searchButtonProps } = useSearchButton({ onSelect: setOutboundContainerId });
 
   if (!currentTask) {
     return null;
@@ -150,13 +153,17 @@ export default function PickingPickOutboundContainerScreen() {
           Point your barcode scanner at the outbound container or type the code manually.
         </Paragraph>
 
-        <ScannerInput
-          style={styles.marginTop}
-          label="Outbound Container ID"
-          value={outboundContainerId}
-          onChange={setOutboundContainerId}
-          onSubmit={handleScan}
-        />
+        <View style={styles.scannerRow}>
+          <ScannerInput
+            style={styles.scannerInput}
+            label="Outbound Container ID"
+            value={outboundContainerId}
+            isEnabled={!isSearchOpen}
+            onChange={setOutboundContainerId}
+            onSubmit={handleScan}
+          />
+          <SearchButton searchType="container" {...searchButtonProps} />
+        </View>
       </View>
     </ProductDetails.Provider>
   );

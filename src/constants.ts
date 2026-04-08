@@ -26,6 +26,7 @@ export const DEFAULT_DATE_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = {
 
 export const appConfig = {
   DEFAULT_DEBOUNCE_TIME: 100,
+  DEFAULT_SEARCH_DEBOUNCE_TIME: 800,
   APP_HEADER_HEIGHT: 56,
   LOCALE: 'en-US'
 };
