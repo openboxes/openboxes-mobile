@@ -3,7 +3,7 @@ import Theme from '../../utils/Theme';
 
 export default StyleSheet.create({
   button: {
-    width: 58,
+    width: 48,
     height: 58,
     marginLeft: Theme.spacing.small,
     alignSelf: 'flex-end',
@@ -24,10 +24,23 @@ export default StyleSheet.create({
     padding: Theme.spacing.large,
     maxHeight: '80%'
   },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: Theme.spacing.small
+  },
   title: {
     fontSize: 20,
-    color: Theme.colors.text,
-    marginBottom: Theme.spacing.medium
+    color: Theme.colors.text
+  },
+  closeButton: {
+    width: 28,
+    height: 28,
+    backgroundColor: Theme.colors.secondaryBackground,
+    borderRadius: 4,
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   hintText: {
     fontSize: 13,
@@ -101,17 +114,5 @@ export default StyleSheet.create({
     fontSize: 13,
     color: Theme.colors.secondaryForeground,
     marginTop: 2
-  },
-  cancelButton: {
-    backgroundColor: Theme.colors.primary,
-    borderRadius: 4,
-    paddingVertical: 10,
-    alignItems: 'center',
-    marginTop: Theme.spacing.medium
-  },
-  cancelText: {
-    fontSize: 15,
-    fontWeight: 'bold',
-    color: '#FFFFFF'
   }
 });

@@ -95,7 +95,12 @@ export function SearchButton({ searchType, onSelect, onOpen, onClose }: SearchBu
       <Modal transparent visible={visible} animationType="slide" onRequestClose={handleClose}>
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            <Text style={styles.title}>{provider.title}</Text>
+            <View style={styles.headerRow}>
+              <Text style={styles.title}>{provider.title}</Text>
+              <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
+                <MaterialCommunityIcons name="close" size={18} color={Theme.colors.secondaryForeground} />
+              </TouchableOpacity>
+            </View>
 
             <PaperTextInput
               autoFocus
@@ -148,10 +153,6 @@ export function SearchButton({ searchType, onSelect, onOpen, onClose }: SearchBu
                 )}
               />
             )}
-
-            <TouchableOpacity style={styles.cancelButton} onPress={handleClose}>
-              <Text style={styles.cancelText}>Cancel</Text>
-            </TouchableOpacity>
           </View>
         </View>
       </Modal>
