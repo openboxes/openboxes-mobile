@@ -3,6 +3,7 @@ import { ScrollView } from 'react-native';
 import { Card, Paragraph, Text, TextInput } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 
+import BuildInfoLabel from '../../components/BuildInfoLabel';
 import Button from '../../components/Button';
 import showPopup from '../../components/Popup';
 import { appConfig } from '../../constants';
@@ -175,6 +176,7 @@ const Settings = () => {
           />
         ))}
       </ToggleCard>
+      <BuildInfoLabel style={{ paddingBottom: 16 }} />
     </ScrollView>
   );
 };

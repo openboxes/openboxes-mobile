@@ -2,6 +2,7 @@ import React, { useCallback, useMemo } from 'react';
 import { FlatList, ListRenderItemInfo, ScrollView, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 
+import BuildInfoLabel from '../../components/BuildInfoLabel';
 import EmptyIcon from '../../assets/images/icon_empty.svg';
 import Button from '../../components/Button';
 import { useFilteredDashboardEntries } from '../../hooks/useFilteredDashboardEntries';
@@ -97,6 +98,7 @@ export default function Dashboard({ navigation }: Props) {
       {GROUP_ORDER.map((group) => (
         <DashboardGroupSection key={group} group={group} entries={groupedEntries[group]} columns={columns} />
       ))}
+      <BuildInfoLabel />
     </ScrollView>
   );
 }

@@ -5,6 +5,7 @@ import { Caption, Paragraph, TextInput } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useDispatch } from 'react-redux';
 import ProfileCardSkeleton from '../../components/ProfileCardSkeleton';
+import BuildInfoLabel from '../../components/BuildInfoLabel';
 import EyeIcon from '../../assets/images/icon_eye.svg';
 import EyeSlashIcon from '../../assets/images/icon_eye_slash.svg';
 import Button from '../../components/Button';
@@ -76,67 +77,70 @@ const Login = () => {
   };
 
   return (
-    <ScrollView style={styles.screenContainer} contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}>
-      <View style={styles.welcomeContainer}>
-        <Image source={require('../../assets/images/logo.png')} style={styles.logo} resizeMode="contain" />
-      </View>
-      {loading ? (
-        <ProfileCardSkeleton />
-      ) : activeProfile ? (
-        <TouchableOpacity
-          style={styles.profileCard}
-          activeOpacity={0.7}
-          onPress={() => NavigationService.navigate('Profiles')}
-        >
-          <View style={styles.profileCardOuter}>
-            <View style={styles.profileCardInner}>
-              <Caption style={styles.profileCardTitle}>CONNECTED TO</Caption>
-              <View style={styles.profileCardContent}>
-                <Icon name="server" size={22} color={Theme.colors.primary} style={styles.profileCardServerIcon} />
-                <View style={styles.profileCardText}>
-                  <Paragraph style={styles.profileCardLabel}>{activeProfile.label}</Paragraph>
-                  <Caption style={styles.profileCardUrl} numberOfLines={1}>
-                    {activeProfile.serverUrl}
-                  </Caption>
+    <ScrollView style={styles.screenContainer} contentContainerStyle={{ flexGrow: 1 }}>
+      <View style={{ flex: 1, justifyContent: 'center' }}>
+        <View style={styles.welcomeContainer}>
+          <Image source={require('../../assets/images/logo.png')} style={styles.logo} resizeMode="contain" />
+        </View>
+        {loading ? (
+          <ProfileCardSkeleton />
+        ) : activeProfile ? (
+          <TouchableOpacity
+            style={styles.profileCard}
+            activeOpacity={0.7}
+            onPress={() => NavigationService.navigate('Profiles')}
+          >
+            <View style={styles.profileCardOuter}>
+              <View style={styles.profileCardInner}>
+                <Caption style={styles.profileCardTitle}>CONNECTED TO</Caption>
+                <View style={styles.profileCardContent}>
+                  <Icon name="server" size={22} color={Theme.colors.primary} style={styles.profileCardServerIcon} />
+                  <View style={styles.profileCardText}>
+                    <Paragraph style={styles.profileCardLabel}>{activeProfile.label}</Paragraph>
+                    <Caption style={styles.profileCardUrl} numberOfLines={1}>
+                      {activeProfile.serverUrl}
+                    </Caption>
+                  </View>
                 </View>
               </View>
+              <Icon name="chevron-right" size={20} color={Theme.colors.disabled} />
             </View>
-            <Icon name="chevron-right" size={20} color={Theme.colors.disabled} />
-          </View>
-        </TouchableOpacity>
-      ) : null}
-      <View style={styles.inputsContainer}>
-        <TextInput mode="flat" label={'Username'} placeholder="Username" onChangeText={onUsernameChange} />
-        <TextInput
-          mode="flat"
-          placeholder="Password"
-          label={'Password'}
-          secureTextEntry={state.isSeePassword}
-          right={
-            <TextInput.Icon
-              icon={() =>
-                state.isSeePassword ? <EyeIcon width={24} height={24} /> : <EyeSlashIcon width={24} height={24} />
-              }
-              onPress={onPasswordClick}
-            />
-          }
-          style={{
-            marginTop: Theme.spacing.small
-          }}
-          onChangeText={onPasswordChange}
-        />
+          </TouchableOpacity>
+        ) : null}
+        <View style={styles.inputsContainer}>
+          <TextInput mode="flat" label={'Username'} placeholder="Username" onChangeText={onUsernameChange} />
+          <TextInput
+            mode="flat"
+            placeholder="Password"
+            label={'Password'}
+            secureTextEntry={state.isSeePassword}
+            right={
+              <TextInput.Icon
+                icon={() =>
+                  state.isSeePassword ? <EyeIcon width={24} height={24} /> : <EyeSlashIcon width={24} height={24} />
+                }
+                onPress={onPasswordClick}
+              />
+            }
+            style={{
+              marginTop: Theme.spacing.small
+            }}
+            onChangeText={onPasswordChange}
+          />
+        </View>
+        <View style={styles.buttonsContainer}>
+          <Button title="Login" size="100%" style={{ marginBottom: 8 }} onPress={onLoginPress} />
+          <Button
+            title="Settings"
+            size="100%"
+            mode="text"
+            onPress={() => {
+              NavigationService.navigate('Settings');
+            }}
+          />
+        </View>
       </View>
-      <View style={styles.buttonsContainer}>
-        <Button title="Login" size="100%" style={{ marginBottom: 8 }} onPress={onLoginPress} />
-        <Button
-          title="Settings"
-          size="100%"
-          mode="text"
-          onPress={() => {
-            NavigationService.navigate('Settings');
-          }}
-        />
-      </View>
+      <BuildInfoLabel />
     </ScrollView>
   );
 };

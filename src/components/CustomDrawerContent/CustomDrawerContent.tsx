@@ -4,6 +4,7 @@ import { View } from 'react-native';
 import { Button, Caption, Paragraph } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 
+import BuildInfoLabel from '../BuildInfoLabel';
 import * as NavigationService from '../../NavigationService';
 import { logout } from '../../redux/actions/auth';
 import { RootState } from '../../redux/reducers';
@@ -54,6 +55,7 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
         >
           Logout
         </Button>
+        <BuildInfoLabel style={{ paddingBottom: 0 }} />
       </View>
     </DrawerContentScrollView>
   );
