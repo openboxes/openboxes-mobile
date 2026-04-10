@@ -12,7 +12,7 @@ const LEGACY_API_URL_KEY = 'API_URL';
 const CURRENT_VERSION = 1;
 
 const DEFAULT_SERVERS = [
-  { label: 'Staging Server', serverUrl: 'http://stag.vtc.openboxes.com/openboxes/api' },
+  { label: 'Staging Server', serverUrl: 'https://stag.vtc.openboxes.com/openboxes/api' },
   { label: 'Test Server', serverUrl: 'https://vvg.openboxes.com/openboxes/api' }
 ];
 
