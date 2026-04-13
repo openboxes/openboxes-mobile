@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
-import { Searchbar } from 'react-native-paper';
-import styles from './styles';
+import _ from 'lodash';
+import React, { useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
-import Theme from '../../utils/Theme';
+import { Searchbar } from 'react-native-paper';
+import { appConfig } from '../../constants';
+import styles from './styles';
 
 interface OwnProps {
   subtitle?: string | null;
@@ -11,8 +12,8 @@ interface OwnProps {
   searchBox: boolean;
   onSearchTermSubmit: (query: string) => void;
   resetSearch?: () => void;
-  autoSearch: boolean | false;
-  autoFocus?: boolean | false;
+  autoSearch: boolean;
+  autoFocus?: boolean;
 }
 
 const BarcodeSearchHeader: React.FC<OwnProps> = (props) => {
@@ -20,12 +21,24 @@ const BarcodeSearchHeader: React.FC<OwnProps> = (props) => {
 
   const navigation = useNavigation<any>();
 
+  const onSearchTermSubmitRef = useRef(props.onSearchTermSubmit);
+  onSearchTermSubmitRef.current = props.onSearchTermSubmit;
+
+  const debouncedSearchTermSubmit = useRef(
+    _.debounce((term: string) => onSearchTermSubmitRef.current(term), appConfig.DEFAULT_SEARCH_DEBOUNCE_TIME)
+  ).current;
+
   // If autoSearch is true, then trigger onSearchTermSubmit on a searchTerm change
   useEffect(() => {
     if (props.autoSearch) {
-      onSearchTermSubmit();
+      debouncedSearchTermSubmit(searchTerm);
     }
-  }, [searchTerm]);
+  }, [debouncedSearchTermSubmit, props.autoSearch, searchTerm]);
+
+  // Cancel pending debounced calls on unmount
+  useEffect(() => {
+    return () => debouncedSearchTermSubmit.cancel();
+  }, [debouncedSearchTermSubmit]);
 
   // Resets the search bar's search term on the navigation change
   useEffect(() => {
@@ -35,7 +48,8 @@ const BarcodeSearchHeader: React.FC<OwnProps> = (props) => {
         props.resetSearch();
       }
     });
-  }, [navigation]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [navigation, props.resetSearch]);
 
   const onSearchTermSubmit = () => {
     props.onSearchTermSubmit(searchTerm);

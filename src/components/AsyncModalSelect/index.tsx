@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Image, TextInput, TouchableOpacity, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 
@@ -56,7 +56,9 @@ const AsyncModalSelect = ({
     onSelect?.({ id: '', name: '' });
   };
 
-  const debounceOnSearchTerm = _.debounce((term: string) => setSearchTerm(term), appConfig.DEFAULT_DEBOUNCE_TIME);
+  const debounceOnSearchTerm = useRef(
+    _.debounce((term: string) => setSearchTerm(term), appConfig.DEFAULT_SEARCH_DEBOUNCE_TIME)
+  ).current;
 
   return (
     <View style={styles.mainContainer}>
