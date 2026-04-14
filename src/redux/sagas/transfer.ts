@@ -5,13 +5,11 @@ import {
   UPDATE_INTERNAL_STOCK_TRANSFER,
   UPDATE_INTERNAL_STOCK_TRANSFER_SUCCESS
 } from '../actions/transfers';
-import { hideScreenLoading, showScreenLoading } from '../actions/main';
 import * as api from '../../apis';
 import * as Sentry from '@sentry/react-native';
 
 function* updateStockTransfer(action: any) {
   try {
-    yield put(showScreenLoading('Please wait..'));
     const response: any = yield call(
       api.updateStockTransfers,
       action.payload.data
@@ -21,9 +19,7 @@ function* updateStockTransfer(action: any) {
       payload: response
     });
     yield action.callback(response.data);
-    yield put(hideScreenLoading());
   } catch (e) {
-    yield put(hideScreenLoading());
     yield action.callback({
       error: true,
       errorMessage: e.message,
@@ -34,16 +30,13 @@ function* updateStockTransfer(action: any) {
 
 function* getStockMovements(action: any) {
   try {
-    yield put(showScreenLoading('Please wait..'));
     const response: any = yield call(api.getStockMovements, action.payload.id);
     yield put({
       type: FETCH_STOCK_MOVEMENTS_SUCCESS,
       payload: response.data
     });
     yield action.callback(response.data);
-    yield put(hideScreenLoading());
   } catch (e) {
-    yield put(hideScreenLoading());
     Sentry.captureException('Error while getStockMovements API', e.message);
   }
 }

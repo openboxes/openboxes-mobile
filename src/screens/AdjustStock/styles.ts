@@ -22,6 +22,9 @@ export default StyleSheet.create({
     fontWeight: 'normal',
     color: Theme.colors.placeholder
   },
+  subtitle: {
+    marginTop: -4
+  },
   chipDefault: {
     height: 28,
     justifyContent: 'flex-start',

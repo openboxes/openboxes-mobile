@@ -147,9 +147,7 @@ export default function AdjustStock() {
             {location.name ? <Text style={styles.titleParent}>{` (${location.name})`}</Text> : null}
           </Title>
 
-          {item?.binLocation?.locationType?.name && (
-            <Caption>{`Location Type: ${item.binLocation.locationType.name}`}</Caption>
-          )}
+          <Caption style={styles.subtitle}>Adjusting inventory at this bin</Caption>
 
           <Divider style={styles.contentDivider} />
 

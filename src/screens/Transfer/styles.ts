@@ -1,61 +1,68 @@
 import { StyleSheet } from 'react-native';
-import { ratio } from '../../constants';
 import Theme from '../../utils/Theme';
 
 export default StyleSheet.create({
-  container: {
-    display: 'flex',
-    flexDirection: 'column',
-    flex: 1,
-    paddingVertical: 10,
-    paddingHorizontal: 20
+  screenContainer: {
+    flex: 1
   },
-  formContainer: {
-    padding: Theme.spacing.medium
+  contentContainer: {
+    flex: 1
   },
-  bottom: {
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: ratio.height * 100
-  },
-  inputSpinner: {
-    flex: 1,
-    alignItems: 'center'
-  },
-  infoContainer: {
-    display: 'flex',
-    flexDirection: 'column',
+  productDetails: {
     backgroundColor: Theme.colors.surface,
-    padding: Theme.spacing.medium
+    padding: Theme.spacing.large
   },
   chipDefault: {
     height: 28,
-    justifyContent: 'center',
-    borderRadius: Theme.spacing.small,
-    alignItems: 'center',
-    marginRight: Theme.spacing.small,
-    backgroundColor: Theme.colors.background
+    justifyContent: 'flex-start',
+    borderRadius: 4,
+    alignItems: 'center'
   },
   chipText: {
     fontSize: 12,
     color: Theme.colors.text
   },
-  additionalInfoRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 8,
-    alignItems: 'center',
-    flexWrap: 'wrap'
-  },
-  headerRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center'
-  },
-  caption: { fontSize: 12, color: Theme.colors.text },
-  subheading: { fontWeight: 'bold', fontSize: 16 },
-  button: {
+  chipSpacing: {
     marginTop: Theme.spacing.small
+  },
+  contentDivider: {
+    marginVertical: 8
+  },
+  title: {
+    fontSize: 18,
+    color: Theme.colors.text,
+    fontWeight: '600'
+  },
+  titleParent: {
+    fontSize: 14,
+    fontWeight: 'normal',
+    color: Theme.colors.placeholder
+  },
+  subtitle: {
+    marginTop: -4
+  },
+  bold: { fontWeight: 'bold' },
+  fieldLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: Theme.colors.text,
+    marginBottom: 4
+  },
+  formContainer: {
+    padding: Theme.spacing.large
+  },
+  fieldGap: {
+    marginTop: Theme.spacing.medium
+  },
+  bottom: {
+    width: '100%',
+    backgroundColor: Theme.colors.surface,
+    paddingVertical: Theme.spacing.small,
+    paddingHorizontal: Theme.spacing.large
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
   }
 });

@@ -1,99 +1,125 @@
-import { useNavigation, useRoute } from '@react-navigation/native';
-import _ from 'lodash';
-import React, { useEffect, useMemo, useState } from 'react';
-import { ScrollView, Text, ToastAndroid, View } from 'react-native';
-import { Caption, Chip, Divider, Subheading } from 'react-native-paper';
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Alert, ScrollView, ToastAndroid, View } from 'react-native';
+import { Caption, Chip, Divider, TextInput as PaperTextInput, Text, Title } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 
 import AsyncModalSelect from '../../components/AsyncModalSelect';
 import Button from '../../components/Button';
-import InputSpinner from '../../components/InputSpinner';
-import showPopup from '../../components/Popup';
-import { HYPHEN } from '../../constants';
+import { DetailFormSkeleton } from '../../components/ContentSkeleton';
+import EmptyView from '../../components/EmptyView';
+import { QuantityIcon } from '../../components/Icons';
+import { EMPTY_FALLBACK } from '../../constants';
 import { searchInternalLocations } from '../../redux/actions/locations';
 import { updateStockTransfer } from '../../redux/actions/transfers';
 import { RootState } from '../../redux/reducers';
-import Theme from '../../utils/Theme';
+import { DetailChip } from '../../types/sortation';
 import styles from './styles';
 
-const Transfer = () => {
-  const route = useRoute();
+type TransferRouteParams = {
+  Transfer: {
+    item: any;
+  };
+};
+
+type TransferRouteProp = RouteProp<TransferRouteParams, 'Transfer'>;
+
+function buildDetailsChips(item: any, showExpirationDate: boolean, showLotNumber: boolean): DetailChip[] {
+  const chips: DetailChip[] = [
+    {
+      icon: 'barcode',
+      label: 'Product',
+      value: `${item?.product?.productCode} - ${item?.product?.name}`
+    }
+  ];
+
+  if (showExpirationDate) {
+    chips.push({ icon: 'calendar', label: 'Expiry Date', value: item?.expirationDate ?? 'Never' });
+  }
+
+  if (showLotNumber) {
+    chips.push({ icon: 'tag', label: 'Lot Number', value: item?.lotNumber ?? 'Default' });
+  }
+
+  chips.push({
+    icon: () => <QuantityIcon size={16} color="#000" />,
+    label: 'Available to Transfer',
+    value: item.quantityAvailable ?? EMPTY_FALLBACK
+  });
+
+  return chips;
+}
+
+function validateTransfer(parsed: number | undefined, item: any, binToLocationData: any): string | null {
+  if (!parsed || parsed <= 0) {
+    return 'Please enter a quantity greater than zero.';
+  }
+  if (parsed > Number(item.quantityAvailable)) {
+    return 'Quantity to transfer is greater than quantity available.';
+  }
+  if (!binToLocationData?.id) {
+    return 'Please select a destination bin location.';
+  }
+  if (binToLocationData.id === item?.binLocation?.id) {
+    return 'Origin and destination bin locations cannot be the same.';
+  }
+  return null;
+}
+
+export default function Transfer() {
+  const route = useRoute<TransferRouteProp>();
   const navigation = useNavigation<any>();
-  const { item }: any = route.params;
   const dispatch = useDispatch();
+  const { item } = route.params;
   const location = useSelector((rootState: RootState) => rootState.mainReducer.currentLocation);
   const { productSummaryConfig } = useSelector((state: RootState) => state.settingsReducer);
-  const [binToLocationData, setBinToLocationData] = useState<any>({});
-  const [quantity, setQuantity] = useState(item?.quantityAvailable ?? 0);
-  const [internalLocations, setInternalLocations] = useState<any>([]);
 
-  useEffect(() => {
-    getInternalLocation(location.id);
-  }, [item]);
+  const [binToLocationData, setBinToLocationData] = useState<any>(null);
+  const [quantity, setQuantity] = useState<string>(item?.quantityAvailable?.toString() ?? '');
+  const [internalLocations, setInternalLocations] = useState<any[]>([]);
+  const [isLoadingLocations, setIsLoadingLocations] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const getInternalLocation = (id: string = '') => {
-    const callback = (data: any) => {
-      if (data?.error) {
-        showPopup({
-          title: data.message ? 'internal location details' : '',
-          message: data.errorMessage ?? `Failed to load internal location value ${id}`,
-          positiveButton: {
-            text: 'Retry',
-            callback: () => {
-              dispatch(
-                searchInternalLocations(
-                  '',
-                  {
-                    'parentLocation.id': location.id,
-                    max: '25',
-                    offset: '0'
-                  },
-                  callback
-                )
-              );
-            }
-          },
-          negativeButtonText: 'Cancel'
-        });
-      } else {
-        if (data && Object.keys(data).length !== 0) {
-          setInternalLocations(
-            _.map(data.data, (internalLocation) => ({
-              name: internalLocation.name,
-              id: internalLocation.id
-            }))
-          );
-        }
-      }
-    };
+  const fetchInternalLocations = useCallback(() => {
+    setIsLoadingLocations(true);
     dispatch(
       searchInternalLocations(
         '',
-        {
-          'parentLocation.id': location.id,
-          max: 25,
-          offset: 0
+        { 'parentLocation.id': location.id, max: 25, offset: 0 },
+        (data: any) => {
+          setIsLoadingLocations(false);
+          if (data?.error) {
+            Alert.alert(
+              'Failed to Load Locations',
+              data.errorMessage ?? 'Could not load internal locations. Please try again.',
+              [
+                { text: 'Retry', onPress: fetchInternalLocations },
+                { text: 'Cancel', style: 'cancel' }
+              ]
+            );
+          } else if (data?.data) {
+            setInternalLocations(data.data.map((loc: any) => ({ name: loc.name, id: loc.id })));
+          }
         },
-        callback
+        true
       )
     );
-  };
+  }, [dispatch, location.id]);
 
-  const onTransfer = () => {
-    let errorTitle = '';
-    let errorMessage = '';
-    if (Number(item.quantityAvailableToPromise) < quantity) {
-      errorTitle = 'Quantity!';
-      errorMessage = 'Quantity to transfer is greater than quantity available';
+  useEffect(() => {
+    fetchInternalLocations();
+  }, [fetchInternalLocations]);
+
+  const handleTransfer = useCallback(() => {
+    const parsed = quantity.trim() === '' ? undefined : parseInt(quantity, 10);
+    const error = validateTransfer(parsed, item, binToLocationData);
+
+    if (error) {
+      Alert.alert('Validation Error', error);
+      return;
     }
-    if (errorTitle !== '') {
-      showPopup({
-        title: errorTitle,
-        message: errorMessage,
-        negativeButtonText: 'Cancel'
-      });
-      return Promise.resolve(null);
-    }
+
+    setIsSubmitting(true);
 
     const request: any = {
       status: 'COMPLETED',
@@ -108,73 +134,81 @@ const Transfer = () => {
           location: { id: location.id },
           originBinLocation: { id: item?.binLocation?.id },
           destinationBinLocation: { id: binToLocationData.id },
-          quantity: quantity
+          quantity: parsed
         }
       ]
     };
 
-    const actionCallback = (data: any) => {
-      if (data?.error) {
-        showPopup({
-          title: data.errorMessage ? 'Submit' : 'Error',
-          message: 'Failed to submit',
-          positiveButton: {
-            text: 'Retry',
-            callback: () => {
-              dispatch(updateStockTransfer(request, actionCallback));
-            }
-          },
-          negativeButtonText: 'Cancel'
-        });
-      } else {
-        const product = { id: item.product.productCode };
-        ToastAndroid.show('Transferred item successfully!', ToastAndroid.SHORT);
-        navigation.navigate('ProductDetails', {
-          product,
-          refetchProduct: true
-        });
-      }
-    };
-
-    dispatch(updateStockTransfer(request, actionCallback));
-  };
+    dispatch(
+      updateStockTransfer(request, (data: any) => {
+        setIsSubmitting(false);
+        if (data?.error) {
+          Alert.alert('Transfer Failed', data.errorMessage ?? 'Failed to complete transfer.', [
+            { text: 'Retry', onPress: handleTransfer },
+            { text: 'Cancel', style: 'cancel' }
+          ]);
+        } else {
+          ToastAndroid.show('Transferred item successfully!', ToastAndroid.SHORT);
+          navigation.navigate('ProductDetails', {
+            product: { id: item.product.productCode },
+            refetchProduct: true
+          });
+        }
+      })
+    );
+  }, [quantity, item, binToLocationData, location, dispatch, navigation]);
 
   const showLotNumber = useMemo(() => productSummaryConfig?.lotNumber, [productSummaryConfig]);
   const showExpirationDate = useMemo(() => productSummaryConfig?.expirationDate, [productSummaryConfig]);
+  const detailsChips = useMemo(
+    () => buildDetailsChips(item, showExpirationDate, showLotNumber),
+    [item, showExpirationDate, showLotNumber]
+  );
+
+  if (!item) {
+    return (
+      <View style={styles.emptyContainer}>
+        <EmptyView title="Item Not Found" description="The item you are looking for is not available." />
+      </View>
+    );
+  }
+
+  if (isLoadingLocations) {
+    return <DetailFormSkeleton />;
+  }
+
+  const parsed = quantity.trim() === '' ? 0 : parseInt(quantity, 10);
+  const isTransferDisabled = !binToLocationData?.id || !parsed || parsed <= 0 || isSubmitting;
 
   return (
-    <ScrollView>
-      <View style={styles.infoContainer}>
-        <View style={styles.headerRow}>
-          <Chip icon="pin" style={styles.chipDefault} textStyle={styles.chipText}>
-            {`Bin (From): ${item?.binLocation?.name ?? 'Default'}`}
-          </Chip>
-          {showExpirationDate && (
-            <Chip icon="calendar" style={styles.chipDefault} textStyle={styles.chipText}>
-              {`Expiry Date: ${item?.expirationDate ?? 'Never'}`}
+    <View style={styles.screenContainer}>
+      <ScrollView keyboardShouldPersistTaps="handled" style={styles.contentContainer}>
+        <View style={styles.productDetails}>
+          <Title style={styles.title}>
+            {item?.binLocation?.name ?? 'Default Bin'}
+            {location.name ? <Text style={styles.titleParent}>{` (${location.name})`}</Text> : null}
+          </Title>
+          <Caption style={styles.subtitle}>Transferring from this bin</Caption>
+
+          <Divider style={styles.contentDivider} />
+
+          {detailsChips.map(({ icon, value, label }) => (
+            <Chip key={label} icon={icon} style={[styles.chipDefault, styles.chipSpacing]}>
+              <Text style={styles.chipText}>
+                {label}: <Text style={[styles.bold, styles.chipText]}>{value}</Text>
+              </Text>
             </Chip>
-          )}
+          ))}
         </View>
-        <Divider style={{ marginVertical: Theme.spacing.medium }} />
 
-        <Subheading style={styles.subheading}>{`${item?.product.productCode} - ${item?.product.name}`}</Subheading>
-        {showLotNumber && <Caption style={styles.caption}>{`Lot Number: ${item?.lotNumber ?? 'Default'}`}</Caption>}
+        <Divider />
 
-        <View style={styles.additionalInfoRow}>
-          <Chip icon="package" style={styles.chipDefault} textStyle={styles.chipText}>
-            {`Quantity Available To Transfer: ${item.quantityAvailable ?? HYPHEN}`}
-          </Chip>
-        </View>
-      </View>
-      <Divider />
-
-      <View style={styles.formContainer}>
-        <View>
-          <Text>Bin Location (Destination)</Text>
+        <View style={styles.formContainer}>
+          <Text style={styles.fieldLabel}>Destination Bin Location</Text>
           <AsyncModalSelect
-            placeholder="Bin Location (Destination)"
-            label="Bin Location (Destination)"
-            initValue={binToLocationData?.label || ''}
+            placeholder="Search or select a bin location"
+            label="Destination Bin Location"
+            initValue={binToLocationData?.name || ''}
             initialData={internalLocations}
             searchAction={searchInternalLocations}
             searchActionParams={{ 'parentLocation.id': location.id }}
@@ -184,18 +218,30 @@ const Transfer = () => {
               }
             }}
           />
+
+          <View style={styles.fieldGap}>
+            <PaperTextInput
+              autoCompleteType="off"
+              mode="outlined"
+              label="Quantity to Transfer"
+              placeholder={String(item?.quantityAvailable ?? '')}
+              value={quantity}
+              keyboardType="number-pad"
+              onChangeText={setQuantity}
+            />
+          </View>
         </View>
-        <InputSpinner title="Quantity to Transfer" value={quantity} setValue={setQuantity} />
+      </ScrollView>
+
+      <View style={styles.bottom}>
         <Button
-          style={styles.button}
+          title={isSubmitting ? 'Transferring...' : 'Transfer'}
+          mode="contained"
           size="100%"
-          title="TRANSFER"
-          disabled={binToLocationData && quantity <= 0}
-          onPress={onTransfer}
+          disabled={isTransferDisabled}
+          onPress={handleTransfer}
         />
       </View>
-    </ScrollView>
+    </View>
   );
-};
-
-export default Transfer;
+}
