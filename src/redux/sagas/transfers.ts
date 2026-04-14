@@ -32,7 +32,8 @@ function* getStockTransfers(action: any) {
     });
     yield action.callback(response.data);
   } catch (e) {
-    Sentry.captureException('Error while getStockMovements API', e.message);
+    Sentry.captureException('Error while getStockTransfers API', e.message);
+    yield action.callback({ error: true, errorMessage: e.message });
   }
 }
 

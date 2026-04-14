@@ -150,7 +150,7 @@ export default function Transfer() {
         } else {
           ToastAndroid.show('Transferred item successfully!', ToastAndroid.SHORT);
           navigation.navigate('ProductDetails', {
-            product: { id: item.product.productCode },
+            product: item.product,
             refetchProduct: true
           });
         }
@@ -158,8 +158,8 @@ export default function Transfer() {
     );
   }, [quantity, item, binToLocationData, location, dispatch, navigation]);
 
-  const showLotNumber = useMemo(() => productSummaryConfig?.lotNumber, [productSummaryConfig]);
-  const showExpirationDate = useMemo(() => productSummaryConfig?.expirationDate, [productSummaryConfig]);
+  const showLotNumber = useMemo(() => productSummaryConfig?.lotNumber !== false, [productSummaryConfig]);
+  const showExpirationDate = useMemo(() => productSummaryConfig?.expirationDate !== false, [productSummaryConfig]);
   const detailsChips = useMemo(
     () => buildDetailsChips(item, showExpirationDate, showLotNumber),
     [item, showExpirationDate, showLotNumber]

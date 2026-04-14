@@ -96,7 +96,7 @@ export default function AdjustStock() {
         if (data?.error) {
           Alert.alert(
             'Unable to Save',
-            data.message ?? 'Unexpected error occurred on the server.',
+            data.errorMessage ?? 'Unexpected error occurred on the server.',
             [
               { text: 'Retry', onPress: handleSave },
               { text: 'Cancel', style: 'cancel' }
