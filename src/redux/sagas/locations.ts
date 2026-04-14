@@ -211,16 +211,13 @@ function* getBinLocations() {
 
 function* fetchProductSummary(action: any) {
   try {
-    yield put(showScreenLoading('Loading...'));
     const response = yield call(api.fetchProductSummary, action.payload.location);
     yield put({
       type: GET_PRODUCT_SUMMARY_FROM_LOCATION_SUCCESS,
       payload: response.data
     });
     yield action.callback(response.data);
-    yield put(hideScreenLoading());
   } catch (e) {
-    yield put(hideScreenLoading());
     yield action.callback({
       error: true,
       errorMessage: e.message

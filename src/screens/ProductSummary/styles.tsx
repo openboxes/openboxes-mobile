@@ -71,5 +71,8 @@ export default StyleSheet.create({
   chipText: {
     fontSize: 12,
     color: Theme.colors.text
+  },
+  skeletonContainer: {
+    padding: Theme.spacing.large
   }
 });

@@ -16,8 +16,6 @@ export interface StateProps {
 
 export interface DispatchProps {
   getProductByIdAction: (id: any, callback?: (data: any) => void) => void;
-  showScreenLoading: () => void;
-  hideScreenLoading: () => void;
   updateProductIdentifierAction: (
     id: string,
     identifierType: string,
@@ -25,9 +23,12 @@ export interface DispatchProps {
     callback?: (data: any) => void
   ) => void;
 }
+
 export interface State {
   visible: boolean;
   productDetails: Product | any;
   editBarcodeVisible: boolean;
+  isLoading: boolean;
 }
+
 export type Props = OwnProps & StateProps & DispatchProps & State;

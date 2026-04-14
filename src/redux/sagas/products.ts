@@ -157,16 +157,13 @@ function* searchBarcode(action: any) {
 
 function* getProductById(action: any) {
   try {
-    yield put(showScreenLoading('Please wait..'));
     const response = yield call(api.getProductById, action.payload.id);
     yield put({
       type: GET_PRODUCT_BY_ID_REQUEST_SUCCESS,
       payload: response.data
     });
     yield action.callback(response.data);
-    yield put(hideScreenLoading());
   } catch (error) {
-    yield put(hideScreenLoading());
     if (error.code != 401) {
       yield action.callback({
         error: true,
@@ -253,7 +250,6 @@ function* getSortationDetailsSaga(action: any) {
 
 function* updateProductIdentifierSaga(action: any) {
   try {
-    yield put(showScreenLoading('Updating Product Identifier...'));
     const response = yield call(
       api.updateProductIdentifier,
       action.payload.id,
@@ -265,9 +261,7 @@ function* updateProductIdentifierSaga(action: any) {
       payload: response.data
     });
     if (action.callback) action.callback(response.data);
-    yield put(hideScreenLoading());
   } catch (error: any) {
-    yield put(hideScreenLoading());
     if (action.callback) {
       action.callback({
         error: true,

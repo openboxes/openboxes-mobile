@@ -1,13 +1,13 @@
 import React from 'react';
-import { ScrollView, TouchableOpacity, View } from 'react-native';
-import { Caption, Card, Chip, Divider, Button as PaperButton, Paragraph, Subheading } from 'react-native-paper';
+import { Alert, ScrollView, TouchableOpacity, View } from 'react-native';
+import { Caption, Card, Chip, Divider, Button as PaperButton, Paragraph, Subheading, Title } from 'react-native-paper';
 import { connect } from 'react-redux';
 
 import Button from '../../components/Button';
-import showPopup from '../../components/Popup';
+import { ProductDetailsSkeleton, CardSkeleton } from '../../components/ContentSkeleton';
+import EmptyView from '../../components/EmptyView';
 import PrintModal from '../../components/PrintModal';
 import { HYPHEN } from '../../constants';
-import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
 import { getProductByIdAction, updateProductIdentifierAction } from '../../redux/actions/products';
 import { RootState } from '../../redux/reducers';
 import EditBarcodeModal from './EditBarcodeModal';
@@ -18,7 +18,7 @@ import { vmMapper } from './VMMapper';
 function SectionCard({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <Card style={styles.sectionCard}>
-      <Card.Title titleStyle={styles.title} title={title} />
+      <Card.Title titleStyle={styles.sectionTitle} title={title} />
       <Card.Content>{children}</Card.Content>
     </Card>
   );
@@ -41,8 +41,20 @@ class ProductDetails extends React.Component<Props, State> {
     this.state = {
       visible: false,
       productDetails: {},
-      editBarcodeVisible: false
+      editBarcodeVisible: false,
+      isLoading: true
     };
+  }
+
+  componentDidMount() {
+    this.getProduct();
+  }
+
+  componentDidUpdate(prevProps: Props) {
+    if (this.props.route.params.refetchProduct && !prevProps.route.params.refetchProduct) {
+      const { product } = this.props.route.params;
+      this.getProductDetails(product.id);
+    }
   }
 
   getProduct = () => {
@@ -50,19 +62,32 @@ class ProductDetails extends React.Component<Props, State> {
     this.getProductDetails(product.id);
   };
 
-  closeModal = () => {
-    this.setState({ visible: false });
+  getProductDetails = (id: string) => {
+    this.props.navigation.setParams({ refetchProduct: false });
+
+    if (!id) {
+      Alert.alert('Error', 'Product ID is empty.');
+      return;
+    }
+
+    this.setState({ isLoading: true });
+
+    const actionCallback = (data: any) => {
+      this.setState({ isLoading: false });
+      if (data?.error) {
+        Alert.alert('Failed to Load', data.errorMessage ?? 'Failed to load product details.', [
+          { text: 'Retry', onPress: () => this.getProductDetails(id) },
+          { text: 'Cancel', style: 'cancel' }
+        ]);
+      } else {
+        this.setState({ productDetails: data });
+      }
+    };
+
+    this.props.getProductByIdAction(id, actionCallback);
   };
 
-  openEditBarcodeModal = () => {
-    this.setState({ editBarcodeVisible: true });
-  };
-
-  closeEditBarcodeModal = () => {
-    this.setState({ editBarcodeVisible: false });
-  };
-
-  handleClick = () => {
+  handlePrint = () => {
     const { product } = this.props.route.params;
     this.props.getProductByIdAction(product.id, () => {
       this.setState({ visible: true });
@@ -78,61 +103,13 @@ class ProductDetails extends React.Component<Props, State> {
 
     this.props.updateProductIdentifierAction(id, 'upc', newBarcode, (response: any) => {
       if (response?.error) {
-        showPopup({
-          title: 'Error',
-          message: response.errorMessage ?? 'Product Identifier update failed',
-          positiveButton: { text: 'OK' }
-        });
+        Alert.alert('Error', response.errorMessage ?? 'Product identifier update failed.');
         return;
       }
-
       this.setState({ editBarcodeVisible: false });
       this.getProductDetails(id);
     });
   };
-
-  componentDidMount() {
-    this.getProduct();
-  }
-
-  componentDidUpdate() {
-    if (this.props.route.params.refetchProduct) {
-      const { product } = this.props.route.params;
-      this.getProductDetails(product.id);
-    }
-  }
-
-  getProductDetails(id: string) {
-    this.props.navigation.setParams({ refetchProduct: false });
-    this.props.showScreenLoading('');
-    if (!id) {
-      showPopup({
-        message: 'Product id is empty',
-        positiveButton: { text: 'Ok' }
-      });
-      return;
-    }
-
-    const actionCallback = (data: any) => {
-      if (data?.error) {
-        showPopup({
-          title: data.errorMessage ? `Failed to load product details with value = "${id}"` : null,
-          message: data.errorMessage ?? `Failed to load product details with value = "${id}"`,
-          positiveButton: {
-            text: 'Retry',
-            callback: () => {
-              this.props.getProductByIdAction(id, actionCallback);
-            }
-          },
-          negativeButtonText: 'Cancel'
-        });
-      } else {
-        this.setState({ productDetails: data });
-      }
-    };
-    this.props.hideScreenLoading();
-    this.props.getProductByIdAction(id, actionCallback);
-  }
 
   navigateToDetails = (item: any) => {
     this.props.navigation.navigate('ViewAvailableItem', {
@@ -141,7 +118,7 @@ class ProductDetails extends React.Component<Props, State> {
     });
   };
 
-  renderListItem = (item: any, index: any) => {
+  renderAvailableItem = (item: any, index: number) => {
     const { productSummaryConfig } = this.props;
     const showLotNumber = productSummaryConfig?.lotNumber !== false;
 
@@ -156,8 +133,8 @@ class ProductDetails extends React.Component<Props, State> {
             </View>
             <Divider style={styles.contentDivider} />
 
-            <Subheading style={styles.subheading}>{`${item?.product.name}`}</Subheading>
-            {showLotNumber && <Caption style={styles.caption}>{`Lot Number: ${item?.lotNumber ?? 'Default'}`}</Caption>}
+            <Subheading style={styles.subheading}>{item?.product?.name}</Subheading>
+            {showLotNumber && <Caption>{`Lot Number: ${item?.lotNumber ?? 'Default'}`}</Caption>}
 
             <View style={styles.additionalInfoRow}>
               {item.quantityOnHand ? (
@@ -166,7 +143,7 @@ class ProductDetails extends React.Component<Props, State> {
                 </Chip>
               ) : null}
               {item.quantityAvailable ? (
-                <Chip icon="thumb-up" style={styles.chipDefault} textStyle={styles.chipText}>
+                <Chip icon="package" style={styles.chipDefault} textStyle={styles.chipText}>
                   {`Qty Available: ${item.quantityAvailable}`}
                 </Chip>
               ) : null}
@@ -178,60 +155,80 @@ class ProductDetails extends React.Component<Props, State> {
   };
 
   render() {
-    const vm = vmMapper(this.state.productDetails);
+    const { isLoading, productDetails, visible, editBarcodeVisible } = this.state;
     const product = this.props.selectedProduct;
-    const { visible } = this.state;
+
+    if (isLoading) {
+      return (
+        <View style={styles.screenContainer}>
+          <ProductDetailsSkeleton />
+          <View style={styles.detailsSection}>
+            <CardSkeleton />
+            <CardSkeleton />
+          </View>
+        </View>
+      );
+    }
+
+    if (!productDetails?.id) {
+      return (
+        <View style={styles.emptyContainer}>
+          <EmptyView
+            isRefresh
+            title="Product Not Found"
+            description="Could not load product details."
+            onPress={this.getProduct}
+          />
+        </View>
+      );
+    }
+
+    const vm = vmMapper(productDetails);
     const filteredItems =
-      vm?.availableItems?.filter((item) => item.quantityOnHand > 0 || item.quantityAvailable > 0) ?? [];
+      vm?.availableItems?.filter((item: any) => item.quantityOnHand > 0 || item.quantityAvailable > 0) ?? [];
 
     return (
-      <ScrollView>
+      <View style={styles.screenContainer}>
         <PrintModal
           visible={visible}
-          closeModal={this.closeModal}
+          closeModal={() => this.setState({ visible: false })}
           product={product}
-          type={'products'}
+          type="products"
           defaultBarcodeLabelUrl={product?.defaultBarcodeLabelUrl}
         />
         <EditBarcodeModal
-          visible={this.state.editBarcodeVisible}
-          currentBarcode={this.state.productDetails?.upc}
-          onClose={this.closeEditBarcodeModal}
+          visible={editBarcodeVisible}
+          currentBarcode={productDetails?.upc}
+          onClose={() => this.setState({ editBarcodeVisible: false })}
           onSave={this.handleSaveBarcode}
         />
-        <View style={styles.contentContainer}>
+
+        <ScrollView>
           <View style={styles.header}>
             <View style={styles.headerRow}>
               <Chip icon="barcode" style={styles.chipDefault} textStyle={styles.chipText}>
-                {`Product Code: ${vm.productCode || HYPHEN}`}
+                {vm.productCode || HYPHEN}
               </Chip>
             </View>
 
             <Divider style={styles.contentDivider} />
 
-            <Subheading style={styles.name}>{vm.name}</Subheading>
-
-            <View style={styles.additionalInfoRow}>
-              <Chip icon="barcode" style={styles.chipDefault} textStyle={styles.chipText}>
-                {/* UPC (Universal Product Code) — ensures consistency if the barcode differs from the product code */}
-                {`Barcode: ${vm.upc}`}
-              </Chip>
-              <Chip icon="package" style={styles.chipDefault} textStyle={styles.chipText}>
-                {`Items Available: ${filteredItems.length}`}
-              </Chip>
-            </View>
+            <Title style={styles.title}>{vm.name}</Title>
+            <Caption style={styles.subtitle}>{`Barcode: ${vm.upc}`}</Caption>
 
             <View style={styles.actionButtons}>
-              <PaperButton icon="barcode" mode="contained" onPress={this.openEditBarcodeModal}>
+              <PaperButton icon="barcode" mode="contained" onPress={() => this.setState({ editBarcodeVisible: true })}>
                 Edit Barcode
               </PaperButton>
-              <PaperButton style={styles.topSeparator} icon="refresh" mode="contained" onPress={this.getProduct}>
+              <PaperButton style={styles.fieldGap} icon="refresh" mode="contained" onPress={this.getProduct}>
                 Refresh Availability
               </PaperButton>
             </View>
           </View>
+
           <Divider />
-          <ScrollView style={styles.detailsSection}>
+
+          <View style={styles.detailsSection}>
             <SectionCard title="Availability">
               {[
                 { label: 'Status', value: vm.status },
@@ -253,17 +250,16 @@ class ProductDetails extends React.Component<Props, State> {
               ))}
             </SectionCard>
 
-            {filteredItems.length > 0 ? (
-              <SectionCard title="Available Items">
-                {filteredItems.map((item, index) => {
-                  return this.renderListItem(item, index);
-                })}
+            {filteredItems.length > 0 && (
+              <SectionCard title={`Available Items (${filteredItems.length})`}>
+                {filteredItems.map((item: any, index: number) => this.renderAvailableItem(item, index))}
               </SectionCard>
-            ) : null}
-            <Button style={styles.printButton} title={'Print Barcode Label'} size="100%" onPress={this.handleClick} />
-          </ScrollView>
-        </View>
-      </ScrollView>
+            )}
+
+            <Button style={styles.printButton} title="Print Barcode Label" size="100%" onPress={this.handlePrint} />
+          </View>
+        </ScrollView>
+      </View>
     );
   }
 }
@@ -275,8 +271,6 @@ const mapStateToProps = (state: RootState) => ({
 
 const mapDispatchToProps: DispatchProps = {
   getProductByIdAction,
-  showScreenLoading,
-  hideScreenLoading,
   updateProductIdentifierAction
 };
 
