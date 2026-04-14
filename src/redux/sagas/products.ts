@@ -201,16 +201,13 @@ function* printLabel(action: any) {
 
 function* stockAdjustments(action: any) {
   try {
-    yield put(showScreenLoading('Please wait...'));
     const response = yield call(api.stockAdjustments, action.payload.data);
     yield put({
       type: STOCK_ADJUSTMENT_REQUEST_SUCCESS,
       payload: response
     });
     yield action.callback(response);
-    yield put(hideScreenLoading());
   } catch (e) {
-    yield put(hideScreenLoading());
     yield action.callback({
       error: true,
       errorMessage: e.message

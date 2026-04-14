@@ -1,103 +1,54 @@
 import { StyleSheet } from 'react-native';
-import { ratio } from '../../constants';
 import Theme from '../../utils/Theme';
 
 export default StyleSheet.create({
-  container: {
-    display: 'flex',
-    flexDirection: 'column',
-    flex: 1,
-    paddingVertical: 10,
-    paddingHorizontal: 20
+  screenContainer: {
+    flex: 1
   },
-  arrowDownIcon: {
-    height: 15,
-    width: 15
+  contentContainer: {
+    flex: 1
   },
-  select: {
-    width: '100%',
-    borderWidth: 2,
-    height: 40,
-    alignSelf: 'center',
-    borderColor: 'grey',
-    backgroundColor: 'white',
-    borderRadius: 5,
-    marginTop: 10
-  },
-  formContainer: {
-    padding: Theme.spacing.medium
-  },
-  bottom: {
-    width: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: ratio.height * 100
-  },
-  itemView: {
-    marginTop: 5
-  },
-  rowItem: {
-    flexDirection: 'row',
-    borderColor: Theme.colors.background,
-    marginTop: 1,
-    padding: 2,
-    marginStart: 4,
-    width: '100%',
-    alignItems: 'center'
-  },
-  columnItem: {
-    display: 'flex',
-    flexDirection: 'column',
-    flex: 0,
-    width: '50%'
-  },
-  label: {
-    fontSize: 12,
-    color: Theme.colors.placeholder
-  },
-  value: {
-    fontSize: 16,
-    color: Theme.colors.text,
-    marginTop: 10,
-    width: '90%'
-  },
-  dropdownDivider: {
-    marginBottom: Theme.spacing.small,
-    marginTop: Theme.spacing.small
-  },
-  infoContainer: {
-    display: 'flex',
-    flexDirection: 'column',
+  productDetails: {
     backgroundColor: Theme.colors.surface,
-    padding: Theme.spacing.medium
+    padding: Theme.spacing.large
+  },
+  title: {
+    fontSize: 18,
+    color: Theme.colors.text,
+    fontWeight: '600'
+  },
+  titleParent: {
+    fontSize: 14,
+    fontWeight: 'normal',
+    color: Theme.colors.placeholder
   },
   chipDefault: {
     height: 28,
-    justifyContent: 'center',
-    borderRadius: Theme.spacing.small,
-    alignItems: 'center',
-    marginRight: Theme.spacing.small,
-    backgroundColor: Theme.colors.background
+    justifyContent: 'flex-start',
+    borderRadius: 4,
+    alignItems: 'center'
   },
   chipText: {
     fontSize: 12,
     color: Theme.colors.text
   },
-  additionalInfoRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 8,
-    alignItems: 'center',
-    flexWrap: 'wrap'
+  chipSpacing: {
+    marginTop: Theme.spacing.small
   },
-  headerRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center'
+  contentDivider: {
+    marginVertical: 8
   },
-  caption: { fontSize: 12, color: Theme.colors.text },
-  subheading: { fontWeight: 'bold', fontSize: 16 },
-  button: {
+  bold: { fontWeight: 'bold' },
+  formContainer: {
+    padding: Theme.spacing.large
+  },
+  fieldGap: {
     marginTop: Theme.spacing.medium
+  },
+  bottom: {
+    width: '100%',
+    backgroundColor: Theme.colors.surface,
+    paddingVertical: Theme.spacing.small,
+    paddingHorizontal: Theme.spacing.large
   }
 });
