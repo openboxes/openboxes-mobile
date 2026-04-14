@@ -7,52 +7,42 @@ import {
   FETCH_STOCK_TRANSFERS_DETAILS,
   POST_COMPLETE_STOCK_TRANSFER
 } from '../actions/transfers';
-import { hideScreenLoading, showScreenLoading } from '../actions/main';
 import * as api from '../../apis';
 import * as Sentry from '@sentry/react-native';
 import { parseResponse } from '../../utils/utils';
 
 function* stockTransfers(action: any) {
   try {
-    yield put(showScreenLoading('Please wait...'));
     const response = yield call(api.stockTransfers, action.payload);
     yield put({
       type: STOCK_TRANSFERS_REQUEST_SUCCESS,
       payload: response.data
     });
-    yield put(hideScreenLoading());
   } catch (e) {
-    yield put(hideScreenLoading());
     Sentry.captureException('Error while getStockMovements API', e.message);
   }
 }
 
 function* getStockTransfers(action: any) {
   try {
-    yield put(showScreenLoading('Please wait...'));
     const response = yield call(api.getStockTransfers, action.payload);
     yield put({
       type: FETCH_STOCK_TRANSFERS_SUCCESS,
       payload: response.data
     });
     yield action.callback(response.data);
-    yield put(hideScreenLoading());
   } catch (e) {
-    yield put(hideScreenLoading());
     Sentry.captureException('Error while getStockMovements API', e.message);
   }
 }
 
 function* getStockTransfersSummary(action: any) {
   try {
-    yield put(showScreenLoading('Loading...'));
     const response = yield call(api.fetchStockTransferSummary, action.payload.id);
     const parsedResponse = parseResponse(response.data);
     yield action.callback(parsedResponse);
-    yield put(hideScreenLoading());
   } catch (e) {
     Sentry.captureException('Error while stockTransfers details', e.message);
-    yield put(hideScreenLoading());
     yield action.callback({
       error: true,
       errorMessage: e.message
@@ -62,13 +52,10 @@ function* getStockTransfersSummary(action: any) {
 
 function* completeStockTransfer(action: any) {
   try {
-    yield put(showScreenLoading('Please wait...'));
     const response = yield call(api.completeStockTransfer, action.payload);
     yield action.callback(response.data);
-    yield put(hideScreenLoading());
   } catch (e) {
     Sentry.captureException('Error while completing Transfer', e.message);
-    yield put(hideScreenLoading());
     yield action.callback({
       error: true,
       errorMessage: e.message
