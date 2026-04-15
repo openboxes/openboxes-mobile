@@ -89,7 +89,7 @@ export default function TransferDetails() {
             <Text style={styles.cardProductName} numberOfLines={2}>
               {item?.product?.name}
             </Text>
-            {item.quantityOnHand && (
+            {item.quantityOnHand !== null && (
               <Text style={styles.cardOnHand}>
                 On Hand: <Text style={styles.cardOnHandValue}>{item.quantityOnHand}</Text>
               </Text>
