@@ -177,6 +177,11 @@ export default function TransferDetails() {
         style={styles.contentContainer}
         data={items}
         keyExtractor={(item, index) => item?.id ?? String(index)}
+        ListHeaderComponent={
+          items.length > 0 ? (
+            <Text style={styles.listSectionLabel}>{`Items To Transfer (${items.length})`}</Text>
+          ) : null
+        }
         ListEmptyComponent={<EmptyView title="No Items" description="There are no items in this transfer." />}
         renderItem={renderItem}
         contentContainerStyle={styles.itemListContainer}

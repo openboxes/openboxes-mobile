@@ -130,6 +130,13 @@ export default StyleSheet.create({
     alignItems: 'center',
     padding: Theme.spacing.large * 2
   },
+  listSectionLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: Theme.colors.text,
+    marginTop: Theme.spacing.medium,
+    marginHorizontal: Theme.spacing.large
+  },
   itemListContainer: {
     paddingBottom: Theme.spacing.small
   }
