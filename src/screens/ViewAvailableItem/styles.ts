@@ -41,13 +41,12 @@ export default StyleSheet.create({
     fontWeight: '600'
   },
   bold: { fontWeight: 'bold' },
+  spacer: { flex: 1 },
   bottom: {
     width: '100%',
     backgroundColor: Theme.colors.surface,
     paddingVertical: Theme.spacing.small,
-    paddingHorizontal: Theme.spacing.large,
-    position: 'absolute',
-    bottom: 0
+    paddingHorizontal: Theme.spacing.large
   },
   buttonSpacing: {
     marginBottom: Theme.spacing.small

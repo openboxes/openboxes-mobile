@@ -116,7 +116,7 @@ const ProductSummary = () => {
           ListEmptyComponent={
             <EmptyView title="Inventory" description="There are no items in inventory" isRefresh={false} />
           }
-          keyExtractor={(item, index) => item + index}
+          keyExtractor={(item, index) => item?.productCode?.toString() ?? index.toString()}
         />
       )}
     </View>

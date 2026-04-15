@@ -33,21 +33,22 @@ export default function ViewAvailableItem() {
   const showExpirationDate = useMemo(() => productSummaryConfig?.expirationDate !== false, [productSummaryConfig]);
 
   const onAdjustStockSelect = (data: any) => {
-    setAvailableItem({
-      ...availableItem,
+    setAvailableItem((prev: any) => ({
+      ...prev,
       quantityOnHand: data?.quantityAvailable,
       quantityAvailable: data?.quantityAvailable,
       quantityAvailableToPromise: data?.quantityAdjusted
-    });
+    }));
   };
 
   const detailsChips: DetailChip[] = [
     {
       icon: () => <LocationIcon size={16} color="#000" />,
       label: 'Bin Location',
-      value: showLocationType && availableItem?.binLocation?.locationType?.name
-        ? `${availableItem?.binLocation?.name ?? 'Default'} (${availableItem.binLocation.locationType.name})`
-        : availableItem?.binLocation?.name ?? 'Default'
+      value:
+        showLocationType && availableItem?.binLocation?.locationType?.name
+          ? `${availableItem?.binLocation?.name ?? 'Default'} (${availableItem.binLocation.locationType.name})`
+          : availableItem?.binLocation?.name ?? 'Default'
     },
     ...(showExpirationDate
       ? [
@@ -86,11 +87,7 @@ export default function ViewAvailableItem() {
           <Chip icon="barcode" style={styles.chipDefault} textStyle={styles.chipText}>
             {availableItem?.product?.productCode}
           </Chip>
-          {source ? (
-            <Image style={styles.productImage} source={source} />
-          ) : (
-            <DefaultProductIcon />
-          )}
+          {source ? <Image style={styles.productImage} source={source} /> : <DefaultProductIcon />}
         </View>
 
         <Divider style={styles.contentDivider} />
@@ -107,6 +104,8 @@ export default function ViewAvailableItem() {
       </View>
 
       <Divider />
+
+      <View style={styles.spacer} />
 
       <View style={styles.bottom}>
         <Button
