@@ -70,12 +70,12 @@ export default function ViewAvailableItem() {
       : []),
     {
       icon: () => <QuantityIcon size={16} color="#000" />,
-      label: 'On Hand',
+      label: 'Quantity On Hand',
       value: availableItem?.quantityOnHand ?? EMPTY_FALLBACK
     },
     {
-      icon: 'package' as const,
-      label: 'Available',
+      icon: () => <QuantityIcon size={16} color="#000" />,
+      label: 'Quantity Available',
       value: availableItem?.quantityAvailable ?? EMPTY_FALLBACK
     }
   ];
