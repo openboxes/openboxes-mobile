@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, FlatList, Modal, Text, TouchableOpacity, View } from 'react-native';
 import { TextInput as PaperTextInput } from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -54,9 +54,23 @@ export function SearchButton({ searchType, onSelect, onOpen, onClose }: SearchBu
     );
   };
 
-  const debouncedSearch = useRef(
-    _.debounce((term: string) => performSearch(term), searchDebounceTime ?? appConfig.DEFAULT_SEARCH_DEBOUNCE_TIME)
-  ).current;
+  const performSearchRef = useRef(performSearch);
+  useEffect(() => {
+    performSearchRef.current = performSearch;
+  });
+
+  const debouncedSearch = useMemo(
+    () =>
+      _.debounce(
+        (term: string) => performSearchRef.current(term),
+        searchDebounceTime ?? appConfig.DEFAULT_SEARCH_DEBOUNCE_TIME
+      ),
+    [searchDebounceTime]
+  );
+
+  useEffect(() => {
+    return () => debouncedSearch.cancel();
+  }, [debouncedSearch]);
 
   const handleChangeText = (text: string) => {
     setSearchTerm(text);

@@ -64,6 +64,10 @@ const AsyncModalSelect = ({
     [searchDebounceTime]
   );
 
+  useEffect(() => {
+    return () => debounceOnSearchTerm.cancel();
+  }, [debounceOnSearchTerm]);
+
   return (
     <View style={styles.mainContainer}>
       <View style={styles.inputContainer}>
