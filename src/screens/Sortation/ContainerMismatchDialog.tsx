@@ -5,7 +5,7 @@ import { Text } from 'react-native-paper';
 import Button from '../../components/Button';
 import { ContainerIcon } from '../../components/Icons';
 import { ScannerInput } from '../../components/ScannerInput';
-import { EMPTY_STRING, HYPHEN } from '../../constants';
+import { appConfig, EMPTY_STRING, HYPHEN } from '../../constants';
 import Theme from '../../utils/Theme';
 import styles from './styles';
 
@@ -72,7 +72,7 @@ export function ContainerMismatchDialog({
               label="Container"
               placeholder="Scan or type the container"
               value={dialogInput}
-              autoSubmitTimeout={0}
+              autoSubmitTimeout={appConfig.DEFAULT_SEARCH_DEBOUNCE_TIME}
               onChange={setDialogInput}
               onSubmit={handleScanSubmit}
             />

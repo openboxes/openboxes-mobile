@@ -4,6 +4,7 @@ export const DASHBOARD_ENTRIES_ORDER = 'DASHBOARD_ENTRIES_ORDER';
 export const GROUP_LOCATION_ENTRIES = 'GROUP_LOCATION_ENTRIES';
 export const PRODUCT_SUMMARY_CONFIG = 'PRODUCT_SUMMARY_CONFIG';
 export const BARCODE_SCAN_DEBOUNCE = 'BARCODE_SCAN_DEBOUNCE';
+export const SEARCH_DEBOUNCE = 'SEARCH_DEBOUNCE';
 export const ALLOW_REALLOCATION_DURING_PICKING = 'ALLOW_REALLOCATION_DURING_PICKING';
 
 type SetAllowReallocationDuringPickingAction = {
@@ -44,6 +45,11 @@ type SetBarcodeScanDebounceAction = {
   payload: number;
 };
 
+type SetSearchDebounceAction = {
+  type: typeof SEARCH_DEBOUNCE;
+  payload: number;
+};
+
 // Create a union type for all action types in this file.
 // e.g., export type SettingsActionTypes = SetGroupLocationEntriesAction | SetThemeAction;
 export type SettingsActionTypes =
@@ -53,6 +59,7 @@ export type SettingsActionTypes =
   | SetDashboardEntriesOrderAction
   | SetProductSummaryConfigAction
   | SetBarcodeScanDebounceAction
+  | SetSearchDebounceAction
   | SetAllowReallocationDuringPickingAction;
 
 export const setGroupLocationEntries = (group: boolean): SetGroupLocationEntriesAction => {
@@ -95,6 +102,13 @@ export const setProductSummaryConfig = (key: string, visible: boolean): SetProdu
 export const setBarcodeScanDebounce = (value: number): SetBarcodeScanDebounceAction => {
   return {
     type: BARCODE_SCAN_DEBOUNCE,
+    payload: value
+  };
+};
+
+export const setSearchDebounce = (value: number): SetSearchDebounceAction => {
+  return {
+    type: SEARCH_DEBOUNCE,
     payload: value
   };
 };

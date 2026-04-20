@@ -1,11 +1,12 @@
 import _ from 'lodash';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Image, TextInput, TouchableOpacity, View } from 'react-native';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import ModalSelector from 'react-native-modal-selector-searchable';
 import CLEAR from '../../assets/images/icon_clear.png';
 import { appConfig } from '../../constants';
+import { RootState } from '../../redux/reducers';
 import showPopup from '../Popup';
 import styles from './styles';
 import { Props } from './types';
@@ -23,6 +24,7 @@ const AsyncModalSelect = ({
   const [data, setData] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const dispatch = useDispatch();
+  const searchDebounceTime = useSelector((state: RootState) => state.settingsReducer.searchDebounceTime);
 
   useEffect(() => {
     if (searchTerm) {
@@ -56,9 +58,11 @@ const AsyncModalSelect = ({
     onSelect?.({ id: '', name: '' });
   };
 
-  const debounceOnSearchTerm = useRef(
-    _.debounce((term: string) => setSearchTerm(term), appConfig.DEFAULT_SEARCH_DEBOUNCE_TIME)
-  ).current;
+  const debounceOnSearchTerm = useMemo(
+    () =>
+      _.debounce((term: string) => setSearchTerm(term), searchDebounceTime ?? appConfig.DEFAULT_SEARCH_DEBOUNCE_TIME),
+    [searchDebounceTime]
+  );
 
   return (
     <View style={styles.mainContainer}>

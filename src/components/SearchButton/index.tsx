@@ -3,9 +3,10 @@ import React, { useRef, useState } from 'react';
 import { Alert, FlatList, Modal, Text, TouchableOpacity, View } from 'react-native';
 import { TextInput as PaperTextInput } from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { appConfig } from '../../constants';
+import { RootState } from '../../redux/reducers';
 import Theme from '../../utils/Theme';
 import { SkeletonList } from './SkeletonList';
 import { SearchResult, SearchType, searchProviders } from './searchProviders';
@@ -25,6 +26,7 @@ export function SearchButton({ searchType, onSelect, onOpen, onClose }: SearchBu
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
   const dispatch = useDispatch();
+  const searchDebounceTime = useSelector((state: RootState) => state.settingsReducer.searchDebounceTime);
   const provider = searchProviders[searchType];
 
   const performSearch = (term: string) => {
@@ -53,7 +55,7 @@ export function SearchButton({ searchType, onSelect, onOpen, onClose }: SearchBu
   };
 
   const debouncedSearch = useRef(
-    _.debounce((term: string) => performSearch(term), appConfig.DEFAULT_SEARCH_DEBOUNCE_TIME)
+    _.debounce((term: string) => performSearch(term), searchDebounceTime ?? appConfig.DEFAULT_SEARCH_DEBOUNCE_TIME)
   ).current;
 
   const handleChangeText = (text: string) => {

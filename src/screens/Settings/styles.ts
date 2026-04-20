@@ -14,12 +14,12 @@ const styles = StyleSheet.create({
     marginBottom: Theme.spacing.large
   },
   paragraphSmall: {
-    marginBottom: Theme.spacing.small,
+    marginBottom: Theme.spacing.large,
     fontSize: 12,
     color: Theme.colors.backdrop
   },
   input: {
-    marginBottom: Theme.spacing.large
+    marginBottom: 2
   },
   link: {
     color: Theme.colors.primary,

@@ -15,6 +15,7 @@ import {
   setDashboardEntriesOrder,
   setGroupLocationEntries,
   setProductSummaryConfig,
+  setSearchDebounce,
   SettingsActionTypes
 } from '../../redux/actions/settings';
 import { RootState } from '../../redux/reducers';
@@ -27,10 +28,18 @@ import styles from './styles';
 
 const Settings = () => {
   const dispatch = useDispatch();
-  const { groupLocationEntries, allowReallocationDuringPicking, productSummaryConfig, barcodeScanDebounceTime } =
-    useSelector((state: RootState) => state.settingsReducer);
+  const {
+    groupLocationEntries,
+    allowReallocationDuringPicking,
+    productSummaryConfig,
+    barcodeScanDebounceTime,
+    searchDebounceTime
+  } = useSelector((state: RootState) => state.settingsReducer);
   const [debounceInput, setDebounceInput] = useState<string>(
     barcodeScanDebounceTime?.toString() ?? appConfig.DEFAULT_DEBOUNCE_TIME.toString()
+  );
+  const [searchDebounceInput, setSearchDebounceInput] = useState<string>(
+    searchDebounceTime?.toString() ?? appConfig.DEFAULT_SEARCH_DEBOUNCE_TIME.toString()
   );
 
   const askResetDashboard = useCallback(() => {
@@ -68,15 +77,42 @@ const Settings = () => {
     [dispatch]
   );
 
-  const askResetDebounce = useCallback(() => {
+  const handleSearchDebounceChange = useCallback(
+    (text: string) => {
+      const numericValue = text.replace(/[^0-9]/g, '');
+      setSearchDebounceInput(numericValue);
+      const value = parseInt(numericValue, 10);
+      if (!isNaN(value) && value >= 0) {
+        dispatch(setSearchDebounce(value));
+      }
+    },
+    [dispatch]
+  );
+
+  const askResetScanDebounce = useCallback(() => {
     showPopup({
       title: 'Reset Scanning Debounce',
-      message: `Are you sure you want to reset scanning debounce to default (${appConfig.DEFAULT_DEBOUNCE_TIME}ms)?`,
+      message: `Reset scanning debounce to default (${appConfig.DEFAULT_DEBOUNCE_TIME}ms)?`,
       positiveButton: {
         text: 'Reset',
         callback: () => {
           dispatch(setBarcodeScanDebounce(appConfig.DEFAULT_DEBOUNCE_TIME));
           setDebounceInput(appConfig.DEFAULT_DEBOUNCE_TIME.toString());
+        }
+      },
+      negativeButtonText: 'Cancel'
+    });
+  }, [dispatch]);
+
+  const askResetSearchDebounce = useCallback(() => {
+    showPopup({
+      title: 'Reset Search Debounce',
+      message: `Reset search debounce to default (${appConfig.DEFAULT_SEARCH_DEBOUNCE_TIME}ms)?`,
+      positiveButton: {
+        text: 'Reset',
+        callback: () => {
+          dispatch(setSearchDebounce(appConfig.DEFAULT_SEARCH_DEBOUNCE_TIME));
+          setSearchDebounceInput(appConfig.DEFAULT_SEARCH_DEBOUNCE_TIME.toString());
         }
       },
       negativeButtonText: 'Cancel'
@@ -137,9 +173,8 @@ const Settings = () => {
         />
       </ToggleCard>
 
-      {/* Scanner Settings */}
-      <ToggleCard title="Scanner Settings">
-        <Paragraph style={styles.paragraph}>Configure barcode scanner behavior.</Paragraph>
+      {/* Debounce Settings */}
+      <ToggleCard title="Debounce Settings" subtitle="Configure debounce timings for scanning and search.">
         <TextInput
           autoCompleteType="off"
           style={styles.input}
@@ -151,11 +186,35 @@ const Settings = () => {
           onChangeText={handleDebounceChange}
         />
         <Paragraph style={styles.paragraphSmall}>
-          Time in milliseconds to wait after scanning before auto-submitting.{' '}
+          Time in milliseconds to wait after scanning before auto-submitting.
           {barcodeScanDebounceTime !== undefined && barcodeScanDebounceTime !== appConfig.DEFAULT_DEBOUNCE_TIME && (
-            <Text style={styles.link} onPress={askResetDebounce}>
-              Reset to default.
-            </Text>
+            <>
+              {' '}
+              <Text style={styles.link} onPress={askResetScanDebounce}>
+                Reset to default.
+              </Text>
+            </>
+          )}
+        </Paragraph>
+        <TextInput
+          autoCompleteType="off"
+          style={styles.input}
+          mode="outlined"
+          label="Search Debounce [ms]"
+          placeholder="e.g., 800"
+          value={searchDebounceInput}
+          keyboardType="numeric"
+          onChangeText={handleSearchDebounceChange}
+        />
+        <Paragraph style={styles.paragraphSmall}>
+          Time in milliseconds to wait after typing before triggering a search.
+          {searchDebounceTime !== undefined && searchDebounceTime !== appConfig.DEFAULT_SEARCH_DEBOUNCE_TIME && (
+            <>
+              {' '}
+              <Text style={styles.link} onPress={askResetSearchDebounce}>
+                Reset to default.
+              </Text>
+            </>
           )}
         </Paragraph>
       </ToggleCard>

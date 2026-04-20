@@ -6,6 +6,7 @@ import {
   GROUP_LOCATION_ENTRIES,
   PRODUCT_SUMMARY_CONFIG,
   BARCODE_SCAN_DEBOUNCE,
+  SEARCH_DEBOUNCE,
   SettingsActionTypes,
   ALLOW_REALLOCATION_DURING_PICKING
 } from '../actions/settings';
@@ -18,6 +19,7 @@ type SettingsState = {
   dashboardEntriesOrder: string[];
   productSummaryConfig: { [key: string]: boolean };
   barcodeScanDebounceTime: number;
+  searchDebounceTime: number;
 };
 
 const initialState: SettingsState = {
@@ -26,7 +28,8 @@ const initialState: SettingsState = {
   dashboardEntriesOrder: getDashboardEntriesKeys(),
   dashboardEntriesVisibility: {},
   productSummaryConfig: {},
-  barcodeScanDebounceTime: appConfig.DEFAULT_DEBOUNCE_TIME
+  barcodeScanDebounceTime: appConfig.DEFAULT_DEBOUNCE_TIME,
+  searchDebounceTime: appConfig.DEFAULT_SEARCH_DEBOUNCE_TIME
 };
 
 function settingsReducer(state = initialState, action: SettingsActionTypes): SettingsState {
@@ -79,6 +82,11 @@ function settingsReducer(state = initialState, action: SettingsActionTypes): Set
       return {
         ...state,
         barcodeScanDebounceTime: action.payload
+      };
+    case SEARCH_DEBOUNCE:
+      return {
+        ...state,
+        searchDebounceTime: action.payload
       };
     default: {
       return state;

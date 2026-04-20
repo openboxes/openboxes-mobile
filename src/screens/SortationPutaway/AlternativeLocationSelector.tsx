@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 
 import Button from '../../components/Button';
 import { ScannerInput } from '../../components/ScannerInput';
-import { EMPTY_STRING } from '../../constants';
+import { appConfig, EMPTY_STRING } from '../../constants';
 import { getAlternativeDestinationsAction, searchLocationByLocationNumber } from '../../redux/actions/locations';
 import { SortationLocation, SortationTask } from '../../types/sortation';
 import styles from './styles';
@@ -130,6 +130,7 @@ export default function AlternativeLocationSelector({
 
           <ScannerInput
             label="Scan location number"
+            autoSubmitTimeout={appConfig.DEFAULT_SEARCH_DEBOUNCE_TIME}
             value={scannedLocationInput}
             onChange={setScannedLocationInput}
             onSubmit={handleLocationSearch}
