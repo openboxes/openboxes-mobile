@@ -7,14 +7,17 @@ import { connect } from 'react-redux';
 import { LayoutStyle } from '../../assets/styles';
 import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSearchHeader';
 import EmptyView from '../../components/EmptyView';
+import ListLoadingSkeleton from '../../components/ListLoadingSkeleton';
 import showPopup from '../../components/Popup';
+import ResultCount from '../../components/ResultCount';
 import { HYPHEN } from '../../constants';
 import { Container } from '../../data/container/Container';
 import { Shipment } from '../../data/container/Shipment';
-import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
 import { getShipmentsReadyToBePacked } from '../../redux/actions/packing';
 import { RootState } from '../../redux/reducers';
+import { emptyStateMessage } from '../../utils/emptyStateMessage';
 import { parseDateToISODate, parseFromISODateToLocaleString } from '../../utils/utils';
+import OutboundShipmentCardSkeleton from '../OutboundStockList/OutboundShipmentCardSkeleton';
 import styles from '../OutboundStockList/styles';
 import { DispatchProps, Props, State } from '../OutboundStockList/types';
 
@@ -25,7 +28,9 @@ class OutboundLoadingList extends React.Component<Props, State> {
     this.state = {
       error: null,
       shipments: [],
-      filteredShipments: []
+      filteredShipments: [],
+      loading: true,
+      searchTerm: ''
     };
   }
 
@@ -36,35 +41,32 @@ class OutboundLoadingList extends React.Component<Props, State> {
   }
 
   actionCallback = (data: any) => {
-    const { currentLocation } = this.props;
+    this.setState({ loading: false });
     if (!data || data?.error) {
       showPopup({
-        title: data.errorMessage ? 'Shipment details' : null,
-        message: data.errorMessage ?? 'Failed to submit shipment details',
+        title: data?.errorMessage ? 'Shipment details' : null,
+        message: data?.errorMessage ?? 'Failed to submit shipment details',
         positiveButton: {
           text: 'Retry',
           callback: () => {
-            this.props.getShipmentsReadyToBePacked(currentLocation.id, 'PENDING', this.actionCallback);
+            this.fetchShipmentsReadyForLoading();
           }
         },
         negativeButtonText: 'Cancel'
       });
-    } else {
-      if (data?.length > 0) {
-        this.setState({
-          shipments: data
-        });
-      }
+      return;
     }
-    this.props.hideScreenLoading();
+    this.setState({
+      shipments: data ?? []
+    });
   };
 
   fetchShipmentsReadyForLoading = () => {
     const { currentLocation } = this.props;
-    this.props.showScreenLoading('Loading..');
+    this.setState({ loading: true });
     // For now were pull the same list of shipments as for packing list. Later change to the list of shipments
     // ready to be loaded
-    this.props.getShipmentsReadyToBePacked(currentLocation.id, 'PENDING', this.actionCallback);
+    this.props.getShipmentsReadyToBePacked(currentLocation.id, 'PENDING', this.actionCallback, true);
   };
 
   showLoadingDetailsScreen = (shipment: any) => {
@@ -81,17 +83,18 @@ class OutboundLoadingList extends React.Component<Props, State> {
     });
   };
 
-  filterShipments = (searchTerm: string) => {
-    if (searchTerm) {
+  filterShipments = (query: string) => {
+    this.setState({ searchTerm: query });
+    if (query) {
       // Find exact match by LPN
       const exactShipmentByLPN = _.find(this.state.shipments, (shipment: Shipment) =>
-        _.find(shipment?.containers, (container: Container) => container.containerNumber === searchTerm)
+        _.find(shipment?.containers, (container: Container) => container.containerNumber === query)
       );
 
       if (exactShipmentByLPN) {
         const exactContainer = _.find(
           exactShipmentByLPN?.containers,
-          (container: Container) => container.containerNumber === searchTerm
+          (container: Container) => container.containerNumber === query
         );
 
         this.resetFiltering();
@@ -101,11 +104,11 @@ class OutboundLoadingList extends React.Component<Props, State> {
 
       // If no exact match by LPN, then filter by <shipment number or loading location> containing the search term
       const filteredShipments = _.filter(this.state.shipments, (shipment: Shipment) => {
-        const matchingShipmentNumber = shipment?.shipmentNumber?.toLowerCase()?.includes(searchTerm.toLowerCase());
+        const matchingShipmentNumber = shipment?.shipmentNumber?.toLowerCase()?.includes(query.toLowerCase());
 
         const matchingLoadingLocation =
-          shipment?.loadingLocationNumber?.toLowerCase()?.includes(searchTerm.toLowerCase()) ||
-          shipment?.loadingLocation?.toLowerCase()?.includes(searchTerm.toLowerCase());
+          shipment?.loadingLocationNumber?.toLowerCase()?.includes(query.toLowerCase()) ||
+          shipment?.loadingLocation?.toLowerCase()?.includes(query.toLowerCase());
 
         return matchingShipmentNumber || matchingLoadingLocation;
       });
@@ -131,11 +134,15 @@ class OutboundLoadingList extends React.Component<Props, State> {
   resetFiltering = () => {
     this.setState({
       ...this.state,
+      searchTerm: '',
       filteredShipments: []
     });
   };
 
   render() {
+    const { loading, searchTerm } = this.state;
+    const visibleData =
+      this.state.filteredShipments.length > 0 ? this.state.filteredShipments : this.state.shipments;
     return (
       <View style={styles.screenContainer}>
         <BarcodeSearchHeader
@@ -143,61 +150,74 @@ class OutboundLoadingList extends React.Component<Props, State> {
           placeholder={'Search or scan barcode'}
           resetSearch={this.resetFiltering}
           searchBox={false}
+          loading={loading}
+          accessibilityLabel="Search shipments to load"
           onSearchTermSubmit={this.filterShipments}
         />
+        <ResultCount count={visibleData.length} noun="shipments" visible={!loading} />
         <View style={styles.contentContainer}>
-          <FlatList
-            data={this.state.filteredShipments.length > 0 ? this.state.filteredShipments : this.state.shipments}
-            ListEmptyComponent={
-              <EmptyView title="Loading" description=" There are no items to load" isRefresh={false} />
-            }
-            renderItem={(shipment: ListRenderItemInfo<Shipment>) => {
-              const parsedExpectedShippingDate = parseDateToISODate(shipment?.item?.expectedShippingDate || '');
-              const formattedExpectedShippingDate = parseFromISODateToLocaleString(parsedExpectedShippingDate);
+          {loading ? (
+            <ListLoadingSkeleton visible count={5} CardComponent={OutboundShipmentCardSkeleton} />
+          ) : (
+            <FlatList
+              data={visibleData}
+              keyboardShouldPersistTaps="handled"
+              keyboardDismissMode="on-drag"
+              ListEmptyComponent={
+                <EmptyView
+                  title="Loading"
+                  description={emptyStateMessage('shipments', searchTerm, 'There are no items to load')}
+                  isRefresh={false}
+                />
+              }
+              renderItem={(shipment: ListRenderItemInfo<Shipment>) => {
+                const parsedExpectedShippingDate = parseDateToISODate(shipment?.item?.expectedShippingDate || '');
+                const formattedExpectedShippingDate = parseFromISODateToLocaleString(parsedExpectedShippingDate);
 
-              return (
-                <Card
-                  style={LayoutStyle.listItemContainer}
-                  onPress={() => this.showLoadingDetailsScreen(shipment.item)}
-                >
-                  <Card.Content>
-                    <View style={styles.headerRow}>
-                      <View style={styles.dividedValues}>
-                        <Text style={styles.value}>{shipment.item.shipmentNumber}</Text>
+                return (
+                  <Card
+                    style={LayoutStyle.listItemContainer}
+                    onPress={() => this.showLoadingDetailsScreen(shipment.item)}
+                  >
+                    <Card.Content>
+                      <View style={styles.headerRow}>
+                        <View style={styles.dividedValues}>
+                          <Text style={styles.value}>{shipment.item.shipmentNumber}</Text>
+                        </View>
+                        <Chip style={styles.chipWarning} textStyle={styles.chipWarningText}>
+                          {shipment.item.status}
+                        </Chip>
                       </View>
-                      <Chip style={styles.chipWarning} textStyle={styles.chipWarningText}>
-                        {shipment.item.status}
-                      </Chip>
-                    </View>
-                    <Divider style={styles.dividerHorizontal} />
+                      <Divider style={styles.dividerHorizontal} />
 
-                    <Subheading style={styles.subheading}>
-                      {`Destination: ${shipment.item?.destination?.name}`}
-                    </Subheading>
-                    <View style={styles.additionalInfoRow}>
-                      <Chip icon="calendar" style={styles.chipDefault} textStyle={styles.chipDefaultText}>
-                        {`Expected Shipping: ${formattedExpectedShippingDate}`}
-                      </Chip>
-                    </View>
-                    <Divider style={styles.dividerHorizontal} />
+                      <Subheading style={styles.subheading}>
+                        {`Destination: ${shipment.item?.destination?.name}`}
+                      </Subheading>
+                      <View style={styles.additionalInfoRow}>
+                        <Chip icon="calendar" style={styles.chipDefault} textStyle={styles.chipDefaultText}>
+                          {`Expected Shipping: ${formattedExpectedShippingDate}`}
+                        </Chip>
+                      </View>
+                      <Divider style={styles.dividerHorizontal} />
 
-                    <View style={styles.rowItem}>
-                      <View style={styles.columnItem}>
-                        <Text style={styles.label}>Loading Location</Text>
-                        <Text style={styles.value}>{shipment.item.loadingLocation ?? HYPHEN}</Text>
+                      <View style={styles.rowItem}>
+                        <View style={styles.columnItem}>
+                          <Text style={styles.label}>Loading Location</Text>
+                          <Text style={styles.value}>{shipment.item.loadingLocation ?? HYPHEN}</Text>
+                        </View>
+                        <View style={styles.columnItem}>
+                          <Text style={styles.label}>Expected Delivery Date</Text>
+                          <Text style={styles.value}>{shipment.item.expectedDeliveryDate ?? HYPHEN}</Text>
+                        </View>
                       </View>
-                      <View style={styles.columnItem}>
-                        <Text style={styles.label}>Expected Delivery Date</Text>
-                        <Text style={styles.value}>{shipment.item.expectedDeliveryDate ?? HYPHEN}</Text>
-                      </View>
-                    </View>
-                  </Card.Content>
-                </Card>
-              );
-            }}
-            keyExtractor={(item) => item.id}
-            style={styles.list}
-          />
+                    </Card.Content>
+                  </Card>
+                );
+              }}
+              keyExtractor={(item) => item.id}
+              style={styles.list}
+            />
+          )}
         </View>
       </View>
     );
@@ -209,8 +229,6 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps: DispatchProps = {
-  showScreenLoading,
-  hideScreenLoading,
   getShipmentsReadyToBePacked
 };
 
