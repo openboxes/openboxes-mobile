@@ -7,10 +7,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Card, Chip, Divider, Subheading } from 'react-native-paper';
 import { LayoutStyle } from '../../assets/styles';
 import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSearchHeader';
-import { CardSkeleton } from '../../components/ContentSkeleton';
 import EmptyView from '../../components/EmptyView';
+import ListLoadingSkeleton from '../../components/ListLoadingSkeleton';
+import ResultCount from '../../components/ResultCount';
 import { getLocationProductSummary } from '../../redux/actions/locations';
 import { RootState } from '../../redux/reducers';
+import { emptyStateMessage } from '../../utils/emptyStateMessage';
+import ProductSummaryCardSkeleton from './ProductSummaryCardSkeleton';
 import styles from './styles';
 
 const ProductSummary = () => {
@@ -20,6 +23,7 @@ const ProductSummary = () => {
   const [productSummary, setProductSummary] = useState<any[]>([]);
   const [productData, setProductData] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     getProductSummary(location.id);
@@ -49,6 +53,7 @@ const ProductSummary = () => {
   };
 
   const searchProduct = (query: string) => {
+    setSearchTerm(query);
     if (query) {
       setProductSummary(
         _.filter(
@@ -89,32 +94,33 @@ const ProductSummary = () => {
     );
   };
 
-  const renderSkeletons = () => (
-    <View style={styles.skeletonContainer}>
-      <CardSkeleton />
-      <CardSkeleton />
-      <CardSkeleton />
-    </View>
-  );
-
   return (
     <View style={styles.mainContainer}>
       <BarcodeSearchHeader
         autoSearch
         autoFocus
         placeholder={'Search by product code or name'}
-        resetSearch={() => null}
+        resetSearch={() => setSearchTerm('')}
         searchBox={false}
+        loading={isLoading}
+        accessibilityLabel="Search inventory"
         onSearchTermSubmit={(query) => searchProduct(query)}
       />
+      <ResultCount count={productSummary.length} noun="products" visible={!isLoading} />
       {isLoading ? (
-        renderSkeletons()
+        <ListLoadingSkeleton visible count={5} CardComponent={ProductSummaryCardSkeleton} />
       ) : (
         <FlatList
           renderItem={({ item, index }) => renderListItem(item, index)}
           data={productSummary}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
           ListEmptyComponent={
-            <EmptyView title="Inventory" description="There are no items in inventory" isRefresh={false} />
+            <EmptyView
+              title="Inventory"
+              description={emptyStateMessage('products', searchTerm, 'There are no items in inventory')}
+              isRefresh={false}
+            />
           }
           keyExtractor={(item, index) => item?.productCode?.toString() ?? index.toString()}
         />
