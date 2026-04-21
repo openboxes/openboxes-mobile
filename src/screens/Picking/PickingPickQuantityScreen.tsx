@@ -13,13 +13,12 @@ import { navigate } from '../../NavigationService';
 import { getReasonCodesAction } from '../../redux/actions/others';
 import { ReasonCode } from '../../types/picking';
 import { parseFromISODateToLocaleString } from '../../utils/utils';
-import { revalidateTaskAndProceed } from './lib';
+import { proceedToNextOrComplete } from './lib';
 import { usePickingContext } from './PickingContext';
 import styles from './styles';
 
 export default function PickingPickQuantityScreen() {
-  const { currentTask, currentTaskIndex, allTasksCount, shortPickTask, revalidateCurrentTask, goToNextTask } =
-    usePickingContext();
+  const { currentTask, currentTaskIndex, allTasksCount, shortPickTask, goToNextTask } = usePickingContext();
   const dispatch = useDispatch();
   const isFocused = useIsFocused();
 
@@ -99,7 +98,8 @@ export default function PickingPickQuantityScreen() {
             return;
           }
 
-          revalidateTaskAndProceed(revalidateCurrentTask, currentTaskIndex, allTasksCount, goToNextTask);
+          // Skip revalidation: task is closed server-side, and GET /pick-tasks/:id 404s if the requisition is canceled.
+          proceedToNextOrComplete(currentTaskIndex, allTasksCount, goToNextTask);
         },
         reasonCode?.name
       );

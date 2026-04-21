@@ -47,7 +47,7 @@ type PickingContextType = {
   /** Drop the current pick task at the staging location */
   dropCurrentTask: (task: PickTask, callback?: (response: { errorMessage?: string }) => void) => void;
   /** Revalidates the current pick task details from the server */
-  revalidateCurrentTask: (callback?: (task: PickTask) => void) => void;
+  revalidateCurrentTask: (callback?: (task: PickTask | undefined) => void) => void;
   /** Advances to the next task in the list */
   goToNextTask: () => void;
 };
@@ -64,7 +64,13 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
   const startSession = async (deliveryType: DeliveryType, ordersCount: number): Promise<boolean> => {
     return new Promise((resolve) => {
       dispatch(
-        getPickTasksAction({ deliveryTypeCode: deliveryType.code, ordersCount }, ({ response }) => {
+        getPickTasksAction({ deliveryTypeCode: deliveryType.code, ordersCount }, ({ response, errorMessage }) => {
+          if (errorMessage || !response) {
+            Alert.alert('Error', errorMessage ?? 'Failed to load pick tasks.');
+            resolve(false);
+            return;
+          }
+
           if (response.errorCode) {
             Alert.alert('Error', response.message ?? 'Failed to load pick tasks.');
             navigate('PickingPickType');
@@ -116,15 +122,16 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
     dispatch(shortPickTaskAction(currentTask.id, outboundContainerId, parsedQuantityPicked, callback, reasonCodeName));
   };
 
-  const revalidateCurrentTask = (callback?: (task: PickTask) => void) => {
+  const revalidateCurrentTask = (callback?: (task: PickTask | undefined) => void) => {
     if (!currentTask) {
       return;
     }
 
     dispatch(
-      getPickTaskByIdAction(currentTask.id, ({ response }) => {
-        if (response.errorCode || !response.data) {
-          Alert.alert('Error', 'Failed to revalidate the current pick task.');
+      getPickTaskByIdAction(currentTask.id, ({ response, errorMessage }) => {
+        if (errorMessage || !response?.data) {
+          Alert.alert('Error', errorMessage ?? 'Failed to revalidate the current pick task.');
+          callback?.(undefined);
           return;
         }
 

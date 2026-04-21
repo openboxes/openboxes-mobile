@@ -2,8 +2,28 @@ import { Alert } from 'react-native';
 import { navigate, resetToRoutes } from '../../NavigationService';
 import { PickTask } from '../../types/picking';
 
+export function proceedToNextOrComplete(currentTaskIndex: number, allTasksCount: number, goToNextTask: () => void) {
+  if (currentTaskIndex + 1 < allTasksCount) {
+    goToNextTask();
+    navigate('PickingPickLocation');
+    return;
+  }
+
+  Alert.alert('All Picks Complete', 'You have completed all picks. Proceeding to staging location drop.', [
+    {
+      text: 'OK',
+      onPress: () =>
+        resetToRoutes([
+          { name: 'Drawer', params: { screen: 'Dashboard' } },
+          { name: 'PickingPickType' },
+          { name: 'PickingPickStagingLocation' }
+        ])
+    }
+  ]);
+}
+
 export function revalidateTaskAndProceed(
-  revalidateCurrentTask: (callback: (revalidatedTask: PickTask) => void) => void,
+  revalidateCurrentTask: (callback: (revalidatedTask: PickTask | undefined) => void) => void,
   currentTaskIndex: number,
   allTasksCount: number,
   goToNextTask: () => void,
@@ -15,14 +35,9 @@ export function revalidateTaskAndProceed(
       return;
     }
 
-    // If it's not the last task, go to the next one
-    if (!(currentTaskIndex + 1 >= allTasksCount)) {
-      goToNextTask();
-      navigate('PickingPickLocation');
-      return;
-    }
+    const isLastTask = currentTaskIndex + 1 >= allTasksCount;
 
-    if (omitStagingLocationStep) {
+    if (isLastTask && omitStagingLocationStep) {
       Alert.alert(
         'Short Pick Without Reason Code',
         'You have completed all picks with a short pick without a reason code. This task will remain available to pick. You will be redirected to the Pick Type screen.',
@@ -36,12 +51,6 @@ export function revalidateTaskAndProceed(
       return;
     }
 
-    Alert.alert('All Picks Complete', 'You have completed all picks. Proceeding to staging location drop.', [
-      {
-        text: 'OK',
-        onPress: () =>
-          resetToRoutes([{ name: 'Drawer', params: { screen: 'Dashboard' } }, { name: 'PickingPickType' }, { name: 'PickingPickStagingLocation' }])
-      }
-    ]);
+    proceedToNextOrComplete(currentTaskIndex, allTasksCount, goToNextTask);
   });
 }

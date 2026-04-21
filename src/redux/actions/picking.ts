@@ -44,7 +44,7 @@ export const REALLOCATE_PICK_TASK_REQUEST_FAIL = 'REALLOCATE_PICK_TASK_REQUEST_F
 export function getPickTasksAction(
   params: PickTaskParams,
   callback: (response: {
-    response: {
+    response?: {
       data: PickTask[];
       errorCode?: string;
       message?: string;
@@ -52,6 +52,7 @@ export function getPickTasksAction(
       offset?: number;
       totalCount?: number;
     };
+    errorMessage?: string;
   }) => void
 ) {
   return {
@@ -131,11 +132,12 @@ export function dropPickTaskAction(
 export function getPickTaskByIdAction(
   taskId: string,
   callback: (response: {
-    response: {
+    response?: {
       data: PickTask;
       errorCode?: string;
       message?: string;
     };
+    errorMessage?: string;
   }) => void
 ) {
   return {

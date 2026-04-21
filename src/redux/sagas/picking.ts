@@ -51,8 +51,9 @@ function* getPickTasksAction(action: any) {
     yield put({ type: GET_PICK_TASKS_REQUEST_SUCCESS, payload: response.data });
     yield put(hideScreenLoading());
   } catch (error) {
-    yield put({ type: GET_PICK_TASKS_REQUEST_FAIL, payload: (error as any)?.message || 'Error Fetching Tasks' });
-    yield action.callback({ error });
+    const errorMessage = (error as any)?.message || 'Error Fetching Tasks';
+    yield put({ type: GET_PICK_TASKS_REQUEST_FAIL, payload: errorMessage });
+    yield action.callback({ errorMessage });
     yield put(hideScreenLoading());
   }
 }
@@ -208,11 +209,12 @@ function* getPickTaskByIdAction(action: any) {
     yield put(hideScreenLoading());
     yield action.callback({ response });
   } catch (error) {
+    const errorMessage = (error as any)?.message || 'Error Fetching Pick Task';
     yield put({
       type: GET_PICK_TASK_BY_ID_REQUEST_FAIL,
-      payload: (error as any)?.message || 'Error Fetching Pick Task'
+      payload: errorMessage
     });
-    yield action.callback({ error });
+    yield action.callback({ errorMessage });
     yield put(hideScreenLoading());
   }
 }
