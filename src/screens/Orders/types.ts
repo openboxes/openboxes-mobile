@@ -7,11 +7,7 @@ export interface OwnProps {
 }
 
 export interface DispatchProps {
-  getOrdersAction: (
-    value: string | null,
-    callback: (data: any) => void,
-    suppressLoading?: boolean
-  ) => void;
+  getOrdersAction: (value: string | null, callback: (data: any) => void, suppressLoading?: boolean) => void;
 }
 
 export type Props = OwnProps & DispatchProps;

@@ -53,5 +53,5 @@ export default StyleSheet.create({
   },
   refreshButton: {
     marginTop: Theme.spacing.large
-  },
+  }
 });

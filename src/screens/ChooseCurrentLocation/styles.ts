@@ -42,10 +42,10 @@ export default StyleSheet.create({
   },
   selectedCard: {
     borderColor: Theme.colors.primary,
-    borderWidth: 5,
+    borderWidth: 5
   },
   selectedItem: {
     backgroundColor: '#e0e0e0',
-    borderRadius: Theme.roundness,
-  },
+    borderRadius: Theme.roundness
+  }
 });

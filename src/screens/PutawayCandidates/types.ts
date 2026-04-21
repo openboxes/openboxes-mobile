@@ -12,11 +12,7 @@ export interface StateProps {
 }
 
 export interface DispatchProps {
-  getCandidates: (
-    locationId: string,
-    callback?: (data: any) => void,
-    suppressLoading?: boolean
-  ) => void;
+  getCandidates: (locationId: string, callback?: (data: any) => void, suppressLoading?: boolean) => void;
 }
 
 export type Props = OwnProps & StateProps & DispatchProps;

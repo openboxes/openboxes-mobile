@@ -26,11 +26,7 @@ export interface StateProps {
 
 export interface DispatchProps {
   getOrdersAction: (orderNumber: string, callback: (data: any) => void) => void;
-  fetchPutAwayFromOrderAction: (
-    q: string | null,
-    callback: (data: any) => void,
-    suppressLoading?: boolean
-  ) => void;
+  fetchPutAwayFromOrderAction: (q: string | null, callback: (data: any) => void, suppressLoading?: boolean) => void;
 }
 
 export type Props = OwnProps & StateProps & DispatchProps;
