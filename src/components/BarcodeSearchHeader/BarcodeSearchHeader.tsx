@@ -22,6 +22,8 @@ interface OwnProps {
    * Defaults to the `searchDebounceTime` from settings, or DEFAULT_SEARCH_DEBOUNCE_TIME.
    */
   debounceTime?: number;
+  loading?: boolean;
+  accessibilityLabel?: string;
 }
 
 const BarcodeSearchHeader: React.FC<OwnProps> = (props) => {
@@ -78,6 +80,9 @@ const BarcodeSearchHeader: React.FC<OwnProps> = (props) => {
         autoFocus={props.autoFocus}
         onSubmitEditing={onSearchTermSubmit}
         onChangeText={setSearchTerm}
+        loading={props.loading}
+        returnKeyType="search"
+        accessibilityLabel={props.accessibilityLabel ?? 'Search'}
       />
     </View>
   );
