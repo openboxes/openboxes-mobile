@@ -23,10 +23,7 @@ export default function OrdersList(props: Props) {
       keyboardDismissMode="on-drag"
       renderItem={(item: ListRenderItemInfo<Order>) => renderOrder(item.item, () => props.onOrderTapped(item.item))}
       ListEmptyComponent={
-        <EmptyView
-          title="Orders"
-          description={props.emptyDescription ?? 'No outbound orders found'}
-        />
+        <EmptyView title="Orders" description={props.emptyDescription ?? 'No outbound orders found'} />
       }
       keyExtractor={(order) => order.id}
       style={styles.list}

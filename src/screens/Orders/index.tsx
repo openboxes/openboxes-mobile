@@ -77,9 +77,9 @@ class Index extends React.Component<Props, State> {
     return (
       <View style={styles.screenContainer}>
         <BarcodeSearchHeader
+          autoSearch
           placeholder={'Search Orders by Name'}
           resetSearch={() => this.setState({ searchTerm: '' })}
-          autoSearch
           searchBox={false}
           loading={loading}
           accessibilityLabel="Search orders"
@@ -92,8 +92,8 @@ class Index extends React.Component<Props, State> {
           ) : (
             <OrdersList
               orders={allOrders}
-              onOrderTapped={this.goToOrderDetailsScreen}
               emptyDescription={emptyStateMessage('orders', searchTerm, 'No outbound orders found')}
+              onOrderTapped={this.goToOrderDetailsScreen}
             />
           )}
         </View>

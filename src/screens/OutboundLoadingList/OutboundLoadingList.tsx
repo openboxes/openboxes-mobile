@@ -141,8 +141,7 @@ class OutboundLoadingList extends React.Component<Props, State> {
 
   render() {
     const { loading, searchTerm } = this.state;
-    const visibleData =
-      this.state.filteredShipments.length > 0 ? this.state.filteredShipments : this.state.shipments;
+    const visibleData = this.state.filteredShipments.length > 0 ? this.state.filteredShipments : this.state.shipments;
     return (
       <View style={styles.screenContainer}>
         <BarcodeSearchHeader

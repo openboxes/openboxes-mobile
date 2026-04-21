@@ -112,8 +112,7 @@ class PutawayCandidates extends Component<Props, State> {
     if (query) {
       const exactPutawayCandidate = _.filter(
         this.state.putawayCandidates,
-        (putawayCandidate: any) =>
-          putawayCandidate['inventoryItem.lotNumber']?.toLowerCase() === query.toLowerCase()
+        (putawayCandidate: any) => putawayCandidate['inventoryItem.lotNumber']?.toLowerCase() === query.toLowerCase()
       );
 
       if (exactPutawayCandidate.length === 1) {

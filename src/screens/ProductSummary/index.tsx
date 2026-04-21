@@ -35,14 +35,10 @@ const ProductSummary = () => {
     const callback = (data: any) => {
       setIsLoading(false);
       if (data?.error) {
-        Alert.alert(
-          'Product Summary',
-          data.errorMessage ?? 'Failed to load Product Summary details.',
-          [
-            { text: 'Retry', onPress: () => dispatch(getLocationProductSummary(id, callback)) },
-            { text: 'Cancel', style: 'cancel' }
-          ]
-        );
+        Alert.alert('Product Summary', data.errorMessage ?? 'Failed to load Product Summary details.', [
+          { text: 'Retry', onPress: () => dispatch(getLocationProductSummary(id, callback)) },
+          { text: 'Cancel', style: 'cancel' }
+        ]);
       } else if (data) {
         const filtered = _.filter(data, (item: { quantityOnHand: number }) => item.quantityOnHand > 0);
         setProductSummary(filtered);

@@ -68,9 +68,7 @@ const InboundOrderList = () => {
       if (data && Object.keys(data).length !== 0) {
         setState((prevState: any) => ({
           ...prevState,
-          inboundOrders: data.filter(
-            (item: any) => item.status === 'SHIPPED' || item.status === 'PARTIALLY_RECEIVED'
-          )
+          inboundOrders: data.filter((item: any) => item.status === 'SHIPPED' || item.status === 'PARTIALLY_RECEIVED')
         }));
       }
     };
@@ -162,8 +160,7 @@ const InboundOrderList = () => {
     });
   };
 
-  const visibleData =
-    state.filteredInboundOrders.length > 0 ? state.filteredInboundOrders : state.inboundOrders;
+  const visibleData = state.filteredInboundOrders.length > 0 ? state.filteredInboundOrders : state.inboundOrders;
 
   return (
     <View style={styles.container}>

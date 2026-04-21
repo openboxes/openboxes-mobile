@@ -103,9 +103,7 @@ class OutboundStockList extends React.Component<Props, State> {
             const matchingLotNumber =
               item.lotNumber?.toLowerCase()?.includes(query.toLowerCase()) ||
               item.inventoryItem?.lotNumber?.toLowerCase()?.includes(query.toLowerCase());
-            const matchingCode = item.inventoryItem?.product?.productCode
-              ?.toLowerCase()
-              ?.includes(query.toLowerCase());
+            const matchingCode = item.inventoryItem?.product?.productCode?.toLowerCase()?.includes(query.toLowerCase());
             const matchingName = item.inventoryItem?.product?.name?.toLowerCase()?.includes(query.toLowerCase());
             return matchingLotNumber || matchingCode || matchingName;
           });
@@ -147,8 +145,7 @@ class OutboundStockList extends React.Component<Props, State> {
 
   render() {
     const { loading, searchTerm } = this.state;
-    const visibleData =
-      this.state.filteredShipments.length > 0 ? this.state.filteredShipments : this.state.shipments;
+    const visibleData = this.state.filteredShipments.length > 0 ? this.state.filteredShipments : this.state.shipments;
     return (
       <View style={styles.screenContainer}>
         <BarcodeSearchHeader

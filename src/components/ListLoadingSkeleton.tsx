@@ -9,11 +9,7 @@ interface Props {
   CardComponent?: ComponentType<any>;
 }
 
-export default function ListLoadingSkeleton({
-  visible,
-  count = 5,
-  CardComponent = CardSkeleton
-}: Props) {
+export default function ListLoadingSkeleton({ visible, count = 5, CardComponent = CardSkeleton }: Props) {
   if (!visible) {
     return null;
   }

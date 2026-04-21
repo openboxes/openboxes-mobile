@@ -78,11 +78,11 @@ const BarcodeSearchHeader: React.FC<OwnProps> = (props) => {
         value={searchTerm}
         style={styles.searchBar}
         autoFocus={props.autoFocus}
-        onSubmitEditing={onSearchTermSubmit}
-        onChangeText={setSearchTerm}
         loading={props.loading}
         returnKeyType="search"
         accessibilityLabel={props.accessibilityLabel ?? 'Search'}
+        onSubmitEditing={onSearchTermSubmit}
+        onChangeText={setSearchTerm}
       />
     </View>
   );
