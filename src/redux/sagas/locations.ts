@@ -26,7 +26,9 @@ import * as Sentry from '@sentry/react-native';
 
 function* getLocations(action: any) {
   try {
-    yield put(showScreenLoading('Please wait...'));
+    if (!action.suppressLoading) {
+      yield put(showScreenLoading('Please wait...'));
+    }
     const response = yield call(api.getLocations);
     yield put({
       type: GET_LOCATIONS_REQUEST_SUCCESS,
