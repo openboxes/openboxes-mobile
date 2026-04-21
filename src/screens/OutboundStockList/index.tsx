@@ -9,7 +9,6 @@ import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSea
 import EmptyView from '../../components/EmptyView';
 import ListLoadingSkeleton from '../../components/ListLoadingSkeleton';
 import showPopup from '../../components/Popup';
-import ResultCount from '../../components/ResultCount';
 import { HYPHEN } from '../../constants';
 import { Container } from '../../data/container/Container';
 import { Shipment } from '../../data/container/Shipment';
@@ -157,7 +156,6 @@ class OutboundStockList extends React.Component<Props, State> {
           accessibilityLabel="Search shipments to pack"
           onSearchTermSubmit={this.filterShipments}
         />
-        <ResultCount count={visibleData.length} noun="shipments" visible={!loading} />
         <View style={styles.contentContainer}>
           {loading ? (
             <ListLoadingSkeleton visible count={5} CardComponent={OutboundShipmentCardSkeleton} />

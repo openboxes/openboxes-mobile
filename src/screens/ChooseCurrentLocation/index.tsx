@@ -8,7 +8,6 @@ import GarageIcon from '../../assets/images/icon_garage.svg';
 import EmptyView from '../../components/EmptyView';
 import ListLoadingSkeleton from '../../components/ListLoadingSkeleton';
 import showPopup from '../../components/Popup';
-import ResultCount from '../../components/ResultCount';
 import Location from '../../data/location/Location';
 import { getLocationsAction, setCurrentLocationAction } from '../../redux/actions/locations';
 import { RootState } from '../../redux/reducers';
@@ -196,7 +195,6 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
 
     return (
       <View>
-        <ResultCount count={availableLocations.length} noun="locations" />
         <ScrollView style={styles.scrollView}>
           {groupLocationEntries
             ? this.renderGroupedLocations(

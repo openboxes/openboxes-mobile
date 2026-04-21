@@ -8,32 +8,25 @@ export default function ProductCardSkeleton() {
   return (
     <View style={[LayoutStyle.listItemContainer, styles.card]}>
       <View style={styles.headerRow}>
-        <ShimmerBlock style={styles.chipLarge} />
+        <ShimmerBlock style={styles.chipCode} />
       </View>
-      <ShimmerBlock style={styles.lineLarge} />
+      <View style={styles.divider} />
+      <ShimmerBlock style={styles.name} />
       <View style={styles.footerRow}>
-        <ShimmerBlock style={styles.chipSmall} />
-        <ShimmerBlock style={styles.chipMedium} />
+        <ShimmerBlock style={styles.chipBarcode} />
+        <ShimmerBlock style={styles.chipCategory} />
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  card: {
-    backgroundColor: '#F5F6F8',
-    padding: 14
-  },
-  headerRow: {
-    flexDirection: 'row',
-    marginBottom: 8
-  },
-  footerRow: {
-    flexDirection: 'row',
-    marginTop: 10
-  },
-  chipLarge: { width: 110, height: 22, borderRadius: 11 },
-  chipMedium: { width: 90, height: 22, borderRadius: 11, marginLeft: 8 },
-  chipSmall: { width: 70, height: 22, borderRadius: 11 },
-  lineLarge: { width: '70%', height: 16, borderRadius: 4, marginTop: 4 }
+  card: { backgroundColor: '#FFFFFF', padding: 14 },
+  headerRow: { flexDirection: 'row' },
+  divider: { height: 1, backgroundColor: '#E0E0E0', marginVertical: 10 },
+  footerRow: { flexDirection: 'row', marginTop: 10, flexWrap: 'wrap' },
+  chipCode: { width: 160, height: 24, borderRadius: 4 },
+  name: { width: '75%', height: 16, borderRadius: 4 },
+  chipBarcode: { width: 130, height: 24, borderRadius: 4, marginRight: 8 },
+  chipCategory: { width: 110, height: 24, borderRadius: 4 }
 });

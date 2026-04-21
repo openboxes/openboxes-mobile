@@ -12,7 +12,6 @@ import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSea
 import EmptyView from '../../components/EmptyView';
 import ListLoadingSkeleton from '../../components/ListLoadingSkeleton';
 import showPopup from '../../components/Popup';
-import ResultCount from '../../components/ResultCount';
 import { fetchInboundOrderList } from '../../redux/actions/inboundorder';
 import { RootState } from '../../redux/reducers';
 import { emptyStateMessage } from '../../utils/emptyStateMessage';
@@ -173,7 +172,6 @@ const InboundOrderList = () => {
         accessibilityLabel="Search inbound shipments"
         onSearchTermSubmit={filterInboundOrders}
       />
-      <ResultCount count={visibleData.length} noun="shipments" visible={!loading} />
       {loading ? (
         <ListLoadingSkeleton visible count={5} CardComponent={ShipmentCardSkeleton} />
       ) : state.inboundOrders.length > 0 ? (

@@ -7,7 +7,6 @@ import { LayoutStyle } from '../../assets/styles';
 import EmptyView from '../../components/EmptyView';
 import ListLoadingSkeleton from '../../components/ListLoadingSkeleton';
 import showPopup from '../../components/Popup';
-import ResultCount from '../../components/ResultCount';
 import { appConfig, DEFAULT_DATE_FORMAT_OPTIONS } from '../../constants';
 import { getOrdersAction } from '../../redux/actions/orders';
 import { getStockTransfers } from '../../redux/actions/transfers';
@@ -100,7 +99,6 @@ class Transfers extends React.Component<Props, State> {
 
     return (
       <View style={styles.screenContainer}>
-        <ResultCount count={transfersList?.length ?? 0} noun="transfers" visible={!loading} />
         {loading ? (
           <ListLoadingSkeleton visible count={5} CardComponent={TransferCardSkeleton} />
         ) : (

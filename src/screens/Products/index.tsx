@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 
 import ListLoadingSkeleton from '../../components/ListLoadingSkeleton';
 import showPopup from '../../components/Popup';
-import ResultCount from '../../components/ResultCount';
 import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSearchHeader';
 import { ProductCategory } from '../../data/product/category/ProductCategory';
 import {
@@ -341,7 +340,6 @@ class Products extends React.Component<Props, State> {
           accessibilityLabel="Search products"
           onSearchTermSubmit={this.onSearchTermSubmit}
         />
-        <ResultCount count={vm.list?.length ?? 0} noun="products" visible={!loading} />
         <View style={styles.content}>
           {loading ? (
             <ListLoadingSkeleton visible count={5} CardComponent={ProductCardSkeleton} />

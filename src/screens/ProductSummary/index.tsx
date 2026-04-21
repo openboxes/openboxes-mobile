@@ -9,7 +9,6 @@ import { LayoutStyle } from '../../assets/styles';
 import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSearchHeader';
 import EmptyView from '../../components/EmptyView';
 import ListLoadingSkeleton from '../../components/ListLoadingSkeleton';
-import ResultCount from '../../components/ResultCount';
 import { getLocationProductSummary } from '../../redux/actions/locations';
 import { RootState } from '../../redux/reducers';
 import { emptyStateMessage } from '../../utils/emptyStateMessage';
@@ -102,7 +101,6 @@ const ProductSummary = () => {
         accessibilityLabel="Search inventory"
         onSearchTermSubmit={(query) => searchProduct(query)}
       />
-      <ResultCount count={productSummary.length} noun="products" visible={!isLoading} />
       {isLoading ? (
         <ListLoadingSkeleton visible count={5} CardComponent={ProductSummaryCardSkeleton} />
       ) : (

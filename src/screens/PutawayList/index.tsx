@@ -9,7 +9,6 @@ import { LayoutStyle } from '../../assets/styles';
 import EmptyView from '../../components/EmptyView';
 import InputBox from '../../components/InputBox';
 import ListLoadingSkeleton from '../../components/ListLoadingSkeleton';
-import ResultCount from '../../components/ResultCount';
 import { HYPHEN } from '../../constants';
 import PutAway from '../../data/putaway/PutAway';
 import PutAwayItems from '../../data/putaway/PutAwayItems';
@@ -133,7 +132,6 @@ class PutawayList extends React.Component<Props, State> {
               ) : null}
             </View>
             <Divider />
-            <ResultCount count={visibleData?.length ?? 0} noun="items" />
             <FlatList
               data={visibleData}
               keyboardShouldPersistTaps="handled"

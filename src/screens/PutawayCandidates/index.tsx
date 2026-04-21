@@ -9,7 +9,6 @@ import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSea
 import Button from '../../components/Button';
 import EmptyView from '../../components/EmptyView';
 import ListLoadingSkeleton from '../../components/ListLoadingSkeleton';
-import ResultCount from '../../components/ResultCount';
 import { getCandidates } from '../../redux/actions/putaways';
 import { RootState } from '../../redux/reducers';
 import { emptyStateMessage } from '../../utils/emptyStateMessage';
@@ -166,7 +165,6 @@ class PutawayCandidates extends Component<Props, State> {
           title="Refresh (Get Latest Data)"
           onPress={this.getScreenData}
         />
-        <ResultCount count={visibleData.length} noun="candidates" visible={!initialLoading} />
         {initialLoading ? (
           <ListLoadingSkeleton visible count={6} CardComponent={PutawayCandidateCardSkeleton} />
         ) : putawayCandidates.length ? (

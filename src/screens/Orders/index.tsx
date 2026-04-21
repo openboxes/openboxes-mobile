@@ -5,7 +5,6 @@ import { connect } from 'react-redux';
 import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSearchHeader';
 import ListLoadingSkeleton from '../../components/ListLoadingSkeleton';
 import showPopup from '../../components/Popup';
-import ResultCount from '../../components/ResultCount';
 import { Order } from '../../data/order/Order';
 import { getOrdersAction } from '../../redux/actions/orders';
 import { emptyStateMessage } from '../../utils/emptyStateMessage';
@@ -85,7 +84,6 @@ class Index extends React.Component<Props, State> {
           accessibilityLabel="Search orders"
           onSearchTermSubmit={this.searchOrders}
         />
-        <ResultCount count={allOrders?.length ?? 0} noun="orders" visible={!loading} />
         <View style={styles.content}>
           {loading ? (
             <ListLoadingSkeleton visible count={5} CardComponent={OrderCardSkeleton} />
