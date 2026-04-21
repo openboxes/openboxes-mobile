@@ -5,22 +5,25 @@ import { connect } from 'react-redux';
 
 import { LayoutStyle } from '../../assets/styles';
 import EmptyView from '../../components/EmptyView';
+import ListLoadingSkeleton from '../../components/ListLoadingSkeleton';
 import showPopup from '../../components/Popup';
-import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
+import ResultCount from '../../components/ResultCount';
+import { appConfig, DEFAULT_DATE_FORMAT_OPTIONS } from '../../constants';
 import { getOrdersAction } from '../../redux/actions/orders';
 import { getStockTransfers } from '../../redux/actions/transfers';
 import { RootState } from '../../redux/reducers';
 import Theme from '../../utils/Theme';
+import TransferCardSkeleton from './TransferCardSkeleton';
 import styles from './styles';
 import { DispatchProps, Props, State } from './types';
-import { appConfig, DEFAULT_DATE_FORMAT_OPTIONS } from '../../constants';
 
 class Transfers extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
       error: null,
-      transfersList: null
+      transfersList: null,
+      loading: true
     };
   }
   componentDidMount() {
@@ -31,6 +34,7 @@ class Transfers extends React.Component<Props, State> {
     const { getStockTransfers, currentLocation } = this.props;
 
     if (!currentLocation || !currentLocation.id) {
+      this.setState({ loading: false });
       showPopup({
         title: 'Error',
         message: 'Current location is not set. Please try again later.',
@@ -39,35 +43,37 @@ class Transfers extends React.Component<Props, State> {
       return;
     }
 
+    this.setState({ loading: true });
     const callback = (data: any) => {
+      this.setState({ loading: false });
       if (data?.error) {
         showPopup({
-          title: data.errorMessage ? 'Inbound order details' : null,
-          message: data.errorMessage ?? `Failed to load inbound order details value ${currentLocation.id}`,
+          title: data.errorMessage ? 'Transfer list' : null,
+          message: data.errorMessage ?? `Failed to load transfer list for location ${currentLocation.id}`,
           positiveButton: {
             text: 'Retry',
             callback: () => {
-              getStockTransfers(currentLocation.id, callback);
+              this._getTransfersList();
             }
           },
           negativeButtonText: 'Cancel'
         });
+        return;
+      }
+      if (!data || data.length === 0) {
+        this.setState({
+          error: null,
+          transfersList: []
+        });
       } else {
-        if (data.length === 0) {
-          this.setState({
-            error: 'No products found',
-            transfersList: data
-          });
-        } else {
-          const filteredList = data.filter(
-            (transferData) => transferData.status === 'APPROVED' || transferData.status === 'PENDING'
-          );
+        const filteredList = data.filter(
+          (transferData) => transferData.status === 'APPROVED' || transferData.status === 'PENDING'
+        );
 
-          this.setState({
-            error: null,
-            transfersList: filteredList
-          });
-        }
+        this.setState({
+          error: null,
+          transfersList: filteredList
+        });
       }
     };
 
@@ -90,13 +96,16 @@ class Transfers extends React.Component<Props, State> {
   };
 
   render() {
-    const { transfersList } = this.state;
+    const { transfersList, loading } = this.state;
 
     return (
       <View style={styles.screenContainer}>
-        {transfersList ? (
+        <ResultCount count={transfersList?.length ?? 0} noun="transfers" visible={!loading} />
+        {loading ? (
+          <ListLoadingSkeleton visible count={5} CardComponent={TransferCardSkeleton} />
+        ) : (
           <FlatList
-            data={transfersList}
+            data={transfersList ?? []}
             ListEmptyComponent={<EmptyView title="Transfers" description="There are no items for Transfer" />}
             renderItem={(item: ListRenderItemInfo<any>) => {
               const formattedDate = new Date(item.item?.dateCreated).toLocaleDateString(
@@ -137,7 +146,7 @@ class Transfers extends React.Component<Props, State> {
             keyExtractor={(item) => item.id}
             style={styles.list}
           />
-        ) : null}
+        )}
       </View>
     );
   }
@@ -149,8 +158,6 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps: DispatchProps = {
-  showScreenLoading,
-  hideScreenLoading,
   getOrdersAction,
   getStockTransfers
 };
