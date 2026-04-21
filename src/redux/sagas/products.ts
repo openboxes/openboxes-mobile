@@ -29,7 +29,9 @@ import { userLocation } from '../selectors/auth';
 
 function* getProducts(action: any) {
   try {
-    yield put(showScreenLoading('Loading..'));
+    if (!action.suppressLoading) {
+      yield put(showScreenLoading('Loading..'));
+    }
     const response = yield call(api.getProducts);
     yield put({
       type: GET_PRODUCTS_REQUEST_SUCCESS,

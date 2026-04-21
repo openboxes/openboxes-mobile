@@ -38,25 +38,36 @@ export const UPDATE_PRODUCT_IDENTIFIER_REQUEST = 'UPDATE_PRODUCT_IDENTIFIER_REQU
 export const UPDATE_PRODUCT_IDENTIFIER_SUCCESS = 'UPDATE_PRODUCT_IDENTIFIER_SUCCESS';
 export const UPDATE_PRODUCT_IDENTIFIER_FAIL = 'UPDATE_PRODUCT_IDENTIFIER_FAIL';
 
-export function getProductsAction(callback?: (products: any) => void) {
+export function getProductsAction(callback?: (products: any) => void, suppressLoading?: boolean) {
   return {
     type: GET_PRODUCTS_REQUEST,
-    callback
+    callback,
+    suppressLoading
   };
 }
 
-export function searchProductsByNameAction(name: string, callback: (searchedProducts: any) => void) {
+export function searchProductsByNameAction(
+  name: string,
+  callback: (searchedProducts: any) => void,
+  suppressLoading?: boolean
+) {
   return {
     type: SEARCH_PRODUCTS_BY_NAME_REQUEST,
     payload: { name },
-    callback
+    callback,
+    suppressLoading
   };
 }
-export function searchProductByCodeAction(productCode: string, callback: (searchedProducts: any) => void) {
+export function searchProductByCodeAction(
+  productCode: string,
+  callback: (searchedProducts: any) => void,
+  suppressLoading?: boolean
+) {
   return {
     type: SEARCH_PRODUCT_BY_CODE_REQUEST,
     payload: { productCode },
-    callback
+    callback,
+    suppressLoading
   };
 }
 
@@ -73,11 +84,16 @@ export function searchProductGloballyAction(
   };
 }
 
-export function searchProductSByCategoryAction(category: any, callback: (searchedProducts: any) => void) {
+export function searchProductSByCategoryAction(
+  category: any,
+  callback: (searchedProducts: any) => void,
+  suppressLoading?: boolean
+) {
   return {
     type: SEARCH_PRODUCTS_BY_CATEGORY_REQUEST,
     payload: { category },
-    callback
+    callback,
+    suppressLoading
   };
 }
 

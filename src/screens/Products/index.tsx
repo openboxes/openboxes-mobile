@@ -1,17 +1,12 @@
 import React from 'react';
 import { View } from 'react-native';
 import { connect } from 'react-redux';
-import styles from './styles';
+
+import ListLoadingSkeleton from '../../components/ListLoadingSkeleton';
 import showPopup from '../../components/Popup';
-import ProductsSearchHeader from './ProductsSearchHeader';
-import ProductsList from './ProductsList';
-import CentralMessage from './CentralMessage';
-import ProductCategoryPickerPopup from './ProductCategoryPickerPopup';
-import { ProductCategory } from '../../data/product/category/ProductCategory';
-import { DispatchProps, Props, State } from './types';
-import vmMapper from './VMMapper';
-import ProductsSearchCodeHeader from './ProductsSearchCodeHeader';
+import ResultCount from '../../components/ResultCount';
 import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSearchHeader';
+import { ProductCategory } from '../../data/product/category/ProductCategory';
 import {
   getProductsAction,
   searchProductByCodeAction,
@@ -19,8 +14,17 @@ import {
   searchProductSByCategoryAction,
   searchProductsByNameAction
 } from '../../redux/actions/products';
-import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
 import { RootState } from '../../redux/reducers';
+import { emptyStateMessage } from '../../utils/emptyStateMessage';
+import CentralMessage from './CentralMessage';
+import ProductCardSkeleton from './ProductCardSkeleton';
+import ProductCategoryPickerPopup from './ProductCategoryPickerPopup';
+import ProductsList from './ProductsList';
+import ProductsSearchCodeHeader from './ProductsSearchCodeHeader';
+import ProductsSearchHeader from './ProductsSearchHeader';
+import styles from './styles';
+import { DispatchProps, Props, State } from './types';
+import vmMapper from './VMMapper';
 
 class Products extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -35,7 +39,9 @@ class Products extends React.Component<Props, State> {
       searchByName: null,
       searchByProductCode: null,
       searchByCategory: null,
-      barcodeNo: ''
+      barcodeNo: '',
+      loading: true,
+      searchTerm: ''
     };
   }
 
@@ -44,7 +50,9 @@ class Products extends React.Component<Props, State> {
   };
 
   getProducts = () => {
+    this.setState({ loading: true, searchTerm: '' });
     const actionCallback = (data: any) => {
+      this.setState({ loading: false });
       if (data?.error) {
         showPopup({
           title: data.errorMessage ? 'Failed to fetch products' : 'Error',
@@ -52,28 +60,19 @@ class Products extends React.Component<Props, State> {
           positiveButton: {
             text: 'Retry',
             callback: () => {
-              this.props.getProductsAction(actionCallback);
+              this.getProducts();
             }
           },
           negativeButtonText: 'Cancel'
         });
-      } else {
-        if (data.length === 0) {
-          this.setState({
-            error: 'No products found',
-            allProducts: data
-          });
-        } else {
-          this.setState({
-            error: null,
-            allProducts: data
-          });
-        }
+        return;
       }
-      this.props.hideScreenLoading();
+      this.setState({
+        error: data?.length === 0 ? emptyStateMessage('products', '', 'No products available') : null,
+        allProducts: data ?? []
+      });
     };
-    this.props.showScreenLoading('Loading..');
-    this.props.getProductsAction(actionCallback);
+    this.props.getProductsAction(actionCallback, true);
   };
 
   onSearchByProductNamePress = () => {
@@ -94,7 +93,10 @@ class Products extends React.Component<Props, State> {
 
   onSearchBoxVisibilityChange = (visible: boolean) => {
     if (!visible) {
-      const error = !this.props.products || this.props.products.length === 0 ? 'No products found' : null;
+      const error =
+        !this.props.products || this.props.products.length === 0
+          ? emptyStateMessage('products', '', 'No products available')
+          : null;
       this.setState({
         error: error,
         searchBoxVisible: false,
@@ -118,7 +120,9 @@ class Products extends React.Component<Props, State> {
       return;
     }
 
+    this.setState({ loading: true, searchTerm: query });
     const actionCallback = (data: any) => {
+      this.setState({ loading: false });
       if (data?.error) {
         showPopup({
           title: data.errorMessage ? `Failed to load search results with name = "${query}"` : null,
@@ -126,36 +130,29 @@ class Products extends React.Component<Props, State> {
           positiveButton: {
             text: 'Retry',
             callback: () => {
-              this.props.searchProductsByNameAction(query, actionCallback);
+              this.onSearchQuerySubmitted(query);
             }
           },
           negativeButtonText: 'Cancel'
         });
+        return;
+      }
+      if (data.length === 0) {
+        this.setState({
+          searchByName: { query, results: null },
+          error: emptyStateMessage('products', query, 'No products available')
+        });
+      } else if (data.length === 1) {
+        this.props.navigation.navigate('ProductDetails', { product: data[0] });
       } else {
-        if (data.length === 0) {
-          this.setState({
-            searchByName: {
-              query: query,
-              results: null
-            },
-            error: `No search results found for product name "${query}"`
-          });
-        } else if (data.length === 1) {
-          this.props.navigation.navigate('ProductDetails', { product: data[0] });
-        } else {
-          this.setState({
-            searchByName: {
-              query: query,
-              results: data
-            },
-            error: null
-          });
-        }
-        this.props.hideScreenLoading();
+        this.setState({
+          searchByName: { query, results: data },
+          error: null
+        });
       }
     };
 
-    this.props.searchProductsByNameAction(query, actionCallback);
+    this.props.searchProductsByNameAction(query, actionCallback, true);
   };
 
   onSearchProductCodeQuerySubmitted = (query: string) => {
@@ -171,7 +168,9 @@ class Products extends React.Component<Props, State> {
       return;
     }
 
+    this.setState({ loading: true, searchTerm: query });
     const actionCallback = (data: any) => {
+      this.setState({ loading: false });
       if (data?.error) {
         showPopup({
           title: data.errorMessage ? `Failed to load search results with code = "${query}"` : null,
@@ -179,42 +178,37 @@ class Products extends React.Component<Props, State> {
           positiveButton: {
             text: 'Retry',
             callback: () => {
-              this.props.searchProductByCodeAction(query, actionCallback);
+              this.onSearchProductCodeQuerySubmitted(query);
             }
           },
           negativeButtonText: 'Cancel'
         });
+        return;
+      }
+      if (data.length === 0) {
+        this.setState({
+          searchByProductCode: { query, results: null },
+          error: emptyStateMessage('products', query, 'No products available')
+        });
+      } else if (data.length === 1) {
+        this.props.navigation.navigate('ProductDetails', { product: data[0] });
       } else {
-        if (data.length === 0) {
-          this.setState({
-            searchByProductCode: {
-              query: query,
-              results: null
-            },
-            error: `No search results found for product name "${query}"`
-          });
-        } else if (data.length === 1) {
-          this.props.navigation.navigate('ProductDetails', { product: data[0] });
-        } else {
-          this.setState({
-            searchByProductCode: {
-              query: query,
-              results: data
-            },
-            error: null
-          });
-        }
-        this.props.hideScreenLoading();
+        this.setState({
+          searchByProductCode: { query, results: data },
+          error: null
+        });
       }
     };
 
-    this.props.searchProductByCodeAction(query, actionCallback);
+    this.props.searchProductByCodeAction(query, actionCallback, true);
   };
 
   onCategoryChosen = (category: ProductCategory) => {
     this.hideCategoryPickerPopup();
+    this.setState({ loading: true, searchTerm: '' });
 
     const actionCallback = (data: any) => {
+      this.setState({ loading: false });
       if (data?.error) {
         showPopup({
           title: data.errorMessage ? `Failed to load search results for products in category = ${category.name}` : null,
@@ -222,34 +216,27 @@ class Products extends React.Component<Props, State> {
           positiveButton: {
             text: 'Retry',
             callback: () => {
-              this.props.searchProductSByCategoryAction(category, actionCallback);
+              this.onCategoryChosen(category);
             }
           },
           negativeButtonText: 'Cancel'
         });
+        return;
+      }
+      if (data.length === 0) {
+        this.setState({
+          error: `No products found in category "${category.name}"`,
+          searchByCategory: { category, results: null }
+        });
       } else {
-        if (data.length === 0) {
-          this.setState({
-            error: `No products found in category "${category.name}"`,
-            searchByCategory: {
-              category: category,
-              results: null
-            }
-          });
-        } else {
-          this.setState({
-            error: null,
-            searchByCategory: {
-              category: category,
-              results: data
-            }
-          });
-        }
-        this.props.hideScreenLoading();
+        this.setState({
+          error: null,
+          searchByCategory: { category, results: data }
+        });
       }
     };
 
-    this.props.searchProductSByCategoryAction(category, actionCallback);
+    this.props.searchProductSByCategoryAction(category, actionCallback, true);
   };
 
   showCategoryPickerPopup = () => {
@@ -282,14 +269,14 @@ class Products extends React.Component<Props, State> {
         searchByProductCode: {
           query: '',
           results: this.state.allProducts
-        }
+        },
+        searchTerm: ''
       });
-      // showPopup({
-      //   message: 'Search query is empty',
-      //   positiveButton: {text: 'Ok'},
-      // });
     }
+
+    this.setState({ loading: true, searchTerm: query });
     const actionCallback = (data: any) => {
+      this.setState({ loading: false });
       if (data?.error) {
         showPopup({
           title: data.errorMessage ? `Failed to load search results with value = "${query}"` : null,
@@ -297,42 +284,36 @@ class Products extends React.Component<Props, State> {
           positiveButton: {
             text: 'Retry',
             callback: () => {
-              this.props.searchProductGloballyAction(query, actionCallback);
+              this.onSearchTermSubmit(query);
             }
           },
           negativeButtonText: 'Cancel'
         });
-      } else {
-        const productList = data?.data ?? [];
+        return;
+      }
+      const productList = data?.data ?? [];
 
-        if (productList.length === 0) {
-          this.setState({
-            searchByProductCode: {
-              query: query,
-              results: null
-            },
-            error: `No search results found for product name "${query}"`
-          });
-        } else if (productList.length === 1) {
-          this.props.navigation.navigate('ProductDetails', { product: productList[0] });
-        } else {
-          this.setState({
-            searchByProductCode: {
-              query: query,
-              results: data
-            },
-            error: null
-          });
-        }
-        this.props.hideScreenLoading();
+      if (productList.length === 0) {
+        this.setState({
+          searchByProductCode: { query, results: null },
+          error: emptyStateMessage('products', query, 'No products available')
+        });
+      } else if (productList.length === 1) {
+        this.props.navigation.navigate('ProductDetails', { product: productList[0] });
+      } else {
+        this.setState({
+          searchByProductCode: { query, results: data },
+          error: null
+        });
       }
     };
 
-    this.props.searchProductGloballyAction(query, actionCallback);
+    this.props.searchProductGloballyAction(query, actionCallback, true);
   };
 
   render() {
     const vm = vmMapper(this.state);
+    const { loading } = this.state;
     return (
       <View style={styles.screenContainer}>
         <ProductsSearchHeader
@@ -354,18 +335,27 @@ class Products extends React.Component<Props, State> {
           autoFocus
           placeholder={'Search by product code or name'}
           subtitle={vm.subtitle}
-          resetSearch={() => null}
+          resetSearch={() => this.setState({ searchTerm: '' })}
           searchBox={false}
+          loading={loading}
+          accessibilityLabel="Search products"
           onSearchTermSubmit={this.onSearchTermSubmit}
         />
+        <ResultCount count={vm.list?.length ?? 0} noun="products" visible={!loading} />
         <View style={styles.content}>
-          <ProductsList
-            products={vm.list}
-            onProductTapped={(product) => {
-              this.props.navigation.navigate('ProductDetails', { product });
-            }}
-          />
-          {vm?.list?.length === 0 && <CentralMessage message={vm.centralErrorMessage} />}
+          {loading ? (
+            <ListLoadingSkeleton visible count={5} CardComponent={ProductCardSkeleton} />
+          ) : (
+            <>
+              <ProductsList
+                products={vm.list}
+                onProductTapped={(product) => {
+                  this.props.navigation.navigate('ProductDetails', { product });
+                }}
+              />
+              {vm?.list?.length === 0 && <CentralMessage message={vm.centralErrorMessage} />}
+            </>
+          )}
           <ProductCategoryPickerPopup
             visible={vm.categoryPickerPopupVisible}
             onCategoryChosen={this.onCategoryChosen}
@@ -386,9 +376,7 @@ const mapDispatchToProps: DispatchProps = {
   searchProductsByNameAction,
   searchProductByCodeAction,
   searchProductGloballyAction,
-  searchProductSByCategoryAction,
-  showScreenLoading,
-  hideScreenLoading
+  searchProductSByCategoryAction
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Products);
