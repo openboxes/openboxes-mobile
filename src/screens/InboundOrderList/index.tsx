@@ -10,10 +10,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { LayoutStyle } from '../../assets/styles';
 import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSearchHeader';
 import EmptyView from '../../components/EmptyView';
+import ListLoadingSkeleton from '../../components/ListLoadingSkeleton';
 import showPopup from '../../components/Popup';
+import ResultCount from '../../components/ResultCount';
 import { fetchInboundOrderList } from '../../redux/actions/inboundorder';
 import { RootState } from '../../redux/reducers';
+import { emptyStateMessage } from '../../utils/emptyStateMessage';
 import { parseDateToISODate, parseFromISODateToLocaleString } from '../../utils/utils';
+import ShipmentCardSkeleton from './ShipmentCardSkeleton';
 import styles from './styles';
 
 const InboundOrderList = () => {
@@ -26,6 +30,8 @@ const InboundOrderList = () => {
     inboundOrders: [],
     filteredInboundOrders: []
   });
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     return navigation.addListener('focus', () => {
@@ -42,7 +48,9 @@ const InboundOrderList = () => {
 
   const getInboundOrderList = (id: string = '') => {
     navigation.setParams({ refetchOrders: false });
+    setLoading(true);
     const callback = (data: any) => {
+      setLoading(false);
       if (data?.error) {
         showPopup({
           title: data.errorMessage ? 'Inbound order details' : null,
@@ -50,21 +58,23 @@ const InboundOrderList = () => {
           positiveButton: {
             text: 'Retry',
             callback: () => {
-              dispatch(fetchInboundOrderList(callback, id));
+              getInboundOrderList(id);
             }
           },
           negativeButtonText: 'Cancel'
         });
-      } else {
-        if (data && Object.keys(data).length !== 0) {
-          setState((prevState: any) => ({
-            ...prevState,
-            inboundOrders: data.filter((item: any) => item.status === 'SHIPPED' || item.status === 'PARTIALLY_RECEIVED')
-          }));
-        }
+        return;
+      }
+      if (data && Object.keys(data).length !== 0) {
+        setState((prevState: any) => ({
+          ...prevState,
+          inboundOrders: data.filter(
+            (item: any) => item.status === 'SHIPPED' || item.status === 'PARTIALLY_RECEIVED'
+          )
+        }));
       }
     };
-    dispatch(fetchInboundOrderList(callback, id));
+    dispatch(fetchInboundOrderList(callback, id, true));
   };
 
   const RenderOrderData = ({ title, subText }: any): JSX.Element => {
@@ -117,11 +127,12 @@ const InboundOrderList = () => {
     );
   };
 
-  const filterInboundOrders = (searchTerm: string) => {
-    if (searchTerm) {
+  const filterInboundOrders = (query: string) => {
+    setSearchTerm(query);
+    if (query) {
       const exactInboundOrder = _.find(
         state.inboundOrders,
-        (inboundOrder: any) => inboundOrder?.shipmentNumber?.toLowerCase() === searchTerm.toLowerCase()
+        (inboundOrder: any) => inboundOrder?.shipmentNumber?.toLowerCase() === query.toLowerCase()
       );
 
       if (exactInboundOrder) {
@@ -129,7 +140,7 @@ const InboundOrderList = () => {
         navigateToInboundDetails(exactInboundOrder);
       } else {
         const filteredInboundOrders = _.filter(state.inboundOrders, (inboundOrder: any) =>
-          inboundOrder?.shipmentNumber?.toLowerCase()?.includes(searchTerm.toLowerCase())
+          inboundOrder?.shipmentNumber?.toLowerCase()?.includes(query.toLowerCase())
         );
         setState({
           ...state,
@@ -144,11 +155,15 @@ const InboundOrderList = () => {
   };
 
   const resetFiltering = () => {
+    setSearchTerm('');
     setState({
       ...state,
       filteredInboundOrders: []
     });
   };
+
+  const visibleData =
+    state.filteredInboundOrders.length > 0 ? state.filteredInboundOrders : state.inboundOrders;
 
   return (
     <View style={styles.container}>
@@ -157,16 +172,34 @@ const InboundOrderList = () => {
         placeholder="Search by order number"
         resetSearch={resetFiltering}
         searchBox={false}
+        loading={loading}
+        accessibilityLabel="Search inbound shipments"
         onSearchTermSubmit={filterInboundOrders}
       />
-      {state.inboundOrders.length > 0 ? (
+      <ResultCount count={visibleData.length} noun="shipments" visible={!loading} />
+      {loading ? (
+        <ListLoadingSkeleton visible count={5} CardComponent={ShipmentCardSkeleton} />
+      ) : state.inboundOrders.length > 0 ? (
         <FlatList
-          data={state.filteredInboundOrders.length > 0 ? state.filteredInboundOrders : state.inboundOrders}
+          data={visibleData}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
           keyExtractor={(inboundOrder) => inboundOrder.id}
           renderItem={RenderListItem}
+          ListEmptyComponent={
+            <EmptyView
+              title="Receiving"
+              description={emptyStateMessage('shipments', searchTerm, 'There are no items to receive')}
+              isRefresh={false}
+            />
+          }
         />
       ) : (
-        <EmptyView title="Receiving" description="There are no items to receive" isRefresh={false} />
+        <EmptyView
+          title="Receiving"
+          description={emptyStateMessage('shipments', searchTerm, 'There are no items to receive')}
+          isRefresh={false}
+        />
       )}
     </View>
   );

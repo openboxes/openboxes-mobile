@@ -10,11 +10,12 @@ export const SUBMIT_PARTIAL_RECEIVING_SUCCESS = 'SUBMIT_PARTIAL_RECEIVING_SUCCES
 export const CREATE_RECEIVING_BIN_LOCATION_REQUEST = 'CREATE_RECEIVING_BIN_LOCATION_REQUEST';
 export const CREATE_RECEIVING_BIN_LOCATION_SUCCESS = 'CREATE_RECEIVING_BIN_LOCATION_SUCCESS';
 
-export function fetchInboundOrderList(callback: (data: any) => void, id?: any) {
+export function fetchInboundOrderList(callback: (data: any) => void, id?: any, suppressLoading?: boolean) {
   return {
     type: FETCH_INBOUND_ORDER_LIST_REQUEST,
     payload: { id },
-    callback
+    callback,
+    suppressLoading
   };
 }
 

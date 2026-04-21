@@ -15,7 +15,9 @@ import { Alert } from 'react-native';
 
 function* fetchInboundOrderList(action: any) {
   try {
-    yield put(showScreenLoading('Please wait..'));
+    if (!action.suppressLoading) {
+      yield put(showScreenLoading('Please wait..'));
+    }
     const response: any = yield call(
       api.fetchInboundOrderList,
       action.payload.id ?? ''
@@ -27,7 +29,11 @@ function* fetchInboundOrderList(action: any) {
     yield action.callback(response.data);
     yield put(hideScreenLoading());
   } catch (e) {
-    Alert.alert(e.message);
+    if (action.callback) {
+      yield action.callback({ error: true, errorMessage: e.message });
+    } else {
+      Alert.alert(e.message);
+    }
     yield put(hideScreenLoading());
   }
 }
