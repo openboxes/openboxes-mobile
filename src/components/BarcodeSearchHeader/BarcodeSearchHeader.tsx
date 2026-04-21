@@ -48,7 +48,16 @@ const BarcodeSearchHeader: React.FC<OwnProps> = (props) => {
     return () => debouncedSubmit.cancel();
   }, [debouncedSubmit]);
 
+  // Skip the very first render so mounting with an empty search term does
+  // not race a sibling fetch (e.g. componentDidMount) and cause a double
+  // fetch / double skeleton flash. Subsequent changes — user typing,
+  // clearing via the X icon, or navigation-focus reset — still fire.
+  const isFirstRender = useRef(true);
   useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
     if (props.autoSearch) {
       debouncedSubmit(searchTerm);
     }

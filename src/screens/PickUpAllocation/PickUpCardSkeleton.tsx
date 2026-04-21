@@ -1,33 +1,31 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
+import { Card } from 'react-native-paper';
 
 import LayoutStyle from '../../assets/styles/LayoutStyle';
 import { ShimmerBlock } from '../../components/ContentSkeleton';
 
 export default function PickUpCardSkeleton() {
   return (
-    <View style={[LayoutStyle.listItemContainer, styles.card]}>
-      <View style={styles.headerRow}>
-        <ShimmerBlock style={styles.chipLarge} />
-        <ShimmerBlock style={styles.chipSmall} />
-      </View>
-      <View style={styles.divider} />
-      <ShimmerBlock style={styles.title} />
-      <View style={styles.footerRow}>
-        <ShimmerBlock style={styles.columnHalf} />
-        <ShimmerBlock style={styles.columnHalf} />
-      </View>
-    </View>
+    <Card style={LayoutStyle.listItemContainer}>
+      <Card.Content>
+        <View style={styles.headerRow}>
+          <ShimmerBlock style={styles.identifier} />
+          <ShimmerBlock style={styles.linesChip} />
+        </View>
+        <View style={styles.divider} />
+        <ShimmerBlock style={styles.title} />
+        <ShimmerBlock style={styles.caption} />
+      </Card.Content>
+    </Card>
   );
 }
 
 const styles = StyleSheet.create({
-  card: { backgroundColor: '#F5F6F8', padding: 14 },
   headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  footerRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 10 },
-  divider: { height: 1, backgroundColor: '#E0E0E0', marginVertical: 10 },
-  chipLarge: { width: 130, height: 24, borderRadius: 12 },
-  chipSmall: { width: 80, height: 24, borderRadius: 12 },
-  title: { width: '60%', height: 14, borderRadius: 4, marginBottom: 6 },
-  columnHalf: { width: '45%', height: 12, borderRadius: 4 }
+  divider: { height: 1, backgroundColor: '#E0E0E0', marginVertical: 8 },
+  identifier: { width: 140, height: 24, borderRadius: 4 },
+  linesChip: { width: 90, height: 24, borderRadius: 4 },
+  title: { width: '65%', height: 18, borderRadius: 4, marginTop: 4, marginBottom: 6 },
+  caption: { width: '55%', height: 12, borderRadius: 4 }
 });

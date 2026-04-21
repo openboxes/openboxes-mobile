@@ -1,34 +1,37 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
+import { Card } from 'react-native-paper';
 
 import LayoutStyle from '../../assets/styles/LayoutStyle';
 import { ShimmerBlock } from '../../components/ContentSkeleton';
 
 export default function PutawayCandidateCardSkeleton() {
   return (
-    <View style={[LayoutStyle.listItemContainer, styles.card]}>
-      <View style={styles.row}>
-        <ShimmerBlock style={styles.chipMedium} />
-      </View>
-      <View style={styles.divider} />
-      <ShimmerBlock style={styles.title} />
-      <ShimmerBlock style={styles.subtitle} />
-      <View style={styles.footerRow}>
-        <ShimmerBlock style={styles.chipSmall} />
-        <ShimmerBlock style={styles.chipSmall} />
-        <ShimmerBlock style={styles.chipSmall} />
-      </View>
-    </View>
+    <Card style={LayoutStyle.listItemContainer}>
+      <Card.Content>
+        <View style={styles.headerRow}>
+          <ShimmerBlock style={styles.locationChip} />
+          <ShimmerBlock style={styles.statusChip} />
+        </View>
+        <View style={styles.divider} />
+        <ShimmerBlock style={styles.title} />
+        <ShimmerBlock style={styles.caption} />
+        <View style={styles.chipsRow}>
+          <ShimmerBlock style={styles.chip} />
+          <ShimmerBlock style={styles.chip} />
+        </View>
+      </Card.Content>
+    </Card>
   );
 }
 
 const styles = StyleSheet.create({
-  card: { backgroundColor: '#F5F6F8', padding: 14 },
-  row: { flexDirection: 'row' },
-  footerRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 10 },
-  divider: { height: 1, backgroundColor: '#E0E0E0', marginVertical: 10 },
-  chipMedium: { width: 110, height: 24, borderRadius: 12 },
-  chipSmall: { width: 85, height: 20, borderRadius: 10 },
-  title: { width: '55%', height: 14, borderRadius: 4, marginBottom: 6 },
-  subtitle: { width: '70%', height: 12, borderRadius: 4 }
+  headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  divider: { height: 1, backgroundColor: '#E0E0E0', marginVertical: 8 },
+  chipsRow: { flexDirection: 'row', marginTop: 8, flexWrap: 'wrap' },
+  locationChip: { width: 170, height: 24, borderRadius: 4 },
+  statusChip: { width: 80, height: 24, borderRadius: 4 },
+  title: { width: '70%', height: 16, borderRadius: 4, marginTop: 4, marginBottom: 6 },
+  caption: { width: '45%', height: 12, borderRadius: 4 },
+  chip: { width: 140, height: 24, borderRadius: 4, marginRight: 8 }
 });
