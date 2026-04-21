@@ -9,6 +9,8 @@ export interface State {
   showList: boolean;
   showDetail: boolean;
   lpnFilter: string | null;
+  loading: boolean;
+  searchTerm: string;
 }
 
 export interface OwnProps {
@@ -23,10 +25,12 @@ export interface StateProps {
 }
 
 export interface DispatchProps {
-  showScreenLoading: (message?: string) => void;
-  hideScreenLoading: () => void;
   getOrdersAction: (orderNumber: string, callback: (data: any) => void) => void;
-  fetchPutAwayFromOrderAction: (q: string | null, callback: (data: any) => void) => void;
+  fetchPutAwayFromOrderAction: (
+    q: string | null,
+    callback: (data: any) => void,
+    suppressLoading?: boolean
+  ) => void;
 }
 
 export type Props = OwnProps & StateProps & DispatchProps;
