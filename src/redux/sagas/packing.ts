@@ -22,7 +22,9 @@ import * as Sentry from '@sentry/react-native';
 
 function* getShipmentsReadyToBePacked(action: any) {
   try {
-    yield put(showScreenLoading('Please wait...'));
+    if (!action.suppressLoading) {
+      yield put(showScreenLoading('Please wait...'));
+    }
     const response: ShipmentsReadyToPackedResponse = yield call(
       api.getShipmentsReadyToBePacked,
       action.payload.locationId,
@@ -40,6 +42,9 @@ function* getShipmentsReadyToBePacked(action: any) {
       e.message
     );
     yield put(hideScreenLoading());
+    if (action.callback) {
+      yield action.callback({ error: true, errorMessage: e.message });
+    }
   }
 }
 

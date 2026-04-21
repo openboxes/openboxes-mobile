@@ -15,12 +15,14 @@ export const GET_SUBMIT_SHIPMENT_DETAILS_SUCCESS = 'GET_SUBMIT_SHIPMENT_DETAILS_
 export const getShipmentsReadyToBePacked = (
   locationId: string,
   shipmentStatusCode: string,
-  callback: (shipments: any) => void
+  callback: (shipments: any) => void,
+  suppressLoading?: boolean
 ) => {
   return {
     type: GET_SHIPMENTS_READY_TO_BE_PACKED,
     payload: { locationId, shipmentStatusCode },
-    callback
+    callback,
+    suppressLoading
   };
 };
 
