@@ -7,18 +7,18 @@ export interface OwnProps {
 }
 
 export interface DispatchProps {
-  showScreenLoading: (message?: string) => void;
-  hideScreenLoading: () => void;
   getOrdersAction: (
     value: string | null,
-    callback: (data: any) => void
+    callback: (data: any) => void,
+    suppressLoading?: boolean
   ) => void;
 }
 
 export type Props = OwnProps & DispatchProps;
 
 export interface State {
-  error: string | null;
   allOrders: Order[] | null;
   resultCount: Number;
+  loading: boolean;
+  searchTerm: string;
 }

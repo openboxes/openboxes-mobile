@@ -12,14 +12,22 @@ import { parseDateToISODate, parseFromISODateToLocaleString } from '../../utils/
 export interface Props {
   orders: Order[] | null;
   onOrderTapped: (order: Order) => void;
+  emptyDescription?: string;
 }
 
 export default function OrdersList(props: Props) {
   return props.orders ? (
     <FlatList
       data={props.orders}
+      keyboardShouldPersistTaps="handled"
+      keyboardDismissMode="on-drag"
       renderItem={(item: ListRenderItemInfo<Order>) => renderOrder(item.item, () => props.onOrderTapped(item.item))}
-      ListEmptyComponent={<EmptyView title="Picking" description="There are no items to pick" />}
+      ListEmptyComponent={
+        <EmptyView
+          title="Orders"
+          description={props.emptyDescription ?? 'No outbound orders found'}
+        />
+      }
       keyExtractor={(order) => order.id}
       style={styles.list}
     />

@@ -3,10 +3,13 @@ import { View } from 'react-native';
 import { connect } from 'react-redux';
 
 import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSearchHeader';
+import ListLoadingSkeleton from '../../components/ListLoadingSkeleton';
 import showPopup from '../../components/Popup';
+import ResultCount from '../../components/ResultCount';
 import { Order } from '../../data/order/Order';
-import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
 import { getOrdersAction } from '../../redux/actions/orders';
+import { emptyStateMessage } from '../../utils/emptyStateMessage';
+import OrderCardSkeleton from './OrderCardSkeleton';
 import OrdersList from './OrdersList';
 import styles from './styles';
 import { DispatchProps, Props, State } from './types';
@@ -15,9 +18,10 @@ class Index extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      error: null,
       allOrders: null,
-      resultCount: 0
+      resultCount: 0,
+      loading: true,
+      searchTerm: ''
     };
   }
 
@@ -33,39 +37,29 @@ class Index extends React.Component<Props, State> {
 
   searchOrders = (query: string | null) => {
     this.props.navigation.setParams({ refetchOrders: false });
+    this.setState({ searchTerm: query ?? '', loading: true });
     const actionCallback = (data: any) => {
+      this.setState({ loading: false });
       if (data?.error) {
         showPopup({
-          title: data.errorMessage ? 'Failed to fetch products' : 'Error',
-          message: data.errorMessage ?? 'Failed to fetch products',
+          title: data.errorMessage ? 'Failed to fetch orders' : 'Error',
+          message: data.errorMessage ?? 'Failed to fetch orders',
           positiveButton: {
             text: 'Retry',
             callback: () => {
-              this.props.getOrdersAction(query, actionCallback);
+              this.searchOrders(query);
             }
           },
           negativeButtonText: 'Cancel'
         });
-      } else {
-        if (data?.length === 0) {
-          this.setState({
-            error: 'No outbound orders found',
-            allOrders: data,
-            resultCount: 0
-          });
-        } else {
-          this.setState({
-            error: null,
-            allOrders: data,
-            resultCount: data.length
-          });
-        }
+        return;
       }
-
-      this.props.hideScreenLoading();
+      this.setState({
+        allOrders: data ?? [],
+        resultCount: data?.length ?? 0
+      });
     };
-    this.props.showScreenLoading('Loading..');
-    this.props.getOrdersAction(query, actionCallback);
+    this.props.getOrdersAction(query, actionCallback, true);
   };
 
   goToOrderDetailsScreen = (order: Order) => {
@@ -79,17 +73,29 @@ class Index extends React.Component<Props, State> {
   };
 
   render() {
+    const { loading, allOrders, searchTerm } = this.state;
     return (
       <View style={styles.screenContainer}>
         <BarcodeSearchHeader
           placeholder={'Search Orders by Name'}
-          resetSearch={() => null}
-          autoSearch={false}
+          resetSearch={() => this.setState({ searchTerm: '' })}
+          autoSearch
           searchBox={false}
+          loading={loading}
+          accessibilityLabel="Search orders"
           onSearchTermSubmit={this.searchOrders}
         />
+        <ResultCount count={allOrders?.length ?? 0} noun="orders" visible={!loading} />
         <View style={styles.content}>
-          <OrdersList orders={this.state.allOrders} onOrderTapped={this.goToOrderDetailsScreen} />
+          {loading ? (
+            <ListLoadingSkeleton visible count={5} CardComponent={OrderCardSkeleton} />
+          ) : (
+            <OrdersList
+              orders={allOrders}
+              onOrderTapped={this.goToOrderDetailsScreen}
+              emptyDescription={emptyStateMessage('orders', searchTerm, 'No outbound orders found')}
+            />
+          )}
         </View>
       </View>
     );
@@ -97,9 +103,7 @@ class Index extends React.Component<Props, State> {
 }
 
 const mapDispatchToProps: DispatchProps = {
-  getOrdersAction,
-  showScreenLoading,
-  hideScreenLoading
+  getOrdersAction
 };
 
 export default connect(null, mapDispatchToProps)(Index);

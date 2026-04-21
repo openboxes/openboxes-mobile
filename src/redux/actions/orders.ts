@@ -14,11 +14,16 @@ export const GET_PICKLIST_REQUEST_SUCCESS_FAIL = 'GET_PICKLIST_REQUEST_SUCCESS_F
 export const SUBMIT_PACKING_LOCATION_REQUEST = 'SUBMIT_PACKING_LOCATION_REQUEST';
 export const SUBMIT_PACKING_LOCATION_SUCCESS = 'SUBMIT_PACKING_LOCATION_SUCCESS';
 
-export function getOrdersAction(value: string | null, callback: (products: any) => void) {
+export function getOrdersAction(
+  value: string | null,
+  callback: (products: any) => void,
+  suppressLoading?: boolean
+) {
   return {
     type: GET_ORDERS_REQUEST,
     payload: value,
-    callback
+    callback,
+    suppressLoading
   };
 }
 

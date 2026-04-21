@@ -21,7 +21,9 @@ import {
 
 function* getOrders(action: any) {
   try {
-    yield put(showScreenLoading('Loading...'));
+    if (!action.suppressLoading) {
+      yield put(showScreenLoading('Loading...'));
+    }
     const response: GetOrdersApiResponse = yield call(
       api.getOrders,
       action.payload
