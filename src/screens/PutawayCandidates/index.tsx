@@ -8,9 +8,12 @@ import { LayoutStyle } from '../../assets/styles';
 import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSearchHeader';
 import Button from '../../components/Button';
 import EmptyView from '../../components/EmptyView';
-import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
+import ListLoadingSkeleton from '../../components/ListLoadingSkeleton';
+import ResultCount from '../../components/ResultCount';
 import { getCandidates } from '../../redux/actions/putaways';
 import { RootState } from '../../redux/reducers';
+import { emptyStateMessage } from '../../utils/emptyStateMessage';
+import PutawayCandidateCardSkeleton from './PutawayCandidateCardSkeleton';
 import styles from './styles';
 import { DispatchProps, Props, State } from './types';
 
@@ -21,7 +24,9 @@ class PutawayCandidates extends Component<Props, State> {
     this.state = {
       refreshing: false,
       putawayCandidates: [],
-      filteredPutawayCandidates: []
+      filteredPutawayCandidates: [],
+      initialLoading: true,
+      searchTerm: ''
     };
   }
 
@@ -39,6 +44,7 @@ class PutawayCandidates extends Component<Props, State> {
 
       this.setState({
         refreshing: false,
+        initialLoading: false,
         putawayCandidates
       });
     }
@@ -47,7 +53,7 @@ class PutawayCandidates extends Component<Props, State> {
   getScreenData = async () => {
     this.setState({ refreshing: true });
     const { currentLocation } = this.props;
-    await this.props.getCandidates(currentLocation.id);
+    await this.props.getCandidates(currentLocation.id, undefined, true);
   };
 
   renderItem = (item: any) => {
@@ -101,12 +107,13 @@ class PutawayCandidates extends Component<Props, State> {
     this.props.navigation.navigate('PutawayItem', { item });
   };
 
-  filterPutawayCandidates = (searchTerm: string) => {
-    if (searchTerm) {
+  filterPutawayCandidates = (query: string) => {
+    this.setState({ searchTerm: query });
+    if (query) {
       const exactPutawayCandidate = _.filter(
         this.state.putawayCandidates,
         (putawayCandidate: any) =>
-          putawayCandidate['inventoryItem.lotNumber']?.toLowerCase() === searchTerm.toLowerCase()
+          putawayCandidate['inventoryItem.lotNumber']?.toLowerCase() === query.toLowerCase()
       );
 
       if (exactPutawayCandidate.length === 1) {
@@ -116,9 +123,9 @@ class PutawayCandidates extends Component<Props, State> {
         const filteredPutawayCandidates = _.filter(
           this.state.putawayCandidates,
           (putawayCandidate: any) =>
-            putawayCandidate['inventoryItem.lotNumber']?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            putawayCandidate['currentLocation.name']?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            putawayCandidate['currentLocation.id']?.toLowerCase().includes(searchTerm.toLowerCase())
+            putawayCandidate['inventoryItem.lotNumber']?.toLowerCase().includes(query.toLowerCase()) ||
+            putawayCandidate['currentLocation.name']?.toLowerCase().includes(query.toLowerCase()) ||
+            putawayCandidate['currentLocation.id']?.toLowerCase().includes(query.toLowerCase())
         );
         this.setState({
           ...this.state,
@@ -135,12 +142,14 @@ class PutawayCandidates extends Component<Props, State> {
   resetFiltering = () => {
     this.setState({
       ...this.state,
+      searchTerm: '',
       filteredPutawayCandidates: []
     });
   };
 
   render() {
-    const { filteredPutawayCandidates, putawayCandidates } = this.state;
+    const { filteredPutawayCandidates, putawayCandidates, initialLoading, refreshing, searchTerm } = this.state;
+    const visibleData = filteredPutawayCandidates.length > 0 ? filteredPutawayCandidates : putawayCandidates;
     return (
       <SafeAreaView style={styles.container}>
         <BarcodeSearchHeader
@@ -148,6 +157,8 @@ class PutawayCandidates extends Component<Props, State> {
           placeholder="Search by lot number or current location"
           resetSearch={this.resetFiltering}
           searchBox={false}
+          loading={initialLoading || refreshing}
+          accessibilityLabel="Search putaway candidates"
           onSearchTermSubmit={this.filterPutawayCandidates}
         />
         <Button
@@ -156,16 +167,28 @@ class PutawayCandidates extends Component<Props, State> {
           title="Refresh (Get Latest Data)"
           onPress={this.getScreenData}
         />
-        {putawayCandidates.length ? (
+        <ResultCount count={visibleData.length} noun="candidates" visible={!initialLoading} />
+        {initialLoading ? (
+          <ListLoadingSkeleton visible count={6} CardComponent={PutawayCandidateCardSkeleton} />
+        ) : putawayCandidates.length ? (
           <FlatList
-            refreshControl={<RefreshControl refreshing={this.state.refreshing} onRefresh={this.getScreenData} />}
-            data={filteredPutawayCandidates.length > 0 ? filteredPutawayCandidates : putawayCandidates}
+            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={this.getScreenData} />}
+            keyboardShouldPersistTaps="handled"
+            keyboardDismissMode="on-drag"
+            data={visibleData}
             renderItem={({ item }) => this.renderItem(item)}
+            ListEmptyComponent={
+              <EmptyView
+                title="Putaway Candidates"
+                description={emptyStateMessage('candidates', searchTerm, 'There are no candidate items to Putaway')}
+                isRefresh={false}
+              />
+            }
           />
         ) : (
           <EmptyView
             title="Putaway Candidates"
-            description="There are no candidate items to Putaway"
+            description={emptyStateMessage('candidates', searchTerm, 'There are no candidate items to Putaway')}
             isRefresh={false}
           />
         )}
@@ -181,9 +204,7 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps: DispatchProps = {
-  getCandidates,
-  showScreenLoading,
-  hideScreenLoading
+  getCandidates
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(PutawayCandidates);

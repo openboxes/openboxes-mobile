@@ -21,7 +21,9 @@ import { userLocation } from '../selectors/auth';
 
 function* fetchPutAwayFromOrder(action: any) {
   try {
-    yield put(showScreenLoading('Loading..'));
+    if (!action.suppressLoading) {
+      yield put(showScreenLoading('Loading..'));
+    }
     const response: GetPutAwaysApiResponse = yield call(api.fetchPutAwayFromOrder, action.payload.q);
     yield put({
       type: FETCH_PUTAWAY_FROM_ORDER_REQUEST_SUCCESS,
@@ -67,16 +69,24 @@ function* submitPutawayItem(action: any) {
 
 function* getCandidates(action: any) {
   try {
-    yield put(showScreenLoading('Loading..'));
+    if (!action.suppressLoading) {
+      yield put(showScreenLoading('Loading..'));
+    }
     const response = yield call(api.getCandidates, action.payload.locationId);
     yield put({
       type: GET_PUTAWAY_CANDIDATES_REQUEST_SUCCESS,
       payload: response.data
     });
     yield put(hideScreenLoading());
+    if (action.callback) {
+      yield action.callback(response.data);
+    }
   } catch (e) {
     yield put(hideScreenLoading());
     Sentry.captureException('Error while get Candidates API', e.message);
+    if (action.callback) {
+      yield action.callback({ error: true, errorMessage: e.message });
+    }
   }
 }
 

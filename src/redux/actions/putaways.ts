@@ -12,11 +12,16 @@ export const GET_PUTAWAY_DETAILS_BY_CONTAINER_ID_REQUEST = 'GET_PUTAWAY_DETAILS_
 export const GET_PUTAWAY_DETAILS_BY_CONTAINER_ID_REQUEST_SUCCESS =
   'GET_PUTAWAY_DETAILS_BY_CONTAINER_ID_REQUEST_SUCCESS';
 
-export function fetchPutAwayFromOrderAction(q: string | null, callback: (data: any) => void) {
+export function fetchPutAwayFromOrderAction(
+  q: string | null,
+  callback: (data: any) => void,
+  suppressLoading?: boolean
+) {
   return {
     type: FETCH_PUTAWAY_FROM_ORDER_REQUEST,
     payload: { q },
-    callback
+    callback,
+    suppressLoading
   };
 }
 
@@ -27,11 +32,16 @@ export function submitPutawayItem(id: string, requestBody: any, callback: (data:
     callback
   };
 }
-export function getCandidates(locationId: string, callback?: (data: any) => void) {
+export function getCandidates(
+  locationId: string,
+  callback?: (data: any) => void,
+  suppressLoading?: boolean
+) {
   return {
     type: GET_PUTAWAY_CANDIDATES_REQUEST,
     payload: { locationId },
-    callback
+    callback,
+    suppressLoading
   };
 }
 
