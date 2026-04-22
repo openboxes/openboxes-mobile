@@ -56,15 +56,22 @@ function* getProducts(action: any) {
 
 function* searchProductsByName(action: any) {
   try {
-    yield showScreenLoading('Please wait...');
+    if (!action.suppressLoading) {
+      yield put(showScreenLoading('Please wait...'));
+    }
     const data = yield call(api.searchProductsByName, action.payload.name);
     yield put({
       type: SEARCH_PRODUCTS_BY_NAME_REQUEST_SUCCESS,
       payload: data
     });
-    yield action.payload.callback(data);
-    yield put(hideScreenLoading());
+    yield action.callback(data);
+    if (!action.suppressLoading) {
+      yield put(hideScreenLoading());
+    }
   } catch (error) {
+    if (!action.suppressLoading) {
+      yield put(hideScreenLoading());
+    }
     if (error.code !== 401) {
       yield action.callback({
         error: true,
@@ -76,15 +83,22 @@ function* searchProductsByName(action: any) {
 
 function* searchProductByCode(action: any) {
   try {
-    yield showScreenLoading('Please wait...');
+    if (!action.suppressLoading) {
+      yield put(showScreenLoading('Please wait...'));
+    }
     const data = yield call(api.searchProductByCode, action.payload.productCode);
     yield put({
       type: SEARCH_PRODUCT_BY_CODE_REQUEST_SUCCESS,
       payload: data
     });
     yield action.callback(data);
-    yield put(hideScreenLoading());
+    if (!action.suppressLoading) {
+      yield put(hideScreenLoading());
+    }
   } catch (error) {
+    if (!action.suppressLoading) {
+      yield put(hideScreenLoading());
+    }
     if (error.code != 401) {
       yield action.callback({
         error: true,
@@ -123,15 +137,22 @@ function* searchProductGlobally(action: any) {
 
 function* searchProductsByCategory(action: any) {
   try {
-    yield showScreenLoading('Searching..');
+    if (!action.suppressLoading) {
+      yield put(showScreenLoading('Searching..'));
+    }
     const data = yield call(api.searchProductsByCategory, action.payload.category);
     yield put({
       type: SEARCH_PRODUCTS_BY_CATEGORY_REQUEST_SUCCESS,
       payload: data
     });
     yield action.callback(data);
-    yield put(hideScreenLoading());
+    if (!action.suppressLoading) {
+      yield put(hideScreenLoading());
+    }
   } catch (error) {
+    if (!action.suppressLoading) {
+      yield put(hideScreenLoading());
+    }
     if (error.code != 401) {
       yield action.callback({
         error: true,
