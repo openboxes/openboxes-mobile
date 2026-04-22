@@ -1,5 +1,7 @@
+export type EmptyStateNoun = 'orders' | 'products' | 'shipments' | 'candidates' | 'items' | 'transfers' | 'locations';
+
 export function emptyStateMessage(
-  noun: string,
+  noun: EmptyStateNoun,
   searchTerm: string | undefined | null,
   defaultDescription: string
 ): string {

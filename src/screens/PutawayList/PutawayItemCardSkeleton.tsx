@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { Card } from 'react-native-paper';
 
 import LayoutStyle from '../../assets/styles/LayoutStyle';
-import { ShimmerBlock } from '../../components/ContentSkeleton';
+import { ShimmerBlock, SkeletonDivider } from '../../components/ContentSkeleton';
 
 export default function PutawayItemCardSkeleton() {
   return (
@@ -12,7 +12,7 @@ export default function PutawayItemCardSkeleton() {
         <View style={styles.headerRow}>
           <ShimmerBlock style={styles.locationChip} />
         </View>
-        <View style={styles.divider} />
+        <SkeletonDivider />
         <ShimmerBlock style={styles.title} />
         <ShimmerBlock style={styles.caption} />
         <View style={styles.footerRow}>
@@ -25,7 +25,6 @@ export default function PutawayItemCardSkeleton() {
 
 const styles = StyleSheet.create({
   headerRow: { flexDirection: 'row' },
-  divider: { height: 1, backgroundColor: '#E0E0E0', marginVertical: 8 },
   footerRow: { flexDirection: 'row', marginTop: 8 },
   locationChip: { width: 170, height: 24, borderRadius: 4 },
   title: { width: '65%', height: 16, borderRadius: 4, marginTop: 4, marginBottom: 6 },

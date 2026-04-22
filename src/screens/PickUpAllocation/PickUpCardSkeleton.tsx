@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Card } from 'react-native-paper';
 
-import { ShimmerBlock } from '../../components/ContentSkeleton';
+import { ShimmerBlock, SkeletonDivider } from '../../components/ContentSkeleton';
 import Theme from '../../utils/Theme';
 
 export default function PickUpCardSkeleton() {
@@ -14,7 +14,7 @@ export default function PickUpCardSkeleton() {
             <ShimmerBlock style={styles.identifier} />
             <ShimmerBlock style={styles.linesChip} />
           </View>
-          <View style={styles.divider} />
+          <SkeletonDivider />
           <ShimmerBlock style={styles.title} />
           <ShimmerBlock style={styles.caption} />
         </Card.Content>
@@ -39,7 +39,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: Theme.spacing.small - 2
   },
-  divider: { height: 1, backgroundColor: '#E0E0E0', marginVertical: Theme.spacing.small / 2 },
   identifier: { width: 140, height: 24, borderRadius: Theme.roundness },
   linesChip: { width: 90, height: 24, borderRadius: Theme.roundness },
   title: { width: '65%', height: 20, borderRadius: 4, marginTop: 4, marginBottom: 6 },

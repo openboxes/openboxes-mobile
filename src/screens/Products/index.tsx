@@ -265,12 +265,11 @@ class Products extends React.Component<Props, State> {
   onSearchTermSubmit = (query: string) => {
     if (!query) {
       this.setState({
-        searchByProductCode: {
-          query: '',
-          results: this.state.allProducts
-        },
-        searchTerm: ''
+        searchByProductCode: { query: '', results: this.state.allProducts },
+        searchTerm: '',
+        error: null
       });
+      return;
     }
 
     this.setState({ loading: true, searchTerm: query });

@@ -13,30 +13,27 @@ import { AllocationOrder } from './types';
 
 export function PickUpEntryScreen() {
   const [orders, setOrders] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [hasLoaded, setHasLoaded] = useState<boolean>(false);
 
   const fetchOrders = async () => {
     try {
-      setIsLoading(true);
+      setIsRefreshing(true);
       const response = await getOutboundOrders();
       setOrders(response.data || []);
     } catch (error) {
       Alert.alert('Error', 'Failed to fetch orders data');
     } finally {
-      setIsLoading(false);
+      setIsRefreshing(false);
       setHasLoaded(true);
     }
   };
 
-  // useFocusEffect usedto refresh when screen is focused after nagivation
   useFocusEffect(
     useCallback(() => {
       fetchOrders();
     }, [])
   );
-
-  const showSkeleton = isLoading && !hasLoaded;
 
   return (
     <View style={styles.screenContainer}>
@@ -47,7 +44,7 @@ export function PickUpEntryScreen() {
 
       <Divider style={styles.sectionDivider} />
 
-      {showSkeleton ? (
+      {!hasLoaded ? (
         <ListLoadingSkeleton visible count={5} CardComponent={PickUpCardSkeleton} />
       ) : (
         <FlatList
@@ -56,7 +53,7 @@ export function PickUpEntryScreen() {
           keyExtractor={(item: AllocationOrder) => item.id}
           numColumns={1}
           ItemSeparatorComponent={() => <View style={styles.itemSeparator} />}
-          refreshing={isLoading}
+          refreshing={isRefreshing}
           onRefresh={fetchOrders}
         />
       )}

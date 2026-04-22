@@ -167,7 +167,7 @@ class PutawayCandidates extends Component<Props, State> {
         />
         {initialLoading ? (
           <ListLoadingSkeleton visible count={6} CardComponent={PutawayCandidateCardSkeleton} />
-        ) : putawayCandidates.length ? (
+        ) : (
           <FlatList
             refreshControl={<RefreshControl refreshing={refreshing} onRefresh={this.getScreenData} />}
             keyboardShouldPersistTaps="handled"
@@ -181,12 +181,6 @@ class PutawayCandidates extends Component<Props, State> {
                 isRefresh={false}
               />
             }
-          />
-        ) : (
-          <EmptyView
-            title="Putaway Candidates"
-            description={emptyStateMessage('candidates', searchTerm, 'There are no candidate items to Putaway')}
-            isRefresh={false}
           />
         )}
       </SafeAreaView>

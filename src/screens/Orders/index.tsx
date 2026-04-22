@@ -18,7 +18,6 @@ class Index extends React.Component<Props, State> {
     super(props);
     this.state = {
       allOrders: null,
-      resultCount: 0,
       loading: true,
       searchTerm: ''
     };
@@ -53,10 +52,7 @@ class Index extends React.Component<Props, State> {
         });
         return;
       }
-      this.setState({
-        allOrders: data ?? [],
-        resultCount: data?.length ?? 0
-      });
+      this.setState({ allOrders: data ?? [] });
     };
     this.props.getOrdersAction(query, actionCallback, true);
   };

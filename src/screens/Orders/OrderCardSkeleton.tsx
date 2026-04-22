@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { Card } from 'react-native-paper';
 
 import LayoutStyle from '../../assets/styles/LayoutStyle';
-import { ShimmerBlock } from '../../components/ContentSkeleton';
+import { ShimmerBlock, SkeletonDivider } from '../../components/ContentSkeleton';
 
 export default function OrderCardSkeleton() {
   return (
@@ -13,12 +13,12 @@ export default function OrderCardSkeleton() {
           <ShimmerBlock style={styles.identifier} />
           <ShimmerBlock style={styles.statusChip} />
         </View>
-        <View style={styles.divider} />
+        <SkeletonDivider />
         <ShimmerBlock style={styles.destination} />
         <View style={styles.infoRow}>
           <ShimmerBlock style={styles.chipInfo} />
         </View>
-        <View style={styles.divider} />
+        <SkeletonDivider />
         <View style={styles.footerRow}>
           <View style={styles.columnItem}>
             <ShimmerBlock style={styles.label} />
@@ -36,7 +36,6 @@ export default function OrderCardSkeleton() {
 
 const styles = StyleSheet.create({
   headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  divider: { height: 1, backgroundColor: '#E0E0E0', marginVertical: 8 },
   infoRow: { flexDirection: 'row', marginTop: 8 },
   footerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
   columnItem: { flexDirection: 'column' },

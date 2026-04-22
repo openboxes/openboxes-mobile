@@ -14,7 +14,6 @@ export type Props = OwnProps & DispatchProps;
 
 export interface State {
   allOrders: Order[] | null;
-  resultCount: Number;
   loading: boolean;
   searchTerm: string;
 }

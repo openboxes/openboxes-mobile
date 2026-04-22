@@ -174,7 +174,7 @@ const InboundOrderList = () => {
       />
       {loading ? (
         <ListLoadingSkeleton visible count={5} CardComponent={ShipmentCardSkeleton} />
-      ) : state.inboundOrders.length > 0 ? (
+      ) : (
         <FlatList
           data={visibleData}
           keyboardShouldPersistTaps="handled"
@@ -188,12 +188,6 @@ const InboundOrderList = () => {
               isRefresh={false}
             />
           }
-        />
-      ) : (
-        <EmptyView
-          title="Receiving"
-          description={emptyStateMessage('shipments', searchTerm, 'There are no items to receive')}
-          isRefresh={false}
         />
       )}
     </View>
