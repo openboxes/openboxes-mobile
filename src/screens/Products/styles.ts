@@ -10,8 +10,6 @@ export default StyleSheet.create({
   content: {
     display: 'flex',
     flexDirection: 'column',
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center'
+    flex: 1
   }
 });
