@@ -9,6 +9,7 @@ import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSea
 import Button from '../../components/Button';
 import EmptyView from '../../components/EmptyView';
 import ListLoadingSkeleton from '../../components/ListLoadingSkeleton';
+import showPopup from '../../components/Popup';
 import { getCandidates } from '../../redux/actions/putaways';
 import { RootState } from '../../redux/reducers';
 import { emptyStateMessage } from '../../utils/emptyStateMessage';
@@ -52,7 +53,24 @@ class PutawayCandidates extends Component<Props, State> {
   getScreenData = async () => {
     this.setState({ refreshing: true });
     const { currentLocation } = this.props;
-    await this.props.getCandidates(currentLocation.id, undefined, true);
+    this.props.getCandidates(
+      currentLocation.id,
+      (data: any) => {
+        if (data?.error) {
+          this.setState({ refreshing: false, initialLoading: false });
+          showPopup({
+            title: 'Putaway Candidates',
+            message: data.errorMessage ?? 'Failed to load putaway candidates',
+            positiveButton: {
+              text: 'Retry',
+              callback: () => this.getScreenData()
+            },
+            negativeButtonText: 'Cancel'
+          });
+        }
+      },
+      true
+    );
   };
 
   renderItem = (item: any) => {
