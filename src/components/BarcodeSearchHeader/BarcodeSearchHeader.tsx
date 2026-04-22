@@ -48,21 +48,6 @@ const BarcodeSearchHeader: React.FC<OwnProps> = (props) => {
     return () => debouncedSubmit.cancel();
   }, [debouncedSubmit]);
 
-  // Skip the very first render so mounting with an empty search term does
-  // not race a sibling fetch (e.g. componentDidMount) and cause a double
-  // fetch / double skeleton flash. Subsequent changes — user typing,
-  // clearing via the X icon, or navigation-focus reset — still fire.
-  const isFirstRender = useRef(true);
-  useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
-    if (props.autoSearch) {
-      debouncedSubmit(searchTerm);
-    }
-  }, [searchTerm, props.autoSearch, debouncedSubmit]);
-
   useEffect(() => {
     return navigation.addListener('focus', () => {
       setSearchTerm('');
@@ -73,7 +58,14 @@ const BarcodeSearchHeader: React.FC<OwnProps> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigation, props.resetSearch]);
 
-  const onSearchTermSubmit = () => {
+  const onChangeText = (text: string) => {
+    setSearchTerm(text);
+    if (props.autoSearch) {
+      debouncedSubmit(text);
+    }
+  };
+
+  const onSubmitEditing = () => {
     debouncedSubmit.cancel();
     props.onSearchTermSubmit(searchTerm);
   };
@@ -90,8 +82,8 @@ const BarcodeSearchHeader: React.FC<OwnProps> = (props) => {
         loading={props.loading}
         returnKeyType="search"
         accessibilityLabel={props.accessibilityLabel ?? 'Search'}
-        onSubmitEditing={onSearchTermSubmit}
-        onChangeText={setSearchTerm}
+        onSubmitEditing={onSubmitEditing}
+        onChangeText={onChangeText}
       />
     </View>
   );
