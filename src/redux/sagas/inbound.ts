@@ -27,14 +27,18 @@ function* fetchInboundOrderList(action: any) {
       payload: response.data
     });
     yield action.callback(response.data);
-    yield put(hideScreenLoading());
+    if (!action.suppressLoading) {
+      yield put(hideScreenLoading());
+    }
   } catch (e) {
     if (action.callback) {
       yield action.callback({ error: true, errorMessage: e.message });
     } else {
       Alert.alert(e.message);
     }
-    yield put(hideScreenLoading());
+    if (!action.suppressLoading) {
+      yield put(hideScreenLoading());
+    }
   }
 }
 

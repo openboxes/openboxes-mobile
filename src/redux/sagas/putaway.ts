@@ -30,9 +30,13 @@ function* fetchPutAwayFromOrder(action: any) {
       payload: response.data
     });
     yield action.callback(response.data);
-    yield put(hideScreenLoading());
+    if (!action.suppressLoading) {
+      yield put(hideScreenLoading());
+    }
   } catch (error) {
-    yield put(hideScreenLoading());
+    if (!action.suppressLoading) {
+      yield put(hideScreenLoading());
+    }
     if (error.code != 401) {
       yield action.callback({
         error: true,
@@ -77,12 +81,16 @@ function* getCandidates(action: any) {
       type: GET_PUTAWAY_CANDIDATES_REQUEST_SUCCESS,
       payload: response.data
     });
-    yield put(hideScreenLoading());
+    if (!action.suppressLoading) {
+      yield put(hideScreenLoading());
+    }
     if (action.callback) {
       yield action.callback(response.data);
     }
   } catch (e) {
-    yield put(hideScreenLoading());
+    if (!action.suppressLoading) {
+      yield put(hideScreenLoading());
+    }
     Sentry.captureException('Error while get Candidates API', e.message);
     if (action.callback) {
       yield action.callback({ error: true, errorMessage: e.message });

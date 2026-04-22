@@ -35,13 +35,17 @@ function* getShipmentsReadyToBePacked(action: any) {
       payload: response.data
     });
     yield action.callback(response.data);
-    yield put(hideScreenLoading());
+    if (!action.suppressLoading) {
+      yield put(hideScreenLoading());
+    }
   } catch (e) {
     Sentry.captureException(
       'Error while getShipmentsReadyToBePacked API',
       e.message
     );
-    yield put(hideScreenLoading());
+    if (!action.suppressLoading) {
+      yield put(hideScreenLoading());
+    }
     if (action.callback) {
       yield action.callback({ error: true, errorMessage: e.message });
     }
