@@ -22,9 +22,10 @@ export function refreshScreenAction() {
   };
 }
 
-export function getSessionAction(callback: (data: any) => void) {
+export function getSessionAction(callback: (data: any) => void, suppressLoading?: boolean) {
   return {
     type: GET_SESSION_REQUEST,
-    callback
+    callback,
+    suppressLoading
   };
 }

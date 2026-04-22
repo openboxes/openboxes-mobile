@@ -104,7 +104,7 @@ interface StateProps {
 }
 
 interface DispatchProps {
-  getSessionAction: (callback: (data: any) => void) => void;
+  getSessionAction: (callback: (data: any) => void, suppressLoading?: boolean) => void;
 }
 
 type Props = OwnProps & StateProps & DispatchProps;
@@ -140,13 +140,13 @@ class Main extends Component<Props, State> {
             positiveButton: {
               text: 'Retry',
               callback: () => {
-                this.props.getSessionAction(actionCallback);
+                this.props.getSessionAction(actionCallback, true);
               }
             }
           });
         }
       };
-      this.props.getSessionAction(actionCallback);
+      this.props.getSessionAction(actionCallback, true);
     }
   }
 

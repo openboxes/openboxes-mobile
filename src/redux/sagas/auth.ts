@@ -19,17 +19,29 @@ import {
 } from '../actions/main';
 import GetSessionApiResponse from '../../data/auth/Session';
 
-function* getSession() {
+function* getSession(action: any) {
   try {
-    yield put(showScreenLoading('Loading..'));
+    if (!action.suppressLoading) {
+      yield put(showScreenLoading('Loading..'));
+    }
     const response: GetSessionApiResponse = yield call(api.getSession);
     yield put({
       type: GET_SESSION_REQUEST_SUCCESS,
       payload: response.data
     });
-    yield put(hideScreenLoading());
+    if (action.callback) {
+      yield action.callback(response.data);
+    }
+    if (!action.suppressLoading) {
+      yield put(hideScreenLoading());
+    }
   } catch (e) {
-    yield put(hideScreenLoading());
+    if (!action.suppressLoading) {
+      yield put(hideScreenLoading());
+    }
+    if (action.callback) {
+      yield action.callback({ error: true, errorMessage: e.message });
+    }
   }
 }
 

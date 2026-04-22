@@ -42,11 +42,16 @@ export function getBinLocationsAction(callback?: () => void) {
   };
 }
 
-export function setCurrentLocationAction(location: any, callback: (data: any) => void) {
+export function setCurrentLocationAction(
+  location: any,
+  callback: (data: any) => void,
+  suppressLoading?: boolean
+) {
   return {
     type: SET_CURRENT_LOCATION_REQUEST,
     payload: { location },
-    callback
+    callback,
+    suppressLoading
   };
 }
 

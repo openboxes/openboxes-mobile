@@ -26,7 +26,11 @@ export interface OwnProps {
 
 interface DispatchProps {
   getLocationsAction: (callback: (locations: any) => void, suppressLoading?: boolean) => void;
-  setCurrentLocationAction: (location: Location, callback: (data: any) => void) => void;
+  setCurrentLocationAction: (
+    location: Location,
+    callback: (data: any) => void,
+    suppressLoading?: boolean
+  ) => void;
 }
 
 type Props = OwnProps & DispatchProps;
@@ -77,15 +81,15 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
           positiveButton: {
             text: 'Try Again',
             callback: () => {
-              this.props.setCurrentLocationAction(location, actionCallback);
+              this.setCurrentLocation(location);
             }
           },
           negativeButtonText: 'Cancel'
         });
-      } else {
-        global.location = location;
-        this.props.navigation.navigate('Dashboard');
+        return;
       }
+      global.location = location;
+      this.props.navigation.navigate('Dashboard');
     };
 
     this.props.setCurrentLocationAction(location, actionCallback);
@@ -179,7 +183,11 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
     const { groupLocationEntries, currentLocation } = this.props;
 
     if (loading) {
-      return <ListLoadingSkeleton visible count={7} CardComponent={LocationCardSkeleton} />;
+      return (
+        <View style={styles.scrollView}>
+          <ListLoadingSkeleton visible count={4} CardComponent={LocationCardSkeleton} />
+        </View>
+      );
     }
 
     if (!availableLocations || availableLocations.length === 0) {

@@ -53,7 +53,9 @@ function* getLocations(action: any) {
 
 function* setCurrentLocation(action: any) {
   try {
-    yield put(showScreenLoading('Please wait...'));
+    if (!action.suppressLoading) {
+      yield put(showScreenLoading('Starting Session...'));
+    }
     const response = yield call(
       api.setCurrentLocation,
       action.payload.location
@@ -63,9 +65,13 @@ function* setCurrentLocation(action: any) {
       payload: action.payload
     });
     yield action.callback(action.payload.location);
-    yield put(hideScreenLoading());
+    if (!action.suppressLoading) {
+      yield put(hideScreenLoading());
+    }
   } catch (error) {
-    yield put(hideScreenLoading());
+    if (!action.suppressLoading) {
+      yield put(hideScreenLoading());
+    }
     if (error.code !== 401) {
       yield action.callback({
         error: true,
