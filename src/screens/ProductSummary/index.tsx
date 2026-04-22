@@ -95,7 +95,7 @@ const ProductSummary = () => {
         autoSearch
         autoFocus
         placeholder={'Search by product code or name'}
-        resetSearch={() => setSearchTerm('')}
+        resetSearch={() => searchProduct('')}
         searchBox={false}
         loading={isLoading}
         accessibilityLabel="Search inventory"

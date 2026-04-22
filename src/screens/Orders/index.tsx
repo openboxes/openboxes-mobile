@@ -74,7 +74,7 @@ class Index extends React.Component<Props, State> {
         <BarcodeSearchHeader
           autoSearch
           placeholder={'Search Orders by Name'}
-          resetSearch={() => this.setState({ searchTerm: '' })}
+          resetSearch={() => this.searchOrders(null)}
           searchBox={false}
           loading={loading}
           accessibilityLabel="Search orders"

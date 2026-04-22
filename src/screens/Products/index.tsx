@@ -333,7 +333,7 @@ class Products extends React.Component<Props, State> {
           autoFocus
           placeholder={'Search by product code or name'}
           subtitle={vm.subtitle}
-          resetSearch={() => this.setState({ searchTerm: '' })}
+          resetSearch={this.getProducts}
           searchBox={false}
           loading={loading}
           accessibilityLabel="Search products"
