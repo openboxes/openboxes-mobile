@@ -35,7 +35,7 @@ function* getSession() {
 
 function* login(action: any) {
   try {
-    yield put(showScreenLoading('Logging in'));
+    yield put(showScreenLoading('Logging In...'));
     const data = yield call(api.login, action.payload.data);
     yield put({
       type: LOGIN_REQUEST_SUCCESS,

@@ -22,7 +22,10 @@ export default function LocationCardSkeleton() {
 }
 
 const styles = StyleSheet.create({
-  cardContainer: { margin: Theme.spacing.small / 4 },
+  cardContainer: {
+    marginHorizontal: Theme.spacing.small / 4,
+    marginVertical: Theme.spacing.small
+  },
   cardContent: { flexDirection: 'row' },
   contentContainer: {
     flexDirection: 'row',

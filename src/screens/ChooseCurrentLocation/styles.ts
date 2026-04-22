@@ -12,7 +12,8 @@ export default StyleSheet.create({
     margin: Theme.spacing.small
   },
   cardContainer: {
-    margin: Theme.spacing.small / 4
+    marginHorizontal: Theme.spacing.small / 4,
+    marginVertical: Theme.spacing.small
   },
   cardContent: {
     flexDirection: 'row'
