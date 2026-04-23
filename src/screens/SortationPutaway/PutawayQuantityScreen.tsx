@@ -57,7 +57,7 @@ export default function PutawayQuantityScreen() {
   const [isDialogVisible, setIsDialogVisible] = useState(false);
 
   useEffect(() => {
-    setSelectedAlternativeDestination(putawayDetails.destination);
+    setSelectedAlternativeDestination(putawayDetails?.destination);
   }, [putawayDetails]);
 
   useEffect(() => {
@@ -227,7 +227,7 @@ export default function PutawayQuantityScreen() {
 
   const updatedPutawayDetails = {
     ...putawayDetails,
-    destination: selectedAlternativeDestination ?? putawayDetails.destination
+    destination: selectedAlternativeDestination ?? putawayDetails?.destination
   };
 
   const remainingQty = Math.max(putawayDetails.quantity - (putawayQuantity ?? 0), 0);
