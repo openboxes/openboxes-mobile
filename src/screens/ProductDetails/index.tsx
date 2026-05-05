@@ -20,7 +20,7 @@ import { vmMapper } from './VMMapper';
 
 function BackToSortationBanner() {
   const handlePress = () => {
-    resetToRoutes([{ name: 'Dashboard' }, { name: 'Sortation' }]);
+    resetToRoutes([{ name: 'Drawer', params: { screen: 'Dashboard' } }, { name: 'Sortation' }]);
   };
 
   return (
