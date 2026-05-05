@@ -277,6 +277,7 @@ function* getSortationDetailsSaga(action: any) {
 
 function* updateProductIdentifierSaga(action: any) {
   try {
+    yield put(showScreenLoading('Saving...'));
     const response = yield call(
       api.updateProductIdentifier,
       action.payload.id,
@@ -295,6 +296,8 @@ function* updateProductIdentifierSaga(action: any) {
         errorMessage: error.message
       });
     }
+  } finally {
+    yield put(hideScreenLoading());
   }
 }
 
