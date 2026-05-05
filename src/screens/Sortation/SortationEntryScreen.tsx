@@ -46,8 +46,10 @@ export default function SortationEntryScreen() {
             } else {
               navigate('SortationTaskList', { product, tasks: filteredTasks });
             }
-          } else {
+          } else if (response?.productNotFound) {
             setUnrecognizedBarcode(code);
+          } else {
+            Alert.alert('Sortation Failed', response?.errorMessage || 'Something went wrong.');
           }
           setBarcode(EMPTY_STRING);
         })
@@ -97,7 +99,7 @@ export default function SortationEntryScreen() {
           placeholder="Scan product barcode"
           value={barcode}
           leftIcon={<IconProducts height={24} width={24} />}
-          isEnabled={!isSearchOpen}
+          isEnabled={!isSearchOpen && unrecognizedBarcode === null}
           onChange={setBarcode}
           onSubmit={handleScan}
         />
