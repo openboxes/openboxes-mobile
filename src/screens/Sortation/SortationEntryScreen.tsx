@@ -12,6 +12,7 @@ import { EMPTY_STRING } from '../../constants';
 import { navigate, replace } from '../../NavigationService';
 import { getSortationDetailsByBarcode } from '../../redux/actions/products';
 import { SortationTask } from '../../types/sortation';
+import { BarcodeUnrecognizedDialog } from './BarcodeUnrecognizedDialog';
 import styles from './styles';
 
 type SortedProduct = {
@@ -23,6 +24,7 @@ type SortationEntryRouteProp = RouteProp<{ Sortation: { sortedProduct?: SortedPr
 
 export default function SortationEntryScreen() {
   const [barcode, setBarcode] = useState<string>(EMPTY_STRING);
+  const [unrecognizedBarcode, setUnrecognizedBarcode] = useState<string | null>(null);
   const dispatch = useDispatch();
   const { isSearchOpen, searchButtonProps } = useSearchButton({ onSelect: setBarcode });
   const { params } = useRoute<SortationEntryRouteProp>();
@@ -45,7 +47,7 @@ export default function SortationEntryScreen() {
               navigate('SortationTaskList', { product, tasks: filteredTasks });
             }
           } else {
-            Alert.alert('Sortation Failed', response?.errorMessage || 'Product not found.');
+            setUnrecognizedBarcode(code);
           }
           setBarcode(EMPTY_STRING);
         })
@@ -54,6 +56,11 @@ export default function SortationEntryScreen() {
     [dispatch]
   );
 
+  const handleFindProduct = () => {
+    setUnrecognizedBarcode(null);
+    navigate('Products', { fromSortation: true });
+  };
+
   const handleReturnToDashboard = () => {
     replace('Sortation');
     navigate('Dashboard');
@@ -61,6 +68,12 @@ export default function SortationEntryScreen() {
 
   return (
     <ScrollView keyboardShouldPersistTaps="always" style={styles.screen}>
+      <BarcodeUnrecognizedDialog
+        visible={unrecognizedBarcode !== null}
+        barcode={unrecognizedBarcode ?? EMPTY_STRING}
+        onFindProduct={handleFindProduct}
+        onClose={() => setUnrecognizedBarcode(null)}
+      />
       {sortedProduct && (
         <View style={styles.successBanner}>
           <Paragraph style={styles.successHeader}>{sortedProduct.productCode} was sorted </Paragraph>

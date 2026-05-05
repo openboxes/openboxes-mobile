@@ -4,6 +4,7 @@ import { ProductCategory } from '../../data/product/category/ProductCategory';
 export interface OwnProps {
   exit: () => void;
   navigation: any;
+  route: any;
 }
 
 export interface StateProps {
