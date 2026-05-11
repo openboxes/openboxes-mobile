@@ -11,6 +11,7 @@ import transfers from './transfers';
 import packing from './packing';
 import others from './others';
 import picking from './picking';
+import createTransfer from './createTransfer';
 
 export default function* root() {
   const sagas = [
@@ -25,7 +26,8 @@ export default function* root() {
     packing,
     lpn,
     others,
-    picking
+    picking,
+    createTransfer
   ];
   yield all(sagas.map(fork));
 }

@@ -84,6 +84,11 @@ import { ReplenishmentStagingLocationScreen } from './screens/Replenishment/Repl
 import Transfer from './screens/Transfer';
 import Transfers from './screens/Transfers';
 import TransferDetails from './screens/TransfersDetails';
+import CreateTransferEntryScreen from './screens/CreateTransfer/CreateTransferEntryScreen';
+import CreateTransferItemListScreen from './screens/CreateTransfer/CreateTransferItemListScreen';
+import CreateTransferQuantityScreen from './screens/CreateTransfer/CreateTransferQuantityScreen';
+import CreateTransferDestinationScreen from './screens/CreateTransfer/CreateTransferDestinationScreen';
+import CreateTransferCompleteScreen from './screens/CreateTransfer/CreateTransferCompleteScreen';
 import ViewAvailableItem from './screens/ViewAvailableItem';
 import ApiClient from './utils/ApiClient';
 import Theme from './utils/Theme';
@@ -270,6 +275,31 @@ class Main extends Component<Props, State> {
               />
               <Stack.Screen name="AdjustStock" component={AdjustStock} options={{ title: 'Adjust Stock' }} />
               <Stack.Screen name="Transfer" component={Transfer} options={{ title: 'Transfer' }} />
+              <Stack.Screen
+                name="CreateTransferEntry"
+                component={CreateTransferEntryScreen}
+                options={{ title: 'Create Transfer' }}
+              />
+              <Stack.Screen
+                name="CreateTransferItemList"
+                component={CreateTransferItemListScreen}
+                options={{ title: 'Transfer Items' }}
+              />
+              <Stack.Screen
+                name="CreateTransferQuantity"
+                component={CreateTransferQuantityScreen}
+                options={{ title: 'Transfer Quantity' }}
+              />
+              <Stack.Screen
+                name="CreateTransferDestination"
+                component={CreateTransferDestinationScreen}
+                options={{ title: 'Transfer Destination' }}
+              />
+              <Stack.Screen
+                name="CreateTransferComplete"
+                component={CreateTransferCompleteScreen}
+                options={{ title: 'Complete Transfer' }}
+              />
               <Stack.Screen
                 name="ShipmentDetails"
                 component={ShipItemDetails}

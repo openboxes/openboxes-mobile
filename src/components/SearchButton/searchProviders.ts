@@ -1,5 +1,6 @@
 import Location from '../../data/location/Location';
 import Product from '../../data/product/Product';
+import { searchDestinationBinsAction, searchProductOrLocationAction } from '../../redux/actions/createTransfer';
 import { searchInternalLocations } from '../../redux/actions/locations';
 import { searchProductGloballyAction } from '../../redux/actions/products';
 
@@ -47,25 +48,71 @@ function createProductAction(term: string, callback: SearchCallback) {
   );
 }
 
+function locationToSearchResult(item: Location): SearchResult {
+  return {
+    id: item.id,
+    label: item.locationNumber || item.name,
+    subtitle: item.name,
+    value: item.locationNumber
+  };
+}
+
+function handleLocationSearchResponse(
+  response: SearchResponse<Location>,
+  callback: SearchCallback,
+  failureMessage: string
+) {
+  if (response?.error) {
+    callback({ error: response.errorMessage || failureMessage });
+    return;
+  }
+  callback({ results: (response?.data || []).map(locationToSearchResult) });
+}
+
 function createLocationAction(term: string, callback: SearchCallback) {
   return searchInternalLocations(
     term,
     null,
-    (response: SearchResponse<Location>) => {
+    (response: SearchResponse<Location>) =>
+      handleLocationSearchResponse(response, callback, 'Failed to search locations.'),
+    true
+  );
+}
+
+function createProductOrLocationAction(term: string, callback: SearchCallback) {
+  return searchProductOrLocationAction(
+    term,
+    (response: { products?: Product[]; locations?: Location[]; error?: boolean; errorMessage?: string }) => {
       if (response?.error) {
-        callback({ error: response.errorMessage || 'Failed to search locations.' });
+        callback({ error: response.errorMessage || 'Failed to search.' });
         return;
       }
 
-      callback({
-        results: (response?.data || []).map((item) => ({
-          id: item.id,
-          label: item.locationNumber || item.name,
-          subtitle: item.name,
-          value: item.locationNumber
-        }))
-      });
+      const productResults: SearchResult[] = (response?.products || []).map((item) => ({
+        id: `product:${item.id}`,
+        label: item.productCode || item.name,
+        subtitle: `Product · ${item.name}`,
+        value: item.productCode
+      }));
+
+      const locationResults: SearchResult[] = (response?.locations || []).map((item) => ({
+        id: `location:${item.id}`,
+        label: item.locationNumber || item.name,
+        subtitle: `Bin · ${item.name}`,
+        value: item.locationNumber
+      }));
+
+      callback({ results: [...productResults, ...locationResults] });
     },
+    true
+  );
+}
+
+function createDestinationBinAction(term: string, callback: SearchCallback) {
+  return searchDestinationBinsAction(
+    term,
+    (response: SearchResponse<Location>) =>
+      handleLocationSearchResponse(response, callback, 'Failed to search destination bins.'),
     true
   );
 }
@@ -88,6 +135,18 @@ export const searchProviders = {
     placeholder: 'Search by name or number...',
     inputLabel: 'Container ID',
     createAction: createLocationAction
+  },
+  destinationBin: {
+    title: 'Search Destination Bin',
+    placeholder: 'Search by name or number...',
+    inputLabel: 'Destination Bin',
+    createAction: createDestinationBinAction
+  },
+  productOrLocation: {
+    title: 'Search Product or Bin',
+    placeholder: 'Product or bin code...',
+    inputLabel: 'Product or Bin',
+    createAction: createProductOrLocationAction
   }
 };
 

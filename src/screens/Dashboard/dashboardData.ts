@@ -151,6 +151,14 @@ const dashboardEntries: DashboardEntry[] = [
     group: 'INVENTORY'
   },
   {
+    key: 'createTransfer',
+    screenName: 'Create Transfer',
+    entryDescription: 'Create a new internal stock transfer',
+    icon: IconPendingTransfers,
+    navigationScreenName: 'CreateTransferEntry',
+    group: 'INVENTORY'
+  },
+  {
     key: 'cycleCount',
     screenName: 'Cycle Count',
     entryDescription: 'Manage inventory cycle counts',
