@@ -79,6 +79,15 @@ export default function PutawayQuantityScreen() {
     setPutawayQuantity(undefined);
   }, [isFocused]);
 
+  const remainingQty = Math.max((putawayDetails?.quantity ?? 0) - (putawayQuantity ?? 0), 0);
+  const isCancelRemainingDisabled = remainingQty === 0;
+
+  useEffect(() => {
+    if (isCancelRemainingDisabled && isCancelRemainingEnabled) {
+      setIsCancelRemainingEnabled(false);
+    }
+  }, [isCancelRemainingDisabled, isCancelRemainingEnabled]);
+
   if (!putawayDetails) {
     return (
       <View style={styles.emptyContainer}>
@@ -230,8 +239,6 @@ export default function PutawayQuantityScreen() {
     destination: selectedAlternativeDestination ?? putawayDetails?.destination
   };
 
-  const remainingQty = Math.max(putawayDetails.quantity - (putawayQuantity ?? 0), 0);
-
   return (
     <Portal.Host>
       <ScrollView keyboardShouldPersistTaps="always" style={styles.contentContainer}>
@@ -281,10 +288,13 @@ export default function PutawayQuantityScreen() {
           </View>
 
           <View style={styles.cardAnnotation}>
-            <Paragraph style={styles.subheading}>Cancel Remaining ({remainingQty})</Paragraph>
+            <Paragraph style={[styles.subheading, isCancelRemainingDisabled && styles.subheadingDisabled]}>
+              Cancel Remaining ({remainingQty})
+            </Paragraph>
             <Switch
               value={isCancelRemainingEnabled}
               color={Theme.colors.primary}
+              disabled={isCancelRemainingDisabled}
               onValueChange={handleCancelRemainingToggle}
             />
           </View>

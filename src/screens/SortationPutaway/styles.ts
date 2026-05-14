@@ -61,6 +61,9 @@ export default StyleSheet.create({
     color: Theme.colors.text,
     fontWeight: 'bold'
   },
+  subheadingDisabled: {
+    color: Theme.colors.disabled
+  },
   caption: { fontSize: 12 },
   bold: { fontWeight: 'bold' },
   paragraph: {
