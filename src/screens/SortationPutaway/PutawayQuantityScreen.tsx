@@ -79,6 +79,15 @@ export default function PutawayQuantityScreen() {
     setPutawayQuantity(undefined);
   }, [isFocused]);
 
+  const hasDiscrepancy =
+    (putawayQuantity !== undefined && putawayQuantity < (putawayDetails?.quantity ?? 0)) || isCancelRemainingEnabled;
+
+  useEffect(() => {
+    if (!hasDiscrepancy && selectedReasonCode) {
+      setSelectedReasonCode(null);
+    }
+  }, [hasDiscrepancy, selectedReasonCode]);
+
   if (!putawayDetails) {
     return (
       <View style={styles.emptyContainer}>
@@ -110,8 +119,6 @@ export default function PutawayQuantityScreen() {
       );
       return;
     }
-
-    const hasDiscrepancy = putawayQuantity < totalQty || isCancelRemainingEnabled;
 
     if (hasDiscrepancy && !selectedReasonCode?.id) {
       Alert.alert('Discrepancy Reason Required', 'Please select a discrepancy reason.');
@@ -263,21 +270,22 @@ export default function PutawayQuantityScreen() {
               <Button size="50%" title="Request" onPress={() => setIsDialogVisible(true)} />
             </View>
 
-            <View style={styles.headerRow}>
-              <Paragraph style={styles.subheading}>Discrepancy Reason</Paragraph>
-              <View style={styles.dropdownContainer}>
-                <AsyncModalSelect
-                  placeholder="Select a reason"
-                  label="Reason for shortage"
-                  initValue={selectedReasonCode?.name || ''}
-                  initialData={reasonCodes}
-                  searchAction={() => {}}
-                  serverSearchEnabled={false}
-                  disabled={!isCancelRemainingEnabled && putawayQuantity === putawayDetails.quantity}
-                  onSelect={(reason: ReasonCode) => setSelectedReasonCode(reason)}
-                />
+            {hasDiscrepancy && (
+              <View style={styles.headerRow}>
+                <Paragraph style={styles.subheading}>Discrepancy Reason</Paragraph>
+                <View style={styles.dropdownContainer}>
+                  <AsyncModalSelect
+                    placeholder="Select a reason"
+                    label="Reason for shortage"
+                    initValue={selectedReasonCode?.name || ''}
+                    initialData={reasonCodes}
+                    searchAction={() => {}}
+                    serverSearchEnabled={false}
+                    onSelect={(reason: ReasonCode) => setSelectedReasonCode(reason)}
+                  />
+                </View>
               </View>
-            </View>
+            )}
           </View>
 
           <View style={styles.cardAnnotation}>
