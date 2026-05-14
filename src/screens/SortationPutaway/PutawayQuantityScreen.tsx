@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import AsyncModalSelect from '../../components/AsyncModalSelect';
 import Button from '../../components/Button';
 import EmptyView from '../../components/EmptyView';
+import Icon, { Name as IconName } from '../../components/Icon';
 import { QuantityIcon } from '../../components/Icons';
 import { ScannerInput } from '../../components/ScannerInput';
 import { navigate, replace } from '../../NavigationService';
@@ -288,6 +289,15 @@ export default function PutawayQuantityScreen() {
               onValueChange={handleCancelRemainingToggle}
             />
           </View>
+
+          {isCancelRemainingEnabled && remainingQty > 0 && (
+            <View style={styles.lostAndFoundBanner}>
+              <Icon name={IconName.Warning} size={20} color={Theme.colors.warningText} />
+              <Paragraph style={styles.lostAndFoundBannerText}>
+                The remaining {remainingQty} will be recorded as Lost & Found upon submission.
+              </Paragraph>
+            </View>
+          )}
         </View>
 
         <View style={styles.bottomActionContainer}>

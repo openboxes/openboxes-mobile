@@ -111,6 +111,20 @@ export default StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center'
   },
+  lostAndFoundBanner: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    backgroundColor: Theme.colors.warning,
+    padding: Theme.spacing.medium,
+    borderRadius: 4,
+    marginTop: Theme.spacing.small
+  },
+  lostAndFoundBannerText: {
+    fontSize: 14,
+    color: Theme.colors.warningText,
+    flex: 1,
+    marginLeft: Theme.spacing.medium
+  },
   dialogActions: {
     flexDirection: 'row',
     justifyContent: 'flex-end'
