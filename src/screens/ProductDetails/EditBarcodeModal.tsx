@@ -1,41 +1,41 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Keyboard, Modal, View } from 'react-native';
-import { Button, Headline, Paragraph, Subheading, TextInput } from 'react-native-paper';
+import { Headline, Paragraph, Subheading } from 'react-native-paper';
 
+import Button from '../../components/Button';
+import { ScannerInput } from '../../components/ScannerInput';
+import { EMPTY_STRING } from '../../constants';
 import Theme from '../../utils/Theme';
 import styles from './styles';
 
 type EditBarcodeModalProps = {
   visible: boolean;
   currentBarcode?: string;
-  onSave: (barcode: string) => void;
+  onSave: (barcode: string, clear: () => void) => void;
   onClose: () => void;
 };
 
 export default function EditBarcodeModal({ visible, currentBarcode, onSave, onClose }: EditBarcodeModalProps) {
-  const [barcode, setBarcode] = useState('');
-  const inputRef = useRef<any>(null);
-
-  useEffect(() => {
-    setBarcode('');
-  }, [currentBarcode]);
+  const [barcode, setBarcode] = useState(EMPTY_STRING);
 
   useEffect(() => {
     if (visible) {
-      const timer = setTimeout(() => {
-        inputRef.current?.focus();
-      }, 100);
-      return () => clearTimeout(timer);
+      setBarcode(EMPTY_STRING);
     }
   }, [visible]);
+
+  const handleSave = () => {
+    Keyboard.dismiss();
+    onSave(barcode, () => setBarcode(EMPTY_STRING));
+  };
 
   return (
     <Modal transparent animationType="slide" visible={visible} onDismiss={onClose}>
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
-          <Headline>Edit Barcode</Headline>
+          <Headline>Edit barcode</Headline>
           <Paragraph style={{ marginBottom: Theme.spacing.medium }}>
-            You'll be able to find and scan the product using either its internal product code or its barcode, depending
+            You'll be able to find and scan the product using either its internal product code or its barcode depending
             on what your scanner provides.
           </Paragraph>
 
@@ -45,34 +45,33 @@ export default function EditBarcodeModal({ visible, currentBarcode, onSave, onCl
             </Subheading>
           ) : null}
 
-          <TextInput
-            blurOnSubmit
-            ref={inputRef}
-            autoCompleteType="off"
+          <ScannerInput
+            isEnabled={visible}
             label="Barcode (UPC)"
-            mode="outlined"
+            placeholder="Scan or type the product's barcode"
             value={barcode}
+            autoSubmitTimeout={0}
             style={styles.bottomSeparator}
-            returnKeyType="done"
-            onChangeText={setBarcode}
-            onSubmitEditing={() => {
-              Keyboard.dismiss();
-              onSave(barcode);
-            }}
+            onChange={setBarcode}
+            onSubmit={handleSave}
           />
 
-          <View style={styles.actionButtons}>
-            <Button onPress={onClose}>Cancel</Button>
+          <View style={styles.modalButtonRow}>
             <Button
-              style={styles.topSeparator}
+              icon="close-circle"
+              variant="secondary"
               mode="contained"
-              onPress={() => {
-                Keyboard.dismiss();
-                onSave(barcode);
-              }}
-            >
-              Save
-            </Button>
+              title="Cancel"
+              style={[styles.modalButton, styles.modalButtonSpacing]}
+              onPress={onClose}
+            />
+            <Button
+              icon="arrow-right-circle"
+              mode="contained"
+              title="Save"
+              style={styles.modalButton}
+              onPress={handleSave}
+            />
           </View>
         </View>
       </View>

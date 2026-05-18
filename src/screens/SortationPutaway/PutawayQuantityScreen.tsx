@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import AsyncModalSelect from '../../components/AsyncModalSelect';
 import Button from '../../components/Button';
 import EmptyView from '../../components/EmptyView';
+import Icon, { Name as IconName } from '../../components/Icon';
 import { QuantityIcon } from '../../components/Icons';
 import { ScannerInput } from '../../components/ScannerInput';
 import { navigate, replace } from '../../NavigationService';
@@ -79,8 +80,16 @@ export default function PutawayQuantityScreen() {
     setPutawayQuantity(undefined);
   }, [isFocused]);
 
+  const remainingQty = Math.max((putawayDetails?.quantity ?? 0) - (putawayQuantity ?? 0), 0);
+  const isCancelRemainingDisabled = remainingQty === 0;
   const hasDiscrepancy =
     (putawayQuantity !== undefined && putawayQuantity < (putawayDetails?.quantity ?? 0)) || isCancelRemainingEnabled;
+
+  useEffect(() => {
+    if (isCancelRemainingDisabled && isCancelRemainingEnabled) {
+      setIsCancelRemainingEnabled(false);
+    }
+  }, [isCancelRemainingDisabled, isCancelRemainingEnabled]);
 
   useEffect(() => {
     if (!hasDiscrepancy && selectedReasonCode) {
@@ -237,8 +246,6 @@ export default function PutawayQuantityScreen() {
     destination: selectedAlternativeDestination ?? putawayDetails?.destination
   };
 
-  const remainingQty = Math.max(putawayDetails.quantity - (putawayQuantity ?? 0), 0);
-
   return (
     <Portal.Host>
       <ScrollView keyboardShouldPersistTaps="always" style={styles.contentContainer}>
@@ -289,13 +296,25 @@ export default function PutawayQuantityScreen() {
           </View>
 
           <View style={styles.cardAnnotation}>
-            <Paragraph style={styles.subheading}>Cancel Remaining ({remainingQty})</Paragraph>
+            <Paragraph style={[styles.subheading, isCancelRemainingDisabled && styles.subheadingDisabled]}>
+              Cancel Remaining ({remainingQty})
+            </Paragraph>
             <Switch
               value={isCancelRemainingEnabled}
               color={Theme.colors.primary}
+              disabled={isCancelRemainingDisabled}
               onValueChange={handleCancelRemainingToggle}
             />
           </View>
+
+          {isCancelRemainingEnabled && remainingQty > 0 && (
+            <View style={styles.lostAndFoundBanner}>
+              <Icon name={IconName.Warning} size={20} color={Theme.colors.warningText} />
+              <Paragraph style={styles.lostAndFoundBannerText}>
+                The remaining {remainingQty} will be recorded as Lost & Found upon submission.
+              </Paragraph>
+            </View>
+          )}
         </View>
 
         <View style={styles.bottomActionContainer}>

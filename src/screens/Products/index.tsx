@@ -74,6 +74,13 @@ class Products extends React.Component<Props, State> {
     this.props.getProductsAction(actionCallback, true);
   };
 
+  goToProductDetails = (product: any) => {
+    this.props.navigation.navigate('ProductDetails', {
+      product,
+      fromSortation: this.props.route?.params?.fromSortation
+    });
+  };
+
   onSearchByProductNamePress = () => {
     this.setState({
       searchBoxVisible: true
@@ -142,7 +149,7 @@ class Products extends React.Component<Props, State> {
           error: emptyStateMessage('products', query, 'No products available')
         });
       } else if (data.length === 1) {
-        this.props.navigation.navigate('ProductDetails', { product: data[0] });
+        this.goToProductDetails(data[0]);
       } else {
         this.setState({
           searchByName: { query, results: data },
@@ -190,7 +197,7 @@ class Products extends React.Component<Props, State> {
           error: emptyStateMessage('products', query, 'No products available')
         });
       } else if (data.length === 1) {
-        this.props.navigation.navigate('ProductDetails', { product: data[0] });
+        this.goToProductDetails(data[0]);
       } else {
         this.setState({
           searchByProductCode: { query, results: data },
@@ -297,7 +304,7 @@ class Products extends React.Component<Props, State> {
           error: emptyStateMessage('products', query, 'No products available')
         });
       } else if (productList.length === 1) {
-        this.props.navigation.navigate('ProductDetails', { product: productList[0] });
+        this.goToProductDetails(productList[0]);
       } else {
         this.setState({
           searchByProductCode: { query, results: data },
@@ -344,12 +351,7 @@ class Products extends React.Component<Props, State> {
             <ListLoadingSkeleton visible count={5} CardComponent={ProductCardSkeleton} />
           ) : (
             <>
-              <ProductsList
-                products={vm.list}
-                onProductTapped={(product) => {
-                  this.props.navigation.navigate('ProductDetails', { product });
-                }}
-              />
+              <ProductsList products={vm.list} onProductTapped={this.goToProductDetails} />
               {vm?.list?.length === 0 && <CentralMessage message={vm.centralErrorMessage} />}
             </>
           )}

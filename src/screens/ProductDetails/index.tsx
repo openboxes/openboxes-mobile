@@ -1,19 +1,35 @@
 import React from 'react';
 import { Alert, ScrollView, TouchableOpacity, View } from 'react-native';
 import { Caption, Card, Chip, Divider, Button as PaperButton, Paragraph, Subheading, Title } from 'react-native-paper';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { connect } from 'react-redux';
 
 import Button from '../../components/Button';
-import { ProductDetailsSkeleton, CardSkeleton } from '../../components/ContentSkeleton';
+import { CardSkeleton, ProductDetailsSkeleton } from '../../components/ContentSkeleton';
 import EmptyView from '../../components/EmptyView';
 import PrintModal from '../../components/PrintModal';
 import { HYPHEN } from '../../constants';
+import { resetToRoutes } from '../../NavigationService';
 import { getProductByIdAction, updateProductIdentifierAction } from '../../redux/actions/products';
 import { RootState } from '../../redux/reducers';
+import Theme from '../../utils/Theme';
 import EditBarcodeModal from './EditBarcodeModal';
 import styles from './styles';
 import { DispatchProps, Props, State } from './Types';
 import { vmMapper } from './VMMapper';
+
+function BackToSortationBanner() {
+  const handlePress = () => {
+    resetToRoutes([{ name: 'Drawer', params: { screen: 'Dashboard' } }, { name: 'Sortation' }]);
+  };
+
+  return (
+    <TouchableOpacity style={styles.backToSortationBanner} onPress={handlePress}>
+      <MaterialCommunityIcons name="arrow-bottom-left" size={20} color={Theme.colors.primary} />
+      <Paragraph style={styles.backToSortationText}>BACK TO SORTATION</Paragraph>
+    </TouchableOpacity>
+  );
+}
 
 function SectionCard({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -94,7 +110,7 @@ class ProductDetails extends React.Component<Props, State> {
     });
   };
 
-  handleSaveBarcode = (newBarcode: string) => {
+  handleSaveBarcode = (newBarcode: string, clear: () => void) => {
     const { productDetails } = this.state;
     const id = productDetails.id;
     if (!id) {
@@ -102,8 +118,12 @@ class ProductDetails extends React.Component<Props, State> {
     }
 
     this.props.updateProductIdentifierAction(id, 'upc', newBarcode, (response: any) => {
+      if (!this.state.editBarcodeVisible) {
+        return;
+      }
       if (response?.error) {
         Alert.alert('Error', response.errorMessage ?? 'Product identifier update failed.');
+        clear();
         return;
       }
       this.setState({ editBarcodeVisible: false });
@@ -157,10 +177,16 @@ class ProductDetails extends React.Component<Props, State> {
   render() {
     const { isLoading, productDetails, visible, editBarcodeVisible } = this.state;
     const product = this.props.selectedProduct;
+    const fromSortation = !!this.props.route?.params?.fromSortation;
 
     if (isLoading) {
       return (
         <View style={styles.screenContainer}>
+          {fromSortation && (
+            <View style={styles.header}>
+              <BackToSortationBanner />
+            </View>
+          )}
           <ProductDetailsSkeleton />
           <View style={styles.detailsSection}>
             <CardSkeleton />
@@ -172,13 +198,20 @@ class ProductDetails extends React.Component<Props, State> {
 
     if (!productDetails?.id) {
       return (
-        <View style={styles.emptyContainer}>
-          <EmptyView
-            isRefresh
-            title="Product Not Found"
-            description="Could not load product details."
-            onPress={this.getProduct}
-          />
+        <View style={styles.screenContainer}>
+          {fromSortation && (
+            <View style={styles.header}>
+              <BackToSortationBanner />
+            </View>
+          )}
+          <View style={styles.emptyContainer}>
+            <EmptyView
+              isRefresh
+              title="Product Not Found"
+              description="Could not load product details."
+              onPress={this.getProduct}
+            />
+          </View>
         </View>
       );
     }
@@ -205,6 +238,13 @@ class ProductDetails extends React.Component<Props, State> {
 
         <ScrollView>
           <View style={styles.header}>
+            {fromSortation && (
+              <>
+                <BackToSortationBanner />
+                <Divider style={styles.contentDivider} />
+              </>
+            )}
+
             <View style={styles.headerRow}>
               <Chip icon="barcode" style={styles.chipDefault} textStyle={styles.chipText}>
                 {vm.productCode || HYPHEN}

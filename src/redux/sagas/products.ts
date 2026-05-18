@@ -242,21 +242,17 @@ function* stockAdjustments(action: any) {
 function* getSortationDetailsSaga(action: any) {
   try {
     const productResponse: any = yield call(api.getProductByBarcode, action.payload.barcode);
-    const product = productResponse.data;
-
-    if (!product) {
-      throw new Error('Product not found.');
-    }
+    const product = productResponse?.data;
 
     const location = yield select(userLocation);
-    if (!location || !location.id) {
+    if (!location?.id) {
       return;
     }
 
     const tasksResponse: any = yield call(api.getPutawayTasks, location.id, product.id);
     const tasks = tasksResponse?.data ?? [];
 
-    if (!tasks || tasks.length === 0) {
+    if (tasks.length === 0) {
       yield action.callback({
         error: true,
         errorMessage: 'Product found but there is not putaway task for it'
@@ -266,17 +262,18 @@ function* getSortationDetailsSaga(action: any) {
 
     yield action.callback({ product, tasks });
   } catch (error: any) {
-    if (error.code != 401) {
-      yield action.callback({
-        error: true,
-        errorMessage: error.message
-      });
-    }
+    yield action.callback({
+      error: true,
+      // The API returns a 500 status code when the product is not found
+      productNotFound: error?.code === 500,
+      errorMessage: error.message
+    });
   }
 }
 
 function* updateProductIdentifierSaga(action: any) {
   try {
+    yield put(showScreenLoading('Saving...'));
     const response = yield call(
       api.updateProductIdentifier,
       action.payload.id,
@@ -295,6 +292,8 @@ function* updateProductIdentifierSaga(action: any) {
         errorMessage: error.message
       });
     }
+  } finally {
+    yield put(hideScreenLoading());
   }
 }
 
