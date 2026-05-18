@@ -30,7 +30,8 @@ export function SearchButton({ searchType, onSelect, onOpen, onClose }: SearchBu
   const provider = searchProviders[searchType];
 
   const performSearch = (term: string) => {
-    if (!term.trim()) {
+    const trimmed = term.trim();
+    if (trimmed.length < appConfig.MIN_SEARCH_LENGTH) {
       setResults([]);
       setLoading(false);
       setHasSearched(false);
@@ -75,6 +76,12 @@ export function SearchButton({ searchType, onSelect, onOpen, onClose }: SearchBu
   const handleChangeText = (text: string) => {
     setSearchTerm(text);
     setHasSearched(false);
+    if (text.trim().length < appConfig.MIN_SEARCH_LENGTH) {
+      debouncedSearch.cancel();
+      setResults([]);
+      setLoading(false);
+      return;
+    }
     debouncedSearch(text);
   };
 
@@ -135,17 +142,21 @@ export function SearchButton({ searchType, onSelect, onOpen, onClose }: SearchBu
               <SkeletonList />
             ) : (
               <>
-                {searchTerm.trim() === '' && results.length === 0 && (
-                  <Text style={styles.hintText}>Start typing to search...</Text>
-                )}
-
-                {results.length > 0 && (
-                  <Text style={styles.resultCount}>
-                    {results.length} result{results.length !== 1 ? 's' : ''} found.
+                {searchTerm.trim().length < appConfig.MIN_SEARCH_LENGTH ? (
+                  <Text style={styles.hintText}>
+                    Type at least {appConfig.MIN_SEARCH_LENGTH} characters to search...
                   </Text>
-                )}
+                ) : (
+                  <>
+                    {results.length > 0 && (
+                      <Text style={styles.resultCount}>
+                        {results.length} result{results.length !== 1 ? 's' : ''} found.
+                      </Text>
+                    )}
 
-                {hasSearched && results.length === 0 && <Text style={styles.emptyText}>No results found.</Text>}
+                    {hasSearched && results.length === 0 && <Text style={styles.emptyText}>No results found.</Text>}
+                  </>
+                )}
               </>
             )}
 
