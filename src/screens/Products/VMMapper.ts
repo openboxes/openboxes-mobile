@@ -7,6 +7,7 @@ export default function vmMapper(state: State): VM {
     subtitle = `Products in category \"${state.searchByCategory.category.name}\"`;
   }
   let list = null;
+  let showingAllProducts = false;
   if (state.error === null) {
     if (
       state.searchByCategory &&
@@ -30,6 +31,7 @@ export default function vmMapper(state: State): VM {
       list = state.searchGlobally.results;
     } else {
       list = state.allProducts;
+      showingAllProducts = true;
     }
   }
   let floatingActionButtonVisible = true;
@@ -48,6 +50,9 @@ export default function vmMapper(state: State): VM {
     list: list,
     floatingActionButtonVisible: floatingActionButtonVisible,
     centralErrorMessage: centralErrorMessage,
-    barcodeNo: state.barcodeNo
+    barcodeNo: state.barcodeNo,
+    showingAllProducts,
+    allProductsHasMore: state.allProductsHasMore,
+    loadingMore: state.loadingMore
   };
 }

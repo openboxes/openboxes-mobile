@@ -38,9 +38,14 @@ export const UPDATE_PRODUCT_IDENTIFIER_REQUEST = 'UPDATE_PRODUCT_IDENTIFIER_REQU
 export const UPDATE_PRODUCT_IDENTIFIER_SUCCESS = 'UPDATE_PRODUCT_IDENTIFIER_SUCCESS';
 export const UPDATE_PRODUCT_IDENTIFIER_FAIL = 'UPDATE_PRODUCT_IDENTIFIER_FAIL';
 
-export function getProductsAction(callback?: (products: any) => void, suppressLoading?: boolean) {
+export function getProductsAction(
+  callback?: (products: any) => void,
+  suppressLoading?: boolean,
+  pagination?: { max?: number; offset?: number }
+) {
   return {
     type: GET_PRODUCTS_REQUEST,
+    payload: { pagination },
     callback,
     suppressLoading
   };

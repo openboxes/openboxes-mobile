@@ -12,27 +12,19 @@ export interface StateProps {
 }
 
 export interface DispatchProps {
-  getProductsAction: (callback: (products: any) => void, suppressLoading?: boolean) => void;
+  getProductsAction: (
+    callback: (products: any) => void,
+    suppressLoading?: boolean,
+    pagination?: { max?: number; offset?: number }
+  ) => void;
   searchProductsByNameAction: (
     name: string,
     callback: (searchedProducts: any) => void,
     suppressLoading?: boolean
   ) => void;
-  searchProductByCodeAction: (
-    productCode: string,
-    callback: (data: any) => void,
-    suppressLoading?: boolean
-  ) => void;
-  searchProductGloballyAction: (
-    value: string,
-    callback: (data: any) => void,
-    suppressLoading?: boolean
-  ) => void;
-  searchProductSByCategoryAction: (
-    category: any,
-    callback: (data: any) => void,
-    suppressLoading?: boolean
-  ) => void;
+  searchProductByCodeAction: (productCode: string, callback: (data: any) => void, suppressLoading?: boolean) => void;
+  searchProductGloballyAction: (value: string, callback: (data: any) => void, suppressLoading?: boolean) => void;
+  searchProductSByCategoryAction: (category: any, callback: (data: any) => void, suppressLoading?: boolean) => void;
 }
 
 export type Props = OwnProps & StateProps & DispatchProps;
@@ -40,6 +32,8 @@ export type Props = OwnProps & StateProps & DispatchProps;
 export interface State {
   error: string | null;
   allProducts: Product[] | null;
+  allProductsHasMore: boolean;
+  loadingMore: boolean;
   searchBoxVisible: boolean;
   searchBoxProductCodeVisible: boolean;
   categoryPickerPopupVisible: boolean;

@@ -32,7 +32,7 @@ function* getProducts(action: any) {
     if (!action.suppressLoading) {
       yield put(showScreenLoading('Loading..'));
     }
-    const response = yield call(api.getProducts);
+    const response = yield call(api.getProducts, action.payload?.pagination);
     yield put({
       type: GET_PRODUCTS_REQUEST_SUCCESS,
       payload: response.data
