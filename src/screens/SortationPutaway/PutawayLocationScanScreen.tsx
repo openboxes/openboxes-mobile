@@ -63,6 +63,11 @@ export default function PutawayLocationScanScreen() {
     );
   }
 
+  const updatedPutawayDetails = {
+    ...putawayDetails,
+    destination: selectedAlternativeDestination ?? putawayDetails.destination
+  };
+
   function handleProcessing(code: string) {
     const expectedLocation = selectedAlternativeDestination?.locationNumber;
 
@@ -80,14 +85,9 @@ export default function PutawayLocationScanScreen() {
       isDirectPutaway,
       isUserDirected,
       containerId,
-      task
+      task: updatedPutawayDetails
     });
   }
-
-  const updatedPutawayDetails = {
-    ...putawayDetails,
-    destination: selectedAlternativeDestination ?? putawayDetails.destination
-  };
 
   return (
     <>
@@ -137,7 +137,7 @@ export default function PutawayLocationScanScreen() {
             Submit
           </Button>
 
-          {task ? null : isUserDirected ? (
+          {isDirectPutaway ? null : isUserDirected ? (
             <Button
               style={styles.topSpace}
               title="Back To List"

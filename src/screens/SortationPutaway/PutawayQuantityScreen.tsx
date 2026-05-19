@@ -38,6 +38,7 @@ type ReasonCode = {
   name: string;
 };
 
+// eslint-disable-next-line complexity
 export default function PutawayQuantityScreen() {
   const { params } = useRoute<PutawayQuantityRouteProp>();
   const { currentTaskIndex, isDirectPutaway, isUserDirected, containerId, task } = params;
@@ -56,10 +57,6 @@ export default function PutawayQuantityScreen() {
   const [isCancelRemainingEnabled, setIsCancelRemainingEnabled] = useState<boolean>(false);
 
   const [isDialogVisible, setIsDialogVisible] = useState(false);
-
-  useEffect(() => {
-    setSelectedAlternativeDestination(putawayDetails?.destination);
-  }, [putawayDetails]);
 
   useEffect(() => {
     dispatch(
@@ -182,7 +179,7 @@ export default function PutawayQuantityScreen() {
               handleResponseAfterComplete
             )
           );
-        } else if (task) {
+        } else if (isDirectPutaway) {
           // Direct Putaway: partial done, remaining task lives on backend
           navigate('Sortation');
         } else if (isUserDirected && containerId) {
@@ -215,7 +212,7 @@ export default function PutawayQuantityScreen() {
     if (response && !response.error) {
       Alert.alert('Putaway Successful', 'The putaway was successful.');
 
-      if (task) {
+      if (isDirectPutaway) {
         // Direct Putaway: single task done, go back to Sortation
         navigate('Sortation');
       } else if (isUserDirected && containerId) {
