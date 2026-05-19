@@ -2,11 +2,12 @@ import React from 'react';
 import { View } from 'react-native';
 import { connect } from 'react-redux';
 
+import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSearchHeader';
 import ListLoadingSkeleton from '../../components/ListLoadingSkeleton';
 import showPopup from '../../components/Popup';
-import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSearchHeader';
 import { appConfig } from '../../constants';
 import { ProductCategory } from '../../data/product/category/ProductCategory';
+import Product from '../../data/product/Product';
 import {
   getProductsAction,
   searchProductByCodeAction,
@@ -79,7 +80,7 @@ class Products extends React.Component<Props, State> {
         });
         return;
       }
-      const items: any[] = Array.isArray(data) ? data : [];
+      const items: Product[] = Array.isArray(data) ? data : [];
       this.setState((prev) => {
         const baseList = offset === 0 ? [] : prev.allProducts ?? [];
         const merged = [...baseList, ...items];
@@ -112,7 +113,7 @@ class Products extends React.Component<Props, State> {
     this.fetchProductsPage(loaded);
   };
 
-  goToProductDetails = (product: any) => {
+  goToProductDetails = (product: Product) => {
     this.props.navigation.navigate('ProductDetails', {
       product,
       fromSortation: this.props.route?.params?.fromSortation

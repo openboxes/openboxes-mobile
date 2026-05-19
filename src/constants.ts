@@ -29,6 +29,13 @@ export const appConfig = {
   DEFAULT_SEARCH_DEBOUNCE_TIME: 800,
   DEFAULT_PAGE_SIZE: 25,
   MIN_SEARCH_LENGTH: 3,
+  /**
+   * Distance from the end of the loaded list at which `FlatList.onEndReached`
+   * fires, expressed as a multiplier of the visible viewport length (not a
+   * fixed item count). e.g. `2` means the callback triggers when the user is
+   * within two viewport-heights of the end of the loaded content.
+   */
+  LIST_END_REACHED_THRESHOLD: 2,
   APP_HEADER_HEIGHT: 56,
   LOCALE: 'en-US'
 };

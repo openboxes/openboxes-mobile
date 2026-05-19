@@ -12,7 +12,7 @@ import { Card, Chip, Divider, Subheading } from 'react-native-paper';
 
 import { LayoutStyle } from '../../assets/styles';
 import EmptyView from '../../components/EmptyView';
-import { HYPHEN } from '../../constants';
+import { appConfig, HYPHEN } from '../../constants';
 import Product from '../../data/product/Product';
 import Theme from '../../utils/Theme';
 
@@ -60,7 +60,7 @@ export default function ProductsList(props: Props) {
       keyboardShouldPersistTaps="handled"
       ListFooterComponent={renderFooter}
       onEndReached={onEndReached}
-      onEndReachedThreshold={0.5}
+      onEndReachedThreshold={appConfig.LIST_END_REACHED_THRESHOLD}
     />
   );
 }
