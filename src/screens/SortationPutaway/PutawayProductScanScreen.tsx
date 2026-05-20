@@ -1,5 +1,5 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Alert, ScrollView, View } from 'react-native';
 import { Divider, Subheading } from 'react-native-paper';
 import { useSelector } from 'react-redux';
@@ -38,6 +38,10 @@ export default function PutawayProductScanScreen() {
   const putawayDetails = task ?? putawayTasks?.[currentTaskIndex];
   const [putawayProductBarcode, setPutawayProductBarcode] = useState<string>(EMPTY_STRING);
   const { isSearchOpen, searchButtonProps } = useSearchButton({ onSelect: setPutawayProductBarcode });
+
+  useEffect(() => {
+    setPutawayProductBarcode(EMPTY_STRING);
+  }, [currentTaskIndex, putawayDetails?.id]);
 
   if (!putawayDetails) {
     return (
