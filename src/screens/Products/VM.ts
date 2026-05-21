@@ -9,4 +9,7 @@ export interface VM {
   list: Product[] | null;
   floatingActionButtonVisible: boolean;
   centralErrorMessage: string | null;
+  showingAllProducts: boolean;
+  allProductsHasMore: boolean;
+  loadingMore: boolean;
 }

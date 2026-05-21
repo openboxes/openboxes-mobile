@@ -1,31 +1,67 @@
 import React, { ReactElement } from 'react';
-import { FlatList, ListRenderItemInfo, StyleSheet, TouchableOpacity, View } from 'react-native';
+import {
+  ActivityIndicator,
+  FlatList,
+  ListRenderItemInfo,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
+} from 'react-native';
 import { Card, Chip, Divider, Subheading } from 'react-native-paper';
 
 import { LayoutStyle } from '../../assets/styles';
 import EmptyView from '../../components/EmptyView';
-import { HYPHEN } from '../../constants';
+import { appConfig, HYPHEN } from '../../constants';
 import Product from '../../data/product/Product';
 import Theme from '../../utils/Theme';
 
 export interface Props {
   products: Product[] | null;
   onProductTapped: (product: Product) => void;
+  onEndReached?: () => void;
+  loadingMore?: boolean;
+  hasMore?: boolean;
 }
 
 export default function ProductsList(props: Props) {
-  return props.products ? (
+  const { products, onProductTapped, onEndReached, loadingMore, hasMore } = props;
+
+  if (!products) {
+    return <EmptyView title="Product List" description="There are no products on the list" />;
+  }
+
+  const renderFooter = () => {
+    if (loadingMore) {
+      return (
+        <View style={styles.footer}>
+          <ActivityIndicator size="small" color={Theme.colors.primary} />
+        </View>
+      );
+    }
+
+    if (hasMore === false && (products?.length ?? 0) > 0) {
+      return (
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>End of list</Text>
+        </View>
+      );
+    }
+
+    return null;
+  };
+
+  return (
     <FlatList
-      data={props.products}
-      renderItem={(item: ListRenderItemInfo<Product>) =>
-        renderProduct(item.item, () => props.onProductTapped(item.item))
-      }
+      data={products}
+      renderItem={(item: ListRenderItemInfo<Product>) => renderProduct(item.item, () => onProductTapped(item.item))}
       keyExtractor={(product) => product.id}
       style={styles.list}
       keyboardShouldPersistTaps="handled"
+      ListFooterComponent={renderFooter}
+      onEndReached={onEndReached}
+      onEndReachedThreshold={appConfig.LIST_END_REACHED_THRESHOLD}
     />
-  ) : (
-    <EmptyView title="Product List" description="There are no products on the list" />
   );
 }
 
@@ -61,6 +97,14 @@ function renderProduct(product: Product, onProductTapped: () => void): ReactElem
 const styles = StyleSheet.create({
   list: {
     width: '100%'
+  },
+  footer: {
+    paddingBottom: Theme.spacing.medium,
+    alignItems: 'center'
+  },
+  footerText: {
+    fontSize: 13,
+    color: Theme.colors.secondaryForeground
   },
   subheading: {
     fontWeight: 'bold',

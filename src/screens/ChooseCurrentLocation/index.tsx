@@ -5,6 +5,7 @@ import { Card, List, Text } from 'react-native-paper';
 import { connect } from 'react-redux';
 
 import GarageIcon from '../../assets/images/icon_garage.svg';
+import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSearchHeader';
 import EmptyView from '../../components/EmptyView';
 import ListLoadingSkeleton from '../../components/ListLoadingSkeleton';
 import showPopup from '../../components/Popup';
@@ -26,11 +27,7 @@ export interface OwnProps {
 
 interface DispatchProps {
   getLocationsAction: (callback: (locations: any) => void, suppressLoading?: boolean) => void;
-  setCurrentLocationAction: (
-    location: Location,
-    callback: (data: any) => void,
-    suppressLoading?: boolean
-  ) => void;
+  setCurrentLocationAction: (location: Location, callback: (data: any) => void, suppressLoading?: boolean) => void;
 }
 
 type Props = OwnProps & DispatchProps;
@@ -38,6 +35,8 @@ type Props = OwnProps & DispatchProps;
 interface State {
   availableLocations: Location[];
   loading: boolean;
+  searchTerm: string;
+  expandedGroups: { [orgName: string]: boolean };
 }
 
 class ChooseCurrentLocation extends React.Component<Props, State> {
@@ -45,9 +44,43 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
     super(props);
     this.state = {
       availableLocations: [],
-      loading: true
+      loading: true,
+      searchTerm: '',
+      expandedGroups: {}
     };
   }
+
+  onSearchTermSubmit = (query: string) => {
+    this.setState((prev) => ({
+      searchTerm: query,
+      expandedGroups: query.trim() ? prev.expandedGroups : {}
+    }));
+  };
+
+  resetSearch = () => {
+    this.setState({ searchTerm: '', expandedGroups: {} });
+  };
+
+  toggleGroup = (orgName: string) => {
+    this.setState((prev) => ({
+      expandedGroups: {
+        ...prev.expandedGroups,
+        [orgName]: !(prev.expandedGroups[orgName] ?? true)
+      }
+    }));
+  };
+
+  getFilteredLocations = (): Location[] => {
+    const term = this.state.searchTerm.trim().toLowerCase();
+    if (!term) {
+      return this.state.availableLocations;
+    }
+    return this.state.availableLocations.filter((location) =>
+      [location.name, location.organizationName, location.locationGroup?.name]
+        .filter((field): field is string => Boolean(field))
+        .some((field) => field.toLowerCase().includes(term))
+    );
+  };
 
   componentDidMount = () => {
     const actionCallback = (data: any) => {
@@ -121,40 +154,47 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
     );
   };
 
-  renderGroupedLocations = (locations: Dictionary<Location[]>, currentLocation: Location | null | undefined) => (
-    <List.AccordionGroup>
-      {_.map(_.keys(locations), (orgName: string) => {
-        return (
-          <List.Accordion
-            title={orgName}
-            description={`${locations[orgName].length} Location(s)`}
-            id={`orgName_${orgName}`}
-            left={(props) => <List.Icon {...props} color={Theme.colors.primary} icon="office-building" />}
-            key={`orgName_${orgName}`}
-            style={{ backgroundColor: Theme.colors.surface, borderRadius: Theme.roundness }}
-          >
-            {_.map(locations[orgName], (location) => {
-              const isSelected = currentLocation && location.id === currentLocation.id;
-              return (
-                <List.Item
-                  title={location.name}
-                  description={location.locationGroup?.name ?? NO_LOCATION_GROUP_NAME}
-                  key={`orgName_${orgName}_locationName_${location.name}`}
-                  hasTVPreferredFocus={false}
-                  tvParallaxProperties={undefined}
-                  style={[
-                    { backgroundColor: Theme.colors.surface, borderRadius: Theme.roundness },
-                    isSelected && styles.selectedItem
-                  ]}
-                  onPress={() => this.setCurrentLocation(location)}
-                />
-              );
-            })}
-          </List.Accordion>
-        );
-      })}
-    </List.AccordionGroup>
-  );
+  renderGroupedLocations = (locations: Dictionary<Location[]>, currentLocation: Location | null | undefined) => {
+    const isSearching = this.state.searchTerm.trim().length > 0;
+
+    const accordions = _.map(_.keys(locations), (orgName: string) => (
+      <List.Accordion
+        title={orgName}
+        description={`${locations[orgName].length} Location(s)`}
+        id={`orgName_${orgName}`}
+        left={(props) => <List.Icon {...props} color={Theme.colors.primary} icon="office-building" />}
+        key={`orgName_${orgName}`}
+        style={{ backgroundColor: Theme.colors.surface, borderRadius: Theme.roundness }}
+        {...(isSearching
+          ? {
+              expanded: this.state.expandedGroups[orgName] ?? true,
+              onPress: () => this.toggleGroup(orgName)
+            }
+          : {})}
+      >
+        {_.map(locations[orgName], (location) => {
+          const isSelected = currentLocation && location.id === currentLocation.id;
+
+          return (
+            <List.Item
+              title={location.name}
+              description={location.locationGroup?.name ?? NO_LOCATION_GROUP_NAME}
+              key={`orgName_${orgName}_locationName_${location.name}`}
+              hasTVPreferredFocus={false}
+              tvParallaxProperties={undefined}
+              style={[
+                { backgroundColor: Theme.colors.surface, borderRadius: Theme.roundness },
+                isSelected && styles.selectedItem
+              ]}
+              onPress={() => this.setCurrentLocation(location)}
+            />
+          );
+        })}
+      </List.Accordion>
+    ));
+
+    return isSearching ? <View>{accordions}</View> : <List.AccordionGroup>{accordions}</List.AccordionGroup>;
+  };
 
   renderAllLocations = (locations: Location[], currentLocation: Location | null | undefined) =>
     locations.map((location) => {
@@ -178,8 +218,8 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
       );
     });
 
-  render() {
-    const { availableLocations, loading } = this.state;
+  renderContent = () => {
+    const { availableLocations, loading, searchTerm } = this.state;
     const { groupLocationEntries, currentLocation } = this.props;
 
     if (loading) {
@@ -201,16 +241,40 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
       );
     }
 
+    const filteredLocations = this.getFilteredLocations();
+
+    if (filteredLocations.length === 0) {
+      return (
+        <View style={styles.emptyContainer}>
+          <EmptyView title="No Locations Found" description={`No locations match "${searchTerm}".`} />
+        </View>
+      );
+    }
+
     return (
-      <View>
-        <ScrollView style={styles.scrollView}>
-          {groupLocationEntries
-            ? this.renderGroupedLocations(
-                this.getSortedOrgNameAndLocationsDictionary(availableLocations),
-                currentLocation
-              )
-            : this.renderAllLocations(availableLocations, currentLocation)}
-        </ScrollView>
+      <ScrollView style={styles.scrollView} keyboardShouldPersistTaps="handled">
+        {groupLocationEntries
+          ? this.renderGroupedLocations(this.getSortedOrgNameAndLocationsDictionary(filteredLocations), currentLocation)
+          : this.renderAllLocations(filteredLocations, currentLocation)}
+      </ScrollView>
+    );
+  };
+
+  render() {
+    return (
+      <View style={styles.screenContainer}>
+        <BarcodeSearchHeader
+          autoSearch
+          searchBox={false}
+          placeholder="Search locations"
+          resetSearch={this.resetSearch}
+          // Set debounceTime to 0 to trigger search immediately on submit, since the list is filtered client-side and is very fast
+          debounceTime={0}
+          loading={this.state.loading}
+          accessibilityLabel="Search locations"
+          onSearchTermSubmit={this.onSearchTermSubmit}
+        />
+        <View style={styles.content}>{this.renderContent()}</View>
       </View>
     );
   }

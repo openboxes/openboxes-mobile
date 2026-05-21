@@ -173,5 +173,22 @@ export default StyleSheet.create({
     fontSize: 14,
     color: Theme.colors.primary,
     textDecorationLine: 'underline'
+  },
+  dialogDivider: {
+    height: 1,
+    backgroundColor: Theme.colors.disabled,
+    opacity: 0.3,
+    marginVertical: Theme.spacing.large
+  },
+  dialogLinkRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: Theme.spacing.small
+  },
+  dialogLink: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    color: Theme.colors.primary,
+    marginRight: 2
   }
 });

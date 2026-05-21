@@ -1,7 +1,22 @@
 import apiClient from '../utils/ApiClient';
 
-export function getProducts() {
-  return apiClient.get('/generic/product');
+export interface PaginationParams {
+  max?: number;
+  offset?: number;
+}
+
+export function getProducts(pagination?: PaginationParams) {
+  const params: string[] = [];
+
+  if (pagination?.max !== undefined) {
+    params.push(`max=${pagination.max}`);
+  }
+  if (pagination?.offset !== undefined) {
+    params.push(`offset=${pagination.offset}`);
+  }
+
+  const qs = params.length ? `?${params.join('&')}` : '';
+  return apiClient.get(`/generic/product${qs}`);
 }
 
 export function searchProductsByName(name: string) {

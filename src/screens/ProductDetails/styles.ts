@@ -102,5 +102,26 @@ export default StyleSheet.create({
     backgroundColor: 'white',
     padding: Theme.spacing.large,
     borderRadius: Theme.roundness * 2
+  },
+  backToSortationBanner: {
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  modalButtonRow: {
+    flexDirection: 'row',
+    marginTop: Theme.spacing.large
+  },
+  modalButton: {
+    flex: 1
+  },
+  modalButtonSpacing: {
+    marginRight: Theme.spacing.small
+  },
+  backToSortationText: {
+    marginLeft: Theme.spacing.small,
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: Theme.colors.primary,
+    letterSpacing: 0.5
   }
 });

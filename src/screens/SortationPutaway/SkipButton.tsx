@@ -14,6 +14,10 @@ type SkipButtonProps = {
 };
 
 export function SkipButton({ taskList, currentTaskIndex, isDirectPutaway = false, containerId }: SkipButtonProps) {
+  if (taskList.length <= 1) {
+    return null;
+  }
+
   function handleSkip() {
     Alert.alert(
       'Skip Putaway',

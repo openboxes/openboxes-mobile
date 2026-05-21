@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import AsyncModalSelect from '../../components/AsyncModalSelect';
 import Button from '../../components/Button';
 import EmptyView from '../../components/EmptyView';
+import Icon, { Name as IconName } from '../../components/Icon';
 import { QuantityIcon } from '../../components/Icons';
 import { ScannerInput } from '../../components/ScannerInput';
 import { navigate, replace } from '../../NavigationService';
@@ -37,6 +38,7 @@ type ReasonCode = {
   name: string;
 };
 
+// eslint-disable-next-line complexity
 export default function PutawayQuantityScreen() {
   const { params } = useRoute<PutawayQuantityRouteProp>();
   const { currentTaskIndex, isDirectPutaway, isUserDirected, containerId, task } = params;
@@ -57,10 +59,6 @@ export default function PutawayQuantityScreen() {
   const [isDialogVisible, setIsDialogVisible] = useState(false);
 
   useEffect(() => {
-    setSelectedAlternativeDestination(putawayDetails?.destination);
-  }, [putawayDetails]);
-
-  useEffect(() => {
     dispatch(
       getReasonCodesAction('PUTAWAY_DISCREPANCY', (data: any) => {
         if (data?.error) {
@@ -78,6 +76,23 @@ export default function PutawayQuantityScreen() {
     }
     setPutawayQuantity(undefined);
   }, [isFocused]);
+
+  const remainingQty = Math.max((putawayDetails?.quantity ?? 0) - (putawayQuantity ?? 0), 0);
+  const isCancelRemainingDisabled = remainingQty === 0;
+  const hasDiscrepancy =
+    (putawayQuantity !== undefined && putawayQuantity < (putawayDetails?.quantity ?? 0)) || isCancelRemainingEnabled;
+
+  useEffect(() => {
+    if (isCancelRemainingDisabled && isCancelRemainingEnabled) {
+      setIsCancelRemainingEnabled(false);
+    }
+  }, [isCancelRemainingDisabled, isCancelRemainingEnabled]);
+
+  useEffect(() => {
+    if (!hasDiscrepancy && selectedReasonCode) {
+      setSelectedReasonCode(null);
+    }
+  }, [hasDiscrepancy, selectedReasonCode]);
 
   if (!putawayDetails) {
     return (
@@ -110,8 +125,6 @@ export default function PutawayQuantityScreen() {
       );
       return;
     }
-
-    const hasDiscrepancy = putawayQuantity < totalQty || isCancelRemainingEnabled;
 
     if (hasDiscrepancy && !selectedReasonCode?.id) {
       Alert.alert('Discrepancy Reason Required', 'Please select a discrepancy reason.');
@@ -166,7 +179,7 @@ export default function PutawayQuantityScreen() {
               handleResponseAfterComplete
             )
           );
-        } else if (task) {
+        } else if (isDirectPutaway) {
           // Direct Putaway: partial done, remaining task lives on backend
           navigate('Sortation');
         } else if (isUserDirected && containerId) {
@@ -199,7 +212,7 @@ export default function PutawayQuantityScreen() {
     if (response && !response.error) {
       Alert.alert('Putaway Successful', 'The putaway was successful.');
 
-      if (task) {
+      if (isDirectPutaway) {
         // Direct Putaway: single task done, go back to Sortation
         navigate('Sortation');
       } else if (isUserDirected && containerId) {
@@ -229,8 +242,6 @@ export default function PutawayQuantityScreen() {
     ...putawayDetails,
     destination: selectedAlternativeDestination ?? putawayDetails?.destination
   };
-
-  const remainingQty = Math.max(putawayDetails.quantity - (putawayQuantity ?? 0), 0);
 
   return (
     <Portal.Host>
@@ -263,31 +274,44 @@ export default function PutawayQuantityScreen() {
               <Button size="50%" title="Request" onPress={() => setIsDialogVisible(true)} />
             </View>
 
-            <View style={styles.headerRow}>
-              <Paragraph style={styles.subheading}>Discrepancy Reason</Paragraph>
-              <View style={styles.dropdownContainer}>
-                <AsyncModalSelect
-                  placeholder="Select a reason"
-                  label="Reason for shortage"
-                  initValue={selectedReasonCode?.name || ''}
-                  initialData={reasonCodes}
-                  searchAction={() => {}}
-                  serverSearchEnabled={false}
-                  disabled={!isCancelRemainingEnabled && putawayQuantity === putawayDetails.quantity}
-                  onSelect={(reason: ReasonCode) => setSelectedReasonCode(reason)}
-                />
+            {hasDiscrepancy && (
+              <View style={styles.headerRow}>
+                <Paragraph style={styles.subheading}>Discrepancy Reason</Paragraph>
+                <View style={styles.dropdownContainer}>
+                  <AsyncModalSelect
+                    placeholder="Select a reason"
+                    label="Reason for shortage"
+                    initValue={selectedReasonCode?.name || ''}
+                    initialData={reasonCodes}
+                    searchAction={() => {}}
+                    serverSearchEnabled={false}
+                    onSelect={(reason: ReasonCode) => setSelectedReasonCode(reason)}
+                  />
+                </View>
               </View>
-            </View>
+            )}
           </View>
 
           <View style={styles.cardAnnotation}>
-            <Paragraph style={styles.subheading}>Cancel Remaining ({remainingQty})</Paragraph>
+            <Paragraph style={[styles.subheading, isCancelRemainingDisabled && styles.subheadingDisabled]}>
+              Cancel Remaining ({remainingQty})
+            </Paragraph>
             <Switch
               value={isCancelRemainingEnabled}
               color={Theme.colors.primary}
+              disabled={isCancelRemainingDisabled}
               onValueChange={handleCancelRemainingToggle}
             />
           </View>
+
+          {isCancelRemainingEnabled && remainingQty > 0 && (
+            <View style={styles.lostAndFoundBanner}>
+              <Icon name={IconName.Warning} size={20} color={Theme.colors.warningText} />
+              <Paragraph style={styles.lostAndFoundBannerText}>
+                The remaining {remainingQty} will be recorded as Lost & Found upon submission.
+              </Paragraph>
+            </View>
+          )}
         </View>
 
         <View style={styles.bottomActionContainer}>

@@ -2,10 +2,12 @@ import React from 'react';
 import { View } from 'react-native';
 import { connect } from 'react-redux';
 
+import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSearchHeader';
 import ListLoadingSkeleton from '../../components/ListLoadingSkeleton';
 import showPopup from '../../components/Popup';
-import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSearchHeader';
+import { appConfig } from '../../constants';
 import { ProductCategory } from '../../data/product/category/ProductCategory';
+import Product from '../../data/product/Product';
 import {
   getProductsAction,
   searchProductByCodeAction,
@@ -32,6 +34,8 @@ class Products extends React.Component<Props, State> {
       searchGlobally: null,
       error: null,
       allProducts: null,
+      allProductsHasMore: true,
+      loadingMore: false,
       searchBoxVisible: false,
       searchBoxProductCodeVisible: false,
       categoryPickerPopupVisible: false,
@@ -49,29 +53,71 @@ class Products extends React.Component<Props, State> {
   };
 
   getProducts = () => {
-    this.setState({ loading: true, searchTerm: '' });
+    this.setState({
+      loading: true,
+      searchTerm: '',
+      allProducts: [],
+      allProductsHasMore: true,
+      loadingMore: false
+    });
+    this.fetchProductsPage(0);
+  };
+
+  fetchProductsPage = (offset: number) => {
     const actionCallback = (data: any) => {
-      this.setState({ loading: false });
       if (data?.error) {
+        this.setState({ loading: false, loadingMore: false });
         showPopup({
           title: data.errorMessage ? 'Failed to fetch products' : 'Error',
           message: data.errorMessage ?? 'Failed to fetch products',
           positiveButton: {
             text: 'Retry',
             callback: () => {
-              this.getProducts();
+              this.fetchProductsPage(offset);
             }
           },
           negativeButtonText: 'Cancel'
         });
         return;
       }
-      this.setState({
-        error: data?.length === 0 ? emptyStateMessage('products', '', 'No products available') : null,
-        allProducts: data ?? []
+      const items: Product[] = Array.isArray(data) ? data : [];
+      this.setState((prev) => {
+        const baseList = offset === 0 ? [] : prev.allProducts ?? [];
+        const merged = [...baseList, ...items];
+        return {
+          loading: false,
+          loadingMore: false,
+          allProducts: merged,
+          allProductsHasMore: items.length === appConfig.DEFAULT_PAGE_SIZE,
+          error: merged.length === 0 ? emptyStateMessage('products', '', 'No products available') : null
+        };
       });
     };
-    this.props.getProductsAction(actionCallback, true);
+
+    this.props.getProductsAction(actionCallback, true, {
+      max: appConfig.DEFAULT_PAGE_SIZE,
+      offset
+    });
+  };
+
+  loadMoreProducts = () => {
+    const { allProducts, allProductsHasMore, loadingMore, loading } = this.state;
+    if (loading || loadingMore || !allProductsHasMore) {
+      return;
+    }
+    const loaded = allProducts?.length ?? 0;
+    if (loaded === 0) {
+      return;
+    }
+    this.setState({ loadingMore: true });
+    this.fetchProductsPage(loaded);
+  };
+
+  goToProductDetails = (product: Product) => {
+    this.props.navigation.navigate('ProductDetails', {
+      product,
+      fromSortation: this.props.route?.params?.fromSortation
+    });
   };
 
   onSearchByProductNamePress = () => {
@@ -142,7 +188,7 @@ class Products extends React.Component<Props, State> {
           error: emptyStateMessage('products', query, 'No products available')
         });
       } else if (data.length === 1) {
-        this.props.navigation.navigate('ProductDetails', { product: data[0] });
+        this.goToProductDetails(data[0]);
       } else {
         this.setState({
           searchByName: { query, results: data },
@@ -190,7 +236,7 @@ class Products extends React.Component<Props, State> {
           error: emptyStateMessage('products', query, 'No products available')
         });
       } else if (data.length === 1) {
-        this.props.navigation.navigate('ProductDetails', { product: data[0] });
+        this.goToProductDetails(data[0]);
       } else {
         this.setState({
           searchByProductCode: { query, results: data },
@@ -263,10 +309,28 @@ class Products extends React.Component<Props, State> {
   };
 
   onSearchTermSubmit = (query: string) => {
-    if (!query) {
+    const trimmed = query.trim();
+
+    if (trimmed.length === 0) {
       this.setState({
-        searchByProductCode: { query: '', results: this.state.allProducts },
+        searchByName: null,
+        searchByProductCode: null,
+        searchByCategory: null,
+        searchGlobally: null,
         searchTerm: '',
+        error: null
+      });
+      this.getProducts();
+      return;
+    }
+
+    if (trimmed.length < appConfig.MIN_SEARCH_LENGTH) {
+      this.setState({
+        searchByName: null,
+        searchByProductCode: null,
+        searchByCategory: null,
+        searchGlobally: null,
+        searchTerm: trimmed,
         error: null
       });
       return;
@@ -297,7 +361,7 @@ class Products extends React.Component<Props, State> {
           error: emptyStateMessage('products', query, 'No products available')
         });
       } else if (productList.length === 1) {
-        this.props.navigation.navigate('ProductDetails', { product: productList[0] });
+        this.goToProductDetails(productList[0]);
       } else {
         this.setState({
           searchByProductCode: { query, results: data },
@@ -331,7 +395,7 @@ class Products extends React.Component<Props, State> {
         <BarcodeSearchHeader
           autoSearch
           autoFocus
-          placeholder={'Search by product code or name'}
+          placeholder={`Search products (min ${appConfig.MIN_SEARCH_LENGTH} chars)`}
           subtitle={vm.subtitle}
           resetSearch={this.getProducts}
           searchBox={false}
@@ -346,9 +410,10 @@ class Products extends React.Component<Props, State> {
             <>
               <ProductsList
                 products={vm.list}
-                onProductTapped={(product) => {
-                  this.props.navigation.navigate('ProductDetails', { product });
-                }}
+                loadingMore={vm.showingAllProducts && vm.loadingMore}
+                hasMore={vm.showingAllProducts ? vm.allProductsHasMore : undefined}
+                onProductTapped={this.goToProductDetails}
+                onEndReached={vm.showingAllProducts ? this.loadMoreProducts : undefined}
               />
               {vm?.list?.length === 0 && <CentralMessage message={vm.centralErrorMessage} />}
             </>

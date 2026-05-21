@@ -1,6 +1,6 @@
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { Button, Chip, Divider, Paragraph } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
@@ -139,19 +139,6 @@ export default function PutawayTaskListScreen({ route }: PutawayTaskListScreenPr
       tasks
     }));
   }, [filteredTasks]);
-
-  useEffect(() => {
-    if (searchTerm.trim() && filteredTasks.length === 1) {
-      const matchedTask = filteredTasks[0];
-      const globalIndex = putawayTasks.findIndex((t) => t.id === matchedTask.id);
-      setSearchTerm('');
-      navigation.navigate('SortationPutawayLocationScan', {
-        currentTaskIndex: globalIndex >= 0 ? globalIndex : 0,
-        isUserDirected: true,
-        containerId
-      });
-    }
-  }, [searchTerm, filteredTasks, putawayTasks, navigation, containerId]);
 
   const isSearching = searchTerm.trim().length > 0;
 
