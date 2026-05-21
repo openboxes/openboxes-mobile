@@ -4,6 +4,8 @@ import { Paragraph, Title } from 'react-native-paper';
 
 import { useDispatch } from 'react-redux';
 import { ScannerInput } from '../../components/ScannerInput';
+import { SearchButton } from '../../components/SearchButton';
+import { useSearchButton } from '../../components/SearchButton/useSearchButton';
 import { EMPTY_STRING } from '../../constants';
 
 import { navigate } from '../../NavigationService';
@@ -12,6 +14,7 @@ import styles from './styles';
 
 export default function PickingMoveToStagingScreen() {
   const [outboundContainerId, setOutboundContainerId] = React.useState<string>(EMPTY_STRING);
+  const { isSearchOpen, searchButtonProps } = useSearchButton({ onSelect: setOutboundContainerId });
   const dispatch = useDispatch();
 
   function handleScan(containerId: string) {
@@ -42,13 +45,17 @@ export default function PickingMoveToStagingScreen() {
         <Title>Scan The Container</Title>
         <Paragraph>Please scan the barcode of the outbound container you want to move to staging.</Paragraph>
 
-        <ScannerInput
-          style={styles.marginTopSmall}
-          label="Outbound Container ID"
-          value={outboundContainerId}
-          onChange={setOutboundContainerId}
-          onSubmit={handleScan}
-        />
+        <View style={styles.scannerRow}>
+          <ScannerInput
+            style={styles.scannerInput}
+            label="Outbound Container ID"
+            value={outboundContainerId}
+            isEnabled={!isSearchOpen}
+            onChange={setOutboundContainerId}
+            onSubmit={handleScan}
+          />
+          <SearchButton searchType="container" {...searchButtonProps} />
+        </View>
       </View>
     </ScrollView>
   );
