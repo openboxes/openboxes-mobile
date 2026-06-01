@@ -1,9 +1,11 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import { Chip, Divider, Title } from 'react-native-paper';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { EMPTY_FALLBACK } from '../../constants';
-import { DetailChip, SortationTask } from '../../types/sortation';
+import { SortationTask } from '../../types/sortation';
+import Theme from '../../utils/Theme';
 import styles from './styles';
 
 type PutawayDetailsProps = {
@@ -11,37 +13,22 @@ type PutawayDetailsProps = {
   taskIndex?: number;
   totalTasks?: number;
   showTaskCounter?: boolean;
+  onOverrideDestination?: () => void;
 };
 
 export default function PutawayDetails({
   putawayDetails,
   taskIndex,
   totalTasks,
-  showTaskCounter = true
+  showTaskCounter = true,
+  onOverrideDestination
 }: PutawayDetailsProps) {
   if (!putawayDetails) {
     return null;
   }
 
   const { inventoryItem, quantity, container, destination } = putawayDetails;
-
-  const detailsChips: DetailChip[] = [
-    {
-      icon: 'identifier',
-      label: 'Putaway Container ID',
-      value: container?.locationNumber ?? EMPTY_FALLBACK
-    },
-    {
-      icon: 'map-marker',
-      label: 'Putaway Location',
-      value: destination?.name ?? EMPTY_FALLBACK
-    },
-    {
-      icon: 'cube',
-      label: 'Putaway Quantity',
-      value: quantity ?? EMPTY_FALLBACK
-    }
-  ];
+  const destinationName = destination?.name ?? EMPTY_FALLBACK;
 
   return (
     <View style={styles.productDetails}>
@@ -65,13 +52,40 @@ export default function PutawayDetails({
 
       <Title style={styles.title}>{inventoryItem?.product?.name}</Title>
 
-      {detailsChips.map(({ icon, value, label }) => (
-        <Chip key={label} icon={icon} style={[styles.chipDefault, styles.topSpace]} textStyle={styles.chipText}>
+      <Chip icon="identifier" style={[styles.chipDefault, styles.topSpace]} textStyle={styles.chipText}>
+        <Text>
+          Putaway Container ID: <Text style={styles.bold}>{container?.locationNumber ?? EMPTY_FALLBACK}</Text>
+        </Text>
+      </Chip>
+
+      {onOverrideDestination ? (
+        <View style={[styles.chipDestination, styles.topSpace]}>
+          <MaterialCommunityIcons
+            name="map-marker"
+            size={16}
+            color={Theme.colors.text}
+            style={styles.chipDestinationIcon}
+          />
+          <Text style={[styles.chipText, styles.chipDestinationLabel]} numberOfLines={1}>
+            Putaway Location: <Text style={styles.bold}>{destinationName}</Text>
+          </Text>
+          <TouchableOpacity hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} onPress={onOverrideDestination}>
+            <Text style={styles.overrideLink}>Override</Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <Chip icon="map-marker" style={[styles.chipDefault, styles.topSpace]} textStyle={styles.chipText}>
           <Text>
-            {label}: <Text style={styles.bold}>{value}</Text>
+            Putaway Location: <Text style={styles.bold}>{destinationName}</Text>
           </Text>
         </Chip>
-      ))}
+      )}
+
+      <Chip icon="cube" style={[styles.chipDefault, styles.topSpace]} textStyle={styles.chipText}>
+        <Text>
+          Putaway Quantity: <Text style={styles.bold}>{quantity ?? EMPTY_FALLBACK}</Text>
+        </Text>
+      </Chip>
     </View>
   );
 }

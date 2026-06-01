@@ -132,19 +132,92 @@ export default StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-end'
   },
-  dialogNewLocationHeader: {
-    marginBottom: Theme.spacing.large,
-    marginTop: Theme.spacing.small,
-    fontWeight: 'bold',
-    fontSize: 16
+  dialogActionsRow: {
+    flexDirection: 'row',
+    alignItems: 'center'
   },
-  dialogCurrentLocationLabel: {
-    fontWeight: 'bold',
-    fontSize: 16
+  dialogActionButton: {
+    flex: 1
   },
-  dialogCurrentLocationWrapper: {
-    marginBottom: 16,
-    fontWeight: 'bold'
+  dialogActionSpacer: {
+    width: Theme.spacing.small
+  },
+  dialogTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: Theme.colors.text,
+    marginBottom: Theme.spacing.large
+  },
+  chipDestination: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    backgroundColor: '#ebebeb',
+    borderRadius: 4,
+    minHeight: 28
+  },
+  chipDestinationIcon: {
+    marginRight: 6
+  },
+  chipDestinationLabel: {
+    flex: 1
+  },
+  overrideLink: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: Theme.colors.primary,
+    textDecorationLine: 'underline',
+    paddingHorizontal: 4
+  },
+  locationList: {
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    borderRadius: Theme.roundness * 2,
+    overflow: 'hidden',
+    marginBottom: Theme.spacing.large
+  },
+  locationRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: Theme.spacing.medium,
+    paddingHorizontal: Theme.spacing.medium,
+    backgroundColor: 'white',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E0E0E0'
+  },
+  locationRowLast: {
+    borderBottomWidth: 0
+  },
+  locationRowSelected: {
+    backgroundColor: '#E8F0FE'
+  },
+  locationRowContent: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginLeft: Theme.spacing.small
+  },
+  locationRowName: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    color: Theme.colors.text
+  },
+  locationRowSubtext: {
+    fontSize: 13,
+    color: Theme.colors.disabled,
+    marginTop: 2
+  },
+  useNewLocationRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: Theme.spacing.medium,
+    paddingHorizontal: Theme.spacing.medium,
+    backgroundColor: 'white'
+  },
+  destinationInputContainer: {
+    marginBottom: Theme.spacing.large
   },
   modalSurface: {
     width: '90%',
@@ -176,13 +249,6 @@ export default StyleSheet.create({
     fontWeight: 'bold',
     color: Theme.colors.text,
     flexShrink: 1
-  },
-  dialogSuggestButton: {
-    marginBottom: Theme.spacing.large,
-    marginTop: Theme.spacing.medium
-  },
-  dialogActionButton: {
-    marginLeft: Theme.spacing.small
   },
   modeCardContainer: {
     flexDirection: 'row',

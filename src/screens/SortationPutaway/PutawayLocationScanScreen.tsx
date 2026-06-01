@@ -1,7 +1,7 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { Alert, ScrollView, View } from 'react-native';
-import { Divider, Paragraph, Subheading } from 'react-native-paper';
+import { Divider, Subheading } from 'react-native-paper';
 import { useSelector } from 'react-redux';
 
 import Button from '../../components/Button';
@@ -101,6 +101,7 @@ export default function PutawayLocationScanScreen() {
           taskIndex={currentTaskIndex}
           totalTasks={putawayTasks?.length || 0}
           showTaskCounter={!isUserDirected}
+          onOverrideDestination={() => setIsDialogVisible(true)}
         />
 
         <Divider />
@@ -118,13 +119,6 @@ export default function PutawayLocationScanScreen() {
               onSubmit={handleProcessing}
             />
             <SearchButton searchType="location" {...searchButtonProps} />
-          </View>
-
-          <View style={styles.topSpace}>
-            <View style={[styles.headerRow, styles.bottomSpace]}>
-              <Paragraph style={styles.subheading}>Alternative Location?</Paragraph>
-              <Button size="50%" title="Request" onPress={() => setIsDialogVisible(true)} />
-            </View>
           </View>
 
           <Button

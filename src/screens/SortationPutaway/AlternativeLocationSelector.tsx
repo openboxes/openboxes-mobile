@@ -1,14 +1,27 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { Alert, Modal, View } from 'react-native';
-import { Paragraph, Subheading } from 'react-native-paper';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Alert, Modal, ScrollView, TouchableOpacity, View } from 'react-native';
+import { Paragraph, RadioButton } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
 import Button from '../../components/Button';
 import { ScannerInput } from '../../components/ScannerInput';
+import { SearchButton } from '../../components/SearchButton';
+import { useSearchButton } from '../../components/SearchButton/useSearchButton';
 import { appConfig, EMPTY_STRING } from '../../constants';
 import { getAlternativeDestinationsAction, searchLocationByLocationNumber } from '../../redux/actions/locations';
 import { SortationLocation, SortationTask } from '../../types/sortation';
+import Theme from '../../utils/Theme';
 import styles from './styles';
+
+const NEW_LOCATION_OPTION = '__new__';
+
+const buildDisplayList = (
+  current: SortationLocation | null | undefined,
+  alternatives: SortationLocation[]
+): SortationLocation[] => (current ? [current, ...alternatives.filter((loc) => loc.id !== current.id)] : alternatives);
+
+const getLocationSubtext = (location: SortationLocation): string | null =>
+  location?.locationType?.name ?? location?.locationType?.description ?? null;
 
 type Props = {
   visible: boolean;
@@ -28,50 +41,24 @@ export default function AlternativeLocationSelector({
   const dispatch = useDispatch();
 
   const [alternativeLocations, setAlternativeLocations] = useState<SortationLocation[]>([]);
-  const [tempAlternativeLocation, setTempAlternativeLocation] = useState<SortationLocation | null>(initialLocation);
-  const [scannedLocationInput, setScannedLocationInput] = useState('');
-  const [suggestionIndex, setSuggestionIndex] = useState(0);
-
-  // Reset state when modal opens
-  useEffect(() => {
-    if (visible) {
-      setTempAlternativeLocation(initialLocation);
-      setScannedLocationInput(EMPTY_STRING);
-      setSuggestionIndex(0);
-    }
-  }, [visible, initialLocation]);
-
-  // Load list of alternatives when modal opens
-  useEffect(() => {
-    if (!visible) {
-      return;
-    }
-
-    dispatch(
-      getAlternativeDestinationsAction(putawayDetails.facility.id, putawayDetails.id, (data: any) => {
-        if (data?.error) {
-          Alert.alert('Error', 'Failed to load alternative locations.');
-          return;
-        }
-        const mapped: SortationLocation[] = data.data.map((item: any) => ({
-          id: item.id,
-          name: item.name,
-          locationNumber: item.locationNumber
-        }));
-        setAlternativeLocations(mapped);
-      })
-    );
-  }, [dispatch, putawayDetails.facility.id, putawayDetails.id, visible]);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [newLocationInput, setNewLocationInput] = useState<string>(EMPTY_STRING);
+  const [resolvedNewLocation, setResolvedNewLocation] = useState<SortationLocation | null>(null);
 
   const handleLocationSearch = useCallback(
     (locationNumber: string) => {
+      const trimmed = locationNumber?.trim();
+      if (!trimmed) {
+        setResolvedNewLocation(null);
+        return;
+      }
       dispatch(
-        searchLocationByLocationNumber(locationNumber, (data: any) => {
+        searchLocationByLocationNumber(trimmed, (data: any) => {
           if (data && !data.error) {
-            setTempAlternativeLocation(data);
+            setResolvedNewLocation(data);
           } else {
-            setTempAlternativeLocation(null);
-            Alert.alert('Location Not Found', `Location "${locationNumber}" could not be found.`);
+            setResolvedNewLocation(null);
+            Alert.alert('Location Not Found', `Location "${trimmed}" could not be found.`);
           }
         })
       );
@@ -79,30 +66,97 @@ export default function AlternativeLocationSelector({
     [dispatch]
   );
 
-  const handleSuggestLocation = () => {
-    if (alternativeLocations.length === 0) {
-      Alert.alert('No Suggestions', 'No alternative locations are available.');
+  const handleSearchSelect = useCallback(
+    (value: string) => {
+      setNewLocationInput(value);
+      handleLocationSearch(value);
+    },
+    [handleLocationSearch]
+  );
+
+  const { isSearchOpen, searchButtonProps } = useSearchButton({ onSelect: handleSearchSelect });
+
+  const displayLocations = useMemo(
+    () => buildDisplayList(putawayDetails.destination, alternativeLocations),
+    [alternativeLocations, putawayDetails.destination]
+  );
+
+  useEffect(() => {
+    if (!visible) {
       return;
     }
-    const suggested = alternativeLocations[suggestionIndex];
-    setTempAlternativeLocation(suggested);
+    setNewLocationInput(EMPTY_STRING);
+    setResolvedNewLocation(null);
 
-    // Clear the manual input if they choose a suggestion
-    setScannedLocationInput(EMPTY_STRING);
+    const provisionalTarget = initialLocation ?? putawayDetails.destination;
+    setSelectedId(provisionalTarget?.id ?? null);
 
-    const nextIndex = (suggestionIndex + 1) % alternativeLocations.length;
-    setSuggestionIndex(nextIndex);
+    dispatch(
+      getAlternativeDestinationsAction(putawayDetails.facility.id, putawayDetails.id, (data: any) => {
+        if (data?.error) {
+          Alert.alert('Error', 'Failed to load alternative locations.');
+          return;
+        }
+        const items: any[] = Array.isArray(data?.data) ? data.data : [];
+        const mapped: SortationLocation[] = items.map((item: any) => ({
+          id: item.id,
+          name: item.name,
+          locationNumber: item.locationNumber,
+          locationType: item.locationType,
+          locationTypeCode: item.locationTypeCode,
+          zoneId: item.zoneId,
+          zoneName: item.zoneName,
+          active: item.active
+        }));
+        setAlternativeLocations(mapped);
+
+        const target = initialLocation ?? putawayDetails.destination;
+        if (!target) {
+          return;
+        }
+        const displayList = buildDisplayList(putawayDetails.destination, mapped);
+        if (displayList.some((loc) => loc.id === target.id)) {
+          setSelectedId(target.id);
+        } else {
+          setSelectedId(NEW_LOCATION_OPTION);
+          setNewLocationInput(target.locationNumber);
+          setResolvedNewLocation(target);
+        }
+      })
+    );
+  }, [dispatch, putawayDetails.facility.id, putawayDetails.id, putawayDetails.destination, visible, initialLocation]);
+
+  const handleSelectListed = (locationId: string) => {
+    setSelectedId(locationId);
+    setNewLocationInput(EMPTY_STRING);
+    setResolvedNewLocation(null);
   };
 
-  const handleConfirmAlternative = () => {
-    if (tempAlternativeLocation) {
-      onConfirm(tempAlternativeLocation);
+  const handleSelectNew = () => {
+    setSelectedId(NEW_LOCATION_OPTION);
+  };
+
+  const handleNewLocationInputChange = (value: string) => {
+    setNewLocationInput(value);
+    setResolvedNewLocation(null);
+  };
+
+  const isNewLocationMode = selectedId === NEW_LOCATION_OPTION;
+
+  const selectedLocation = isNewLocationMode
+    ? resolvedNewLocation
+    : displayLocations.find((loc) => loc.id === selectedId) ?? null;
+
+  // Disable Save until the selection actually differs from the current destination.
+  const isSaveEnabled = selectedLocation !== null && selectedLocation.id !== putawayDetails.destination?.id;
+
+  const handleSave = () => {
+    if (selectedLocation) {
+      onConfirm(selectedLocation);
+      onDismiss();
     }
-    onDismiss();
   };
 
-  // Don't render anything if not visible
-  // This ensures we do not fight for focus with the scanner input when the modal is closed
   if (!visible) {
     return null;
   }
@@ -111,38 +165,92 @@ export default function AlternativeLocationSelector({
     <Modal transparent visible={visible} animationType="slide" onRequestClose={onDismiss}>
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
-          <View style={styles.modalHeader}>
-            <Subheading style={styles.modalTitleText}>Choose Alternative Location</Subheading>
-          </View>
+          <Paragraph style={styles.dialogTitle}>Override destination</Paragraph>
 
-          <Paragraph style={styles.dialogCurrentLocationWrapper}>
-            <Paragraph style={styles.dialogCurrentLocationLabel}>Current Location: </Paragraph>
-            {putawayDetails.destination?.name || 'Unassigned'}
-          </Paragraph>
+          <ScrollView style={styles.locationList} keyboardShouldPersistTaps="always">
+            {displayLocations.map((location) => {
+              const isSelected = selectedId === location.id;
+              const subtext = getLocationSubtext(location);
+              return (
+                <TouchableOpacity
+                  key={location.id}
+                  style={[styles.locationRow, isSelected && styles.locationRowSelected]}
+                  onPress={() => handleSelectListed(location.id)}
+                >
+                  <RadioButton
+                    value={location.id}
+                    status={isSelected ? 'checked' : 'unchecked'}
+                    color={Theme.colors.primary}
+                    onPress={() => handleSelectListed(location.id)}
+                  />
+                  <View style={styles.locationRowContent}>
+                    <View>
+                      <Paragraph style={styles.locationRowName}>{location.name}</Paragraph>
+                      {subtext ? <Paragraph style={styles.locationRowSubtext}>{subtext}</Paragraph> : null}
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              );
+            })}
 
-          <Button
-            size="100%"
-            title="Suggest new location"
-            mode="contained"
-            style={styles.dialogSuggestButton}
-            onPress={handleSuggestLocation}
-          />
+            <TouchableOpacity
+              style={[
+                styles.useNewLocationRow,
+                styles.locationRowLast,
+                isNewLocationMode && styles.locationRowSelected
+              ]}
+              onPress={handleSelectNew}
+            >
+              <RadioButton
+                value={NEW_LOCATION_OPTION}
+                status={isNewLocationMode ? 'checked' : 'unchecked'}
+                color={Theme.colors.primary}
+                onPress={handleSelectNew}
+              />
+              <View style={styles.locationRowContent}>
+                <Paragraph style={styles.locationRowName}>Use a new location</Paragraph>
+              </View>
+            </TouchableOpacity>
+          </ScrollView>
 
-          <ScannerInput
-            label="Scan location number"
-            autoSubmitTimeout={appConfig.DEFAULT_SEARCH_DEBOUNCE_TIME}
-            value={scannedLocationInput}
-            onChange={setScannedLocationInput}
-            onSubmit={handleLocationSearch}
-          />
+          {isNewLocationMode && (
+            <View style={styles.destinationInputContainer}>
+              <View style={styles.scannerRow}>
+                <ScannerInput
+                  style={styles.scannerInput}
+                  label="Destination"
+                  placeholder="Scan or type the new ID"
+                  value={newLocationInput}
+                  isEnabled={!isSearchOpen}
+                  autoSubmitTimeout={appConfig.DEFAULT_SEARCH_DEBOUNCE_TIME}
+                  onChange={handleNewLocationInputChange}
+                  onSubmit={handleLocationSearch}
+                />
+                <SearchButton searchType="location" {...searchButtonProps} />
+              </View>
+            </View>
+          )}
 
-          <Paragraph style={styles.dialogNewLocationHeader}>
-            New Location: {tempAlternativeLocation?.name || 'Unknown'}
-          </Paragraph>
-
-          <View style={styles.dialogActions}>
-            <Button size="default" mode="text" title="Cancel" onPress={onDismiss} />
-            <Button size="default" title="Confirm" onPress={handleConfirmAlternative} />
+          <View style={styles.dialogActionsRow}>
+            <Button
+              icon="close-circle"
+              size="default"
+              variant="secondary"
+              style={styles.dialogActionButton}
+              title="Cancel"
+              mode="contained"
+              onPress={onDismiss}
+            />
+            <View style={styles.dialogActionSpacer} />
+            <Button
+              icon="check-circle"
+              size="default"
+              style={styles.dialogActionButton}
+              title="Save"
+              mode="contained"
+              disabled={!isSaveEnabled}
+              onPress={handleSave}
+            />
           </View>
         </View>
       </View>

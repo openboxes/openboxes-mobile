@@ -251,6 +251,7 @@ export default function PutawayQuantityScreen() {
           taskIndex={currentTaskIndex}
           totalTasks={putawayTasks?.length || 0}
           showTaskCounter={!isUserDirected}
+          onOverrideDestination={() => setIsDialogVisible(true)}
         />
         <Divider />
 
@@ -268,29 +269,22 @@ export default function PutawayQuantityScreen() {
             onSubmit={handleConfirm}
           />
 
-          <View style={styles.topSpace}>
-            <View style={[styles.headerRow, styles.bottomSpace]}>
-              <Paragraph style={styles.subheading}>Alternative Location?</Paragraph>
-              <Button size="50%" title="Request" onPress={() => setIsDialogVisible(true)} />
-            </View>
-
-            {hasDiscrepancy && (
-              <View style={styles.headerRow}>
-                <Paragraph style={styles.subheading}>Discrepancy Reason</Paragraph>
-                <View style={styles.dropdownContainer}>
-                  <AsyncModalSelect
-                    placeholder="Select a reason"
-                    label="Reason for shortage"
-                    initValue={selectedReasonCode?.name || ''}
-                    initialData={reasonCodes}
-                    searchAction={() => {}}
-                    serverSearchEnabled={false}
-                    onSelect={(reason: ReasonCode) => setSelectedReasonCode(reason)}
-                  />
-                </View>
+          {hasDiscrepancy && (
+            <View style={[styles.topSpace, styles.headerRow]}>
+              <Paragraph style={styles.subheading}>Discrepancy Reason</Paragraph>
+              <View style={styles.dropdownContainer}>
+                <AsyncModalSelect
+                  placeholder="Select a reason"
+                  label="Reason for shortage"
+                  initValue={selectedReasonCode?.name || ''}
+                  initialData={reasonCodes}
+                  searchAction={() => {}}
+                  serverSearchEnabled={false}
+                  onSelect={(reason: ReasonCode) => setSelectedReasonCode(reason)}
+                />
               </View>
-            )}
-          </View>
+            </View>
+          )}
 
           <View style={styles.cardAnnotation}>
             <Paragraph style={[styles.subheading, isCancelRemainingDisabled && styles.subheadingDisabled]}>
