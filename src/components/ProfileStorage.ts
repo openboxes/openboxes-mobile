@@ -11,9 +11,10 @@ const PROFILES_KEY = 'PROFILES';
 const LEGACY_API_URL_KEY = 'API_URL';
 const CURRENT_VERSION = 1;
 
+// The first one in the list will be used as the default active profile if no activeProfileId is set
 const DEFAULT_SERVERS = [
-  { label: 'Staging Server', serverUrl: 'https://stag.vtc.openboxes.com/openboxes/api' },
-  { label: 'Test Server', serverUrl: 'https://vvg.openboxes.com/openboxes/api' }
+  { label: 'Test Server', serverUrl: 'https://vvg.openboxes.com/openboxes/api' },
+  { label: 'Staging Server', serverUrl: 'https://stag.vtc.openboxes.com/openboxes/api' }
 ];
 
 const emitter = createEventEmitter();
