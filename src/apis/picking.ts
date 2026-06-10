@@ -43,6 +43,10 @@ export function getPickTasksApi(facilityId: string, params: PickTaskParams) {
   );
 }
 
+export function getPickTaskCountsApi(facilityId: string) {
+  return ApiClient.get(`/facilities/${facilityId}/pick-tasks/counts`);
+}
+
 export function patchPickTaskApi(facilityId: string, taskId: string, params: PickTaskActionParams) {
   return ApiClient.patch(`/facilities/${facilityId}/pick-tasks/${taskId}`, params);
 }

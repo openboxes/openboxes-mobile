@@ -72,6 +72,12 @@ export type DeliveryType = {
   code: DeliveryTypeCode;
 };
 
+export type DeliveryTypeOrderCount = {
+  deliveryTypeCode: DeliveryTypeCode;
+  availableCount: number;
+  totalCount: number;
+};
+
 export type AvailableItem = {
   'inventoryItem.id': string | null;
   'product.name': string | null;

@@ -1,9 +1,13 @@
 import { PickTaskParams } from '../../apis';
-import { PickPageItem, PickTask, ReallocatePicklistItem } from '../../types/picking';
+import { DeliveryTypeOrderCount, PickPageItem, PickTask, ReallocatePicklistItem } from '../../types/picking';
 
 export const GET_PICK_TASKS_REQUEST = 'GET_PICK_TASKS_REQUEST';
 export const GET_PICK_TASKS_REQUEST_SUCCESS = 'GET_PICK_TASKS_REQUEST_SUCCESS';
 export const GET_PICK_TASKS_REQUEST_FAIL = 'GET_PICK_TASKS_REQUEST_FAIL';
+
+export const GET_PICK_TASK_COUNTS_REQUEST = 'GET_PICK_TASK_COUNTS_REQUEST';
+export const GET_PICK_TASK_COUNTS_REQUEST_SUCCESS = 'GET_PICK_TASK_COUNTS_REQUEST_SUCCESS';
+export const GET_PICK_TASK_COUNTS_REQUEST_FAIL = 'GET_PICK_TASK_COUNTS_REQUEST_FAIL';
 
 export const START_PICK_TASK_REQUEST = 'START_PICK_TASK_REQUEST';
 export const START_PICK_TASK_REQUEST_SUCCESS = 'START_PICK_TASK_REQUEST_SUCCESS';
@@ -58,6 +62,15 @@ export function getPickTasksAction(
   return {
     type: GET_PICK_TASKS_REQUEST,
     payload: { ...params },
+    callback
+  };
+}
+
+export function getPickTaskCountsAction(
+  callback: (response: { response?: { data: DeliveryTypeOrderCount[] }; errorMessage?: string }) => void
+) {
+  return {
+    type: GET_PICK_TASK_COUNTS_REQUEST,
     callback
   };
 }

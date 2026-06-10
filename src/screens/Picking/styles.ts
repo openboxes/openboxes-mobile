@@ -16,39 +16,85 @@ export default StyleSheet.create({
     paddingHorizontal: Theme.spacing.medium
   },
 
-  cardWrapper: {
-    flex: 1,
-    paddingHorizontal: Theme.spacing.medium,
-    marginBottom: Theme.spacing.small / 2
+  optionsCard: {
+    borderWidth: 1,
+    borderColor: '#E4E7EC',
+    borderRadius: Theme.roundness * 2,
+    overflow: 'hidden',
+    marginHorizontal: Theme.spacing.medium,
+    backgroundColor: 'white',
+    elevation: 2,
+    shadowColor: '#101828',
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 }
   },
-  typeCard: {
+  optionRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: Theme.spacing.small,
-    borderRadius: Theme.roundness,
-    backgroundColor: Theme.colors.surface,
-    elevation: 2
+    paddingVertical: Theme.spacing.medium,
+    paddingHorizontal: Theme.spacing.small,
+    backgroundColor: 'white',
+    borderBottomWidth: 1,
+    borderBottomColor: '#EEF0F3',
+    borderLeftWidth: 3,
+    borderLeftColor: 'transparent'
   },
-  selectedCard: {
-    borderColor: Theme.colors.primary,
-    borderWidth: 2
+  optionRowLast: {
+    borderBottomWidth: 0
   },
-  contentWrapper: {
+  optionRowSelected: {
+    backgroundColor: '#E8F0FE',
+    borderLeftColor: Theme.colors.primary
+  },
+  optionRowContent: {
     flex: 1,
     flexDirection: 'row',
-    alignItems: 'center'
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginLeft: Theme.spacing.small
   },
-  cardLabel: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: Theme.colors.text
+  optionTitle: {
+    fontSize: 15,
+    letterSpacing: 0.1,
+    color: Theme.colors.text,
+    marginVertical: 0,
+    lineHeight: 20
   },
-  priorityBadge: {
-    marginLeft: Theme.spacing.small,
-    backgroundColor: Theme.colors.primary,
-    alignSelf: 'center',
-    paddingHorizontal: Theme.spacing.medium,
-    fontSize: 14
+  optionSubtitle: {
+    fontSize: 13,
+    color: Theme.colors.disabled,
+    marginVertical: 0,
+    lineHeight: 16
+  },
+  countWrapper: {
+    alignItems: 'center',
+    paddingRight: Theme.spacing.small / 2
+  },
+  countValue: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    fontVariant: ['tabular-nums'],
+    color: Theme.colors.primary,
+    marginVertical: 0,
+    lineHeight: 18
+  },
+  countValueEmpty: {
+    fontWeight: 'normal',
+    color: Theme.colors.secondaryForeground
+  },
+  countCaption: {
+    fontSize: 11,
+    color: Theme.colors.disabled,
+    marginVertical: 0,
+    lineHeight: 13
+  },
+
+  whiteInput: {
+    backgroundColor: 'white'
+  },
+  ctaContent: {
+    height: 48
   },
 
   title: {

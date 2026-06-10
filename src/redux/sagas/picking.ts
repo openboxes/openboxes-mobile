@@ -15,6 +15,9 @@ import {
   GET_PICK_TASKS_BY_REQUISITION_REQUEST,
   GET_PICK_TASKS_BY_REQUISITION_REQUEST_SUCCESS,
   GET_PICK_TASKS_BY_REQUISITION_REQUEST_FAIL,
+  GET_PICK_TASK_COUNTS_REQUEST,
+  GET_PICK_TASK_COUNTS_REQUEST_FAIL,
+  GET_PICK_TASK_COUNTS_REQUEST_SUCCESS,
   GET_PICK_TASKS_REQUEST,
   GET_PICK_TASKS_REQUEST_FAIL,
   GET_PICK_TASKS_REQUEST_SUCCESS,
@@ -55,6 +58,24 @@ function* getPickTasksAction(action: any) {
     yield put({ type: GET_PICK_TASKS_REQUEST_FAIL, payload: errorMessage });
     yield action.callback({ errorMessage });
     yield put(hideScreenLoading());
+  }
+}
+
+function* getPickTaskCountsAction(action: any) {
+  try {
+    // @ts-ignore
+    const currentLocation = yield select(userLocation);
+    if (!currentLocation) {
+      throw new Error('User Location Not Found');
+    }
+    // @ts-ignore
+    const response = yield call(api.getPickTaskCountsApi, currentLocation.id);
+    yield action.callback({ response });
+    yield put({ type: GET_PICK_TASK_COUNTS_REQUEST_SUCCESS, payload: response.data });
+  } catch (error) {
+    const errorMessage = (error as any)?.message || 'Error Fetching Pick Task Counts';
+    yield put({ type: GET_PICK_TASK_COUNTS_REQUEST_FAIL, payload: errorMessage });
+    yield action.callback({ errorMessage });
   }
 }
 
@@ -325,6 +346,7 @@ function* reallocatePickTaskAction(action: any) {
 
 export default function* watcher() {
   yield takeLatest(GET_PICK_TASKS_REQUEST, getPickTasksAction);
+  yield takeLatest(GET_PICK_TASK_COUNTS_REQUEST, getPickTaskCountsAction);
   yield takeLatest(START_PICK_TASK_REQUEST, startPickTaskAction);
   yield takeLatest(PICK_PICK_TASK_REQUEST, pickPickTaskAction);
   yield takeLatest(DROP_PICK_TASK_REQUEST, dropPickTaskAction);
