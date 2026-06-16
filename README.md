@@ -10,6 +10,10 @@ Openboxes mobile app built using React Native.
 
 **Editor** : Visual Studio Code
 
+**Node.js** : Node.js 14
+
+**OpenJDK** : OpenJDK 11
+
 ## 🔩 How to Setup Project
 
 **Step 1:** Clone this repository.
