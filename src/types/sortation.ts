@@ -75,6 +75,11 @@ export type SortationTask = {
   quantity: number;
   status: string;
   type: string;
+  shipmentNumber: string | null;
+  shipmentId: string | null;
+  backorderReference: string | null;
+  receiptNumber: string | null;
+  receiptId: string | null;
 };
 
 export type DetailChip = {

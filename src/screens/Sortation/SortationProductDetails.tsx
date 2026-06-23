@@ -1,8 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
-import { Chip, Divider, Paragraph, Switch, Text, Title } from 'react-native-paper';
+import { Caption, Chip, Divider, Paragraph, Switch, Text, Title } from 'react-native-paper';
 
-import { ProductIcon } from '../../components/Icons';
 import { EMPTY_FALLBACK } from '../../constants';
 import { DetailChip, SortationProduct, SortationTask } from '../../types/sortation';
 import Theme from '../../utils/Theme';
@@ -19,28 +18,30 @@ export type SortationProductDetailsProps = {
 
 export default function SortationProductDetails({
   product,
+  task,
   detailsChips,
   showDirectPutawayRequired = false,
   directPutawayRequired = false,
   onToggleDirectPutaway
 }: SortationProductDetailsProps) {
   const { productCode, name } = product;
+  const { backorderReference, shipmentNumber } = task ?? {};
 
   return (
     <View style={styles.productDetails}>
       <View style={styles.headerRow}>
-        <Chip
-          icon={() => <ProductIcon size={16} color="#000" />}
-          style={styles.chipDefault}
-          textStyle={styles.chipText}
-        >
-          {productCode}
+        <Chip icon="truck-delivery" style={styles.chipDefault} textStyle={styles.chipText}>
+          ASN: <Text style={[styles.bold, styles.chipText]}>{shipmentNumber ?? EMPTY_FALLBACK}</Text>
+        </Chip>
+        <Chip icon="clipboard-text-outline" style={styles.chipDefault} textStyle={styles.chipText}>
+          PO: <Text style={[styles.bold, styles.chipText]}>{backorderReference ?? EMPTY_FALLBACK}</Text>
         </Chip>
       </View>
 
       <Divider style={styles.contentDivider} />
 
       <Title style={styles.title}>{name}</Title>
+      <Caption style={styles.caption}>{productCode}</Caption>
 
       {product.description ? <Paragraph style={[styles.paragraphMuted]}>{product.description}</Paragraph> : null}
 

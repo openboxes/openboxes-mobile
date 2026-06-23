@@ -1,7 +1,7 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { Alert, FlatList, View } from 'react-native';
-import { Button, Caption, Card, Chip, Divider, Paragraph, Text, Title } from 'react-native-paper';
+import { Button, Card, Chip, Divider, Paragraph, Text, Title } from 'react-native-paper';
 
 import { EMPTY_FALLBACK } from '../../constants';
 import { navigate } from '../../NavigationService';
@@ -59,23 +59,29 @@ export default function SortationTaskSelectionListScreen() {
             <Card style={[styles.card, isSelected && styles.cardSelected]} onPress={() => setSelectedTask(item)}>
               <Card.Content style={styles.cardContent}>
                 <View style={styles.headerRow}>
-                  <Chip icon="barcode" style={styles.chipDefault} textStyle={styles.chipText}>
-                    {`${item.identifier ?? EMPTY_FALLBACK}`}
+                  <Chip icon="truck-delivery" style={styles.chipDefault} textStyle={styles.chipText}>
+                    {`ASN: ${item.shipmentNumber ?? EMPTY_FALLBACK}`}
                   </Chip>
 
-                  <Chip style={[styles.chipWarning]} textStyle={styles.chipText}>
-                    {`${item.type ?? EMPTY_FALLBACK}`}
-                  </Chip>
-
-                  <Chip style={[styles.chipWarning]} textStyle={styles.chipText}>
+                  <Chip style={styles.chipDefault} textStyle={styles.chipText}>
                     {`${item.status ?? EMPTY_FALLBACK}`}
                   </Chip>
                 </View>
 
                 <Divider style={styles.contentDivider} />
 
-                <Title style={styles.title}>{`Location Name: ${item.location.name}`}</Title>
-                <Caption style={styles.caption}> {`Location Number: ${item.location.locationNumber}`} </Caption>
+                <Title style={styles.title}>{`${item.location.locationNumber} - ${item.location.name}`}</Title>
+
+                <Chip icon="barcode" style={[styles.chipDefault, styles.topSpace]} textStyle={styles.chipText}>
+                  {`Putaway Id: ${item.identifier ?? EMPTY_FALLBACK}`}
+                </Chip>
+                <Chip
+                  icon="clipboard-text-outline"
+                  style={[styles.chipDefault, styles.topSpace]}
+                  textStyle={styles.chipText}
+                >
+                  {`PO: ${item.backorderReference ?? EMPTY_FALLBACK}`}
+                </Chip>
                 <Chip icon="package" style={[styles.chipDefault, styles.topSpace]} textStyle={styles.chipText}>
                   {`Quantity: ${item.quantity ?? EMPTY_FALLBACK}`}
                 </Chip>
