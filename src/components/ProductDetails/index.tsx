@@ -63,7 +63,12 @@ function Badge({ icon, label, children }: { icon?: string; label?: string; child
 
 function Title() {
   const { product } = useProduct();
-  return <PaperTitle style={styles.title}>{product.name}</PaperTitle>;
+  return (
+    <>
+      <PaperTitle style={styles.title}>{product.productCode}</PaperTitle>
+      <PaperCaption style={styles.caption}>{product.name}</PaperCaption>
+    </>
+  );
 }
 
 function Caption({ title, subtitle }: { title?: string; subtitle?: string }) {

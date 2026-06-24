@@ -71,9 +71,6 @@ export default function PickingPickLocationScreen() {
       <ProductDetails.Provider product={currentTask.product} status={currentTask.status}>
         <ProductDetails.Root>
           <ProductDetails.Header>
-            <ProductDetails.Badge icon="barcode" label="Product Code">
-              {currentTask.product.productCode}
-            </ProductDetails.Badge>
             <ProductDetails.Badge icon="navigation" label="Pick Task">
               {`${currentTaskIndex + 1} / ${allTasksCount || 0}`}
             </ProductDetails.Badge>

@@ -90,9 +90,6 @@ export default function PickingPickStagingLocationScreen() {
       <ProductDetails.Provider product={currentTask.product} status={currentTask.status}>
         <ProductDetails.Root>
           <ProductDetails.Header>
-            <ProductDetails.Badge icon="barcode" label="Product Code">
-              {currentTask.product.productCode}
-            </ProductDetails.Badge>
             <ProductDetails.Badge icon="navigation" label="Task Progress">
               {`${currentUniqueIndex + 1} / ${uniqueTasks.length}`}
             </ProductDetails.Badge>

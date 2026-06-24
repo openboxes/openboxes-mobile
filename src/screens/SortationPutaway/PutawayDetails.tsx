@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import { Chip, Divider, Title } from 'react-native-paper';
+import { Caption, Chip, Divider, Title } from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { EMPTY_FALLBACK } from '../../constants';
@@ -32,25 +32,23 @@ export default function PutawayDetails({
 
   return (
     <View style={styles.productDetails}>
-      <View style={styles.headerRow}>
-        <Chip icon="barcode" style={styles.chipDefault} textStyle={styles.chipText}>
-          <Text>
-            Product Code: <Text style={styles.bold}>{inventoryItem?.product?.productCode}</Text>
-          </Text>
-        </Chip>
-        {showTaskCounter && taskIndex !== undefined && totalTasks !== undefined && (
-          <Chip icon="navigation" style={styles.chipDefault} textStyle={styles.chipText}>
-            Tasks:{' '}
-            <Text style={styles.bold}>
-              {taskIndex + 1} / {totalTasks}
-            </Text>
-          </Chip>
-        )}
-      </View>
+      {showTaskCounter && taskIndex !== undefined && totalTasks !== undefined && (
+        <>
+          <View style={styles.headerRow}>
+            <Chip icon="navigation" style={styles.chipDefault} textStyle={styles.chipText}>
+              Tasks:{' '}
+              <Text style={styles.bold}>
+                {taskIndex + 1} / {totalTasks}
+              </Text>
+            </Chip>
+          </View>
 
-      <Divider style={styles.contentDivider} />
+          <Divider style={styles.contentDivider} />
+        </>
+      )}
 
-      <Title style={styles.title}>{inventoryItem?.product?.name}</Title>
+      <Title style={styles.title}>{inventoryItem?.product?.productCode}</Title>
+      <Caption style={styles.caption}>{inventoryItem?.product?.name}</Caption>
 
       <Chip icon="identifier" style={[styles.chipDefault, styles.topSpace]} textStyle={styles.chipText}>
         <Text>

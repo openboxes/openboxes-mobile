@@ -62,7 +62,7 @@ export default StyleSheet.create({
   title: {
     fontSize: 18,
     color: Theme.colors.text,
-    fontWeight: '600'
+    fontWeight: 'bold'
   },
   subheading: {
     fontSize: 16,

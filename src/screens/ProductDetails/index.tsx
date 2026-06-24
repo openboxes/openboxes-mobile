@@ -245,15 +245,8 @@ class ProductDetails extends React.Component<Props, State> {
               </>
             )}
 
-            <View style={styles.headerRow}>
-              <Chip icon="barcode" style={styles.chipDefault} textStyle={styles.chipText}>
-                {vm.productCode || HYPHEN}
-              </Chip>
-            </View>
-
-            <Divider style={styles.contentDivider} />
-
-            <Title style={styles.title}>{vm.name}</Title>
+            <Title style={styles.title}>{vm.productCode || HYPHEN}</Title>
+            <Caption style={styles.subtitle}>{vm.name}</Caption>
             <Caption style={styles.subtitle}>{`Barcode: ${vm.upc}`}</Caption>
 
             <View style={styles.actionButtons}>
