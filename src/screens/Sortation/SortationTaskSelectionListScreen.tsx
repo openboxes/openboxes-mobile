@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Alert, FlatList, View } from 'react-native';
 import { Button, Card, Chip, Divider, Paragraph, Text, Title } from 'react-native-paper';
 
+import { ContainerIcon, LocationIcon, QuantityIcon } from '../../components/Icons';
 import { EMPTY_FALLBACK } from '../../constants';
 import { navigate } from '../../NavigationService';
 import { SortationProduct, SortationTask } from '../../types/sortation';
@@ -51,16 +52,13 @@ export default function SortationTaskSelectionListScreen() {
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => {
           const isSelected = selectedTask?.id === item.id;
-          const assigneeName = item.assignee
-            ? `${item.assignee.firstName} ${item.assignee.lastName}`.trim()
-            : EMPTY_FALLBACK;
 
           return (
             <Card style={[styles.card, isSelected && styles.cardSelected]} onPress={() => setSelectedTask(item)}>
               <Card.Content style={styles.cardContent}>
                 <View style={styles.headerRow}>
-                  <Chip icon="truck-delivery" style={styles.chipDefault} textStyle={styles.chipText}>
-                    {`ASN: ${item.shipmentNumber ?? EMPTY_FALLBACK}`}
+                  <Chip icon="barcode" style={styles.chipDefault} textStyle={styles.chipText}>
+                    <Text style={[styles.bold, styles.chipText]}>{`${item.identifier ?? EMPTY_FALLBACK}`}</Text>
                   </Chip>
 
                   <Chip style={styles.chipDefault} textStyle={styles.chipText}>
@@ -70,26 +68,35 @@ export default function SortationTaskSelectionListScreen() {
 
                 <Divider style={styles.contentDivider} />
 
-                <Title style={styles.title}>{`${item.location.locationNumber} - ${item.location.name}`}</Title>
-
-                <Chip icon="barcode" style={[styles.chipDefault, styles.topSpace]} textStyle={styles.chipText}>
-                  {`Putaway Id: ${item.identifier ?? EMPTY_FALLBACK}`}
+                <Chip icon="receipt" style={[styles.chipDefault]} textStyle={styles.chipText}>
+                  ASN: <Text style={[styles.bold, styles.chipText]}>{`${item.shipmentNumber ?? EMPTY_FALLBACK}`}</Text>
+                </Chip>
+                <Chip icon="origin" style={[styles.chipDefault, styles.topSpace]} textStyle={styles.chipText}>
+                  Origin:{' '}
+                  <Text style={[styles.bold, styles.chipText]}>{`${item.location.name ?? EMPTY_FALLBACK}`}</Text>
                 </Chip>
                 <Chip
-                  icon="clipboard-text-outline"
+                  icon={() => <LocationIcon size={16} color="#000" />}
                   style={[styles.chipDefault, styles.topSpace]}
                   textStyle={styles.chipText}
                 >
-                  {`PO: ${item.backorderReference ?? EMPTY_FALLBACK}`}
+                  Destination:{' '}
+                  <Text style={[styles.bold, styles.chipText]}>{`${item.destination?.name ?? EMPTY_FALLBACK}`}</Text>
                 </Chip>
-                <Chip icon="package" style={[styles.chipDefault, styles.topSpace]} textStyle={styles.chipText}>
-                  {`Quantity: ${item.quantity ?? EMPTY_FALLBACK}`}
+                <Chip
+                  icon={() => <QuantityIcon size={16} color="#000" />}
+                  style={[styles.chipDefault, styles.topSpace]}
+                  textStyle={styles.chipText}
+                >
+                  Quantity: <Text style={[styles.bold, styles.chipText]}>{`${item.quantity ?? EMPTY_FALLBACK}`}</Text>
                 </Chip>
-                <Chip icon="human" style={[styles.chipDefault, styles.topSpace]} textStyle={styles.chipText}>
-                  {`Assignee: ${assigneeName}`}
-                </Chip>
-                <Chip icon="map-marker" style={[styles.chipDefault, styles.topSpace]} textStyle={styles.chipText}>
-                  {`Final Storage Location: ${item.destination?.name ?? EMPTY_FALLBACK}`}
+                <Chip
+                  icon={() => <ContainerIcon size={16} color="#000" />}
+                  style={[styles.chipDefault, styles.topSpace]}
+                  textStyle={styles.chipText}
+                >
+                  Container:{' '}
+                  <Text style={[styles.bold, styles.chipText]}>{`${item.container?.name ?? EMPTY_FALLBACK}`}</Text>
                 </Chip>
               </Card.Content>
             </Card>
