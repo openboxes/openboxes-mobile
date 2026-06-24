@@ -38,7 +38,8 @@ export default function SortationQuantityScreen() {
         currentTaskIndex: 0,
         isDirectPutaway: true,
         isUserDirected: true,
-        task
+        task,
+        requiresValidationScan: false
       });
     }
   }, [directPutawayRequired, product, task]);

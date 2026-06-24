@@ -18,21 +18,36 @@ export type SortationProductDetailsProps = {
 
 export default function SortationProductDetails({
   product,
+  task,
   detailsChips,
   showDirectPutawayRequired = false,
   directPutawayRequired = false,
   onToggleDirectPutaway
 }: SortationProductDetailsProps) {
   const { productCode, name } = product;
+  const { shipmentNumber } = task ?? {};
 
   return (
     <View style={styles.productDetails}>
+      <View style={styles.headerRow}>
+        <Chip icon="barcode" style={styles.chipDefault} textStyle={styles.chipText}>
+          <Text style={[styles.bold, styles.chipText]}>{task?.identifier ?? EMPTY_FALLBACK}</Text>
+        </Chip>
+        <Chip style={styles.chipDefault} textStyle={styles.chipText}>
+          {`${task?.status ?? EMPTY_FALLBACK}`}
+        </Chip>
+      </View>
+
+      <Divider style={styles.contentDivider} />
+
       <Title style={styles.title}>{productCode}</Title>
       <Caption style={styles.caption}>{name}</Caption>
 
       {product.description ? <Paragraph style={[styles.paragraphMuted]}>{product.description}</Paragraph> : null}
 
-      <Divider style={styles.contentDivider} />
+      <Chip icon="receipt" style={[styles.chipDefault, styles.topSpace]} textStyle={styles.chipText}>
+        ASN: <Text style={[styles.bold, styles.chipText]}>{shipmentNumber ?? EMPTY_FALLBACK}</Text>
+      </Chip>
 
       {detailsChips.map(({ icon, value, label, isActive }) => (
         <Chip key={label} icon={icon} style={[styles.chipDefault, styles.topSpace, isActive && styles.chipActive]}>
