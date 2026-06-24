@@ -67,7 +67,7 @@ export default function PutawayDetails({
             style={styles.chipDestinationIcon}
           />
           <Text style={[styles.chipText, styles.chipDestinationLabel]} numberOfLines={1}>
-            Putaway Location: <Text style={styles.bold}>{destinationName}</Text>
+            Destination: <Text style={styles.bold}>{destinationName}</Text>
           </Text>
           <TouchableOpacity hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }} onPress={onOverrideDestination}>
             <Text style={styles.overrideLink}>Override</Text>
@@ -76,7 +76,7 @@ export default function PutawayDetails({
       ) : (
         <Chip icon="map-marker" style={[styles.chipDefault, styles.topSpace]} textStyle={styles.chipText}>
           <Text>
-            Putaway Location: <Text style={styles.bold}>{destinationName}</Text>
+            Destination: <Text style={styles.bold}>{destinationName}</Text>
           </Text>
         </Chip>
       )}

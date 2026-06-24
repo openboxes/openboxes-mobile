@@ -26,6 +26,7 @@ type PutawayLocationScanRouteProp = RouteProp<
       isUserDirected?: boolean;
       containerId?: string;
       task?: SortationTask;
+      requiresValidationScan?: boolean;
     };
   },
   'SortationPutawayLocationScan'
@@ -33,7 +34,8 @@ type PutawayLocationScanRouteProp = RouteProp<
 
 export default function PutawayLocationScanScreen() {
   const { params } = useRoute<PutawayLocationScanRouteProp>();
-  const { currentTaskIndex, isDirectPutaway, isUserDirected, containerId, task } = params;
+  const { currentTaskIndex, isDirectPutaway, isUserDirected, containerId, task, requiresValidationScan } = params;
+  const shouldValidateProduct = requiresValidationScan ?? true;
   const putawayTasks = useSelector((state: RootState) => state.putawayReducer.putawayTasks) as SortationTask[];
   const putawayDetails = task ?? putawayTasks?.[currentTaskIndex];
 
@@ -80,7 +82,7 @@ export default function PutawayLocationScanScreen() {
       return;
     }
 
-    navigate('SortationPutawayProductScan', {
+    navigate(shouldValidateProduct ? 'SortationPutawayProductScan' : 'SortationPutawayQuantity', {
       currentTaskIndex,
       isDirectPutaway,
       isUserDirected,
@@ -107,12 +109,12 @@ export default function PutawayLocationScanScreen() {
         <Divider />
 
         <View style={styles.formContainer}>
-          <Subheading style={styles.subheading}>Scan putaway location or use search to find it</Subheading>
+          <Subheading style={styles.subheading}>Scan destination or use search to find it</Subheading>
 
           <View style={styles.scannerRow}>
             <ScannerInput
               style={styles.scannerInput}
-              label="Putaway Location Entry Field"
+              label="Destination Entry Field"
               value={putawayLocationBarcode}
               isEnabled={!isDialogVisible && !isSearchOpen}
               onChange={setPutawayLocationBarcode}
