@@ -7,6 +7,14 @@ export default StyleSheet.create({
     backgroundColor: '#FFFFFF',
     padding: Theme.spacing.large
   },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  actionRequiredPill: {
+    marginLeft: Theme.spacing.small,
+    alignSelf: 'center'
+  },
   emptyContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -28,6 +36,10 @@ export default StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center'
   },
+  titleBadge: {
+    marginLeft: Theme.spacing.small,
+    alignSelf: 'center'
+  },
   chipDefault: {
     height: 28,
     justifyContent: 'flex-start',
@@ -43,14 +55,7 @@ export default StyleSheet.create({
     justifyContent: 'flex-start',
     borderRadius: 4,
     alignItems: 'center',
-    backgroundColor: Theme.colors.warning
-  },
-  chipSuccess: {
-    backgroundColor: Theme.colors.success,
-    height: 28,
-    justifyContent: 'flex-start',
-    borderRadius: 4,
-    alignItems: 'center'
+    backgroundColor: Theme.colors.warningBackground
   },
   chipText: {
     fontSize: 12,
@@ -108,11 +113,22 @@ export default StyleSheet.create({
     marginBottom: Theme.spacing.small,
     borderRadius: Theme.roundness * 2,
     borderColor: Theme.colors.disabled,
-    borderWidth: 0.5
+    borderWidth: 0.5,
+    overflow: 'hidden'
   },
   cardContent: {
     paddingVertical: Theme.spacing.medium,
     paddingHorizontal: Theme.spacing.large
+  },
+  dispositionBand: {
+    alignSelf: 'stretch',
+    paddingVertical: Theme.spacing.small,
+    paddingHorizontal: Theme.spacing.large,
+    borderRadius: 0
+  },
+  dispositionBandText: {
+    fontWeight: 'bold',
+    letterSpacing: 0.5
   },
   cardSelected: {
     borderColor: Theme.colors.primary,

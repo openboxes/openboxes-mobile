@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Alert, FlatList, View } from 'react-native';
 import { Button, Card, Chip, Divider, Paragraph, Text, Title } from 'react-native-paper';
 
+import { Badge } from '../../components/Badge';
 import { ContainerIcon, LocationIcon, QuantityIcon } from '../../components/Icons';
 import { EMPTY_FALLBACK } from '../../constants';
 import { navigate } from '../../NavigationService';
@@ -36,7 +37,10 @@ export default function SortationTaskSelectionListScreen() {
 
   return (
     <View style={styles.screen}>
-      <Title>{`Multiple Putaways (${tasks.length})`}</Title>
+      <View style={styles.titleRow}>
+        <Title>{`Multiple Putaways (${tasks.length})`}</Title>
+        <Badge variant="warning" label="Action Required" style={styles.actionRequiredPill} />
+      </View>
       <Paragraph>
         This{' '}
         <Text style={styles.bold}>
@@ -52,9 +56,20 @@ export default function SortationTaskSelectionListScreen() {
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => {
           const isSelected = selectedTask?.id === item.id;
+          const isCrossDock = Boolean(item.backorderReference);
+          const disposition = isCrossDock
+            ? { variant: 'success' as const, icon: 'swap-horizontal', label: 'CROSS-DOCK PUTAWAY' }
+            : { variant: 'info' as const, icon: 'home', label: 'STORAGE PUTAWAY' };
 
           return (
             <Card style={[styles.card, isSelected && styles.cardSelected]} onPress={() => setSelectedTask(item)}>
+              <Badge
+                variant={disposition.variant}
+                icon={disposition.icon}
+                label={disposition.label}
+                style={styles.dispositionBand}
+                labelStyle={styles.dispositionBandText}
+              />
               <Card.Content style={styles.cardContent}>
                 <View style={styles.headerRow}>
                   <Chip icon="barcode" style={styles.chipDefault} textStyle={styles.chipText}>
@@ -71,6 +86,12 @@ export default function SortationTaskSelectionListScreen() {
                 <Chip icon="receipt" style={[styles.chipDefault]} textStyle={styles.chipText}>
                   ASN: <Text style={[styles.bold, styles.chipText]}>{`${item.shipmentNumber ?? EMPTY_FALLBACK}`}</Text>
                 </Chip>
+                {isCrossDock && (
+                  <Chip icon="link-variant" style={[styles.chipDefault, styles.topSpace]} textStyle={styles.chipText}>
+                    Sales Link:{' '}
+                    <Text style={[styles.bold, styles.chipText]}>{`${item.backorderReference ?? EMPTY_FALLBACK}`}</Text>
+                  </Chip>
+                )}
                 <Chip icon="origin" style={[styles.chipDefault, styles.topSpace]} textStyle={styles.chipText}>
                   Origin:{' '}
                   <Text style={[styles.bold, styles.chipText]}>{`${item.location.name ?? EMPTY_FALLBACK}`}</Text>

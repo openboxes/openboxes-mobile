@@ -46,7 +46,7 @@ export default StyleSheet.create({
     justifyContent: 'flex-start',
     borderRadius: 4,
     alignItems: 'center',
-    backgroundColor: Theme.colors.warning
+    backgroundColor: Theme.colors.warningBackground
   },
   contentDivider: {
     marginVertical: 8

@@ -46,7 +46,7 @@ export default StyleSheet.create({
     justifyContent: 'flex-start',
     borderRadius: 4,
     alignItems: 'center',
-    backgroundColor: Theme.colors.warning
+    backgroundColor: Theme.colors.warningBackground
   },
   contentDivider: {
     marginVertical: 8
@@ -117,14 +117,14 @@ export default StyleSheet.create({
   lostAndFoundBanner: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    backgroundColor: Theme.colors.warning,
+    backgroundColor: Theme.colors.warningBackground,
     padding: Theme.spacing.medium,
     borderRadius: 4,
     marginTop: Theme.spacing.small
   },
   lostAndFoundBannerText: {
     fontSize: 14,
-    color: Theme.colors.warningText,
+    color: Theme.colors.warningForeground,
     flex: 1,
     marginLeft: Theme.spacing.medium
   },

@@ -120,7 +120,7 @@ const PickOrderItem = ({ picklistItems, selectedPicklistItemIndex, successfulPic
           <Divider />
 
           <View style={styles.swipePromptContainer}>
-            <Icon name="swap-horizontal-bold" size={20} color={Theme.colors.warningText} />
+            <Icon name="swap-horizontal-bold" size={20} color={Theme.colors.warningForeground} />
             <Text style={styles.swipePromptText}>Swipe to navigate between items.</Text>
           </View>
         </>

@@ -164,7 +164,13 @@ function AllocationOrderItem({
         <List.Icon
           {...props}
           icon={isFullyAllocated ? 'check-circle' : isPartiallyAllocated ? 'progress-alert' : 'package-variant-closed'}
-          color={isFullyAllocated ? Theme.colors.success : isPartiallyAllocated ? Theme.colors.warning : undefined}
+          color={
+            isFullyAllocated
+              ? Theme.colors.successForeground
+              : isPartiallyAllocated
+              ? Theme.colors.warningForeground
+              : undefined
+          }
         />
       )}
       expanded={expanded}

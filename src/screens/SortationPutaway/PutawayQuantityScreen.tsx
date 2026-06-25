@@ -300,7 +300,7 @@ export default function PutawayQuantityScreen() {
 
           {isCancelRemainingEnabled && remainingQty > 0 && (
             <View style={styles.lostAndFoundBanner}>
-              <Icon name={IconName.Warning} size={20} color={Theme.colors.warningText} />
+              <Icon name={IconName.Warning} size={20} color={Theme.colors.warningForeground} />
               <Paragraph style={styles.lostAndFoundBannerText}>
                 The remaining {remainingQty} will be recorded as Lost & Found upon submission.
               </Paragraph>

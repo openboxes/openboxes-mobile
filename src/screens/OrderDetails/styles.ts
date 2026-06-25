@@ -24,7 +24,7 @@ export default StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 4,
     alignItems: 'center',
-    backgroundColor: Theme.colors.warning
+    backgroundColor: Theme.colors.warningBackground
   },
   chipWarningText: {
     fontSize: 12,

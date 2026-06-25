@@ -10,14 +10,14 @@ export default StyleSheet.create({
     marginTop: Theme.spacing.small
   },
   swipePromptContainer: {
-    backgroundColor: Theme.colors.warning,
+    backgroundColor: Theme.colors.warningBackground,
     padding: Theme.spacing.large,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start'
   },
   swipePromptText: {
-    color: Theme.colors.warningText,
+    color: Theme.colors.warningForeground,
     marginLeft: Theme.spacing.medium,
     fontSize: 14,
     fontWeight: '500',

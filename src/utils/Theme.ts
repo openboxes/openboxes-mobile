@@ -14,11 +14,13 @@ export default {
     primary: '#20345c',
     secondaryBackground: '#e9ecef',
     secondaryForeground: '#495057',
-    warning: '#FCFFC1',
-    warningText: '#8a6d3b',
     danger: '#B00020',
-    success: '#22bb33',
-    info: '#00B8D9'
+    successForeground: '#1F9D6B',
+    successBackground: '#E6F5EE',
+    infoForeground: '#5B6AD0',
+    infoBackground: '#EEF0FB',
+    warningForeground: '#8A6D3B',
+    warningBackground: '#FBEAD0'
   },
   spacing: {
     small: 8,
