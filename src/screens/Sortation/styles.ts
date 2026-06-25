@@ -81,6 +81,24 @@ export default StyleSheet.create({
     color: Theme.colors.text,
     fontWeight: 'normal'
   },
+  methodSelector: {
+    marginTop: 4
+  },
+  methodHintRow: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    marginTop: Theme.spacing.small
+  },
+  methodHintIcon: {
+    marginRight: 6,
+    marginTop: 2
+  },
+  methodHint: {
+    flex: 1,
+    fontSize: 12,
+    color: Theme.colors.secondaryForeground
+  },
   scannerRow: {
     flexDirection: 'row',
     alignItems: 'center',

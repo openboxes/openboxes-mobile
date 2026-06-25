@@ -1,7 +1,9 @@
 import React from 'react';
 import { View } from 'react-native';
-import { Caption, Chip, Divider, Paragraph, Switch, Text, Title } from 'react-native-paper';
+import { Caption, Chip, Divider, Paragraph, Text, Title } from 'react-native-paper';
 
+import ArrowRight from '../../assets/images/arrow_right.svg';
+import { SegmentedControl, SegmentedOption } from '../../components/SegmentedControl';
 import { EMPTY_FALLBACK } from '../../constants';
 import { DetailChip, SortationProduct, SortationTask } from '../../types/sortation';
 import Theme from '../../utils/Theme';
@@ -15,6 +17,44 @@ export type SortationProductDetailsProps = {
   task?: SortationTask;
   onToggleDirectPutaway?: (value: boolean) => void;
 };
+
+type PutawayMethod = 'SORTED' | 'DIRECT';
+
+const PUTAWAY_METHOD_HINTS: Record<PutawayMethod, string> = {
+  SORTED: 'Sort to a temporary putaway container — scan a container next.',
+  DIRECT: 'Put the item away directly to its storage location now.'
+};
+
+const PUTAWAY_METHOD_OPTIONS: SegmentedOption<PutawayMethod>[] = [
+  { value: 'SORTED', label: 'Sorted', icon: 'package-variant-closed' },
+  { value: 'DIRECT', label: 'Direct', icon: 'map-marker-radius' }
+];
+
+function PutawayMethodSelector({
+  value,
+  onChange
+}: {
+  value: PutawayMethod;
+  onChange: (method: PutawayMethod) => void;
+}) {
+  return (
+    <View>
+      <Paragraph style={[styles.paragraph, styles.bold]}>Putaway Method</Paragraph>
+
+      <SegmentedControl
+        style={styles.methodSelector}
+        options={PUTAWAY_METHOD_OPTIONS}
+        value={value}
+        onChange={onChange}
+      />
+
+      <View style={styles.methodHintRow}>
+        <ArrowRight width={16} height={16} fill={Theme.colors.secondaryForeground} style={styles.methodHintIcon} />
+        <Text style={styles.methodHint}>{PUTAWAY_METHOD_HINTS[value]}</Text>
+      </View>
+    </View>
+  );
+}
 
 export default function SortationProductDetails({
   product,
@@ -60,15 +100,10 @@ export default function SortationProductDetails({
       {showDirectPutawayRequired && (
         <>
           <Divider style={styles.contentDivider} />
-          <View style={styles.cardAnnotation}>
-            <Paragraph style={[styles.paragraph, styles.bold]}>Direct Putaway Required</Paragraph>
-            <Switch
-              disabled={!onToggleDirectPutaway}
-              color={Theme.colors.primary}
-              value={directPutawayRequired}
-              onValueChange={(val) => onToggleDirectPutaway?.(val)}
-            />
-          </View>
+          <PutawayMethodSelector
+            value={directPutawayRequired ? 'DIRECT' : 'SORTED'}
+            onChange={(method) => onToggleDirectPutaway?.(method === 'DIRECT')}
+          />
         </>
       )}
     </View>
