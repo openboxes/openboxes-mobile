@@ -4,7 +4,7 @@ import { View } from 'react-native';
 import styles from './styles';
 import { useNavigation } from '@react-navigation/native';
 import Product from '../../data/product/Product';
-import onBarcodeScanned from '../../hooks/onBarcodeScanned';
+import useBarcodeScanned from '../../hooks/useBarcodeScanned';
 import EmptyView from '../../components/EmptyView';
 import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSearchHeader';
 import { searchBarcode } from '../../redux/actions/products';
@@ -12,7 +12,7 @@ import showPopup from '../../components/Popup';
 import { useDispatch } from 'react-redux';
 
 const Scan = () => {
-  const barcodeData = onBarcodeScanned();
+  const barcodeData = useBarcodeScanned();
   const navigation = useNavigation();
   const dispatch = useDispatch();
 

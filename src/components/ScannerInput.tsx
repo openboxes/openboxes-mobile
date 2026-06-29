@@ -13,6 +13,7 @@ import { useSelector } from 'react-redux';
 
 import { isString } from 'lodash';
 import { appConfig } from '../constants';
+import { useScanListener } from '../hooks/useScanListener';
 import { RootState } from '../redux/reducers';
 import { hideSoftKeyboard, showSoftKeyboard } from '../utils/KeyboardUtils';
 import Theme from '../utils/Theme';
@@ -162,6 +163,16 @@ export function ScannerInput({
     return () => clearTimeout(timer);
   }, [value, timeout, onSubmit]);
 
+  useScanListener((result) => {
+    const scanned = result.data;
+    if (!scanned || scanned === lastSubmittedValue.current) {
+      return;
+    }
+    lastSubmittedValue.current = scanned;
+    onChange(scanned);
+    onSubmit(scanned);
+  }, shouldBeFocused);
+
   const handleFocus = useCallback(() => {
     if (showKeyboard) {
       showSoftKeyboard();
@@ -187,7 +198,7 @@ export function ScannerInput({
     }
 
     const trimmed = value.trim();
-    if (trimmed) {
+    if (trimmed && trimmed !== lastSubmittedValue.current) {
       lastSubmittedValue.current = trimmed;
       onSubmit(trimmed);
     }

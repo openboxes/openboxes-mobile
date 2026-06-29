@@ -1,22 +1,16 @@
-import useEventListener from './useEventListener';
+import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { useEffect, useState } from 'react';
-import { searchBarcode } from '../redux/actions/products';
-import showPopup from '../components/Popup';
 
-const onBarcodeScanned = () => {
+import showPopup from '../components/Popup';
+import { searchBarcode } from '../redux/actions/products';
+import { useScanListener } from './useScanListener';
+
+const useBarcodeScanned = () => {
   const [state, setState] = useState<any>({
     error: null,
     searchProductCode: null
   });
   const dispatch = useDispatch();
-  const barcodeData = useEventListener();
-
-  useEffect(() => {
-    if (barcodeData && Object.keys(barcodeData).length !== 0) {
-      onBarCodeScan(barcodeData.data);
-    }
-  }, [barcodeData]);
 
   const onBarCodeScan = (query: string) => {
     onEmptyQuery(query);
@@ -25,18 +19,20 @@ const onBarcodeScanned = () => {
         onError(data, query, () => {
           dispatch(searchBarcode(query, actionCallback));
         });
-      } else {
-        if (data.length == 0) {
-          onEmptyData(query);
-        } else {
-          if (data && Object.keys(data).length !== 0) {
-            onSuccess(data, query);
-          }
-        }
+      } else if (data.length === 0) {
+        onEmptyData(query);
+      } else if (data && Object.keys(data).length !== 0) {
+        onSuccess(data, query);
       }
     };
     dispatch(searchBarcode(query, actionCallback));
   };
+
+  useScanListener((result) => {
+    if (result.data) {
+      onBarCodeScan(result.data);
+    }
+  });
 
   const onError = (data: any, query: any, callback: (data: any) => void) => {
     showPopup({
@@ -56,7 +52,6 @@ const onBarcodeScanned = () => {
         message: 'Search query is empty',
         positiveButton: { text: 'Ok' }
       });
-      return;
     }
   };
 
@@ -85,4 +80,4 @@ const onBarcodeScanned = () => {
   return state.searchProductCode;
 };
 
-export default onBarcodeScanned;
+export default useBarcodeScanned;
