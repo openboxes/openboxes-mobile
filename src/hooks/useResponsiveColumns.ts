@@ -13,7 +13,7 @@ type ResponsiveResult = {
 };
 
 const DEFAULT_BREAKPOINTS: BreakpointConfig = {
-  400: { columns: 2, label: 'medium' },
+  320: { columns: 2, label: 'medium' },
   600: { columns: 3, label: 'large' }
 };
 
