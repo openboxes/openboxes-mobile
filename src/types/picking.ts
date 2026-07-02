@@ -35,6 +35,7 @@ export type PickTask = {
   requisitionNumber?: string;
   requisitionStatus?: string;
   requisitionType?: string;
+  destination?: string;
 
   deliveryTypeCode?: DeliveryTypeCode;
 

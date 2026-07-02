@@ -91,6 +91,11 @@ export default function PickingPickLocationScreen() {
                 value: currentTask.requisitionNumber || HYPHEN
               },
               {
+                icon: 'map-marker',
+                label: 'Destination',
+                value: currentTask.destination || HYPHEN
+              },
+              {
                 icon: 'package',
                 label: 'Quantity Picked',
                 value: `${currentTask.quantityPicked || 0} / ${currentTask.quantityRequired}`

@@ -63,6 +63,11 @@ export default function PickingPickProductScreen() {
                 value: currentTask.requisitionNumber || HYPHEN
               },
               {
+                icon: 'map-marker',
+                label: 'Destination',
+                value: currentTask.destination || HYPHEN
+              },
+              {
                 icon: 'account',
                 label: 'Assignee',
                 value: currentTask?.assignee
