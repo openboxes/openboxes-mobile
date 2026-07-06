@@ -18,7 +18,7 @@ import { usePickingContext } from './PickingContext';
 import styles from './styles';
 
 export default function PickingPickQuantityScreen() {
-  const { currentTask, currentTaskIndex, allTasksCount, shortPickTask, goToNextTask } = usePickingContext();
+  const { tasks, currentTask, currentTaskIndex, allTasksCount, shortPickTask, goToNextTask } = usePickingContext();
   const dispatch = useDispatch();
   const isFocused = useIsFocused();
 
@@ -98,8 +98,13 @@ export default function PickingPickQuantityScreen() {
             return;
           }
 
+          // Skip staging if any other task was short picked without a reason code.
+          const omitStagingLocationStep = tasks.some(
+            (task, index) =>
+              index !== currentTaskIndex && task.quantityPicked < task.quantityRequired && !task.reasonCode
+          );
           // Skip revalidation: task is closed server-side, and GET /pick-tasks/:id 404s if the requisition is canceled.
-          proceedToNextOrComplete(currentTaskIndex, allTasksCount, goToNextTask);
+          proceedToNextOrComplete(currentTaskIndex, allTasksCount, goToNextTask, omitStagingLocationStep);
         },
         reasonCode?.name
       );
