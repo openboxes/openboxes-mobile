@@ -12,8 +12,13 @@ import { parseFromISODateToLocaleString } from '../../utils/utils';
 import { usePickingContext } from './PickingContext';
 import styles from './styles';
 
+// Lets the user stage at any scanned location. Set to false to require the scanned location to
+// match the one suggested by the pick task.
+const SKIP_STAGING_LOCATION_VALIDATION = true;
+
 export default function PickingPickStagingLocationScreen() {
-  const { tasks, dropCurrentTask, resetSession, setCurrentTaskIndex } = usePickingContext();
+  const { tasks, dropCurrentTask, dropCurrentTaskAtStagingLocation, resetSession, setCurrentTaskIndex } =
+    usePickingContext();
   const [stagingLocationNumber, setStagingLocationNumber] = React.useState(EMPTY_STRING);
   const [currentUniqueIndex, setCurrentUniqueIndex] = React.useState(0);
   const { isSearchOpen, searchButtonProps } = useSearchButton({ onSelect: setStagingLocationNumber });
@@ -35,6 +40,7 @@ export default function PickingPickStagingLocationScreen() {
     }
   }, [currentTask, tasks.length, setCurrentTaskIndex, uniqueTasks.length, tasks]);
 
+  // Requires the scanned location to match the one suggested by the task. Used when SKIP_STAGING_LOCATION_VALIDATION is false.
   function handleScan(locationId: string) {
     const expected = currentTask.stagingLocation?.locationNumber;
 
@@ -48,6 +54,45 @@ export default function PickingPickStagingLocationScreen() {
     }
 
     dropCurrentTask(currentTask, (response) => {
+      if (response.errorMessage) {
+        Alert.alert('Error', response.errorMessage);
+        setStagingLocationNumber(EMPTY_STRING);
+        return;
+      }
+
+      const nextIndex = currentUniqueIndex + 1;
+      if (nextIndex < uniqueTasks.length) {
+        Alert.alert('Success', 'Staging Location confirmed. Proceeding to the next container.', [
+          {
+            text: 'OK',
+            onPress: () => {
+              setCurrentUniqueIndex(nextIndex);
+              setStagingLocationNumber(EMPTY_STRING);
+            }
+          }
+        ]);
+      } else {
+        Alert.alert('Picking Session Complete', 'You have completed all staging confirmations.', [
+          {
+            text: 'OK',
+            onPress: () => {
+              resetSession();
+              resetToRoutes([{ name: 'Drawer', params: { screen: 'Dashboard' } }, { name: 'PickingPickType' }]);
+            }
+          }
+        ]);
+      }
+    });
+  }
+
+  // Drops at whatever location the user scans, without checking it against the task's suggestion. 
+  // Used when SKIP_STAGING_LOCATION_VALIDATION is true.
+  function handleScanWithoutValidation(locationId: string) {
+    if (!locationId) {
+      return;
+    }
+
+    dropCurrentTaskAtStagingLocation(currentTask, locationId, (response) => {
       if (response.errorMessage) {
         Alert.alert('Error', response.errorMessage);
         setStagingLocationNumber(EMPTY_STRING);
@@ -150,7 +195,7 @@ export default function PickingPickStagingLocationScreen() {
               value={stagingLocationNumber}
               isEnabled={!isSearchOpen}
               onChange={setStagingLocationNumber}
-              onSubmit={handleScan}
+              onSubmit={SKIP_STAGING_LOCATION_VALIDATION ? handleScanWithoutValidation : handleScan}
             />
             <SearchButton searchType="location" {...searchButtonProps} />
           </View>

@@ -44,8 +44,14 @@ type PickingContextType = {
   revalidateTasksForRequisition: (requisitionId: string | undefined, callback?: () => void) => void;
   /** Start the pick task (API call) */
   startPickTask: (callback: (response: { errorMessage?: string }) => void) => void;
-  /** Drop the current pick task at the staging location */
+  /** Drop the current pick task at the system-suggested staging location */
   dropCurrentTask: (task: PickTask, callback?: (response: { errorMessage?: string }) => void) => void;
+  /** Drop the current pick task at the given staging location */
+  dropCurrentTaskAtStagingLocation: (
+    task: PickTask,
+    stagingLocationId: string,
+    callback?: (response: { errorMessage?: string }) => void
+  ) => void;
   /** Revalidates the current pick task details from the server */
   revalidateCurrentTask: (callback?: (task: PickTask | undefined) => void) => void;
   /** Advances to the next task in the list */
@@ -216,6 +222,30 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
     dispatch(dropPickTaskAction(task.outboundContainer.id, task.stagingLocation.id, callback));
   };
 
+  // Like dropCurrentTask but drops at the given (scanned) staging location instead of the pick task's suggested one
+  const dropCurrentTaskAtStagingLocation = (
+    task: PickTask,
+    stagingLocationId: string,
+    callback?: (response: { errorMessage?: string }) => void
+  ) => {
+    if (!task) {
+      Alert.alert('Task Missing', 'No current task to drop.');
+      return;
+    }
+
+    if (!stagingLocationId) {
+      Alert.alert('Missing Input', 'Please scan or enter a staging location.');
+      return;
+    }
+
+    if (!task.outboundContainer?.id) {
+      Alert.alert('Error', 'Current task does not have a valid Outbound Container.');
+      return;
+    }
+
+    dispatch(dropPickTaskAction(task.outboundContainer.id, stagingLocationId, callback));
+  };
+
   const resetSession = () => {
     setTasks([]);
     setCurrentTaskIndex(0);
@@ -237,6 +267,7 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
         revalidateTasksForRequisition,
         startPickTask,
         dropCurrentTask,
+        dropCurrentTaskAtStagingLocation,
         revalidateCurrentTask,
         goToNextTask
       }}
