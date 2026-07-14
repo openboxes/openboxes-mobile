@@ -141,7 +141,7 @@ export default function PickingPickQuantityScreen() {
                 },
                 {
                   icon: 'map-marker',
-                  label: 'Destination',
+                  label: currentTask.destinationLocationType || 'Destination',
                   value: currentTask.destination || HYPHEN
                 },
                 {

@@ -85,7 +85,7 @@ export default function PickingPickStagingLocationScreen() {
     });
   }
 
-  // Drops at whatever location the user scans, without checking it against the task's suggestion. 
+  // Drops at whatever location the user scans, without checking it against the task's suggestion.
   // Used when SKIP_STAGING_LOCATION_VALIDATION is true.
   function handleScanWithoutValidation(locationId: string) {
     if (!locationId) {
@@ -156,7 +156,7 @@ export default function PickingPickStagingLocationScreen() {
               },
               {
                 icon: 'map-marker',
-                label: 'Destination',
+                label: currentTask.destinationLocationType || 'Destination',
                 value: currentTask.destination || HYPHEN
               },
               {
