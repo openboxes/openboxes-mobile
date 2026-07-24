@@ -302,6 +302,17 @@ app:
   - opts:
       is_expand: false
     VARIANT: staging
+  # Appetize app public keys (from the app's share URL: appetize.io/app/<key>).
+  # These are not secrets. The main app is used by develop; PR builds deploy to a
+  # separate PR preview app. Leave APPETIZE_PR_PUBLIC_KEY empty until the PR
+  # preview app exists — the appetize-deploy run_if guard skips the deploy while
+  # it is empty, so PR builds never overwrite the main app.
+  - opts:
+      is_expand: false
+    APPETIZE_DEVELOP_PUBLIC_KEY: 67t5r4akxrtgvujo7adbiifau4
+  - opts:
+      is_expand: false
+    APPETIZE_PR_PUBLIC_KEY: ""
 
 meta:
   bitrise.io:
