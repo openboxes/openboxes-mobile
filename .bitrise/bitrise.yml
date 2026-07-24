@@ -332,7 +332,7 @@ app:
     APPETIZE_DEVELOP_PUBLIC_KEY: 67t5r4akxrtgvujo7adbiifau4
   - opts:
       is_expand: false
-    APPETIZE_PR_PUBLIC_KEY: ""
+    APPETIZE_PR_PUBLIC_KEY: "b_wchsvah7t6ytekpcvd2pvqavty"
 
 meta:
   bitrise.io:
