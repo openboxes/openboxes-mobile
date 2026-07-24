@@ -156,6 +156,31 @@ step_bundles:
           - app_path: $BITRISE_DEPLOY_DIR/openboxes_test_b$BITRISE_BUILD_NUMBER.apk
           - appetize_token: $APPETIZE_API_TOKEN
           - public_key: $APPETIZE_PUBLIC_KEY
+      # Annotate the deployed Appetize app with build context (PR/branch/commit).
+      # The appetize-deploy step can't set a note, so call the v1 API directly.
+      # v1 supports "note" but not "tags"; failures here are non-fatal.
+      - script@1:
+          title: Set Appetize note with build context
+          run_if: '{{enveq "APPETIZE_PUBLIC_KEY" "" | not}}'
+          inputs:
+          - content: |-
+              set -euo pipefail
+              SHA="${BITRISE_GIT_COMMIT:-}"
+              SHA="${SHA:0:8}"
+              if [ -n "${BITRISE_PULL_REQUEST:-}" ]; then
+                NOTE="PR #${BITRISE_PULL_REQUEST} - ${BITRISE_GIT_BRANCH:-} - ${SHA} - build ${BITRISE_BUILD_NUMBER:-}"
+              else
+                NOTE="${BITRISE_GIT_BRANCH:-} - ${SHA} - build ${BITRISE_BUILD_NUMBER:-}"
+              fi
+              BODY="$(jq -n --arg note "$NOTE" '{note: $note}')"
+              if curl -fsS -X POST "https://api.appetize.io/v1/apps/${APPETIZE_PUBLIC_KEY}" \
+                   -H "X-API-KEY: ${APPETIZE_API_TOKEN}" \
+                   -H "Content-Type: application/json" \
+                   -d "$BODY" > /dev/null; then
+                echo "Set Appetize note: ${NOTE}"
+              else
+                echo "Warning: failed to set Appetize note (non-fatal)"
+              fi
   release-steps-android-signed:
     description: |-
       Assemble the Android app and copy the signed APK to $BITRISE_DEPLOY_DIR.
