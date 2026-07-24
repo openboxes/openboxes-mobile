@@ -133,10 +133,29 @@ step_bundles:
           - notify_email_list: "$TESTERS"
           - notify_user_groups: owner, admins, developers
           is_always_run: false
+      # Pick which Appetize app to deploy to based on build type: PR builds go to
+      # the PR preview app, everything else (e.g. develop push) to the main app.
+      # BITRISE_PULL_REQUEST is set (to the PR number) only on pull request builds.
+      - script@1:
+          title: Select Appetize app by build type
+          inputs:
+          - content: |-
+              set -euo pipefail
+              if [ -n "${BITRISE_PULL_REQUEST:-}" ]; then
+                echo "PR build - deploying to PR preview app"
+                envman add --key APPETIZE_PUBLIC_KEY --value "$APPETIZE_PR_PUBLIC_KEY"
+              else
+                echo "Push build - deploying to main app"
+                envman add --key APPETIZE_PUBLIC_KEY --value "$APPETIZE_DEVELOP_PUBLIC_KEY"
+              fi
       - appetize-deploy@0:
+          # Skip the deploy when no target app key is configured, so we never fall
+          # back to creating a new app (which would overwrite the main app).
+          run_if: '{{enveq "APPETIZE_PUBLIC_KEY" "" | not}}'
           inputs:
           - app_path: $BITRISE_DEPLOY_DIR/openboxes_test_b$BITRISE_BUILD_NUMBER.apk
           - appetize_token: $APPETIZE_API_TOKEN
+          - public_key: $APPETIZE_PUBLIC_KEY
   release-steps-android-signed:
     description: |-
       Assemble the Android app and copy the signed APK to $BITRISE_DEPLOY_DIR.
