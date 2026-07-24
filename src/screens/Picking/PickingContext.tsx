@@ -29,6 +29,8 @@ type PickingContextType = {
   allTasksCount: number;
   /** Starts a new picking session, returns whether it was successful */
   startSession: (deliveryType: DeliveryType, ordersCount: number) => Promise<boolean>;
+  /** Starts a picking session for a single order (discrete picking), returns whether it was successful */
+  startOrderSession: (requisitionId: string) => Promise<boolean>;
   /** Completes the current pick task. */
   pickCurrentTask: (outboundContainerId: string, callback: (response: { errorMessage?: string }) => void) => void;
   /** Resets state to initial values */
@@ -91,6 +93,32 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
           }
 
           setTasks(response.data);
+          setCurrentTaskIndex(0);
+          resolve(true);
+        })
+      );
+    });
+  };
+
+  const startOrderSession = async (requisitionId: string): Promise<boolean> => {
+    return new Promise((resolve) => {
+      dispatch(
+        getPickTasksByRequisitionAction(requisitionId, (res) => {
+          if ('errorMessage' in res || !res.response?.data) {
+            Alert.alert('Error', 'Failed to load pick tasks for the selected order.');
+            resolve(false);
+            return;
+          }
+
+          const orderTasks = res.response.data;
+
+          if (orderTasks.length === 0) {
+            Alert.alert('No Tasks', 'No open pick tasks were found for the selected order.');
+            resolve(false);
+            return;
+          }
+
+          setTasks(orderTasks);
           setCurrentTaskIndex(0);
           resolve(true);
         })
@@ -261,6 +289,7 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
         currentTask,
         allTasksCount,
         startSession,
+        startOrderSession,
         pickCurrentTask,
         shortPickTask,
         resetSession,

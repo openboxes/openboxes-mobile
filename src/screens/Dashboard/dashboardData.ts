@@ -86,6 +86,14 @@ const dashboardEntries: DashboardEntry[] = [
     group: 'OUTBOUND'
   },
   {
+    key: 'discretePicking',
+    screenName: 'Discrete Picking',
+    entryDescription: 'Find and pick a single open order',
+    icon: IconPicking,
+    navigationScreenName: 'DiscretePickingList',
+    group: 'OUTBOUND'
+  },
+  {
     key: 'packing',
     screenName: 'Packing',
     entryDescription: 'Manage packing tasks and shipments',

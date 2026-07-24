@@ -68,6 +68,7 @@ import CycleCountListEntry from './screens/CycleCount/CycleCountListEntry';
 import CycleCountLocation from './screens/CycleCount/CycleCountLocation';
 import CycleCountProduct from './screens/CycleCount/CycleCountProduct';
 import CycleCountQuantityAvailable from './screens/CycleCount/CycleCountQuantityAvailable';
+import DiscretePickingListScreen from './screens/Picking/DiscretePickingListScreen';
 import PickingPickTypeScreen from './screens/Picking/PickingPickTypeScreen';
 import PickingPickLocationScreen from './screens/Picking/PickingPickLocationScreen';
 import PickingPickProductScreen from './screens/Picking/PickingPickProductScreen';
@@ -337,6 +338,11 @@ class Main extends Component<Props, State> {
                 name="SortationPutawayQuantity"
                 component={PutawayQuantityScreen}
                 options={{ title: 'Putaway Details' }}
+              />
+              <Stack.Screen
+                name="DiscretePickingList"
+                component={DiscretePickingListScreen}
+                options={{ title: 'Discrete Picking' }}
               />
               <Stack.Screen
                 name="PickingPickType"

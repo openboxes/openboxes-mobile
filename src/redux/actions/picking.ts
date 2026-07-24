@@ -5,6 +5,10 @@ export const GET_PICK_TASKS_REQUEST = 'GET_PICK_TASKS_REQUEST';
 export const GET_PICK_TASKS_REQUEST_SUCCESS = 'GET_PICK_TASKS_REQUEST_SUCCESS';
 export const GET_PICK_TASKS_REQUEST_FAIL = 'GET_PICK_TASKS_REQUEST_FAIL';
 
+export const GET_OPEN_PICK_TASKS_REQUEST = 'GET_OPEN_PICK_TASKS_REQUEST';
+export const GET_OPEN_PICK_TASKS_REQUEST_SUCCESS = 'GET_OPEN_PICK_TASKS_REQUEST_SUCCESS';
+export const GET_OPEN_PICK_TASKS_REQUEST_FAIL = 'GET_OPEN_PICK_TASKS_REQUEST_FAIL';
+
 export const GET_PICK_TASK_COUNTS_REQUEST = 'GET_PICK_TASK_COUNTS_REQUEST';
 export const GET_PICK_TASK_COUNTS_REQUEST_SUCCESS = 'GET_PICK_TASK_COUNTS_REQUEST_SUCCESS';
 export const GET_PICK_TASK_COUNTS_REQUEST_FAIL = 'GET_PICK_TASK_COUNTS_REQUEST_FAIL';
@@ -62,6 +66,25 @@ export function getPickTasksAction(
   return {
     type: GET_PICK_TASKS_REQUEST,
     payload: { ...params },
+    callback
+  };
+}
+
+export function getOpenPickTasksAction(
+  callback: (response: {
+    response?: {
+      data: PickTask[];
+      errorCode?: string;
+      message?: string;
+      max?: number;
+      offset?: number;
+      totalCount?: number;
+    };
+    errorMessage?: string;
+  }) => void
+) {
+  return {
+    type: GET_OPEN_PICK_TASKS_REQUEST,
     callback
   };
 }
