@@ -143,10 +143,10 @@ step_bundles:
               set -euo pipefail
               if [ -n "${BITRISE_PULL_REQUEST:-}" ]; then
                 echo "PR build - deploying to PR preview app"
-                envman add --key APPETIZE_PUBLIC_KEY --value "$APPETIZE_PR_PUBLIC_KEY"
+                envman add --key APPETIZE_PUBLIC_KEY --value "${APPETIZE_PR_PUBLIC_KEY:-}"
               else
                 echo "Push build - deploying to main app"
-                envman add --key APPETIZE_PUBLIC_KEY --value "$APPETIZE_DEVELOP_PUBLIC_KEY"
+                envman add --key APPETIZE_PUBLIC_KEY --value "${APPETIZE_DEVELOP_PUBLIC_KEY:-}"
               fi
       - appetize-deploy@0:
           # Skip the deploy when no target app key is configured, so we never fall
