@@ -137,11 +137,6 @@ step_bundles:
           inputs:
           - app_path: $BITRISE_DEPLOY_DIR/openboxes_test_b$BITRISE_BUILD_NUMBER.apk
           - appetize_token: $APPETIZE_API_TOKEN
-          # Update a single shared preview app so the URL stays stable across
-          # builds. Set APPETIZE_PUBLIC_KEY in Bitrise (App env vars / Secrets) to
-          # the public key of a preview app created once in Appetize. If left
-          # empty, appetize-deploy creates a new app per build instead.
-          - public_key: $APPETIZE_PUBLIC_KEY
   release-steps-android-signed:
     description: |-
       Assemble the Android app and copy the signed APK to $BITRISE_DEPLOY_DIR.
