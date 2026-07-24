@@ -248,6 +248,20 @@ workflows:
     - bundle::setup-steps: {}
     - bundle::setup-steps-android: {}
     - bundle::branding: {}
+    # On PR builds only, append "(Experimental)" to the Android app name so the
+    # preview app is clearly distinguishable in Appetize from the stable build.
+    # Runs after branding (which sets app_name) and before the release assemble.
+    - script@1:
+        title: Mark PR builds as experimental
+        run_if: '{{getenv "BITRISE_PULL_REQUEST" | ne ""}}'
+        inputs:
+        - content: |-
+            set -euo pipefail
+            STRINGS_FILE="android/app/src/main/res/values/strings.xml"
+            sed -i.bak -E 's#(<string name="app_name">)([^<]*)(</string>)#\1\2 (Experimental)\3#' "$STRINGS_FILE"
+            rm -f "$STRINGS_FILE.bak"
+            echo "app_name is now:"
+            grep app_name "$STRINGS_FILE"
     - bundle::release-steps-android: {}
     triggers:
       enabled: false
