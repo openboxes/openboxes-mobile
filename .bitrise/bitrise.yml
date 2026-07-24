@@ -8,8 +8,8 @@ trigger_map:
   workflow: android-only
 - push_branch: master
   workflow: app_distribution_to_uat_testers
+# Build a preview (APK + Appetize deploy) for every pull request into develop.
 - pull_request_target_branch: develop
-  enabled: false
   workflow: android-only
 - pull_request_source_branch: "*"
   enabled: false
@@ -137,6 +137,11 @@ step_bundles:
           inputs:
           - app_path: $BITRISE_DEPLOY_DIR/openboxes_test_b$BITRISE_BUILD_NUMBER.apk
           - appetize_token: $APPETIZE_API_TOKEN
+          # Update a single shared preview app so the URL stays stable across
+          # builds. Set APPETIZE_APP_ID in Bitrise (App env vars / Secrets) to the
+          # public key of a preview app created once in Appetize. If left empty,
+          # appetize-deploy creates a new app per build instead.
+          - app_id: $APPETIZE_APP_ID
   release-steps-android-signed:
     description: |-
       Assemble the Android app and copy the signed APK to $BITRISE_DEPLOY_DIR.
