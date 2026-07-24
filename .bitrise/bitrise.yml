@@ -248,20 +248,26 @@ workflows:
     - bundle::setup-steps: {}
     - bundle::setup-steps-android: {}
     - bundle::branding: {}
-    # On PR builds only, append "(Experimental)" to the Android app name so the
-    # preview app is clearly distinguishable in Appetize from the stable build.
-    # Runs after branding (which sets app_name) and before the release assemble.
+    # On PR builds only, mark the build as experimental: append "(Experimental)"
+    # to the app name AND give it a distinct applicationId. Appetize keys apps by
+    # applicationId, so the suffix makes the PR build a separate Appetize app
+    # (its own URL) instead of overwriting the stable app. Runs after branding
+    # (which sets app_name) and before the release assemble.
     - script@1:
-        title: Mark PR builds as experimental
+        title: Mark PR builds as experimental (name + applicationId)
         run_if: '{{getenv "BITRISE_PULL_REQUEST" | ne ""}}'
         inputs:
         - content: |-
             set -euo pipefail
             STRINGS_FILE="android/app/src/main/res/values/strings.xml"
+            GRADLE_FILE="android/app/build.gradle"
             sed -i.bak -E 's#(<string name="app_name">)([^<]*)(</string>)#\1\2 (Experimental)\3#' "$STRINGS_FILE"
             rm -f "$STRINGS_FILE.bak"
-            echo "app_name is now:"
+            sed -i.bak -E 's#(applicationId "com\.openboxes\.android)(")#\1.experimental\2#' "$GRADLE_FILE"
+            rm -f "$GRADLE_FILE.bak"
+            echo "app_name and applicationId are now:"
             grep app_name "$STRINGS_FILE"
+            grep applicationId "$GRADLE_FILE"
     - bundle::release-steps-android: {}
     triggers:
       enabled: false
