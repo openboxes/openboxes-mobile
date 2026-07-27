@@ -172,7 +172,10 @@ step_bundles:
               else
                 NOTE="${BITRISE_GIT_BRANCH:-} - ${SHA} - build ${BITRISE_BUILD_NUMBER:-}"
               fi
-              BODY="$(jq -n --arg note "$NOTE" '{note: $note}')"
+              # Build the JSON body without jq (which may be skipped) so this step
+              # is self-contained. Escape backslashes and double quotes for JSON.
+              ESCAPED="$(printf '%s' "$NOTE" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g')"
+              BODY="{\"note\":\"${ESCAPED}\"}"
               if curl -fsS -X POST "https://api.appetize.io/v1/apps/${APPETIZE_PUBLIC_KEY}" \
                    -H "X-API-KEY: ${APPETIZE_API_TOKEN}" \
                    -H "Content-Type: application/json" \

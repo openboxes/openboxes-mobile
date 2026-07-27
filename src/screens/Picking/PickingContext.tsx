@@ -104,8 +104,8 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
     return new Promise((resolve) => {
       dispatch(
         getPickTasksByRequisitionAction(requisitionId, (res) => {
-          if ('errorMessage' in res || !res.response?.data) {
-            Alert.alert('Error', 'Failed to load pick tasks for the selected order.');
+          if (res.errorMessage || !res.response?.data) {
+            Alert.alert('Error', res.errorMessage ?? 'Failed to load pick tasks for the selected order.');
             resolve(false);
             return;
           }
