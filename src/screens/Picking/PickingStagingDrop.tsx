@@ -77,7 +77,7 @@ export default function PickingStagingDropScreen() {
             </Text>
           </Chip>
           <View style={styles.requisitionsSection}>
-            <Text style={styles.requisitionsLabel}>Requisition Numbers</Text>
+            <Text style={styles.requisitionsLabel}>Order Numbers</Text>
             <View style={styles.requisitionTagList}>
               {(requisitionNumbers.length > 0 ? requisitionNumbers : [HYPHEN]).map((requisitionNumber) => (
                 <View key={requisitionNumber} style={styles.requisitionTag}>
@@ -110,7 +110,7 @@ export default function PickingStagingDropScreen() {
                 style={[styles.chipDefault, styles.marginTopSmall, styles.flex1, styles.marginRight]}
               >
                 <Text style={styles.chipText}>
-                  Requisition Number:{' '}
+                  Order Number:{' '}
                   <Text style={[styles.chipText, styles.fontBold]}>{item.requisitionNumber ?? HYPHEN}</Text>
                 </Text>
               </Chip>
