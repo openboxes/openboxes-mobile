@@ -192,7 +192,7 @@ export default StyleSheet.create({
   requisitionTag: {
     height: 28,
     borderRadius: 4,
-    backgroundColor: Theme.colors.secondaryBackground,
+    backgroundColor: '#ebebeb',
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: Theme.spacing.small,
