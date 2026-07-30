@@ -5,84 +5,114 @@ import Theme from '../../utils/Theme';
 export default StyleSheet.create({
   screenContainer: {
     flex: 1,
-    backgroundColor: '#f9f9f9'
+    backgroundColor: Theme.colors.background
   },
-  chipRow: {
+
+  filterBar: {
+    backgroundColor: 'white'
+  },
+  filterRow: {
+    flexGrow: 0,
+    flexShrink: 0
+  },
+  filterRowContent: {
+    alignItems: 'center',
     paddingHorizontal: Theme.spacing.medium,
     paddingVertical: Theme.spacing.small
   },
-  chipRowContent: {
+  filterChip: {
+    height: 32,
+    justifyContent: 'center',
     alignItems: 'center',
-    paddingRight: Theme.spacing.medium
-  },
-  queueChip: {
+    borderRadius: 12,
     marginRight: Theme.spacing.small,
-    backgroundColor: '#fff',
-    borderColor: '#ddd',
-    borderWidth: 1
-  },
-  queueChipSelected: {
-    backgroundColor: Theme.colors.primary
-  },
-  queueChipText: {
-    fontSize: 12,
-    color: Theme.colors.primary
-  },
-  queueChipTextSelected: {
-    color: '#fff'
-  },
-  listContent: {
-    paddingHorizontal: Theme.spacing.medium,
-    paddingBottom: Theme.spacing.large
-  },
-  itemSeparator: {
-    height: Theme.spacing.small - 2
-  },
-
-  cardTouchable: {
-    borderRadius: Theme.roundness
-  },
-  card: {
-    borderRadius: Theme.roundness,
     backgroundColor: 'white',
     borderWidth: 1,
-    borderColor: '#ddd'
+    borderColor: '#ced4da'
   },
-  cardHeader: {
+  filterChipSelected: {
+    backgroundColor: Theme.colors.primary,
+    borderColor: Theme.colors.primary
+  },
+  filterChipText: {
+    fontSize: 12,
+    color: Theme.colors.secondaryForeground
+  },
+  filterChipTextSelected: {
+    color: 'white'
+  },
+  filterSkeletonRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: Theme.spacing.small - 2
+    overflow: 'hidden'
   },
-  orderNumber: {
-    fontSize: 16,
-    fontWeight: '600',
-    flexShrink: 1,
+  filterChipSkeleton: {
+    height: 32,
+    borderRadius: 12,
     marginRight: Theme.spacing.small
   },
-  cardDivider: {
-    marginVertical: Theme.spacing.small / 2
+
+  listContent: {
+    paddingBottom: Theme.spacing.large
+  },
+
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  // Shrinks so a long order number truncates instead of pushing the status chip off-card.
+  orderNumberChip: {
+    flexShrink: 1
+  },
+  orderNumberText: {
+    fontSize: 14,
+    color: Theme.colors.text
+  },
+  contentDivider: {
+    marginVertical: 8
   },
   destination: {
-    fontSize: 14,
-    color: '#333',
-    marginTop: Theme.spacing.small / 2
+    fontWeight: 'bold',
+    color: Theme.colors.text
   },
-  metaRow: {
+  destinationType: {
+    marginTop: -2,
+    color: Theme.colors.secondaryForeground
+  },
+  additionalInfoRow: {
     flexDirection: 'row',
+    marginTop: 8,
     alignItems: 'center',
-    flexWrap: 'wrap',
-    marginTop: Theme.spacing.small
+    flexWrap: 'wrap'
   },
-  metaChip: {
-    height: 24,
-    justifyContent: 'center',
-    borderRadius: Theme.roundness,
-    marginRight: Theme.spacing.small,
-    marginTop: Theme.spacing.small / 2,
-    backgroundColor: Theme.colors.secondaryBackground
+  chipDefault: {
+    height: 28,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    borderRadius: 4,
+    marginRight: 8,
+    backgroundColor: Theme.colors.background
   },
-  metaChipText: {
-    fontSize: 12
+  chipText: {
+    fontSize: 12,
+    color: Theme.colors.text
+  },
+  fontBold: {
+    fontWeight: 'bold'
+  },
+  statusChip: {
+    marginRight: 0
+  },
+  statusChipReady: {
+    backgroundColor: Theme.colors.successBackground
+  },
+  statusChipTextReady: {
+    color: Theme.colors.successForeground
+  },
+  statusChipInProgress: {
+    backgroundColor: Theme.colors.infoBackground
+  },
+  statusChipTextInProgress: {
+    color: Theme.colors.infoForeground
   }
 });

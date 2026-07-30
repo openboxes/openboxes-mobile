@@ -1,9 +1,11 @@
 import React from 'react';
-import { TouchableOpacity, View } from 'react-native';
-import { Caption, Card, Chip, Divider, Text } from 'react-native-paper';
+import { View } from 'react-native';
+import { Caption, Card, Chip, Divider, Subheading, Text } from 'react-native-paper';
 
+import { LayoutStyle } from '../../assets/styles';
 import { HYPHEN } from '../../constants';
 import { DiscretePickingOrder } from '../../types/picking';
+import Theme from '../../utils/Theme';
 import { DELIVERY_TYPES } from './constants';
 import styles from './discretePickingStyles';
 
@@ -18,47 +20,63 @@ type Props = {
 };
 
 export default function DiscretePickingOrderCard({ order, onPress }: Props) {
-  const queueLabel = order.deliveryTypeCode
+  const deliveryTypeLabel = order.deliveryTypeCode
     ? DELIVERY_TYPE_LABELS[order.deliveryTypeCode] ?? order.deliveryTypeCode
     : null;
-  const lineLabel = `${order.taskCount} ${order.taskCount === 1 ? 'line' : 'lines'}`;
+  const lineCountLabel = order.taskCount === 1 ? 'Line' : 'Lines';
 
   return (
-    <TouchableOpacity activeOpacity={0.85} style={styles.cardTouchable} onPress={() => onPress(order)}>
-      <Card style={styles.card}>
-        <Card.Content>
-          <View style={styles.cardHeader}>
-            <Text style={styles.orderNumber} numberOfLines={1}>
-              {order.requisitionNumber ?? HYPHEN}
-            </Text>
-            <Chip
-              icon={order.inProgress ? 'progress-clock' : 'check-circle-outline'}
-              style={styles.metaChip}
-              textStyle={styles.metaChipText}
+    <Card style={LayoutStyle.listItemContainer} onPress={() => onPress(order)}>
+      <Card.Content>
+        <View style={styles.headerRow}>
+          <Chip icon="identifier" style={[styles.chipDefault, styles.orderNumberChip]}>
+            <Text style={[styles.orderNumberText, styles.fontBold]}>{order.requisitionNumber ?? HYPHEN}</Text>
+          </Chip>
+          <Chip
+            icon={order.inProgress ? 'progress-clock' : 'check-circle-outline'}
+            selectedColor={order.inProgress ? Theme.colors.infoForeground : Theme.colors.successForeground}
+            style={[
+              styles.chipDefault,
+              styles.statusChip,
+              order.inProgress ? styles.statusChipInProgress : styles.statusChipReady
+            ]}
+          >
+            <Text
+              style={[
+                styles.chipText,
+                styles.fontBold,
+                order.inProgress ? styles.statusChipTextInProgress : styles.statusChipTextReady
+              ]}
             >
               {order.inProgress ? 'In progress' : 'Ready'}
+            </Text>
+          </Chip>
+        </View>
+
+        <Divider style={styles.contentDivider} />
+
+        <Subheading style={styles.destination} numberOfLines={2}>
+          {order.destination ?? HYPHEN}
+        </Subheading>
+        {order.destinationLocationType ? (
+          <Caption style={styles.destinationType}>{order.destinationLocationType}</Caption>
+        ) : null}
+
+        <View style={styles.additionalInfoRow}>
+          {deliveryTypeLabel ? (
+            <Chip icon="tag-outline" style={styles.chipDefault}>
+              <Text style={styles.chipText}>
+                Type: <Text style={[styles.chipText, styles.fontBold]}>{deliveryTypeLabel}</Text>
+              </Text>
             </Chip>
-          </View>
-
-          <Divider style={styles.cardDivider} />
-
-          <Text style={styles.destination} numberOfLines={2}>
-            {order.destination ?? HYPHEN}
-          </Text>
-          {order.destinationLocationType ? <Caption>{order.destinationLocationType}</Caption> : null}
-
-          <View style={styles.metaRow}>
-            {queueLabel ? (
-              <Chip icon="tag-outline" style={styles.metaChip} textStyle={styles.metaChipText}>
-                {queueLabel}
-              </Chip>
-            ) : null}
-            <Chip icon="package-variant-closed" style={styles.metaChip} textStyle={styles.metaChipText}>
-              {lineLabel}
-            </Chip>
-          </View>
-        </Card.Content>
-      </Card>
-    </TouchableOpacity>
+          ) : null}
+          <Chip icon="package-variant-closed" style={styles.chipDefault}>
+            <Text style={styles.chipText}>
+              {lineCountLabel}: <Text style={[styles.chipText, styles.fontBold]}>{order.taskCount}</Text>
+            </Text>
+          </Chip>
+        </View>
+      </Card.Content>
+    </Card>
   );
 }

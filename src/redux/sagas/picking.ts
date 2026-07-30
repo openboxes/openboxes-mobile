@@ -71,18 +71,17 @@ function* getOpenPickTasksAction(action: any) {
     if (!currentLocation) {
       throw new Error('User Location Not Found');
     }
-    yield put(showScreenLoading('Fetching Orders...'));
-    // Call API to get all open pick tasks across every queue type
+    // Call API to get all open pick tasks across every queue type.
+    // No full-screen loading indicator here on purpose: the list screen renders its own
+    // inline skeleton / pull-to-refresh state so the screen never blocks on the fetch.
     // @ts-ignore
     const response = yield call(api.getOpenPickTasksApi, currentLocation.id);
     yield action.callback({ response });
     yield put({ type: GET_OPEN_PICK_TASKS_REQUEST_SUCCESS, payload: response.data });
-    yield put(hideScreenLoading());
   } catch (error) {
     const errorMessage = (error as any)?.message || 'Error Fetching Orders';
     yield put({ type: GET_OPEN_PICK_TASKS_REQUEST_FAIL, payload: errorMessage });
     yield action.callback({ errorMessage });
-    yield put(hideScreenLoading());
   }
 }
 
