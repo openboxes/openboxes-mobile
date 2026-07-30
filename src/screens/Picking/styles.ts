@@ -175,6 +175,38 @@ export default StyleSheet.create({
     fontSize: 12,
     color: Theme.colors.text
   },
+  requisitionsSection: {
+    marginTop: Theme.spacing.small,
+    paddingTop: 4
+  },
+  requisitionsLabel: {
+    fontSize: 12,
+    color: Theme.colors.disabled,
+    lineHeight: 16,
+    marginBottom: 4
+  },
+  requisitionTagList: {
+    flexDirection: 'row',
+    flexWrap: 'wrap'
+  },
+  requisitionTag: {
+    height: 28,
+    borderRadius: 4,
+    backgroundColor: Theme.colors.secondaryBackground,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: Theme.spacing.small,
+    marginRight: 4,
+    marginBottom: 4
+  },
+  requisitionTagIcon: {
+    marginRight: 4
+  },
+  requisitionTagText: {
+    fontSize: 11,
+    color: Theme.colors.text,
+    lineHeight: 14
+  },
   modalOverlay: {
     flex: 1,
     justifyContent: 'center',

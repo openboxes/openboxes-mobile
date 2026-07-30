@@ -3,9 +3,11 @@ import * as React from 'react';
 import { Alert, FlatList, View } from 'react-native';
 import { Button, Caption, Chip, Divider, Subheading, Text, Title } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { HYPHEN } from '../../constants';
 import { dropPickTaskAction } from '../../redux/actions/picking';
 import { PickTask } from '../../types/picking';
+import Theme from '../../utils/Theme';
 import styles from './styles';
 import { navigate } from '../../NavigationService';
 
@@ -18,6 +20,13 @@ export default function PickingStagingDropScreen() {
 
   const outboundContainer = tasks?.[0]?.outboundContainer;
   const stagingLocation = tasks?.[0]?.stagingLocation;
+  const requisitionNumbers = Array.from(
+    new Set(
+      tasks
+        ?.map((task) => task.requisitionNumber)
+        .filter((requisitionNumber): requisitionNumber is string => Boolean(requisitionNumber))
+    )
+  );
 
   function handleDropToStaging() {
     if (!stagingLocation) {
@@ -55,16 +64,34 @@ export default function PickingStagingDropScreen() {
         <Title style={styles.title}> {outboundContainer?.name} </Title>
 
         <View>
-          {[
-            { icon: 'pin', label: 'Outbound Container', value: outboundContainer?.locationNumber },
-            { icon: 'truck', label: 'Staging Location', value: stagingLocation?.name }
-          ].map((item) => (
-            <Chip icon={item.icon} style={[styles.chipDefault, styles.marginTopSmall]} key={item.icon}>
-              <Text style={styles.chipText}>
-                {item.label}: <Text style={[styles.chipText, styles.fontBold]}>{item.value ?? HYPHEN}</Text>
-              </Text>
-            </Chip>
-          ))}
+          <Chip icon="pin" style={[styles.chipDefault, styles.marginTopSmall]}>
+            <Text style={styles.chipText}>
+              Outbound Container:{' '}
+              <Text style={[styles.chipText, styles.fontBold]}>{outboundContainer?.locationNumber ?? HYPHEN}</Text>
+            </Text>
+          </Chip>
+          <Chip icon="truck" style={[styles.chipDefault, styles.marginTopSmall]}>
+            <Text style={styles.chipText}>
+              Staging Location:{' '}
+              <Text style={[styles.chipText, styles.fontBold]}>{stagingLocation?.name ?? HYPHEN}</Text>
+            </Text>
+          </Chip>
+          <View style={styles.requisitionsSection}>
+            <Text style={styles.requisitionsLabel}>Requisition Numbers</Text>
+            <View style={styles.requisitionTagList}>
+              {(requisitionNumbers.length > 0 ? requisitionNumbers : [HYPHEN]).map((requisitionNumber) => (
+                <View key={requisitionNumber} style={styles.requisitionTag}>
+                  <MaterialCommunityIcons
+                    name="clipboard-text"
+                    size={14}
+                    color={Theme.colors.secondaryForeground}
+                    style={styles.requisitionTagIcon}
+                  />
+                  <Text style={styles.requisitionTagText}>{requisitionNumber}</Text>
+                </View>
+              ))}
+            </View>
+          </View>
         </View>
       </View>
       <Divider />
@@ -78,6 +105,15 @@ export default function PickingStagingDropScreen() {
               <Subheading style={styles.fontBold}>{item.product.name}</Subheading>
               <Caption>Product Code: {item.product.productCode ?? HYPHEN}</Caption>
 
+              <Chip
+                icon="clipboard-text"
+                style={[styles.chipDefault, styles.marginTopSmall, styles.flex1, styles.marginRight]}
+              >
+                <Text style={styles.chipText}>
+                  Requisition Number:{' '}
+                  <Text style={[styles.chipText, styles.fontBold]}>{item.requisitionNumber ?? HYPHEN}</Text>
+                </Text>
+              </Chip>
               <Chip
                 icon="calendar"
                 style={[styles.chipDefault, styles.marginTopSmall, styles.flex1, styles.marginRight]}
