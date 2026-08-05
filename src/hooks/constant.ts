@@ -64,3 +64,21 @@ export const PROFILE_CONFIG2 = {
     }
   }
 };
+
+// Keystroke output is a profile-wide DataWedge setting, so it cannot be scoped to
+// a single field. It is toggled at runtime: disabled while a barcode input owns
+// the scanner (so a scan arrives only via the intent broadcast and is not also
+// typed into the focused field as keystrokes), and re-enabled otherwise so plain
+// inputs elsewhere can still be populated by scanning.
+export const getKeystrokeOutputConfig = (enabled: boolean) => ({
+  PROFILE_NAME: 'OPENBOXES',
+  PROFILE_ENABLED: 'true',
+  CONFIG_MODE: 'UPDATE',
+  PLUGIN_CONFIG: {
+    PLUGIN_NAME: 'KEYSTROKE',
+    RESET_CONFIG: 'true',
+    PARAM_LIST: {
+      keystroke_output_enabled: enabled ? 'true' : 'false'
+    }
+  }
+});
