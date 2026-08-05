@@ -1,7 +1,7 @@
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import React, { useCallback, useMemo, useState } from 'react';
-import { Alert, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { Button, Chip, Divider, Paragraph } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -12,7 +12,6 @@ import { useSearchButton } from '../../components/SearchButton/useSearchButton';
 import { getPutawayDetailsByContainerId } from '../../redux/actions/putaways';
 import { RootState } from '../../redux/reducers';
 import { SortationTask } from '../../types/sortation';
-import { isProductBarcodeValid } from '../../utils/utils';
 import styles from './styles';
 
 type RootStackParamList = {
@@ -20,7 +19,6 @@ type RootStackParamList = {
     currentTaskIndex: number;
     isUserDirected?: boolean;
     containerId?: string;
-    requiresValidationScan?: boolean;
   };
   SortationPutawayTaskList: {
     containerId: string;
@@ -96,59 +94,7 @@ export default function PutawayTaskListScreen({ route }: PutawayTaskListScreenPr
   const putawayTasks = useSelector((state: RootState) => state.putawayReducer.putawayTasks) as SortationTask[];
   const [searchTerm, setSearchTerm] = useState('');
   const [expandedZones, setExpandedZones] = useState<{ [key: string]: boolean }>({});
-  const [enteredManually, setEnteredManually] = useState(true);
-
-  const resetFilters = () => {
-    setSearchTerm('');
-    setEnteredManually(true);
-  };
-
-  const navigateToTask = (task: SortationTask, requiresValidationScan: boolean) => {
-    const globalIndex = putawayTasks.findIndex((t) => t.id === task.id);
-    resetFilters();
-    navigation.navigate('SortationPutawayLocationScan', {
-      currentTaskIndex: globalIndex >= 0 ? globalIndex : 0,
-      isUserDirected: true,
-      containerId,
-      requiresValidationScan
-    });
-  };
-
-  const handleScanChange = (text: string) => {
-    setSearchTerm(text);
-    setEnteredManually(false);
-  };
-
-  const handleScan = (code: string) => {
-    const trimmed = code.trim();
-    if (!trimmed) {
-      return;
-    }
-    const matches = (putawayTasks ?? []).filter((task) => isProductBarcodeValid(trimmed, task.inventoryItem?.product));
-
-    if (matches.length === 1) {
-      navigateToTask(matches[0], enteredManually);
-      return;
-    }
-    if (matches.length > 1) {
-      setSearchTerm(matches[0].inventoryItem?.product?.productCode ?? trimmed);
-      return;
-    }
-
-    Alert.alert('No Matching Task', 'No putaway task was found for the scanned product.');
-  };
-
-  const handleSearchSelect = (productCode: string) => {
-    const matches = (putawayTasks ?? []).filter((task) => task.inventoryItem?.product?.productCode === productCode);
-    setEnteredManually(true);
-    if (matches.length === 1) {
-      navigateToTask(matches[0], true);
-    } else {
-      setSearchTerm(productCode);
-    }
-  };
-
-  const { isSearchOpen, searchButtonProps } = useSearchButton({ onSelect: handleSearchSelect });
+  const { isSearchOpen, searchButtonProps } = useSearchButton({ onSelect: setSearchTerm });
 
   const fetchTasks = useCallback(() => {
     dispatch(getPutawayDetailsByContainerId(containerId));
@@ -217,12 +163,19 @@ export default function PutawayTaskListScreen({ route }: PutawayTaskListScreenPr
     }
 
     const selectedTask = zoneTasks.tasks[taskIndex];
+    const globalIndex = putawayTasks.findIndex((t) => t.id === selectedTask.id);
 
-    navigateToTask(selectedTask, enteredManually);
+    setSearchTerm('');
+
+    navigation.navigate('SortationPutawayLocationScan', {
+      currentTaskIndex: globalIndex >= 0 ? globalIndex : 0,
+      isUserDirected: true,
+      containerId
+    });
   };
 
   const handleClearSearch = () => {
-    resetFilters();
+    setSearchTerm('');
   };
 
   return (
@@ -243,8 +196,8 @@ export default function PutawayTaskListScreen({ route }: PutawayTaskListScreenPr
             label="Product"
             style={styles.scannerInput}
             isEnabled={!isSearchOpen}
-            onChange={handleScanChange}
-            onSubmit={handleScan}
+            onChange={setSearchTerm}
+            onSubmit={setSearchTerm}
           />
           <SearchButton searchType="product" {...searchButtonProps} />
         </View>
@@ -260,7 +213,7 @@ export default function PutawayTaskListScreen({ route }: PutawayTaskListScreenPr
       <View style={styles.formContainer}>
         <View style={styles.tableHeader}>
           <Text style={[styles.tableHeaderText, styles.tableHeaderProduct]}>Product</Text>
-          <Text style={[styles.tableHeaderText, styles.tableHeaderLocation]}>Destination</Text>
+          <Text style={[styles.tableHeaderText, styles.tableHeaderLocation]}>Putaway Location</Text>
           <Text style={[styles.tableHeaderText, styles.tableHeaderQty]}>Quantity</Text>
         </View>
         {groupedTasks.length === 0 ? (
