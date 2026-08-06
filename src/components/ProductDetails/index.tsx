@@ -1,6 +1,7 @@
 import React, { createContext, useContext } from 'react';
-import { View } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import { Chip, Divider, Caption as PaperCaption, Title as PaperTitle, Text } from 'react-native-paper';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { HYPHEN } from '../../constants';
 import Product from '../../data/product/Product';
@@ -10,6 +11,9 @@ export type ProductDetailsItem = {
   icon?: string;
   label: string;
   value: string | number | null;
+  secondaryValue?: string | null;
+  onPress?: () => void;
+  accessibilityLabel?: string;
 };
 
 type ProductContextType = {
@@ -85,20 +89,45 @@ function List({ items }: { items: ProductDetailsItem[] }) {
   return (
     <View>
       {items.map((item) => (
-        <Item key={item.label} icon={item.icon} label={item.label} value={item.value} />
+        <Item key={item.label} {...item} />
       ))}
     </View>
   );
 }
 
-function Item({ icon, label, value }: ProductDetailsItem) {
-  return (
-    <Chip icon={icon} style={[styles.chipDefault, styles.marginTopSmall]}>
-      <Text style={styles.chipText}>
-        {label}: <Text style={[styles.chipText, styles.fontBold]}>{value ?? HYPHEN}</Text>
-      </Text>
-    </Chip>
+function Item({ icon, label, value, secondaryValue, onPress, accessibilityLabel }: ProductDetailsItem) {
+  const content = (
+    <View>
+      <Chip
+        icon={icon}
+        style={[styles.chipDefault, styles.marginTopSmall]}
+        textStyle={onPress ? styles.pressableChipText : undefined}
+      >
+        <Text style={styles.chipText}>
+          {label}: <Text style={[styles.chipText, styles.fontBold]}>{value ?? HYPHEN}</Text>
+          {secondaryValue ? (
+            <Text style={[styles.chipText, styles.secondaryValue]}>{`, ${secondaryValue}`}</Text>
+          ) : null}
+        </Text>
+      </Chip>
+      {onPress ? <Icon name="chevron-right" size={20} style={styles.itemChevron} /> : null}
+    </View>
   );
+
+  if (onPress) {
+    return (
+      <TouchableOpacity
+        activeOpacity={0.7}
+        accessibilityRole="button"
+        accessibilityLabel={accessibilityLabel}
+        onPress={onPress}
+      >
+        {content}
+      </TouchableOpacity>
+    );
+  }
+
+  return content;
 }
 
 function Separator() {

@@ -11,6 +11,7 @@ import { EMPTY_STRING, HYPHEN } from '../../constants';
 import { navigate } from '../../NavigationService';
 import { RootState } from '../../redux/reducers';
 import { parseFromISODateToLocaleString } from '../../utils/utils';
+import { CustomerDetails } from './CustomerDetails';
 import { usePickingContext } from './PickingContext';
 import { ReallocateModal } from './ReallocateModal';
 import styles from './styles';
@@ -89,12 +90,12 @@ export default function PickingPickLocationScreen() {
                 icon: 'identifier',
                 label: 'Order Number',
                 value: currentTask.requisitionNumber || HYPHEN
-              },
-              {
-                icon: 'map-marker',
-                label: currentTask.destinationLocationType || 'Destination',
-                value: currentTask.destination || HYPHEN
-              },
+              }
+            ]}
+          />
+          <CustomerDetails name={currentTask.destination} address={currentTask.destinationAddress} />
+          <ProductDetails.List
+            items={[
               {
                 icon: 'package',
                 label: 'Quantity Picked',

@@ -26,6 +26,16 @@ export enum PickTaskStatus {
   STAGED = 'STAGED'
 }
 
+export type DestinationAddress = {
+  address: string;
+  address2?: string | null;
+  city?: string | null;
+  stateOrProvince?: string | null;
+  postalCode?: string | null;
+  country?: string | null;
+  description?: string | null;
+};
+
 export type PickTask = {
   id: string;
   identifier: string;
@@ -37,6 +47,7 @@ export type PickTask = {
   requisitionType?: string;
   destination?: string;
   destinationLocationType?: string;
+  destinationAddress?: DestinationAddress | null;
 
   deliveryTypeCode?: DeliveryTypeCode;
 

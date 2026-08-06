@@ -19,12 +19,24 @@ export default StyleSheet.create({
     borderRadius: 4,
     alignItems: 'center'
   },
+  pressableChipText: {
+    paddingRight: 24
+  },
   chipText: {
     fontSize: 12,
     color: Theme.colors.text
   },
+  itemChevron: {
+    position: 'absolute',
+    right: Theme.spacing.small,
+    top: 12,
+    color: Theme.colors.secondaryForeground
+  },
   fontBold: {
     fontWeight: 'bold'
+  },
+  secondaryValue: {
+    color: Theme.colors.secondaryForeground
   },
   title: {
     fontSize: 18,
