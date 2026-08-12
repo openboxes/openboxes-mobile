@@ -83,6 +83,7 @@ export type DiscretePickingOrder = {
   destination?: string;
   destinationLocationType?: string;
   deliveryTypeCode?: DeliveryTypeCode;
+  assignee?: Person | null;
   /** requisition.priority (lower = higher priority) */
   priority?: number;
   /** number of open pick tasks (line items) in this order */

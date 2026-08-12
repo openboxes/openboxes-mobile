@@ -39,6 +39,7 @@ export function groupTasksIntoOrders(tasks: PickTask[]): DiscretePickingOrder[] 
         destination: task.destination,
         destinationLocationType: task.destinationLocationType,
         deliveryTypeCode: task.deliveryTypeCode,
+        assignee: task.assignee,
         priority: task.priority,
         taskCount: 0,
         inProgress: false,

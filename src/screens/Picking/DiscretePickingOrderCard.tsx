@@ -17,13 +17,15 @@ const DELIVERY_TYPE_LABELS: Record<string, string> = DELIVERY_TYPES.reduce<Recor
 type Props = {
   order: DiscretePickingOrder;
   onPress: (order: DiscretePickingOrder) => void;
+  showAssignee?: boolean;
 };
 
-export default function DiscretePickingOrderCard({ order, onPress }: Props) {
+export default function DiscretePickingOrderCard({ order, onPress, showAssignee = false }: Props) {
   const deliveryTypeLabel = order.deliveryTypeCode
     ? DELIVERY_TYPE_LABELS[order.deliveryTypeCode] ?? order.deliveryTypeCode
     : null;
   const lineCountLabel = order.taskCount === 1 ? 'Line' : 'Lines';
+  const assigneeName = order.assignee ? `${order.assignee.firstName} ${order.assignee.lastName}`.trim() : null;
 
   return (
     <Card style={LayoutStyle.listItemContainer} onPress={() => onPress(order)}>
@@ -75,6 +77,13 @@ export default function DiscretePickingOrderCard({ order, onPress }: Props) {
               {lineCountLabel}: <Text style={[styles.chipText, styles.fontBold]}>{order.taskCount}</Text>
             </Text>
           </Chip>
+          {showAssignee && assigneeName ? (
+            <Chip icon="account" style={styles.chipDefault}>
+              <Text style={styles.chipText}>
+                Assigned to: <Text style={[styles.chipText, styles.fontBold]}>{assigneeName}</Text>
+              </Text>
+            </Chip>
+          ) : null}
         </View>
       </Card.Content>
     </Card>

@@ -144,7 +144,9 @@ export default function DiscretePickingListScreen() {
         <FlatList
           data={visibleOrders}
           keyExtractor={(order) => order.requisitionId}
-          renderItem={({ item }) => <DiscretePickingOrderCard order={item} onPress={handleOrderPress} />}
+          renderItem={({ item }) => (
+            <DiscretePickingOrderCard order={item} showAssignee={showAssigned} onPress={handleOrderPress} />
+          )}
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="on-drag"
           contentContainerStyle={styles.listContent}
