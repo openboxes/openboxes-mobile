@@ -50,12 +50,16 @@ export function getPickTasksApi(facilityId: string, params?: Partial<PickTaskPar
 }
 
 // Fetch all open pick tasks (across every queue type) for the discrete picking order list.
-export function getOpenPickTasksApi(facilityId: string) {
+// When showAssigned is true, the backend also returns pick tasks already assigned to other users. By default, it skips assigned tasks.
+export function getOpenPickTasksApi(facilityId: string, showAssigned?: boolean) {
   const statuses = ['PENDING', 'PICKING'];
+  const query = statuses.map((status) => `status=${encodeURIComponent(status)}`);
 
-  return ApiClient.get(
-    `/facilities/${facilityId}/pick-tasks?${statuses.map((status) => `status=${encodeURIComponent(status)}`).join('&')}`
-  );
+  if (showAssigned !== undefined) {
+    query.push(`showAssigned=${showAssigned}`);
+  }
+
+  return ApiClient.get(`/facilities/${facilityId}/pick-tasks?${query.join('&')}`);
 }
 
 export function getPickTaskCountsApi(facilityId: string) {

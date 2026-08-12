@@ -11,6 +11,7 @@ import { navigate } from '../../NavigationService';
 import { getOpenPickTasksAction } from '../../redux/actions/picking';
 import { DiscretePickingOrder, PickTask } from '../../types/picking';
 import { emptyStateMessage } from '../../utils/emptyStateMessage';
+import { ToggleRow } from '../Dashboard/ToggleRow';
 import { DELIVERY_TYPES } from './constants';
 import DiscretePickingCardSkeleton from './DiscretePickingCardSkeleton';
 import DiscretePickingFilterSkeleton from './DiscretePickingFilterSkeleton';
@@ -33,18 +34,19 @@ export default function DiscretePickingListScreen() {
   const [tasks, setTasks] = useState<PickTask[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedQueueType, setSelectedQueueType] = useState<QueueTypeFilter>(ALL_QUEUE_TYPES);
+  const [showAssigned, setShowAssigned] = useState<boolean>(false);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [isPullRefreshing, setIsPullRefreshing] = useState<boolean>(false);
   const [hasLoaded, setHasLoaded] = useState<boolean>(false);
 
   const fetchOrders = useCallback(
-    (fromPull = false) => {
+    (showAssignedParam: boolean, fromPull = false) => {
       setIsRefreshing(true);
       if (fromPull) {
         setIsPullRefreshing(true);
       }
       dispatch(
-        getOpenPickTasksAction(({ response, errorMessage }) => {
+        getOpenPickTasksAction(showAssignedParam, ({ response, errorMessage }) => {
           if (!errorMessage && response?.data) {
             setTasks(response.data);
           }
@@ -59,8 +61,8 @@ export default function DiscretePickingListScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      fetchOrders();
-    }, [fetchOrders])
+      fetchOrders(showAssigned);
+    }, [fetchOrders, showAssigned])
   );
 
   const sortedOrders = useMemo(() => sortOrders(groupTasksIntoOrders(tasks)), [tasks]);
@@ -129,6 +131,11 @@ export default function DiscretePickingListScreen() {
             })}
           </ScrollView>
         )}
+        {!isLoadingList && (
+          <View style={styles.showAssignedToggle}>
+            <ToggleRow title="Show assigned orders" value={showAssigned} onValueChange={setShowAssigned} />
+          </View>
+        )}
       </View>
 
       {isLoadingList ? (
@@ -150,7 +157,7 @@ export default function DiscretePickingListScreen() {
               description={emptyStateMessage('orders', searchTerm, 'No open orders ready for picking')}
             />
           }
-          onRefresh={() => fetchOrders(true)}
+          onRefresh={() => fetchOrders(showAssigned, true)}
         />
       )}
     </View>
