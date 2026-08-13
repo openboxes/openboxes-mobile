@@ -71,7 +71,7 @@ export function getPickTasksAction(
 }
 
 export function getOpenPickTasksAction(
-  showAssigned: boolean,
+  excludeAssignedRequisitions: boolean,
   callback: (response: {
     response?: {
       data: PickTask[];
@@ -86,7 +86,7 @@ export function getOpenPickTasksAction(
 ) {
   return {
     type: GET_OPEN_PICK_TASKS_REQUEST,
-    payload: { showAssigned },
+    payload: { excludeAssignedRequisitions },
     callback
   };
 }

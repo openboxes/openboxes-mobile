@@ -34,19 +34,19 @@ export default function DiscretePickingListScreen() {
   const [tasks, setTasks] = useState<PickTask[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedQueueType, setSelectedQueueType] = useState<QueueTypeFilter>(ALL_QUEUE_TYPES);
-  const [showAssigned, setShowAssigned] = useState<boolean>(false);
+  const [excludeAssignedRequisitions, setExcludeAssignedRequisitions] = useState<boolean>(true);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [isPullRefreshing, setIsPullRefreshing] = useState<boolean>(false);
   const [hasLoaded, setHasLoaded] = useState<boolean>(false);
 
   const fetchOrders = useCallback(
-    (showAssignedParam: boolean, fromPull = false) => {
+    (excludeAssignedRequisitionsParam: boolean, fromPull = false) => {
       setIsRefreshing(true);
       if (fromPull) {
         setIsPullRefreshing(true);
       }
       dispatch(
-        getOpenPickTasksAction(showAssignedParam, ({ response, errorMessage }) => {
+        getOpenPickTasksAction(excludeAssignedRequisitionsParam, ({ response, errorMessage }) => {
           if (!errorMessage && response?.data) {
             setTasks(response.data);
           }
@@ -61,8 +61,8 @@ export default function DiscretePickingListScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      fetchOrders(showAssigned);
-    }, [fetchOrders, showAssigned])
+      fetchOrders(excludeAssignedRequisitions);
+    }, [fetchOrders, excludeAssignedRequisitions])
   );
 
   const sortedOrders = useMemo(() => sortOrders(groupTasksIntoOrders(tasks)), [tasks]);
@@ -133,7 +133,11 @@ export default function DiscretePickingListScreen() {
         )}
         {!isLoadingList && (
           <View style={styles.showAssignedToggle}>
-            <ToggleRow title="Show assigned orders" value={showAssigned} onValueChange={setShowAssigned} />
+            <ToggleRow
+              title="Show assigned orders"
+              value={!excludeAssignedRequisitions}
+              onValueChange={(value) => setExcludeAssignedRequisitions(!value)}
+            />
           </View>
         )}
       </View>
@@ -145,7 +149,7 @@ export default function DiscretePickingListScreen() {
           data={visibleOrders}
           keyExtractor={(order) => order.requisitionId}
           renderItem={({ item }) => (
-            <DiscretePickingOrderCard order={item} showAssignee={showAssigned} onPress={handleOrderPress} />
+            <DiscretePickingOrderCard order={item} showAssignee={!excludeAssignedRequisitions} onPress={handleOrderPress} />
           )}
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="on-drag"
@@ -159,7 +163,7 @@ export default function DiscretePickingListScreen() {
               description={emptyStateMessage('orders', searchTerm, 'No open orders ready for picking')}
             />
           }
-          onRefresh={() => fetchOrders(showAssigned, true)}
+          onRefresh={() => fetchOrders(excludeAssignedRequisitions, true)}
         />
       )}
     </View>
