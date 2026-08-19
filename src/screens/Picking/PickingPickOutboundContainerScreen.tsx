@@ -125,7 +125,11 @@ export default function PickingPickOutboundContainerScreen() {
               }
             ]}
           />
-          <CustomerDetails name={currentTask.destination} address={currentTask.destinationAddress} />
+          <CustomerDetails
+            name={currentTask.destination}
+            locationType={currentTask.destinationLocationType}
+            address={currentTask.destinationAddress}
+          />
           <ProductDetails.List
             items={[
               {

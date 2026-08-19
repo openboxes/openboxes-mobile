@@ -96,19 +96,36 @@ function List({ items }: { items: ProductDetailsItem[] }) {
 }
 
 function Item({ icon, label, value, secondaryValue, onPress, accessibilityLabel }: ProductDetailsItem) {
-  const content = (
+  const primaryLine = (
+    <Text style={styles.chipText} numberOfLines={1}>
+      {label}: <Text style={[styles.chipText, styles.fontBold]}>{value ?? HYPHEN}</Text>
+    </Text>
+  );
+
+  const content = secondaryValue ? (
+    <View style={[styles.chipStacked, styles.marginTopSmall]}>
+      {icon ? <Icon name={icon} size={18} style={styles.chipStackedIcon} /> : null}
+      <View style={styles.chipStackedText}>
+        <Text style={[styles.chipText, styles.chipStackedFirstLine]}>{`${label}: `}</Text>
+        <View style={styles.chipStackedValue}>
+          <Text style={[styles.chipText, styles.chipStackedFirstLine, styles.fontBold]} numberOfLines={1}>
+            {value ?? HYPHEN}
+          </Text>
+          <Text style={styles.chipSecondaryLine} numberOfLines={1}>
+            {secondaryValue}
+          </Text>
+        </View>
+      </View>
+      {onPress ? <Icon name="chevron-right" size={20} style={styles.chipStackedChevron} /> : null}
+    </View>
+  ) : (
     <View>
       <Chip
         icon={icon}
         style={[styles.chipDefault, styles.marginTopSmall]}
         textStyle={onPress ? styles.pressableChipText : undefined}
       >
-        <Text style={styles.chipText}>
-          {label}: <Text style={[styles.chipText, styles.fontBold]}>{value ?? HYPHEN}</Text>
-          {secondaryValue ? (
-            <Text style={[styles.chipText, styles.secondaryValue]}>{`, ${secondaryValue}`}</Text>
-          ) : null}
-        </Text>
+        {primaryLine}
       </Chip>
       {onPress ? <Icon name="chevron-right" size={20} style={styles.itemChevron} /> : null}
     </View>

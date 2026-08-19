@@ -10,6 +10,7 @@ import styles from './customerDetailsStyles';
 
 type CustomerDetailsProps = {
   name?: string;
+  locationType?: string;
   address?: DestinationAddress | null;
 };
 
@@ -20,16 +21,13 @@ function compact(parts: Array<string | null | undefined>) {
 function AddressDetails({ address }: { address?: DestinationAddress | null }) {
   const addressLine1 = address?.address || HYPHEN;
   const locality = compact([address?.city, address?.stateOrProvince, address?.postalCode]);
-  const hasAddress = Boolean(
-    address?.address || address?.address2 || locality || address?.country || address?.description
-  );
+  const hasAddress = Boolean(address?.address || address?.address2 || locality || address?.description);
 
   return (
     <>
       <Text style={styles.addressLine}>{addressLine1}</Text>
       {address?.address2 ? <Text style={styles.addressLine}>{address.address2}</Text> : null}
       {locality ? <Text style={styles.addressLine}>{locality}</Text> : null}
-      {address?.country ? <Text style={styles.addressLine}>{address.country}</Text> : null}
       {address?.description ? <Text style={styles.description}>{address.description}</Text> : null}
       {!hasAddress ? (
         <Text style={styles.missingAddress}>No delivery address is available in customer master data.</Text>
@@ -38,17 +36,18 @@ function AddressDetails({ address }: { address?: DestinationAddress | null }) {
   );
 }
 
-export function CustomerDetails({ name, address }: CustomerDetailsProps) {
+export function CustomerDetails({ name, locationType, address }: CustomerDetailsProps) {
   const [visible, setVisible] = React.useState(false);
+  const locationTypeLabel = locationType || 'Destination';
 
   return (
     <>
       <ProductDetails.Item
         icon="map-marker"
-        label="Customer"
+        label={locationTypeLabel}
         value={name || HYPHEN}
         secondaryValue={address?.address}
-        accessibilityLabel={`View delivery address for ${name || 'customer'}`}
+        accessibilityLabel={`View delivery address for ${name || locationTypeLabel.toLowerCase()}`}
         onPress={() => setVisible(true)}
       />
 
@@ -57,13 +56,13 @@ export function CustomerDetails({ name, address }: CustomerDetailsProps) {
           <View style={styles.dialog}>
             <View style={styles.header}>
               <View style={styles.headerText}>
-                <Text style={styles.eyebrow}>CUSTOMER</Text>
+                <Text style={styles.eyebrow}>{locationTypeLabel.toUpperCase()}</Text>
                 <Text style={styles.title}>{name || HYPHEN}</Text>
               </View>
               <TouchableOpacity
                 style={styles.closeButton}
                 accessibilityRole="button"
-                accessibilityLabel="Close customer details"
+                accessibilityLabel={`Close ${locationTypeLabel.toLowerCase()} details`}
                 onPress={() => setVisible(false)}
               >
                 <Icon name="close" size={20} style={styles.closeIcon} />
