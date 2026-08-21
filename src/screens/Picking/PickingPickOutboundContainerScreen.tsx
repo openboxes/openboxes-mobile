@@ -30,7 +30,8 @@ export default function PickingPickOutboundContainerScreen() {
     allTasksCount,
     revalidateCurrentTask,
     goToNextTask,
-    revalidateTasksForRequisition
+    revalidateTasksForRequisition,
+    homeRoute
   } = usePickingContext();
   const { params } = useRoute<PickingPickOutboundContainerScreenProps>();
   const parsedQuantityPicked = params?.quantityPicked ? Number(params.quantityPicked) : undefined;
@@ -72,13 +73,14 @@ export default function PickingPickOutboundContainerScreen() {
             const omitStagingLocationStep =
               currentTask.quantityPicked + parsedQuantityPicked < currentTask.quantityRequired;
 
-            revalidateTaskAndProceed(
+            revalidateTaskAndProceed({
               revalidateCurrentTask,
               currentTaskIndex,
               allTasksCount,
               goToNextTask,
+              homeRoute,
               omitStagingLocationStep
-            );
+            });
           }
         },
         params?.reasonCode?.name
@@ -93,7 +95,7 @@ export default function PickingPickOutboundContainerScreen() {
         return;
       }
 
-      revalidateTaskAndProceed(revalidateCurrentTask, currentTaskIndex, allTasksCount, goToNextTask);
+      revalidateTaskAndProceed({ revalidateCurrentTask, currentTaskIndex, allTasksCount, goToNextTask, homeRoute });
     });
 
     setOutboundContainerId(EMPTY_STRING);

@@ -19,7 +19,8 @@ import { usePickingContext } from './PickingContext';
 import styles from './styles';
 
 export default function PickingPickQuantityScreen() {
-  const { tasks, currentTask, currentTaskIndex, allTasksCount, shortPickTask, goToNextTask } = usePickingContext();
+  const { tasks, currentTask, currentTaskIndex, allTasksCount, shortPickTask, goToNextTask, homeRoute } =
+    usePickingContext();
   const dispatch = useDispatch();
   const isFocused = useIsFocused();
 
@@ -105,7 +106,13 @@ export default function PickingPickQuantityScreen() {
               index !== currentTaskIndex && task.quantityPicked < task.quantityRequired && !task.reasonCode
           );
           // Skip revalidation: task is closed server-side, and GET /pick-tasks/:id 404s if the requisition is canceled.
-          proceedToNextOrComplete(currentTaskIndex, allTasksCount, goToNextTask, omitStagingLocationStep);
+          proceedToNextOrComplete({
+            currentTaskIndex,
+            allTasksCount,
+            goToNextTask,
+            homeRoute,
+            omitStagingLocationStep
+          });
         },
         reasonCode?.name
       );

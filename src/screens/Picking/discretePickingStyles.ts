@@ -46,7 +46,8 @@ export default StyleSheet.create({
     overflow: 'hidden'
   },
   showAssignedToggle: {
-    paddingHorizontal: Theme.spacing.medium
+    paddingHorizontal: Theme.spacing.medium,
+    marginTop: -Theme.spacing.small
   },
   filterChipSkeleton: {
     height: 32,

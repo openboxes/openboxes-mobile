@@ -1,4 +1,10 @@
-import { DeliveryTypeCode, DiscretePickingOrder, PickTask, PickTaskStatus } from '../../types/picking';
+import {
+  DeliveryTypeCode,
+  DiscretePickingOrder,
+  OrderPickStatusCode,
+  PickTask,
+  PickTaskStatus
+} from '../../types/picking';
 import { DELIVERY_TYPES } from './constants';
 
 export const ALL_QUEUE_TYPES = 'ALL' as const;
@@ -22,15 +28,23 @@ function deliveryTypePriority(code?: DeliveryTypeCode): number {
  */
 export function groupTasksIntoOrders(tasks: PickTask[]): DiscretePickingOrder[] {
   const ordersById = new Map<string, DiscretePickingOrder>();
-  const productNamesById = new Map<string, Set<string>>();
+  const searchTokensById = new Map<string, Set<string>>();
+  const returnedTaskCountById = new Map<string, number>();
+
+  const collectSearchTokens = (requisitionId: string, task: PickTask) => {
+    const tokens = searchTokensById.get(requisitionId);
+    [task.product?.name, task.product?.productCode].forEach((token) => {
+      if (token) {
+        tokens?.add(token);
+      }
+    });
+  };
 
   tasks.forEach((task) => {
     const requisitionId = task.requisitionId;
     if (!requisitionId) {
       return;
     }
-
-    const productName = task.product?.name;
 
     if (!ordersById.has(requisitionId)) {
       ordersById.set(requisitionId, {
@@ -41,26 +55,35 @@ export function groupTasksIntoOrders(tasks: PickTask[]): DiscretePickingOrder[] 
         deliveryTypeCode: task.deliveryTypeCode,
         assignee: task.assignee,
         priority: task.priority,
-        taskCount: 0,
+        // Prefer the order wide counts, since this response only carries the open lines.
+        taskCount: task.orderTotalTaskCount ?? 0,
+        openTaskCount: task.orderOpenTaskCount ?? 0,
         inProgress: false,
         searchIndex: ''
       });
-      productNamesById.set(requisitionId, new Set<string>());
+      searchTokensById.set(requisitionId, new Set<string>());
+      returnedTaskCountById.set(requisitionId, 0);
     }
 
     const order = ordersById.get(requisitionId) as DiscretePickingOrder;
-    order.taskCount += 1;
-    if (task.status === PickTaskStatus.PICKING) {
+    returnedTaskCountById.set(requisitionId, (returnedTaskCountById.get(requisitionId) ?? 0) + 1);
+    // Tasks are only assigned once picking starts, so take the first assignee found.
+    if (!order.assignee && task.assignee) {
+      order.assignee = task.assignee;
+    }
+    if (task.status === PickTaskStatus.PICKING || task.orderPickStatusCode === OrderPickStatusCode.PARTIALLY_PICKED) {
       order.inProgress = true;
     }
-    if (productName) {
-      productNamesById.get(requisitionId)?.add(productName);
-    }
+    collectSearchTokens(requisitionId, task);
   });
 
   return Array.from(ordersById.values()).map((order) => {
-    const productNames = Array.from(productNamesById.get(order.requisitionId) ?? []);
-    order.searchIndex = [order.requisitionNumber, order.destination, ...productNames]
+    const returnedTaskCount = returnedTaskCountById.get(order.requisitionId) ?? 0;
+    order.taskCount = order.taskCount || returnedTaskCount;
+    order.openTaskCount = order.openTaskCount || returnedTaskCount;
+
+    const searchTokens = Array.from(searchTokensById.get(order.requisitionId) ?? []);
+    order.searchIndex = [order.requisitionNumber, order.destination, ...searchTokens]
       .filter(Boolean)
       .join(' ')
       .toLowerCase();

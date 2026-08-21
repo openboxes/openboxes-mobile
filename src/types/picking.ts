@@ -19,6 +19,12 @@ export enum DeliveryTypeCode {
   DEFAULT = 'DEFAULT'
 }
 
+export enum OrderPickStatusCode {
+  NOT_PICKED = 'NOT_PICKED',
+  PARTIALLY_PICKED = 'PARTIALLY_PICKED',
+  PICKED = 'PICKED'
+}
+
 export enum PickTaskStatus {
   PENDING = 'PENDING',
   PICKING = 'PICKING',
@@ -71,6 +77,11 @@ export type PickTask = {
   reasonCode?: string | null;
   status: PickTaskStatus;
 
+  /** Progress of the whole order, counting lines this status filtered response leaves out */
+  orderTotalTaskCount?: number | null;
+  orderOpenTaskCount?: number | null;
+  orderPickStatusCode?: OrderPickStatusCode | null;
+
   dateRequested?: string | null;
   dateAssigned?: string | null;
   dateStarted?: string | null;
@@ -97,11 +108,13 @@ export type DiscretePickingOrder = {
   assignee?: Person | null;
   /** requisition.priority (lower = higher priority) */
   priority?: number;
-  /** number of open pick tasks (line items) in this order */
+  /** total number of pick tasks (line items) in this order */
   taskCount: number;
-  /** true when at least one task is already being picked */
+  /** number of pick tasks (line items) still left to pick */
+  openTaskCount: number;
+  /** true when at least one line of this order has already been started or picked */
   inProgress: boolean;
-  /** lowercased blob of order number, destination and product names for real-time search */
+  /** lowercased blob of order number, destination, product names and product codes for search */
   searchIndex: string;
 };
 

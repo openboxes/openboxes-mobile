@@ -38,6 +38,7 @@ export default function DiscretePickingListScreen() {
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [isPullRefreshing, setIsPullRefreshing] = useState<boolean>(false);
   const [hasLoaded, setHasLoaded] = useState<boolean>(false);
+  const [isStartingOrder, setIsStartingOrder] = useState<boolean>(false);
 
   const fetchOrders = useCallback(
     (excludeAssignedRequisitionsParam: boolean, fromPull = false) => {
@@ -61,6 +62,7 @@ export default function DiscretePickingListScreen() {
 
   useFocusEffect(
     useCallback(() => {
+      setIsStartingOrder(false);
       fetchOrders(excludeAssignedRequisitions);
     }, [fetchOrders, excludeAssignedRequisitions])
   );
@@ -75,14 +77,19 @@ export default function DiscretePickingListScreen() {
   );
 
   const handleOrderPress = (order: DiscretePickingOrder) => {
+    // startOrderSession shows a full-screen loader, so suppress the search bar spinner.
+    setIsStartingOrder(true);
     startOrderSession(order.requisitionId).then((success) => {
       if (success) {
         navigate('PickingPickLocation');
+        return;
       }
+      setIsStartingOrder(false);
     });
   };
 
-  const isLoadingList = !hasLoaded || isPullRefreshing;
+  // Skeleton covers the first load only, later refreshes keep the list on screen.
+  const isLoadingList = !hasLoaded;
 
   const chips: { value: QueueTypeFilter; label: string; count: number }[] = [
     { value: ALL_QUEUE_TYPES, label: 'All', count: sortedOrders.length },
@@ -97,7 +104,7 @@ export default function DiscretePickingListScreen() {
         placeholder="Search by order, customer, or product"
         resetSearch={() => setSearchTerm('')}
         accessibilityLabel="Search open orders"
-        loading={hasLoaded && isRefreshing}
+        loading={hasLoaded && isRefreshing && !isPullRefreshing && !isStartingOrder}
         onSearchTermSubmit={setSearchTerm}
       />
 
@@ -134,7 +141,7 @@ export default function DiscretePickingListScreen() {
         {!isLoadingList && (
           <View style={styles.showAssignedToggle}>
             <ToggleRow
-              title="Show assigned orders"
+              title="Show Assigned Orders"
               value={!excludeAssignedRequisitions}
               onValueChange={(value) => setExcludeAssignedRequisitions(!value)}
             />
@@ -149,14 +156,16 @@ export default function DiscretePickingListScreen() {
           data={visibleOrders}
           keyExtractor={(order) => order.requisitionId}
           renderItem={({ item }) => (
-            <DiscretePickingOrderCard order={item} showAssignee={!excludeAssignedRequisitions} onPress={handleOrderPress} />
+            <DiscretePickingOrderCard
+              order={item}
+              showAssignee={!excludeAssignedRequisitions}
+              onPress={handleOrderPress}
+            />
           )}
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="on-drag"
           contentContainerStyle={styles.listContent}
-          // The skeleton above owns the pull-to-refresh loading state, so the spinner
-          // only needs to retract once the gesture hands off to it.
-          refreshing={false}
+          refreshing={isPullRefreshing}
           ListEmptyComponent={
             <EmptyView
               title="Orders"

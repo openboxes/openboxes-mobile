@@ -14,16 +14,39 @@ const DELIVERY_TYPE_LABELS: Record<string, string> = DELIVERY_TYPES.reduce<Recor
   return acc;
 }, {});
 
+function OrderStatusChip({ inProgress }: { inProgress: boolean }) {
+  return (
+    <Chip
+      icon={inProgress ? 'progress-clock' : 'check-circle-outline'}
+      selectedColor={inProgress ? Theme.colors.infoForeground : Theme.colors.successForeground}
+      style={[styles.chipDefault, styles.statusChip, inProgress ? styles.statusChipInProgress : styles.statusChipReady]}
+    >
+      <Text
+        style={[
+          styles.chipText,
+          styles.fontBold,
+          inProgress ? styles.statusChipTextInProgress : styles.statusChipTextReady
+        ]}
+      >
+        {inProgress ? 'In progress' : 'Ready'}
+      </Text>
+    </Chip>
+  );
+}
+
 type Props = {
   order: DiscretePickingOrder;
+  showAssignee?: boolean;
   onPress: (order: DiscretePickingOrder) => void;
 };
 
-export default function DiscretePickingOrderCard({ order, onPress }: Props) {
+export default function DiscretePickingOrderCard({ order, showAssignee = false, onPress }: Props) {
   const deliveryTypeLabel = order.deliveryTypeCode
     ? DELIVERY_TYPE_LABELS[order.deliveryTypeCode] ?? order.deliveryTypeCode
     : null;
   const lineCountLabel = order.taskCount === 1 ? 'Line' : 'Lines';
+  const lineCountValue =
+    order.openTaskCount < order.taskCount ? `${order.openTaskCount} / ${order.taskCount} Left` : `${order.taskCount}`;
   const assigneeName = order.assignee ? `${order.assignee.firstName} ${order.assignee.lastName}`.trim() : null;
 
   return (
@@ -33,25 +56,7 @@ export default function DiscretePickingOrderCard({ order, onPress }: Props) {
           <Chip icon="identifier" style={[styles.chipDefault, styles.orderNumberChip]}>
             <Text style={[styles.orderNumberText, styles.fontBold]}>{order.requisitionNumber ?? HYPHEN}</Text>
           </Chip>
-          <Chip
-            icon={order.inProgress ? 'progress-clock' : 'check-circle-outline'}
-            selectedColor={order.inProgress ? Theme.colors.infoForeground : Theme.colors.successForeground}
-            style={[
-              styles.chipDefault,
-              styles.statusChip,
-              order.inProgress ? styles.statusChipInProgress : styles.statusChipReady
-            ]}
-          >
-            <Text
-              style={[
-                styles.chipText,
-                styles.fontBold,
-                order.inProgress ? styles.statusChipTextInProgress : styles.statusChipTextReady
-              ]}
-            >
-              {order.inProgress ? 'In progress' : 'Ready'}
-            </Text>
-          </Chip>
+          <OrderStatusChip inProgress={order.inProgress} />
         </View>
 
         <Divider style={styles.contentDivider} />
@@ -73,13 +78,13 @@ export default function DiscretePickingOrderCard({ order, onPress }: Props) {
           ) : null}
           <Chip icon="package-variant-closed" style={styles.chipDefault}>
             <Text style={styles.chipText}>
-              {lineCountLabel}: <Text style={[styles.chipText, styles.fontBold]}>{order.taskCount}</Text>
+              {lineCountLabel}: <Text style={[styles.chipText, styles.fontBold]}>{lineCountValue}</Text>
             </Text>
           </Chip>
-          {assigneeName ? (
+          {showAssignee && assigneeName ? (
             <Chip icon="account" style={styles.chipDefault}>
               <Text style={styles.chipText}>
-                Assigned to: <Text style={[styles.chipText, styles.fontBold]}>{assigneeName}</Text>
+                Assigned To: <Text style={[styles.chipText, styles.fontBold]}>{assigneeName}</Text>
               </Text>
             </Chip>
           ) : null}

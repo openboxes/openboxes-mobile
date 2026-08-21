@@ -8,7 +8,7 @@ import { ScannerInput } from '../../components/ScannerInput';
 import { SearchButton } from '../../components/SearchButton';
 import { useSearchButton } from '../../components/SearchButton/useSearchButton';
 import { EMPTY_STRING, HYPHEN } from '../../constants';
-import { navigate } from '../../NavigationService';
+import { navigate, resetToRoutes } from '../../NavigationService';
 import { RootState } from '../../redux/reducers';
 import { parseFromISODateToLocaleString } from '../../utils/utils';
 import { CustomerDetails } from './CustomerDetails';
@@ -17,8 +17,15 @@ import { ReallocateModal } from './ReallocateModal';
 import styles from './styles';
 
 export default function PickingPickLocationScreen() {
-  const { currentTask, currentTaskIndex, allTasksCount, startPickTask, revalidateCurrentTask, resetSession } =
-    usePickingContext();
+  const {
+    currentTask,
+    currentTaskIndex,
+    allTasksCount,
+    startPickTask,
+    revalidateCurrentTask,
+    resetSession,
+    homeRoute
+  } = usePickingContext();
   const [pickLocationBarcode, setPickLocationBarcode] = React.useState<string>(EMPTY_STRING);
   const [isReallocateModalOpen, setIsReallocateModalOpen] = React.useState(false);
   const { allowReallocationDuringPicking } = useSelector((state: RootState) => state.settingsReducer);
@@ -150,7 +157,8 @@ export default function PickingPickLocationScreen() {
             onAllocated={() => {
               setIsReallocateModalOpen(false);
               resetSession();
-              navigate('PickingPickType');
+              // Reset so the finished task screens are not left behind the back arrow.
+              resetToRoutes([{ name: 'Drawer', params: { screen: 'Dashboard' } }, { name: homeRoute }]);
             }}
           />
         )}

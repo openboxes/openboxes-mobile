@@ -18,7 +18,7 @@ import styles from './styles';
 const SKIP_STAGING_LOCATION_VALIDATION = true;
 
 export default function PickingPickStagingLocationScreen() {
-  const { tasks, dropCurrentTask, dropCurrentTaskAtStagingLocation, resetSession, setCurrentTaskIndex } =
+  const { tasks, dropCurrentTask, dropCurrentTaskAtStagingLocation, resetSession, setCurrentTaskIndex, homeRoute } =
     usePickingContext();
   const [stagingLocationNumber, setStagingLocationNumber] = React.useState(EMPTY_STRING);
   const [currentUniqueIndex, setCurrentUniqueIndex] = React.useState(0);
@@ -37,9 +37,9 @@ export default function PickingPickStagingLocationScreen() {
     if (!currentTask) {
       // No tasks left at all, return to home
       Alert.alert('Staging', 'No more tasks available for staging drop.');
-      resetToRoutes([{ name: 'Drawer', params: { screen: 'Dashboard' } }, { name: 'PickingPickType' }]);
+      resetToRoutes([{ name: 'Drawer', params: { screen: 'Dashboard' } }, { name: homeRoute }]);
     }
-  }, [currentTask, tasks.length, setCurrentTaskIndex, uniqueTasks.length, tasks]);
+  }, [currentTask, tasks.length, setCurrentTaskIndex, uniqueTasks.length, tasks, homeRoute]);
 
   // Requires the scanned location to match the one suggested by the task. Used when SKIP_STAGING_LOCATION_VALIDATION is false.
   function handleScan(locationId: string) {
@@ -78,7 +78,7 @@ export default function PickingPickStagingLocationScreen() {
             text: 'OK',
             onPress: () => {
               resetSession();
-              resetToRoutes([{ name: 'Drawer', params: { screen: 'Dashboard' } }, { name: 'PickingPickType' }]);
+              resetToRoutes([{ name: 'Drawer', params: { screen: 'Dashboard' } }, { name: homeRoute }]);
             }
           }
         ]);
@@ -117,7 +117,7 @@ export default function PickingPickStagingLocationScreen() {
             text: 'OK',
             onPress: () => {
               resetSession();
-              resetToRoutes([{ name: 'Drawer', params: { screen: 'Dashboard' } }, { name: 'PickingPickType' }]);
+              resetToRoutes([{ name: 'Drawer', params: { screen: 'Dashboard' } }, { name: homeRoute }]);
             }
           }
         ]);
