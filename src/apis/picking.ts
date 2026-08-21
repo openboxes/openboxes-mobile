@@ -34,7 +34,7 @@ export type PickTaskDropParams = {
 };
 
 export function getPickTasksApi(facilityId: string, params?: Partial<PickTaskParams>) {
-  const query: string[] = [];
+  const query: string[] = ['excludeAssignedRequisitions=true'];
 
   if (params?.deliveryTypeCode) {
     query.push(`deliveryTypeCode=${encodeURIComponent(params.deliveryTypeCode)}`);
@@ -44,9 +44,7 @@ export function getPickTasksApi(facilityId: string, params?: Partial<PickTaskPar
     query.push(`ordersCount=${encodeURIComponent(params.ordersCount)}`);
   }
 
-  const queryString = query.length > 0 ? `?${query.join('&')}` : '';
-
-  return ApiClient.get(`/facilities/${facilityId}/pick-tasks${queryString}`);
+  return ApiClient.get(`/facilities/${facilityId}/pick-tasks?${query.join('&')}`);
 }
 
 // Fetch all open pick tasks (across every queue type) for the discrete picking order list.
