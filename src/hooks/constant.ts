@@ -34,8 +34,15 @@ export const PROFILE = {
   SET_CONFIG_PROFILE: 'com.symbol.datawedge.api.SET_CONFIG'
 };
 
-export const PROFILE_CONFIG = {
-  PROFILE_NAME: 'OPENBOXES',
+// DataWedge reads every value of a profile config bundle as a String, so all of the
+// values below are quoted (including the booleans and the intent delivery mode).
+// See sendDataWedgeConfig in useScanListener for how they reach DataWedge intact.
+
+// The profile only becomes active for the app it is associated with, so the package
+// name has to be the one the app is actually running under - it is not always
+// com.openboxes.android (branded and experimental builds append a suffix).
+export const getProfileConfig = (packageName: string) => ({
+  PROFILE_NAME: PROFILE.NAME,
   PROFILE_ENABLED: 'true',
   CONFIG_MODE: 'UPDATE',
   PLUGIN_CONFIG: {
@@ -45,13 +52,14 @@ export const PROFILE_CONFIG = {
   },
   APP_LIST: [
     {
-      PACKAGE_NAME: 'com.openboxes.android',
+      PACKAGE_NAME: packageName,
       ACTIVITY_LIST: ['*']
     }
   ]
-};
-export const PROFILE_CONFIG2 = {
-  PROFILE_NAME: 'OPENBOXES',
+});
+
+export const INTENT_OUTPUT_CONFIG = {
+  PROFILE_NAME: PROFILE.NAME,
   PROFILE_ENABLED: 'true',
   CONFIG_MODE: 'UPDATE',
   PLUGIN_CONFIG: {
@@ -60,6 +68,7 @@ export const PROFILE_CONFIG2 = {
     PARAM_LIST: {
       intent_output_enabled: 'true',
       intent_action: 'com.openboxes.android.ACTION',
+      // 2 = broadcast intent, which is what registerBroadcastReceiver listens for.
       intent_delivery: '2'
     }
   }
@@ -71,7 +80,7 @@ export const PROFILE_CONFIG2 = {
 // typed into the focused field as keystrokes), and re-enabled otherwise so plain
 // inputs elsewhere can still be populated by scanning.
 export const getKeystrokeOutputConfig = (enabled: boolean) => ({
-  PROFILE_NAME: 'OPENBOXES',
+  PROFILE_NAME: PROFILE.NAME,
   PROFILE_ENABLED: 'true',
   CONFIG_MODE: 'UPDATE',
   PLUGIN_CONFIG: {
