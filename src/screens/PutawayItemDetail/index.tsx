@@ -9,7 +9,7 @@ import showPopup from '../../components/Popup';
 import { ScannerInput } from '../../components/ScannerInput';
 import { SearchButton } from '../../components/SearchButton';
 import { useSearchButton } from '../../components/SearchButton/useSearchButton';
-import { markCandidatePutAway, submitPutawayItem } from '../../redux/actions/putaways';
+import { markCandidatePutaway, submitPutawayItem } from '../../redux/actions/putaways';
 import { RootState } from '../../redux/reducers';
 import { putawayCandidateKey } from '../../utils/putawayCandidate';
 import styles from './styles';
@@ -89,7 +89,7 @@ const PutawayItemDetail = () => {
       } else {
         const putAwayQuantity = Number(state.putAwayItem?.quantity ?? 0);
         const remainingQuantity = Math.max(Number(candidateQuantity ?? putAwayQuantity) - putAwayQuantity, 0);
-        dispatch(markCandidatePutAway(putawayCandidateKey(state.putAwayItem), remainingQuantity));
+        dispatch(markCandidatePutaway(putawayCandidateKey(state.putAwayItem), remainingQuantity));
 
         showPopup({
           title: ' Success',

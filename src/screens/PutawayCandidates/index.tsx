@@ -34,7 +34,7 @@ export default function PutawayCandidates() {
   const navigation = useNavigation<any>();
 
   const candidates = useSelector((state: RootState) => state.putawayReducer.candidates);
-  const putAwayOverrides = useSelector((state: RootState) => state.putawayReducer.putAwayOverrides);
+  const putawayOverrides = useSelector((state: RootState) => state.putawayReducer.putawayOverrides);
   const currentLocation = useSelector((state: RootState) => state.mainReducer.currentLocation);
   const productSummaryConfig = useSelector((state: RootState) => state.settingsReducer.productSummaryConfig);
 
@@ -92,14 +92,14 @@ export default function PutawayCandidates() {
       (candidates ?? [])
         .filter((candidate: PutawayCandidate) => candidate.putawayStatus === 'READY')
         .map((candidate: PutawayCandidate) => {
-          const override = putAwayOverrides?.[putawayCandidateKey(candidate)];
+          const override = putawayOverrides?.[putawayCandidateKey(candidate)];
           return override === undefined ? candidate : { ...candidate, quantity: override };
         })
         .filter((candidate: PutawayCandidate) => Number(candidate.quantity) > 0)
         .sort((a: PutawayCandidate, b: PutawayCandidate) =>
           (a['currentLocation.name'] ?? '').toLowerCase().localeCompare((b['currentLocation.name'] ?? '').toLowerCase())
         ),
-    [candidates, putAwayOverrides]
+    [candidates, putawayOverrides]
   );
 
   const visibleData = useMemo<PutawayCandidate[]>(() => {

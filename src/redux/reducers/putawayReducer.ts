@@ -4,7 +4,7 @@ import {
   FETCH_PUTAWAY_FROM_ORDER_REQUEST_SUCCESS,
   GET_PUTAWAY_CANDIDATES_REQUEST_SUCCESS,
   GET_PUTAWAY_DETAILS_BY_CONTAINER_ID_REQUEST_SUCCESS,
-  PUTAWAY_CANDIDATE_PUT_AWAY,
+  PUTAWAY_CANDIDATE_PUTAWAY,
   SUBMIT_PUTAWAY_ITEM_BIN_LOCATION_SUCCESS
 } from '../actions/putaways';
 
@@ -13,7 +13,7 @@ export interface State {
   putAwayItem: any;
   candidates: any;
   putawayTasks: SortationTask[];
-  putAwayOverrides: { [key: string]: number };
+  putawayOverrides: { [key: string]: number };
 }
 
 const initialState: State = {
@@ -21,7 +21,7 @@ const initialState: State = {
   putAwayItem: null,
   candidates: [],
   putawayTasks: [],
-  putAwayOverrides: {}
+  putawayOverrides: {}
 };
 
 function reducer(state = initialState, action: any) {
@@ -32,27 +32,27 @@ function reducer(state = initialState, action: any) {
         putAway: action.payload.data
       };
     }
-    case PUTAWAY_CANDIDATE_PUT_AWAY: {
+    case PUTAWAY_CANDIDATE_PUTAWAY: {
       const { key, remainingQuantity } = action.payload;
       return {
         ...state,
-        putAwayOverrides: { ...state.putAwayOverrides, [key]: remainingQuantity }
+        putawayOverrides: { ...state.putawayOverrides, [key]: remainingQuantity }
       };
     }
     case GET_PUTAWAY_CANDIDATES_REQUEST_SUCCESS: {
       const candidates = action.payload || [];
       // Drop overrides the server has caught up with, so they cannot go stale
-      const putAwayOverrides = { ...state.putAwayOverrides };
-      Object.keys(putAwayOverrides).forEach((key) => {
+      const putawayOverrides = { ...state.putawayOverrides };
+      Object.keys(putawayOverrides).forEach((key) => {
         const match = candidates.find((candidate: any) => putawayCandidateKey(candidate) === key);
-        if (!match || Number(match.quantity) <= putAwayOverrides[key]) {
-          delete putAwayOverrides[key];
+        if (!match || Number(match.quantity) <= putawayOverrides[key]) {
+          delete putawayOverrides[key];
         }
       });
       return {
         ...state,
         candidates,
-        putAwayOverrides
+        putawayOverrides
       };
     }
     case SUBMIT_PUTAWAY_ITEM_BIN_LOCATION_SUCCESS: {
