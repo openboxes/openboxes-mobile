@@ -118,7 +118,8 @@ class PutawayItem extends Component<Props, State> {
         const putAwayItem = _.get(response, 'data.putawayItems[0]', {});
         this.props.navigation.navigate('PutawayItemDetail', {
           putAway,
-          putAwayItem
+          putAwayItem,
+          candidateQuantity: item.quantity
         });
       }
     });

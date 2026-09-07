@@ -69,9 +69,11 @@ export default StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between'
   },
-  scanPutawayLabel: {
-    fontSize: 14,
-    color: Theme.colors.placeholder,
-    marginBottom: 10
+  scannerRow: {
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  scannerInput: {
+    flex: 1
   }
 });
