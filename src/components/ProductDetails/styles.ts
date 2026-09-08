@@ -19,9 +19,54 @@ export default StyleSheet.create({
     borderRadius: 4,
     alignItems: 'center'
   },
+  chipStacked: {
+    height: 44,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 4,
+    borderRadius: 4,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: '#ebebeb',
+    backgroundColor: '#ebebeb'
+  },
+  chipStackedIcon: {
+    padding: 4,
+    color: '#6c6c6c'
+  },
+  chipStackedText: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginLeft: 4,
+    marginRight: Theme.spacing.small
+  },
+  chipStackedFirstLine: {
+    lineHeight: 16
+  },
+  chipStackedValue: {
+    flex: 1
+  },
+  chipSecondaryLine: {
+    fontSize: 11,
+    lineHeight: 15,
+    color: Theme.colors.secondaryForeground
+  },
+  pressableChipText: {
+    paddingRight: 24
+  },
   chipText: {
     fontSize: 12,
     color: Theme.colors.text
+  },
+  itemChevron: {
+    position: 'absolute',
+    right: Theme.spacing.small,
+    top: 12,
+    color: Theme.colors.secondaryForeground
+  },
+  chipStackedChevron: {
+    alignSelf: 'center',
+    color: Theme.colors.secondaryForeground
   },
   fontBold: {
     fontWeight: 'bold'

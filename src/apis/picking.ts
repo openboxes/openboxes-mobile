@@ -34,7 +34,7 @@ export type PickTaskDropParams = {
 };
 
 export function getPickTasksApi(facilityId: string, params?: Partial<PickTaskParams>) {
-  const query: string[] = [];
+  const query: string[] = ['excludeAssignedRequisitions=true'];
 
   if (params?.deliveryTypeCode) {
     query.push(`deliveryTypeCode=${encodeURIComponent(params.deliveryTypeCode)}`);
@@ -44,22 +44,24 @@ export function getPickTasksApi(facilityId: string, params?: Partial<PickTaskPar
     query.push(`ordersCount=${encodeURIComponent(params.ordersCount)}`);
   }
 
-  const queryString = query.length > 0 ? `?${query.join('&')}` : '';
-
-  return ApiClient.get(`/facilities/${facilityId}/pick-tasks${queryString}`);
+  return ApiClient.get(`/facilities/${facilityId}/pick-tasks?${query.join('&')}`);
 }
 
 // Fetch all open pick tasks (across every queue type) for the discrete picking order list.
-export function getOpenPickTasksApi(facilityId: string) {
+// When excludeAssignedRequisitions is true, the backend skips pick tasks already assigned to other users.
+export function getOpenPickTasksApi(facilityId: string, excludeAssignedRequisitions?: boolean) {
   const statuses = ['PENDING', 'PICKING'];
+  const query = statuses.map((status) => `status=${encodeURIComponent(status)}`);
 
-  return ApiClient.get(
-    `/facilities/${facilityId}/pick-tasks?${statuses.map((status) => `status=${encodeURIComponent(status)}`).join('&')}`
-  );
+  if (excludeAssignedRequisitions !== undefined) {
+    query.push(`excludeAssignedRequisitions=${excludeAssignedRequisitions}`);
+  }
+
+  return ApiClient.get(`/facilities/${facilityId}/pick-tasks?${query.join('&')}`);
 }
 
 export function getPickTaskCountsApi(facilityId: string) {
-  return ApiClient.get(`/facilities/${facilityId}/pick-tasks/counts`);
+  return ApiClient.get(`/facilities/${facilityId}/pick-tasks/counts?excludeAssignedRequisitions=true`);
 }
 
 export function patchPickTaskApi(facilityId: string, taskId: string, params: PickTaskActionParams) {

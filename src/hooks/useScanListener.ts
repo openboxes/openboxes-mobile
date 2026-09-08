@@ -1,16 +1,17 @@
 import { useEffect, useRef } from 'react';
 import { DeviceEventEmitter, Platform } from 'react-native';
 import DataWedgeIntents from 'react-native-datawedge-intents';
+import DeviceInfo from 'react-native-device-info';
 
 import {
   ACTION,
   FILTER_ACTIONS,
   FILTER_CATEGORY,
   getKeystrokeOutputConfig,
+  getProfileConfig,
+  INTENT_OUTPUT_CONFIG,
   LISTENER,
-  PROFILE,
-  PROFILE_CONFIG,
-  PROFILE_CONFIG2
+  PROFILE
 } from './constant';
 
 export type ScanResult = {
@@ -24,11 +25,22 @@ let profileConfigured = false;
 // muted while this is > 0 (see below).
 let activeConsumerCount = 0;
 
-function sendDataWedgeCommand(extraName: string, extraValue: unknown): void {
+function sendDataWedgeCommand(extraName: string, extraValue: string): void {
   DataWedgeIntents.sendBroadcastWithExtras({
     action: ACTION.API_ACTION,
     extras: { [extraName]: extraValue, SEND_RESULT: 'false' }
   });
+}
+
+// A profile config is a nested bundle, and the native bridge builds it by calling
+// String.valueOf() on whatever it is given and re-parsing that as JSON. Handing it a
+// plain object therefore serialises a Java Map ("{PROFILE_ENABLED=true, ...}"), whose
+// unquoted values parse back as booleans and numbers - DataWedge then rejects them
+// ("Key PROFILE_ENABLED expected String but value was a java.lang.Boolean"), leaves the
+// profile disabled and never sends the scan broadcast. Passing real JSON keeps every
+// value the String that DataWedge expects.
+function sendDataWedgeConfig(config: Record<string, unknown>): void {
+  sendDataWedgeCommand(PROFILE.SET_CONFIG_PROFILE, JSON.stringify(config));
 }
 
 function configureProfileOnce(): void {
@@ -37,12 +49,12 @@ function configureProfileOnce(): void {
   }
   profileConfigured = true;
   sendDataWedgeCommand(PROFILE.CREATE_PROFILE, PROFILE.NAME);
-  sendDataWedgeCommand(PROFILE.SET_CONFIG_PROFILE, PROFILE_CONFIG);
-  sendDataWedgeCommand(PROFILE.SET_CONFIG_PROFILE, PROFILE_CONFIG2);
+  sendDataWedgeConfig(getProfileConfig(DeviceInfo.getBundleId()));
+  sendDataWedgeConfig(INTENT_OUTPUT_CONFIG);
 }
 
 function setKeystrokeOutput(enabled: boolean): void {
-  sendDataWedgeCommand(PROFILE.SET_CONFIG_PROFILE, getKeystrokeOutputConfig(enabled));
+  sendDataWedgeConfig(getKeystrokeOutputConfig(enabled));
 }
 
 function extractScan(intent: Record<string, any>): ScanResult | null {

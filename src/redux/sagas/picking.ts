@@ -75,7 +75,11 @@ function* getOpenPickTasksAction(action: any) {
     // No full-screen loading indicator here on purpose: the list screen renders its own
     // inline skeleton / pull-to-refresh state so the screen never blocks on the fetch.
     // @ts-ignore
-    const response = yield call(api.getOpenPickTasksApi, currentLocation.id);
+    const response = yield call(
+      api.getOpenPickTasksApi,
+      currentLocation.id,
+      action.payload?.excludeAssignedRequisitions
+    );
     yield action.callback({ response });
     yield put({ type: GET_OPEN_PICK_TASKS_REQUEST_SUCCESS, payload: response.data });
   } catch (error) {

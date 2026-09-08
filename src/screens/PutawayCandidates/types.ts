@@ -1,26 +1,12 @@
-export interface OwnProps {
-  navigation: any;
-  route: any;
-}
-
-export interface StateProps {
-  candidates: any;
-  currentLocation: any;
-  productSummaryConfig: {
-    [key: string]: boolean;
-  };
-}
-
-export interface DispatchProps {
-  getCandidates: (locationId: string, callback?: (data: any) => void, suppressLoading?: boolean) => void;
-}
-
-export type Props = OwnProps & StateProps & DispatchProps;
-
-export interface State {
-  putawayCandidates: any;
-  refreshing: boolean;
-  filteredPutawayCandidates: any;
-  initialLoading: boolean;
-  searchTerm: string;
+export interface PutawayCandidate {
+  id?: string | null;
+  putawayStatus?: string;
+  quantity: number;
+  'currentLocation.id'?: string;
+  'currentLocation.name'?: string;
+  'product.productCode'?: string;
+  'product.name'?: string;
+  'inventoryItem.lotNumber'?: string | null;
+  'inventoryItem.expirationDate'?: string | null;
+  [key: string]: any;
 }

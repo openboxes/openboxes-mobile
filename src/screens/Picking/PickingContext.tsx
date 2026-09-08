@@ -14,6 +14,14 @@ import {
 } from '../../redux/actions/picking';
 import { DeliveryType, PickTask } from '../../types/picking';
 
+// Which screen the session was started from, used to send the picker back there when it ends.
+export type PickingEntryPoint = 'BATCH' | 'DISCRETE';
+
+const HOME_ROUTE_BY_ENTRY_POINT: Record<PickingEntryPoint, string> = {
+  BATCH: 'PickingPickType',
+  DISCRETE: 'DiscretePickingList'
+};
+
 type PickingContextType = {
   /** The list of all tasks for this session */
   tasks: PickTask[];
@@ -27,6 +35,10 @@ type PickingContextType = {
   currentTask: PickTask | undefined;
   /** Total number of tasks in the session */
   allTasksCount: number;
+  /** The screen this session was started from */
+  entryPoint: PickingEntryPoint;
+  /** Route to return to when the session ends, derived from the entry point */
+  homeRoute: string;
   /** Starts a new picking session, returns whether it was successful */
   startSession: (deliveryType: DeliveryType, ordersCount: number) => Promise<boolean>;
   /** Starts a picking session for a single order (discrete picking), returns whether it was successful */
@@ -65,11 +77,14 @@ const PickingContext = React.createContext<PickingContextType | undefined>(undef
 export function PickingProvider({ children }: { children: React.ReactNode }) {
   const [tasks, setTasks] = React.useState<PickTask[]>([]);
   const [currentTaskIndex, setCurrentTaskIndex] = React.useState<number>(0);
+  const [entryPoint, setEntryPoint] = React.useState<PickingEntryPoint>('BATCH');
   const dispatch = useDispatch();
+  const homeRoute = HOME_ROUTE_BY_ENTRY_POINT[entryPoint];
   const allTasksCount = tasks.length;
   const currentTask = allTasksCount > 0 && currentTaskIndex < allTasksCount ? tasks[currentTaskIndex] : undefined;
 
   const startSession = async (deliveryType: DeliveryType, ordersCount: number): Promise<boolean> => {
+    setEntryPoint('BATCH');
     return new Promise((resolve) => {
       dispatch(
         getPickTasksAction({ deliveryTypeCode: deliveryType.code, ordersCount }, ({ response, errorMessage }) => {
@@ -101,6 +116,7 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
   };
 
   const startOrderSession = async (requisitionId: string): Promise<boolean> => {
+    setEntryPoint('DISCRETE');
     return new Promise((resolve) => {
       dispatch(
         getPickTasksByRequisitionAction(requisitionId, (res) => {
@@ -210,6 +226,7 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
               onPress: () =>
                 resetToRoutes([
                   { name: 'Drawer', params: { screen: 'Dashboard' } },
+                  { name: homeRoute },
                   { name: 'PickingPickStagingLocation' }
                 ])
             }
@@ -288,6 +305,8 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
         setCurrentTaskIndex,
         currentTask,
         allTasksCount,
+        entryPoint,
+        homeRoute,
         startSession,
         startOrderSession,
         pickCurrentTask,

@@ -11,6 +11,7 @@ import { EMPTY_STRING, HYPHEN } from '../../constants';
 import { navigate } from '../../NavigationService';
 import { ReasonCode } from '../../types/picking';
 import { parseFromISODateToLocaleString } from '../../utils/utils';
+import { CustomerDetails } from './CustomerDetails';
 import { revalidateTaskAndProceed } from './lib';
 import { usePickingContext } from './PickingContext';
 import styles from './styles';
@@ -29,7 +30,8 @@ export default function PickingPickOutboundContainerScreen() {
     allTasksCount,
     revalidateCurrentTask,
     goToNextTask,
-    revalidateTasksForRequisition
+    revalidateTasksForRequisition,
+    homeRoute
   } = usePickingContext();
   const { params } = useRoute<PickingPickOutboundContainerScreenProps>();
   const parsedQuantityPicked = params?.quantityPicked ? Number(params.quantityPicked) : undefined;
@@ -71,13 +73,14 @@ export default function PickingPickOutboundContainerScreen() {
             const omitStagingLocationStep =
               currentTask.quantityPicked + parsedQuantityPicked < currentTask.quantityRequired;
 
-            revalidateTaskAndProceed(
+            revalidateTaskAndProceed({
               revalidateCurrentTask,
               currentTaskIndex,
               allTasksCount,
               goToNextTask,
+              homeRoute,
               omitStagingLocationStep
-            );
+            });
           }
         },
         params?.reasonCode?.name
@@ -92,7 +95,7 @@ export default function PickingPickOutboundContainerScreen() {
         return;
       }
 
-      revalidateTaskAndProceed(revalidateCurrentTask, currentTaskIndex, allTasksCount, goToNextTask);
+      revalidateTaskAndProceed({ revalidateCurrentTask, currentTaskIndex, allTasksCount, goToNextTask, homeRoute });
     });
 
     setOutboundContainerId(EMPTY_STRING);
@@ -121,12 +124,16 @@ export default function PickingPickOutboundContainerScreen() {
                 icon: 'identifier',
                 label: 'Order Number',
                 value: currentTask.requisitionNumber || HYPHEN
-              },
-              {
-                icon: 'map-marker',
-                label: currentTask.destinationLocationType || 'Destination',
-                value: currentTask.destination || HYPHEN
-              },
+              }
+            ]}
+          />
+          <CustomerDetails
+            name={currentTask.destination}
+            locationType={currentTask.destinationLocationType}
+            address={currentTask.destinationAddress}
+          />
+          <ProductDetails.List
+            items={[
               {
                 icon: 'account',
                 label: 'Assignee',

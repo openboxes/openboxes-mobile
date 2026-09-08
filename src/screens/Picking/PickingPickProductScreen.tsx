@@ -9,6 +9,7 @@ import { useSearchButton } from '../../components/SearchButton/useSearchButton';
 import { EMPTY_STRING, HYPHEN } from '../../constants';
 import { navigate } from '../../NavigationService';
 import { isProductBarcodeValid, parseFromISODateToLocaleString } from '../../utils/utils';
+import { CustomerDetails } from './CustomerDetails';
 import { usePickingContext } from './PickingContext';
 import styles from './styles';
 
@@ -61,12 +62,16 @@ export default function PickingPickProductScreen() {
                 icon: 'identifier',
                 label: 'Order Number',
                 value: currentTask.requisitionNumber || HYPHEN
-              },
-              {
-                icon: 'map-marker',
-                label: currentTask.destinationLocationType || 'Destination',
-                value: currentTask.destination || HYPHEN
-              },
+              }
+            ]}
+          />
+          <CustomerDetails
+            name={currentTask.destination}
+            locationType={currentTask.destinationLocationType}
+            address={currentTask.destinationAddress}
+          />
+          <ProductDetails.List
+            items={[
               {
                 icon: 'account',
                 label: 'Assignee',

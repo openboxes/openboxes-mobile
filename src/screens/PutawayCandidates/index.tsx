@@ -1,8 +1,8 @@
-import _ from 'lodash';
-import React, { Component } from 'react';
-import { Alert, FlatList, RefreshControl, SafeAreaView, View } from 'react-native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import React, { useCallback, useMemo, useState } from 'react';
+import { FlatList, RefreshControl, SafeAreaView, View } from 'react-native';
 import { Caption, Card, Chip, Divider, Subheading } from 'react-native-paper';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { LayoutStyle } from '../../assets/styles';
 import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSearchHeader';
@@ -10,83 +10,134 @@ import Button from '../../components/Button';
 import EmptyView from '../../components/EmptyView';
 import ListLoadingSkeleton from '../../components/ListLoadingSkeleton';
 import showPopup from '../../components/Popup';
+import { EMPTY_STRING } from '../../constants';
 import { getCandidates } from '../../redux/actions/putaways';
 import { RootState } from '../../redux/reducers';
 import { emptyStateMessage } from '../../utils/emptyStateMessage';
+import { putawayCandidateKey } from '../../utils/putawayCandidate';
 import PutawayCandidateCardSkeleton from './PutawayCandidateCardSkeleton';
 import styles from './styles';
-import { DispatchProps, Props, State } from './types';
+import { PutawayCandidate } from './types';
 
-class PutawayCandidates extends Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
+const SKELETON_CARD_COUNT = 6;
 
-    this.state = {
-      refreshing: false,
-      putawayCandidates: [],
-      filteredPutawayCandidates: [],
-      initialLoading: true,
-      searchTerm: ''
-    };
-  }
+function matchesSearchTerm(candidate: PutawayCandidate, term: string): boolean {
+  return (
+    (candidate['inventoryItem.lotNumber']?.toLowerCase().includes(term) ?? false) ||
+    (candidate['currentLocation.name']?.toLowerCase().includes(term) ?? false) ||
+    (candidate['currentLocation.id']?.toLowerCase().includes(term) ?? false)
+  );
+}
 
-  componentDidMount() {
-    this.getScreenData();
-  }
+export default function PutawayCandidates() {
+  const dispatch = useDispatch();
+  const navigation = useNavigation<any>();
 
-  componentDidUpdate(prevProps: Props) {
-    if (prevProps.candidates !== this.props.candidates) {
-      const putawayCandidates = this.props.candidates
-        .filter((candidate: any) => candidate.putawayStatus === 'READY')
-        .sort((a: any, b: any) =>
-          a['currentLocation.name'].toLowerCase().localeCompare(b['currentLocation.name'].toLowerCase())
-        );
+  const candidates = useSelector((state: RootState) => state.putawayReducer.candidates);
+  const putawayOverrides = useSelector((state: RootState) => state.putawayReducer.putawayOverrides);
+  const currentLocation = useSelector((state: RootState) => state.mainReducer.currentLocation);
+  const productSummaryConfig = useSelector((state: RootState) => state.settingsReducer.productSummaryConfig);
 
-      this.setState({
-        refreshing: false,
-        initialLoading: false,
-        putawayCandidates
-      });
+  const [searchTerm, setSearchTerm] = useState<string>(EMPTY_STRING);
+  const [refreshing, setRefreshing] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
+
+  const showLotNumber = productSummaryConfig?.lotNumber !== false;
+  const showExpirationDate = productSummaryConfig?.expirationDate !== false;
+
+  const navigateToPutawayItem = useCallback(
+    (item: PutawayCandidate) => navigation.navigate('PutawayItem', { item }),
+    [navigation]
+  );
+
+  const getScreenData = useCallback(() => {
+    if (!currentLocation?.id) {
+      setRefreshing(false);
+      setInitialLoading(false);
+      return;
     }
-  }
 
-  getScreenData = async () => {
-    this.setState({ refreshing: true });
-    const { currentLocation } = this.props;
-    this.props.getCandidates(
-      currentLocation.id,
-      (data: any) => {
-        if (data?.error) {
-          this.setState({ refreshing: false, initialLoading: false });
-          showPopup({
-            title: 'Putaway Candidates',
-            message: data.errorMessage ?? 'Failed to load putaway candidates',
-            positiveButton: {
-              text: 'Retry',
-              callback: () => this.getScreenData()
-            },
-            negativeButtonText: 'Cancel'
-          });
-        }
-      },
-      true
+    setRefreshing(true);
+    dispatch(
+      getCandidates(
+        currentLocation.id,
+        (data: any) => {
+          setRefreshing(false);
+          setInitialLoading(false);
+          if (data?.error) {
+            showPopup({
+              title: 'Putaway Candidates',
+              message: data.errorMessage ?? 'Failed to load putaway candidates',
+              positiveButton: {
+                text: 'Retry',
+                callback: () => getScreenData()
+              },
+              negativeButtonText: 'Cancel'
+            });
+          }
+        },
+        true
+      )
     );
-  };
+  }, [dispatch, currentLocation?.id]);
 
-  renderItem = (item: any) => {
-    const { productSummaryConfig } = this.props;
-    const showLotNumber = productSummaryConfig?.lotNumber !== false;
-    const showExpirationDate = productSummaryConfig?.expirationDate !== false;
+  useFocusEffect(
+    useCallback(() => {
+      getScreenData();
+    }, [getScreenData])
+  );
 
-    return (
-      <Card
-        style={LayoutStyle.listItemContainer}
-        onPress={() =>
-          item.id
-            ? Alert.alert('Item is already in a pending putaway')
-            : this.props.navigation.navigate('PutawayItem', { item })
-        }
-      >
+  const putawayCandidates = useMemo<PutawayCandidate[]>(
+    () =>
+      (candidates ?? [])
+        .filter((candidate: PutawayCandidate) => candidate.putawayStatus === 'READY')
+        .map((candidate: PutawayCandidate) => {
+          const override = putawayOverrides?.[putawayCandidateKey(candidate)];
+          return override === undefined ? candidate : { ...candidate, quantity: override };
+        })
+        .filter((candidate: PutawayCandidate) => Number(candidate.quantity) > 0)
+        .sort((a: PutawayCandidate, b: PutawayCandidate) =>
+          (a['currentLocation.name'] ?? '').toLowerCase().localeCompare((b['currentLocation.name'] ?? '').toLowerCase())
+        ),
+    [candidates, putawayOverrides]
+  );
+
+  const visibleData = useMemo<PutawayCandidate[]>(() => {
+    const term = searchTerm.trim().toLowerCase();
+    if (!term) {
+      return putawayCandidates;
+    }
+    return putawayCandidates.filter((candidate) => matchesSearchTerm(candidate, term));
+  }, [putawayCandidates, searchTerm]);
+
+  const resetFiltering = useCallback(() => setSearchTerm(EMPTY_STRING), []);
+
+  const onSearchTermSubmit = useCallback(
+    (query: string) => {
+      const term = query.trim().toLowerCase();
+      if (!term) {
+        resetFiltering();
+        return;
+      }
+
+      const exactLotMatches = putawayCandidates.filter(
+        (candidate) => candidate['inventoryItem.lotNumber']?.toLowerCase() === term
+      );
+
+      if (exactLotMatches.length === 1) {
+        resetFiltering();
+        navigateToPutawayItem(exactLotMatches[0]);
+        return;
+      }
+
+      setSearchTerm(query);
+    },
+    [putawayCandidates, navigateToPutawayItem, resetFiltering]
+  );
+
+  const renderItem = useCallback(
+    (item: PutawayCandidate) => (
+      <Card style={LayoutStyle.listItemContainer} onPress={() => navigateToPutawayItem(item)}>
         <Card.Content>
           <View style={styles.headerRow}>
             <Chip icon="pin" style={styles.chipDefault} textStyle={styles.chipDefaultText}>
@@ -102,7 +153,7 @@ class PutawayCandidates extends Component<Props, State> {
             {`${item['product.productCode']} - ${item['product.name']}`}
           </Subheading>
           {showLotNumber && (
-            <Caption style={styles.caption}> {`Lot Number: ${item?.['inventoryItem.lotNumber'] ?? 'Default'}`}</Caption>
+            <Caption style={styles.caption}> {`Lot Number: ${item['inventoryItem.lotNumber'] ?? 'Default'}`}</Caption>
           )}
 
           <View style={styles.additionalInfoRow}>
@@ -117,103 +168,40 @@ class PutawayCandidates extends Component<Props, State> {
           </View>
         </Card.Content>
       </Card>
-    );
-  };
+    ),
+    [navigateToPutawayItem, showLotNumber, showExpirationDate]
+  );
 
-  navigateToPutawayItem = (item: any) => {
-    this.props.navigation.navigate('PutawayItem', { item });
-  };
-
-  filterPutawayCandidates = (query: string) => {
-    this.setState({ searchTerm: query });
-    if (query) {
-      const exactPutawayCandidate = _.filter(
-        this.state.putawayCandidates,
-        (putawayCandidate: any) => putawayCandidate['inventoryItem.lotNumber']?.toLowerCase() === query.toLowerCase()
-      );
-
-      if (exactPutawayCandidate.length === 1) {
-        this.resetFiltering();
-        this.navigateToPutawayItem(exactPutawayCandidate[0]);
-      } else {
-        const filteredPutawayCandidates = _.filter(
-          this.state.putawayCandidates,
-          (putawayCandidate: any) =>
-            putawayCandidate['inventoryItem.lotNumber']?.toLowerCase().includes(query.toLowerCase()) ||
-            putawayCandidate['currentLocation.name']?.toLowerCase().includes(query.toLowerCase()) ||
-            putawayCandidate['currentLocation.id']?.toLowerCase().includes(query.toLowerCase())
-        );
-        this.setState({
-          ...this.state,
-          filteredPutawayCandidates
-        });
-      }
-
-      return;
-    }
-
-    this.resetFiltering();
-  };
-
-  resetFiltering = () => {
-    this.setState({
-      ...this.state,
-      searchTerm: '',
-      filteredPutawayCandidates: []
-    });
-  };
-
-  render() {
-    const { filteredPutawayCandidates, putawayCandidates, initialLoading, refreshing, searchTerm } = this.state;
-    const visibleData = filteredPutawayCandidates.length > 0 ? filteredPutawayCandidates : putawayCandidates;
-    return (
-      <SafeAreaView style={styles.container}>
-        <BarcodeSearchHeader
-          autoSearch
-          placeholder="Search by lot number or current location"
-          resetSearch={this.resetFiltering}
-          searchBox={false}
-          loading={initialLoading || refreshing}
-          accessibilityLabel="Search putaway candidates"
-          onSearchTermSubmit={this.filterPutawayCandidates}
+  return (
+    <SafeAreaView style={styles.container}>
+      <BarcodeSearchHeader
+        autoSearch
+        placeholder="Search by lot number or current location"
+        resetSearch={resetFiltering}
+        searchBox={false}
+        loading={initialLoading || refreshing}
+        accessibilityLabel="Search putaway candidates"
+        onSearchTermSubmit={onSearchTermSubmit}
+      />
+      <Button style={styles.refreshButton} size="90%" title="Refresh (Get Latest Data)" onPress={getScreenData} />
+      {initialLoading ? (
+        <ListLoadingSkeleton visible count={SKELETON_CARD_COUNT} CardComponent={PutawayCandidateCardSkeleton} />
+      ) : (
+        <FlatList
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={getScreenData} />}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
+          data={visibleData}
+          renderItem={({ item }) => renderItem(item)}
+          ListEmptyComponent={
+            <EmptyView
+              title="Putaway Candidates"
+              description={emptyStateMessage('candidates', searchTerm, 'There are no candidate items to Putaway')}
+              isRefresh={false}
+            />
+          }
         />
-        <Button
-          style={styles.refreshButton}
-          size="90%"
-          title="Refresh (Get Latest Data)"
-          onPress={this.getScreenData}
-        />
-        {initialLoading ? (
-          <ListLoadingSkeleton visible count={6} CardComponent={PutawayCandidateCardSkeleton} />
-        ) : (
-          <FlatList
-            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={this.getScreenData} />}
-            keyboardShouldPersistTaps="handled"
-            keyboardDismissMode="on-drag"
-            data={visibleData}
-            renderItem={({ item }) => this.renderItem(item)}
-            ListEmptyComponent={
-              <EmptyView
-                title="Putaway Candidates"
-                description={emptyStateMessage('candidates', searchTerm, 'There are no candidate items to Putaway')}
-                isRefresh={false}
-              />
-            }
-          />
-        )}
-      </SafeAreaView>
-    );
-  }
+      )}
+    </SafeAreaView>
+  );
 }
-
-const mapStateToProps = (state: RootState) => ({
-  candidates: state.putawayReducer.candidates,
-  currentLocation: state.mainReducer.currentLocation,
-  productSummaryConfig: state.settingsReducer.productSummaryConfig
-});
-
-const mapDispatchToProps: DispatchProps = {
-  getCandidates
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(PutawayCandidates);

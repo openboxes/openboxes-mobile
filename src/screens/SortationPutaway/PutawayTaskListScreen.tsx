@@ -1,6 +1,6 @@
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { Alert, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { Button, Chip, Divider, Paragraph } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
@@ -96,11 +96,12 @@ export default function PutawayTaskListScreen({ route }: PutawayTaskListScreenPr
   const putawayTasks = useSelector((state: RootState) => state.putawayReducer.putawayTasks) as SortationTask[];
   const [searchTerm, setSearchTerm] = useState('');
   const [expandedZones, setExpandedZones] = useState<{ [key: string]: boolean }>({});
-  const [enteredManually, setEnteredManually] = useState(true);
+  // A hardware scan fires onChange and onSubmit in the same tick, so state would still read its previous value here.
+  const enteredManually = useRef(true);
 
   const resetFilters = () => {
     setSearchTerm('');
-    setEnteredManually(true);
+    enteredManually.current = true;
   };
 
   const navigateToTask = (task: SortationTask, requiresValidationScan: boolean) => {
@@ -116,7 +117,7 @@ export default function PutawayTaskListScreen({ route }: PutawayTaskListScreenPr
 
   const handleScanChange = (text: string) => {
     setSearchTerm(text);
-    setEnteredManually(false);
+    enteredManually.current = false;
   };
 
   const handleScan = (code: string) => {
@@ -127,7 +128,7 @@ export default function PutawayTaskListScreen({ route }: PutawayTaskListScreenPr
     const matches = (putawayTasks ?? []).filter((task) => isProductBarcodeValid(trimmed, task.inventoryItem?.product));
 
     if (matches.length === 1) {
-      navigateToTask(matches[0], enteredManually);
+      navigateToTask(matches[0], enteredManually.current);
       return;
     }
     if (matches.length > 1) {
@@ -140,7 +141,7 @@ export default function PutawayTaskListScreen({ route }: PutawayTaskListScreenPr
 
   const handleSearchSelect = (productCode: string) => {
     const matches = (putawayTasks ?? []).filter((task) => task.inventoryItem?.product?.productCode === productCode);
-    setEnteredManually(true);
+    enteredManually.current = true;
     if (matches.length === 1) {
       navigateToTask(matches[0], true);
     } else {
@@ -218,7 +219,7 @@ export default function PutawayTaskListScreen({ route }: PutawayTaskListScreenPr
 
     const selectedTask = zoneTasks.tasks[taskIndex];
 
-    navigateToTask(selectedTask, enteredManually);
+    navigateToTask(selectedTask, enteredManually.current);
   };
 
   const handleClearSearch = () => {

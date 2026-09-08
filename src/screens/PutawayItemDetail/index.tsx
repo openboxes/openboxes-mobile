@@ -5,10 +5,13 @@ import { Caption, Chip, Divider, Subheading, Text } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Button from '../../components/Button';
-import InputBox from '../../components/InputBox';
 import showPopup from '../../components/Popup';
-import { submitPutawayItem } from '../../redux/actions/putaways';
+import { ScannerInput } from '../../components/ScannerInput';
+import { SearchButton } from '../../components/SearchButton';
+import { useSearchButton } from '../../components/SearchButton/useSearchButton';
+import { setPutawayCandidateRemainingQuantity, submitPutawayItem } from '../../redux/actions/putaways';
 import { RootState } from '../../redux/reducers';
+import { putawayCandidateKey } from '../../utils/putawayCandidate';
 import styles from './styles';
 
 const PutawayItemDetail = () => {
@@ -22,7 +25,7 @@ const PutawayItemDetail = () => {
     scannedPutawayLocation: ''
   });
   const { productSummaryConfig } = useSelector((state: RootState) => state.settingsReducer);
-  const { putAway, putAwayItem }: any = route.params;
+  const { putAway, putAwayItem, candidateQuantity }: any = route.params;
 
   useEffect(() => {
     setState({
@@ -84,6 +87,10 @@ const PutawayItemDetail = () => {
           negativeButtonText: 'Cancel'
         });
       } else {
+        const putAwayQuantity = Number(state.putAwayItem?.quantity ?? 0);
+        const remainingQuantity = Math.max(Number(candidateQuantity ?? putAwayQuantity) - putAwayQuantity, 0);
+        dispatch(setPutawayCandidateRemainingQuantity(putawayCandidateKey(state.putAwayItem), remainingQuantity));
+
         showPopup({
           title: ' Success',
           message: 'Putaway was successfully submited',
@@ -100,14 +107,16 @@ const PutawayItemDetail = () => {
   };
 
   const onChangeScannedPutawayLocation = (text: string) => {
-    setState({ ...state, scannedPutawayLocation: text });
+    setState((current: any) => ({ ...current, scannedPutawayLocation: text }));
   };
+
+  const { isSearchOpen, searchButtonProps } = useSearchButton({ onSelect: onChangeScannedPutawayLocation });
 
   const showLotNumber = useMemo(() => productSummaryConfig?.lotNumber !== false, [productSummaryConfig]);
   const showExpirationDate = useMemo(() => productSummaryConfig?.expirationDate !== false, [productSummaryConfig]);
 
   return (
-    <ScrollView>
+    <ScrollView keyboardShouldPersistTaps="always">
       <View style={styles.dataContainer}>
         <View style={styles.headerRow}>
           <Chip icon="identifier" style={styles.chipDefault} textStyle={styles.chipWarningText}>
@@ -148,21 +157,24 @@ const PutawayItemDetail = () => {
       </View>
       <Divider />
       <View style={styles.contentContainer}>
-        <Text style={styles.scanPutawayLabel}>Scan Putaway Location</Text>
-        <InputBox
-          placeholder="Default"
-          label="Default"
-          value={state.scannedPutawayLocation}
-          onChange={onChangeScannedPutawayLocation}
-          editable={false}
-          disabled={false}
-        />
+        <View style={styles.scannerRow}>
+          <ScannerInput
+            style={styles.scannerInput}
+            label="Putaway Location Entry Field"
+            placeholder={state.putAwayItem?.['putawayLocation.name'] ?? ''}
+            value={state.scannedPutawayLocation}
+            isEnabled={!isSearchOpen}
+            onChange={onChangeScannedPutawayLocation}
+            onSubmit={onChangeScannedPutawayLocation}
+          />
+          <SearchButton searchType="destinationBin" {...searchButtonProps} />
+        </View>
         <Button
           size="100%"
           title="Confirm Putaway"
           style={styles.buttonContainer}
           onPress={formSubmit}
-          disabled={false}
+          disabled={!state.scannedPutawayLocation}
         />
       </View>
     </ScrollView>

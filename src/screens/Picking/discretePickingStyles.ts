@@ -45,6 +45,10 @@ export default StyleSheet.create({
     flexDirection: 'row',
     overflow: 'hidden'
   },
+  showAssignedToggle: {
+    paddingHorizontal: Theme.spacing.medium,
+    marginTop: -Theme.spacing.small
+  },
   filterChipSkeleton: {
     height: 32,
     borderRadius: 12,

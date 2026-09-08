@@ -13,12 +13,14 @@ import { navigate } from '../../NavigationService';
 import { getReasonCodesAction } from '../../redux/actions/others';
 import { ReasonCode } from '../../types/picking';
 import { parseFromISODateToLocaleString } from '../../utils/utils';
+import { CustomerDetails } from './CustomerDetails';
 import { proceedToNextOrComplete } from './lib';
 import { usePickingContext } from './PickingContext';
 import styles from './styles';
 
 export default function PickingPickQuantityScreen() {
-  const { tasks, currentTask, currentTaskIndex, allTasksCount, shortPickTask, goToNextTask } = usePickingContext();
+  const { tasks, currentTask, currentTaskIndex, allTasksCount, shortPickTask, goToNextTask, homeRoute } =
+    usePickingContext();
   const dispatch = useDispatch();
   const isFocused = useIsFocused();
 
@@ -104,7 +106,13 @@ export default function PickingPickQuantityScreen() {
               index !== currentTaskIndex && task.quantityPicked < task.quantityRequired && !task.reasonCode
           );
           // Skip revalidation: task is closed server-side, and GET /pick-tasks/:id 404s if the requisition is canceled.
-          proceedToNextOrComplete(currentTaskIndex, allTasksCount, goToNextTask, omitStagingLocationStep);
+          proceedToNextOrComplete({
+            currentTaskIndex,
+            allTasksCount,
+            goToNextTask,
+            homeRoute,
+            omitStagingLocationStep
+          });
         },
         reasonCode?.name
       );
@@ -138,12 +146,16 @@ export default function PickingPickQuantityScreen() {
                   icon: 'identifier',
                   label: 'Order Number',
                   value: currentTask.requisitionNumber || HYPHEN
-                },
-                {
-                  icon: 'map-marker',
-                  label: currentTask.destinationLocationType || 'Destination',
-                  value: currentTask.destination || HYPHEN
-                },
+                }
+              ]}
+            />
+            <CustomerDetails
+              name={currentTask.destination}
+              locationType={currentTask.destinationLocationType}
+              address={currentTask.destinationAddress}
+            />
+            <ProductDetails.List
+              items={[
                 {
                   icon: 'account',
                   label: 'Assignee',

@@ -19,12 +19,28 @@ export enum DeliveryTypeCode {
   DEFAULT = 'DEFAULT'
 }
 
+export enum OrderPickStatusCode {
+  NOT_PICKED = 'NOT_PICKED',
+  PARTIALLY_PICKED = 'PARTIALLY_PICKED',
+  PICKED = 'PICKED'
+}
+
 export enum PickTaskStatus {
   PENDING = 'PENDING',
   PICKING = 'PICKING',
   PICKED = 'PICKED',
   STAGED = 'STAGED'
 }
+
+export type DestinationAddress = {
+  address: string;
+  address2?: string | null;
+  city?: string | null;
+  stateOrProvince?: string | null;
+  postalCode?: string | null;
+  country?: string | null;
+  description?: string | null;
+};
 
 export type PickTask = {
   id: string;
@@ -37,6 +53,7 @@ export type PickTask = {
   requisitionType?: string;
   destination?: string;
   destinationLocationType?: string;
+  destinationAddress?: DestinationAddress | null;
 
   deliveryTypeCode?: DeliveryTypeCode;
 
@@ -59,6 +76,11 @@ export type PickTask = {
   priority?: number;
   reasonCode?: string | null;
   status: PickTaskStatus;
+
+  /** Progress of the whole order, counting lines this status filtered response leaves out */
+  orderTotalTaskCount?: number | null;
+  orderOpenTaskCount?: number | null;
+  orderPickStatusCode?: OrderPickStatusCode | null;
 
   dateRequested?: string | null;
   dateAssigned?: string | null;
@@ -83,13 +105,16 @@ export type DiscretePickingOrder = {
   destination?: string;
   destinationLocationType?: string;
   deliveryTypeCode?: DeliveryTypeCode;
+  assignee?: Person | null;
   /** requisition.priority (lower = higher priority) */
   priority?: number;
-  /** number of open pick tasks (line items) in this order */
+  /** total number of pick tasks (line items) in this order */
   taskCount: number;
-  /** true when at least one task is already being picked */
+  /** number of pick tasks (line items) still left to pick */
+  openTaskCount: number;
+  /** true when at least one line of this order has already been started or picked */
   inProgress: boolean;
-  /** lowercased blob of order number, destination and product names for real-time search */
+  /** lowercased blob of order number, destination, product names and product codes for search */
   searchIndex: string;
 };
 
