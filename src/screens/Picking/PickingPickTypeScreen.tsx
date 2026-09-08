@@ -10,6 +10,7 @@ import { DeliveryType, DeliveryTypeCode, DeliveryTypeOrderCount } from '../../ty
 import Theme from '../../utils/Theme';
 import { DELIVERY_TYPES, PRIORITY_LABELS } from './constants';
 import { usePickingContext } from './PickingContext';
+import PickingPickTypeSkeleton from './PickingPickTypeSkeleton';
 import styles from './styles';
 
 const NUMBER_OF_ORDERS_THRESHOLD = 10;
@@ -21,10 +22,12 @@ export default function PickingPickTypeScreen() {
   const [deliveryType, setDeliveryType] = React.useState<DeliveryType | null>(DELIVERY_TYPES[0]);
   const [numberOfOrdersToGroup, setNumberOfOrdersToGroup] = React.useState<string>('');
   const [counts, setCounts] = React.useState<Record<string, DeliveryTypeOrderCount>>({});
+  const [hasLoadedCounts, setHasLoadedCounts] = React.useState<boolean>(false);
 
   const fetchCounts = React.useCallback(() => {
     dispatch(
       getPickTaskCountsAction(({ response, errorMessage }) => {
+        setHasLoadedCounts(true);
         if (errorMessage || !response?.data) {
           Alert.alert('Error', 'Failed to load pick task counts. Please try again.');
           return;
@@ -99,69 +102,74 @@ export default function PickingPickTypeScreen() {
         <Paragraph>Please select the appropriate pick type and specify the number of orders to group.</Paragraph>
       </View>
 
-      <View style={styles.optionsCard}>
-        {DELIVERY_TYPES.map((item, index) => {
-          const selected = isSelected(item);
-          const count = counts[item.code];
-          const isEmpty = !count || count.availableCount === 0;
-          const priorityLabel = item.code === DeliveryTypeCode.DEFAULT ? undefined : PRIORITY_LABELS[item.priority];
-          const isLast = index === DELIVERY_TYPES.length - 1;
+      {!hasLoadedCounts ? (
+        <PickingPickTypeSkeleton />
+      ) : (
+        <>
+          <View style={styles.optionsCard}>
+            {DELIVERY_TYPES.map((item, index) => {
+              const selected = isSelected(item);
+              const count = counts[item.code];
+              const isEmpty = !count || count.availableCount === 0;
+              const priorityLabel = item.code === DeliveryTypeCode.DEFAULT ? undefined : PRIORITY_LABELS[item.priority];
+              const isLast = index === DELIVERY_TYPES.length - 1;
 
-          return (
-            <TouchableOpacity
-              key={item.label}
-              activeOpacity={0.7}
-              style={[styles.optionRow, isLast && styles.optionRowLast, selected && styles.optionRowSelected]}
-              onPress={() => setDeliveryType(item)}
+              return (
+                <TouchableOpacity
+                  key={item.label}
+                  activeOpacity={0.7}
+                  style={[styles.optionRow, isLast && styles.optionRowLast, selected && styles.optionRowSelected]}
+                  onPress={() => setDeliveryType(item)}
+                >
+                  <RadioButton
+                    value={item.code}
+                    color={Theme.colors.primary}
+                    status={selected ? 'checked' : 'unchecked'}
+                    onPress={() => setDeliveryType(item)}
+                  />
+
+                  <View style={styles.optionRowContent}>
+                    <View>
+                      <Paragraph style={styles.optionTitle}>{item.label}</Paragraph>
+                      {priorityLabel ? <Paragraph style={styles.optionSubtitle}>{priorityLabel}</Paragraph> : null}
+                    </View>
+
+                    <View style={styles.countWrapper}>
+                      <Paragraph style={[styles.countValue, isEmpty && styles.countValueEmpty]}>
+                        {count ? count.availableCount : 0}
+                      </Paragraph>
+                      <Paragraph style={styles.countCaption}>Orders</Paragraph>
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+
+          <View style={styles.formWrapper}>
+            <PaperTextInput
+              autoCompleteType="off"
+              style={[styles.marginTopSmall, styles.whiteInput]}
+              label="Orders to Group"
+              mode="outlined"
+              keyboardType="numeric"
+              value={numberOfOrdersToGroup}
+              onChangeText={setNumberOfOrdersToGroup}
+              onSubmitEditing={handleRetrievePickTasks}
+            />
+
+            <Button
+              mode="contained"
+              style={styles.marginTop}
+              contentStyle={styles.ctaContent}
+              disabled={!deliveryType || !numberOfOrdersToGroup}
+              onPress={handleRetrievePickTasks}
             >
-              <RadioButton
-                value={item.code}
-                color={Theme.colors.primary}
-                status={selected ? 'checked' : 'unchecked'}
-                onPress={() => setDeliveryType(item)}
-              />
-
-              <View style={styles.optionRowContent}>
-                <View>
-                  <Paragraph style={styles.optionTitle}>{item.label}</Paragraph>
-                  {priorityLabel ? <Paragraph style={styles.optionSubtitle}>{priorityLabel}</Paragraph> : null}
-                </View>
-
-                {/* Count is always rendered: shows 0 until counts load */}
-                <View style={styles.countWrapper}>
-                  <Paragraph style={[styles.countValue, isEmpty && styles.countValueEmpty]}>
-                    {count ? count.availableCount : 0}
-                  </Paragraph>
-                  <Paragraph style={styles.countCaption}>Orders</Paragraph>
-                </View>
-              </View>
-            </TouchableOpacity>
-          );
-        })}
-      </View>
-
-      <View style={styles.formWrapper}>
-        <PaperTextInput
-          autoCompleteType="off"
-          style={[styles.marginTopSmall, styles.whiteInput]}
-          label="Orders to Group"
-          mode="outlined"
-          keyboardType="numeric"
-          value={numberOfOrdersToGroup}
-          onChangeText={setNumberOfOrdersToGroup}
-          onSubmitEditing={handleRetrievePickTasks}
-        />
-
-        <Button
-          mode="contained"
-          style={styles.marginTop}
-          contentStyle={styles.ctaContent}
-          disabled={!deliveryType || !numberOfOrdersToGroup}
-          onPress={handleRetrievePickTasks}
-        >
-          Retrieve Pick Tasks
-        </Button>
-      </View>
+              Retrieve Pick Tasks
+            </Button>
+          </View>
+        </>
+      )}
     </ScrollView>
   );
 }

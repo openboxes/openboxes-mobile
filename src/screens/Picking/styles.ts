@@ -93,6 +93,46 @@ export default StyleSheet.create({
   whiteInput: {
     backgroundColor: 'white'
   },
+  radioSkeleton: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    margin: 8
+  },
+  optionTitleSkeleton: {
+    width: 120,
+    height: 14,
+    borderRadius: 4,
+    marginVertical: 3
+  },
+  optionSubtitleSkeleton: {
+    width: 56,
+    height: 12,
+    borderRadius: 4,
+    marginVertical: 2
+  },
+  countValueSkeleton: {
+    width: 20,
+    height: 14,
+    borderRadius: 4,
+    marginVertical: 2
+  },
+  countCaptionSkeleton: {
+    width: 34,
+    height: 9,
+    borderRadius: 4,
+    marginVertical: 2
+  },
+  inputSkeleton: {
+    width: '100%',
+    height: 64,
+    borderRadius: 4
+  },
+  buttonSkeleton: {
+    width: '100%',
+    height: 48,
+    borderRadius: 4
+  },
   ctaContent: {
     height: 48
   },
