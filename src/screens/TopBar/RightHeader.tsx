@@ -12,7 +12,7 @@ interface HeaderRightProps {
 
 const HeaderRight = ({ route, navigation }: HeaderRightProps) => {
   const currentLocation = useSelector((state: RootState) => state.mainReducer.currentLocation);
-  const screensToHideMenu = ["Dashboard", "Choose Location"];
+  const screensToHideMenu = ["Dashboard"];
 
   return (
     <View style={styles.container}>
