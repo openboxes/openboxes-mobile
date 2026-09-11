@@ -58,6 +58,8 @@ export type PickTask = {
   deliveryTypeCode?: DeliveryTypeCode;
 
   facility?: Location;
+  /** Whether the task's facility tracks internal transactions (mirrors facility.supports(TRACK_INTERNAL_TRANSACTIONS)) */
+  internalTransactionsEnabled?: boolean;
   location?: Location;
   outboundContainer?: Container | null;
   stagingLocation?: Location | null;

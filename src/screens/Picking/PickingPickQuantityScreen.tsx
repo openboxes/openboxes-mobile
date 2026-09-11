@@ -19,8 +19,17 @@ import { usePickingContext } from './PickingContext';
 import styles from './styles';
 
 export default function PickingPickQuantityScreen() {
-  const { tasks, currentTask, currentTaskIndex, allTasksCount, shortPickTask, goToNextTask, homeRoute } =
-    usePickingContext();
+  const {
+    tasks,
+    currentTask,
+    currentTaskIndex,
+    allTasksCount,
+    shortPickTask,
+    goToNextTask,
+    homeRoute,
+    skipStagingStep,
+    resetSession
+  } = usePickingContext();
   const dispatch = useDispatch();
   const isFocused = useIsFocused();
 
@@ -111,7 +120,9 @@ export default function PickingPickQuantityScreen() {
             allTasksCount,
             goToNextTask,
             homeRoute,
-            omitStagingLocationStep
+            omitStagingLocationStep,
+            skipStagingStep,
+            resetSession
           });
         },
         reasonCode?.name
