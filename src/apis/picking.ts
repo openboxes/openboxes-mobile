@@ -31,6 +31,9 @@ export type PickTaskDropParams = {
   stagingLocationId: string;
   // User Id
   stagedById: string;
+  // Provided when the caller is overriding a previously reported staging location zone mismatch
+  overrideReasonCode?: string;
+  overrideComment?: string;
 };
 
 export function getPickTasksApi(facilityId: string, params?: Partial<PickTaskParams>) {

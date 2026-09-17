@@ -57,7 +57,7 @@ class _ApiClient {
         message = message ?? 'Not found';
         break;
       case 409:
-        message = error.response?.data ?? 'Conflict: Resource Already Exists';
+        message = message ?? 'Conflict: Resource Already Exists';
         break;
       case 500:
         message = message ?? 'Internal Server Error';
@@ -68,7 +68,8 @@ class _ApiClient {
     }
     return Promise.reject({
       message: message,
-      code: code
+      code: code,
+      data: error.response?.data
     });
   };
 }
