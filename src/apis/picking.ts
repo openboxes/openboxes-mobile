@@ -33,8 +33,8 @@ export type PickTaskDropParams = {
   stagedById: string;
 };
 
-export function getPickTasksApi(facilityId: string, params?: Partial<PickTaskParams>) {
-  const query: string[] = ['excludeAssignedRequisitions=true'];
+export function getPickTasksApi(facilityId: string, currentUserId: string, params?: Partial<PickTaskParams>) {
+  const query: string[] = ['excludeAssignedRequisitions=true', `currentUserId=${encodeURIComponent(currentUserId)}`];
 
   if (params?.deliveryTypeCode) {
     query.push(`deliveryTypeCode=${encodeURIComponent(params.deliveryTypeCode)}`);
@@ -49,9 +49,10 @@ export function getPickTasksApi(facilityId: string, params?: Partial<PickTaskPar
 
 // Fetch all open pick tasks (across every queue type) for the discrete picking order list.
 // When excludeAssignedRequisitions is true, the backend skips pick tasks already assigned to other users.
-export function getOpenPickTasksApi(facilityId: string, excludeAssignedRequisitions?: boolean) {
+export function getOpenPickTasksApi(facilityId: string, currentUserId: string, excludeAssignedRequisitions?: boolean) {
   const statuses = ['PENDING', 'PICKING'];
   const query = statuses.map((status) => `status=${encodeURIComponent(status)}`);
+  query.push(`currentUserId=${encodeURIComponent(currentUserId)}`);
 
   if (excludeAssignedRequisitions !== undefined) {
     query.push(`excludeAssignedRequisitions=${excludeAssignedRequisitions}`);
@@ -60,8 +61,10 @@ export function getOpenPickTasksApi(facilityId: string, excludeAssignedRequisiti
   return ApiClient.get(`/facilities/${facilityId}/pick-tasks?${query.join('&')}`);
 }
 
-export function getPickTaskCountsApi(facilityId: string) {
-  return ApiClient.get(`/facilities/${facilityId}/pick-tasks/counts?excludeAssignedRequisitions=true`);
+export function getPickTaskCountsApi(facilityId: string, currentUserId: string) {
+  return ApiClient.get(
+    `/facilities/${facilityId}/pick-tasks/counts?excludeAssignedRequisitions=true&currentUserId=${encodeURIComponent(currentUserId)}`
+  );
 }
 
 export function patchPickTaskApi(facilityId: string, taskId: string, params: PickTaskActionParams) {

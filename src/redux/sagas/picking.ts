@@ -49,10 +49,15 @@ function* getPickTasksAction(action: any) {
     if (!currentLocation) {
       throw new Error('User Location Not Found');
     }
+    // @ts-ignore
+    const session = yield select(userSession);
+    if (!session || !session.user) {
+      throw new Error('User Session Not Found');
+    }
     yield put(showScreenLoading('Fetching Tasks...'));
     // Call API to get pick tasks
     // @ts-ignore
-    const response = yield call(api.getPickTasksApi, currentLocation.id, action.payload);
+    const response = yield call(api.getPickTasksApi, currentLocation.id, session.user.id, action.payload);
     yield action.callback({ response });
     yield put({ type: GET_PICK_TASKS_REQUEST_SUCCESS, payload: response.data });
     yield put(hideScreenLoading());
@@ -71,6 +76,11 @@ function* getOpenPickTasksAction(action: any) {
     if (!currentLocation) {
       throw new Error('User Location Not Found');
     }
+    // @ts-ignore
+    const session = yield select(userSession);
+    if (!session || !session.user) {
+      throw new Error('User Session Not Found');
+    }
     // Call API to get all open pick tasks across every queue type.
     // No full-screen loading indicator here on purpose: the list screen renders its own
     // inline skeleton / pull-to-refresh state so the screen never blocks on the fetch.
@@ -78,6 +88,7 @@ function* getOpenPickTasksAction(action: any) {
     const response = yield call(
       api.getOpenPickTasksApi,
       currentLocation.id,
+      session.user.id,
       action.payload?.excludeAssignedRequisitions
     );
     yield action.callback({ response });
@@ -97,7 +108,12 @@ function* getPickTaskCountsAction(action: any) {
       throw new Error('User Location Not Found');
     }
     // @ts-ignore
-    const response = yield call(api.getPickTaskCountsApi, currentLocation.id);
+    const session = yield select(userSession);
+    if (!session || !session.user) {
+      throw new Error('User Session Not Found');
+    }
+    // @ts-ignore
+    const response = yield call(api.getPickTaskCountsApi, currentLocation.id, session.user.id);
     yield action.callback({ response });
     yield put({ type: GET_PICK_TASK_COUNTS_REQUEST_SUCCESS, payload: response.data });
   } catch (error) {
