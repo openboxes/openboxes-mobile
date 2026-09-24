@@ -229,25 +229,19 @@ function* dropPickTaskAction(action: any) {
       action: 'drop',
       stagingLocationId: action.payload.stagingLocationId,
       stagedById: session.user.id,
-      overrideReasonCode: action.payload.overrideReasonCode,
-      overrideComment: action.payload.overrideComment
+      overrideStagingLocationZone: action.payload.overrideStagingLocationZone
     });
     yield put({ type: DROP_PICK_TASK_REQUEST_SUCCESS });
     yield action.callback({});
     yield put(hideScreenLoading());
   } catch (error) {
     const errorMessage = (error as any)?.message || 'Error Dropping Pick Task';
-    const errorData = (error as any)?.data;
-    const isZoneMismatch = errorData?.errorCode === 'STAGING_LOCATION_ZONE_MISMATCH';
+    const overridable = (error as any)?.data?.overridable;
     yield put({
       type: DROP_PICK_TASK_REQUEST_FAIL,
       payload: errorMessage
     });
-    yield action.callback({
-      errorMessage,
-      errorCode: isZoneMismatch ? errorData.errorCode : undefined,
-      expectedZones: isZoneMismatch ? errorData.expectedZones : undefined
-    });
+    yield action.callback({ errorMessage, overridable });
     yield put(hideScreenLoading());
   }
 }

@@ -62,12 +62,8 @@ type PickingContextType = {
   dropCurrentTaskAtStagingLocation: (
     task: PickTask,
     stagingLocationId: string,
-    callback?: (response: {
-      errorMessage?: string;
-      errorCode?: string;
-      expectedZones?: { id: string; name: string }[];
-    }) => void,
-    override?: { reasonCode?: string; comment?: string }
+    callback?: (response: { errorMessage?: string; overridable?: boolean }) => void,
+    overrideStagingLocationZone?: boolean
   ) => void;
   /** Revalidates the current pick task details from the server */
   revalidateCurrentTask: (callback?: (task: PickTask | undefined) => void) => void;
@@ -256,12 +252,8 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
   const dropCurrentTaskAtStagingLocation = (
     task: PickTask,
     stagingLocationId: string,
-    callback?: (response: {
-      errorMessage?: string;
-      errorCode?: string;
-      expectedZones?: { id: string; name: string }[];
-    }) => void,
-    override?: { reasonCode?: string; comment?: string }
+    callback?: (response: { errorMessage?: string; overridable?: boolean }) => void,
+    overrideStagingLocationZone?: boolean
   ) => {
     if (!task) {
       Alert.alert('Task Missing', 'No current task to drop.');
@@ -278,7 +270,7 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    dispatch(dropPickTaskAction(task.outboundContainer.id, stagingLocationId, callback, override));
+    dispatch(dropPickTaskAction(task.outboundContainer.id, stagingLocationId, callback, overrideStagingLocationZone));
   };
 
   const resetSession = () => {

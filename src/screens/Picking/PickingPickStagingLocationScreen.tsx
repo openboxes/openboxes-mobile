@@ -1,17 +1,14 @@
 import * as React from 'react';
 import { Alert, ScrollView, View } from 'react-native';
 import { Divider, Paragraph, Subheading } from 'react-native-paper';
-import { useDispatch } from 'react-redux';
 
-import PickingStagingLocationZoneMismatchModal from '../../components/PickingStagingLocationZoneMismatchModal';
+import StagingLocationZoneMismatchModal from '../../components/StagingLocationZoneMismatchModal';
 import { ProductDetails } from '../../components/ProductDetails';
 import { ScannerInput } from '../../components/ScannerInput';
 import { SearchButton } from '../../components/SearchButton';
 import { useSearchButton } from '../../components/SearchButton/useSearchButton';
 import { EMPTY_STRING, HYPHEN } from '../../constants';
 import { resetToRoutes } from '../../NavigationService';
-import { getReasonCodesAction } from '../../redux/actions/others';
-import { ReasonCode } from '../../types/picking';
 import { parseFromISODateToLocaleString } from '../../utils/utils';
 import { CustomerDetails } from './CustomerDetails';
 import { usePickingContext } from './PickingContext';
@@ -19,27 +16,12 @@ import styles from './styles';
 
 export default function PickingPickStagingLocationScreen() {
   const { tasks, dropCurrentTaskAtStagingLocation, resetSession, setCurrentTaskIndex, homeRoute } = usePickingContext();
-  const dispatch = useDispatch();
   const [stagingLocationNumber, setStagingLocationNumber] = React.useState(EMPTY_STRING);
   const [currentUniqueIndex, setCurrentUniqueIndex] = React.useState(0);
   const { isSearchOpen, searchButtonProps } = useSearchButton({ onSelect: setStagingLocationNumber });
 
-  const [reasonCodes, setReasonCodes] = React.useState<ReasonCode[]>([]);
-  const [selectedReasonCode, setSelectedReasonCode] = React.useState<ReasonCode | undefined>(undefined);
-  const [overrideComment, setOverrideComment] = React.useState(EMPTY_STRING);
-  const [isOverrideModalVisible, setIsOverrideModalVisible] = React.useState(false);
   const [pendingLocationId, setPendingLocationId] = React.useState(EMPTY_STRING);
-  const [expectedZoneNames, setExpectedZoneNames] = React.useState<string[]>([]);
-
-  React.useEffect(() => {
-    dispatch(
-      getReasonCodesAction('VALIDATE_STAGING_LOCATION_ZONE', (data: any) => {
-        if (!data?.error) {
-          setReasonCodes(data);
-        }
-      })
-    );
-  }, [dispatch]);
+  const [zoneMismatchMessage, setZoneMismatchMessage] = React.useState<string | undefined>(undefined);
 
   // Memoize unique tasks based on outbound container ID
   const uniqueTasks = React.useMemo(() => {
@@ -84,20 +66,17 @@ export default function PickingPickStagingLocationScreen() {
   }
 
   // Always defers to the server: it's the authority on whether the scanned location is valid for
-  // this delivery type's zone (per-facility configurable). A mismatch surfaces the override modal
-  // rather than a plain error, since the mismatch is expected to be overridable.
+  // this delivery type's zone (per-facility configurable). A mismatch surfaces a modal offering
+  // to stage at the scanned location anyway, rather than a plain error.
   function handleScan(locationId: string) {
     if (!locationId) {
       return;
     }
 
     dropCurrentTaskAtStagingLocation(currentTask, locationId, (response) => {
-      if (response.errorCode === 'STAGING_LOCATION_ZONE_MISMATCH') {
+      if (response.overridable) {
         setPendingLocationId(locationId);
-        setExpectedZoneNames(response.expectedZones?.map((zone) => zone.name) ?? []);
-        setSelectedReasonCode(undefined);
-        setOverrideComment(EMPTY_STRING);
-        setIsOverrideModalVisible(true);
+        setZoneMismatchMessage(response.errorMessage);
         return;
       }
 
@@ -111,8 +90,8 @@ export default function PickingPickStagingLocationScreen() {
     });
   }
 
-  function handleOverrideConfirm(reasonCode: ReasonCode | undefined, comment: string) {
-    setIsOverrideModalVisible(false);
+  function handleStageAnyway() {
+    setZoneMismatchMessage(undefined);
 
     dropCurrentTaskAtStagingLocation(
       currentTask,
@@ -126,7 +105,7 @@ export default function PickingPickStagingLocationScreen() {
 
         advanceOrComplete();
       },
-      { reasonCode: reasonCode?.id, comment }
+      true
     );
   }
 
@@ -212,19 +191,14 @@ export default function PickingPickStagingLocationScreen() {
         </View>
       </ProductDetails.Provider>
 
-      <PickingStagingLocationZoneMismatchModal
-        visible={isOverrideModalVisible}
-        reasonCodes={reasonCodes}
-        selectedReasonCode={selectedReasonCode}
-        setSelectedReasonCode={setSelectedReasonCode}
-        comment={overrideComment}
-        setComment={setOverrideComment}
-        expectedZoneNames={expectedZoneNames}
-        onDismiss={() => {
-          setIsOverrideModalVisible(false);
+      <StagingLocationZoneMismatchModal
+        visible={!!zoneMismatchMessage}
+        message={zoneMismatchMessage}
+        onScanAnother={() => {
+          setZoneMismatchMessage(undefined);
           setStagingLocationNumber(EMPTY_STRING);
         }}
-        onConfirm={handleOverrideConfirm}
+        onStageAnyway={handleStageAnyway}
       />
     </ScrollView>
   );
