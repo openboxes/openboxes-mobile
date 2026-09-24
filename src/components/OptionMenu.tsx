@@ -24,13 +24,15 @@ const OptionMenu = ({ route, navigation }: any) => {
           }
           onDismiss={closeMenu}
         >
-          <Menu.Item
-            title="Dashboard"
-            onPress={() => {
-              navigation.navigate('Dashboard');
-              closeMenu();
-            }}
-          />
+          {route.name !== 'Choose Location' && (
+            <Menu.Item
+              title="Dashboard"
+              onPress={() => {
+                navigation.navigate('Dashboard');
+                closeMenu();
+              }}
+            />
+          )}
           <Menu.Item
             title="User detail"
             onPress={() => {
@@ -46,14 +48,16 @@ const OptionMenu = ({ route, navigation }: any) => {
               closeMenu();
             }}
           />
-          <Menu.Item
-            style={styles.menuItem}
-            title="Change location"
-            onPress={() => {
-              navigation.navigate('Choose Location');
-              closeMenu();
-            }}
-          />
+          {route.name !== 'Choose Location' && (
+            <Menu.Item
+              style={styles.menuItem}
+              title="Change location"
+              onPress={() => {
+                navigation.navigate('Choose Location');
+                closeMenu();
+              }}
+            />
+          )}
           <Menu.Item
             style={styles.menuItem}
             title="App info / version"
