@@ -70,6 +70,8 @@ type PickingContextType = {
   revalidateCurrentTask: (callback?: (task: PickTask | undefined) => void) => void;
   /** Advances to the next task in the list */
   goToNextTask: () => void;
+  /** Whether the move-to-staging step should be skipped because the pick task's facility does not track internal transactions */
+  skipStagingStep: boolean;
 };
 
 const PickingContext = React.createContext<PickingContextType | undefined>(undefined);
@@ -82,6 +84,8 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
   const homeRoute = HOME_ROUTE_BY_ENTRY_POINT[entryPoint];
   const allTasksCount = tasks.length;
   const currentTask = allTasksCount > 0 && currentTaskIndex < allTasksCount ? tasks[currentTaskIndex] : undefined;
+  // Move to staging only applies to facilities that track internal transactions.
+  const skipStagingStep = currentTask?.internalTransactionsEnabled === false;
 
   const startSession = async (deliveryType: DeliveryType, ordersCount: number): Promise<boolean> => {
     setEntryPoint('BATCH');
@@ -220,6 +224,23 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
             return;
           }
 
+          if (skipStagingStep) {
+            Alert.alert(
+              'No Additional Tasks',
+              'No new pick tasks were created. This location does not track internal transactions, so staging is not required.',
+              [
+                {
+                  text: 'OK',
+                  onPress: () => {
+                    resetSession();
+                    resetToRoutes([{ name: 'Drawer', params: { screen: 'Dashboard' } }, { name: homeRoute }]);
+                  }
+                }
+              ]
+            );
+            return;
+          }
+
           Alert.alert('No Additional Tasks', 'No new pick tasks were created. Proceeding to staging location drop.', [
             {
               text: 'OK',
@@ -317,7 +338,8 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
         dropCurrentTask,
         dropCurrentTaskAtStagingLocation,
         revalidateCurrentTask,
-        goToNextTask
+        goToNextTask,
+        skipStagingStep
       }}
     >
       {children}
