@@ -147,6 +147,33 @@ else
 fi
 echo "Shared In-App Logo processed."
 echo ""
+
+# Shared Primary Color
+echo "Processing Shared Primary Color..."
+THEME_FILE="./src/utils/Theme.ts"
+PRIMARY_COLOR=""
+
+if [ -f "${SETTINGS_FILE}" ] && command -v jq &>/dev/null; then
+    PRIMARY_COLOR=$(jq -r '.primary_color // empty' "${SETTINGS_FILE}")
+fi
+
+if [ -z "${PRIMARY_COLOR}" ]; then
+    echo "  'primary_color' not set in ${SETTINGS_FILE}. Keeping the default colors."
+elif [[ ! "${PRIMARY_COLOR}" =~ ^#[0-9A-Fa-f]{6}$ ]]; then
+    echo "  Error: 'primary_color' must be a hex color like #005BC8, got '${PRIMARY_COLOR}'."
+    exit 1
+else
+    COLOR_LINE_PATTERN='^(export const brandPrimaryColor: string \| null = )[^;]*;'
+    if ! grep -Eq "${COLOR_LINE_PATTERN}" "${THEME_FILE}"; then
+        echo "  Error: brandPrimaryColor line not found in ${THEME_FILE}."
+        exit 1
+    fi
+    sed -i.pre-color.bak -E "s@${COLOR_LINE_PATTERN}@\1'${PRIMARY_COLOR}';@" "${THEME_FILE}"
+    rm "${THEME_FILE}.pre-color.bak"
+    echo "  Set primary color to '${PRIMARY_COLOR}' in ${THEME_FILE}"
+fi
+echo "Shared Primary Color processed."
+echo ""
 echo ">>> Shared Asset Processing Complete."
 echo ""
 

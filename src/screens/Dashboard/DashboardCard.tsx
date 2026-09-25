@@ -3,9 +3,11 @@ import { Text, useWindowDimensions, View } from 'react-native';
 import { Card } from 'react-native-paper';
 
 import { navigateToDashboardEntry } from '../../NavigationService';
-import Theme from '../../utils/Theme';
+import Theme, { brandPrimaryColor } from '../../utils/Theme';
 import { DashboardEntry } from './dashboardData';
 import styles from './styles';
+
+const brandIconColors = brandPrimaryColor ? { fill: brandPrimaryColor, color: brandPrimaryColor } : {};
 
 type DashboardCardProps = {
   item: DashboardEntry;
@@ -27,7 +29,9 @@ export const DashboardCard = ({ item, columns }: DashboardCardProps) => {
     <Card style={cardStyle} onPress={onPress}>
       <Card.Content style={styles.cardContent}>
         <View style={styles.iconWrapper}>
-          {IconComponent && <IconComponent width={styles.icon.width} height={styles.icon.height} />}
+          {IconComponent && (
+            <IconComponent width={styles.icon.width} height={styles.icon.height} {...brandIconColors} />
+          )}
         </View>
         <Text style={styles.cardLabel}>{item.screenName}</Text>
       </Card.Content>

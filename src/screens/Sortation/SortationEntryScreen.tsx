@@ -4,7 +4,7 @@ import { Alert, ScrollView, View } from 'react-native';
 import { Divider, Paragraph, Text, Title } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
-import IconProducts from '../../assets/images/icon_products.svg';
+import { ProductIcon } from '../../components/Icons';
 import { ScannerInput } from '../../components/ScannerInput';
 import { SearchButton } from '../../components/SearchButton';
 import { useSearchButton } from '../../components/SearchButton/useSearchButton';
@@ -98,7 +98,7 @@ export default function SortationEntryScreen() {
           label="Product"
           placeholder="Scan product barcode"
           value={barcode}
-          leftIcon={<IconProducts height={24} width={24} />}
+          leftIcon={<ProductIcon size={24} />}
           isEnabled={!isSearchOpen && unrecognizedBarcode === null}
           onChange={setBarcode}
           onSubmit={handleScan}

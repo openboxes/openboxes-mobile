@@ -1,5 +1,8 @@
 import { DefaultTheme } from 'react-native-paper';
 
+// Set by scripts/apply_branding.sh from the brand's primary_color; keep on one line.
+export const brandPrimaryColor: string | null = null;
+
 export default {
   ...DefaultTheme,
   fonts: {
@@ -11,7 +14,7 @@ export default {
   },
   colors: {
     ...DefaultTheme.colors,
-    primary: '#20345c',
+    primary: brandPrimaryColor ?? '#20345c',
     secondaryBackground: '#e9ecef',
     secondaryForeground: '#495057',
     danger: '#B00020',
