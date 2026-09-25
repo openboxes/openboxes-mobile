@@ -1,5 +1,5 @@
 import { useNavigation, useRoute } from '@react-navigation/native';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { Caption, Chip, Divider, Subheading, Text } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
@@ -10,6 +10,7 @@ import { ScannerInput } from '../../components/ScannerInput';
 import { SearchButton } from '../../components/SearchButton';
 import { useSearchButton } from '../../components/SearchButton/useSearchButton';
 import { useScanField } from '../../hooks/useScanField';
+import { lookupLocationByCodeAction } from '../../redux/actions/createTransfer';
 import { setPutawayCandidateRemainingQuantity, submitPutawayItem } from '../../redux/actions/putaways';
 import { RootState } from '../../redux/reducers';
 import { putawayCandidateKey } from '../../utils/putawayCandidate';
@@ -25,6 +26,7 @@ const PutawayItemDetail = () => {
     putAwayItem: null
   });
   const locationScan = useScanField();
+  const isProcessing = useRef(false);
   const { productSummaryConfig } = useSelector((state: RootState) => state.settingsReducer);
   const { putAway, putAwayItem, candidateQuantity }: any = route.params;
 
@@ -75,6 +77,7 @@ const PutawayItemDetail = () => {
     };
 
     const actionCallback = (data: any) => {
+      isProcessing.current = false;
       if (data?.error) {
         locationScan.fail(data.errorMessage ?? 'Failed to submit details');
       } else {
@@ -87,6 +90,37 @@ const PutawayItemDetail = () => {
       }
     };
     dispatch(submitPutawayItem(state.putAwayItem?.id as string, requestBody, actionCallback));
+  };
+
+  // The server accepts any unknown code when no putaway location is set, so the scan is checked here first.
+  const handleLocationScan = (scannedLocation: string) => {
+    if (isProcessing.current) {
+      return;
+    }
+
+    const expectedLocationId = state.putAwayItem?.['putawayLocation.id'];
+    const expectedLocationName = state.putAwayItem?.['putawayLocation.name'];
+    if (!expectedLocationId) {
+      locationScan.fail('No putaway location is assigned to this item. Go back and choose one.');
+      return;
+    }
+
+    isProcessing.current = true;
+    if (scannedLocation === expectedLocationName) {
+      formSubmit(scannedLocation);
+      return;
+    }
+
+    dispatch(
+      lookupLocationByCodeAction(scannedLocation, (response: any) => {
+        if (response?.data?.id === expectedLocationId) {
+          formSubmit(scannedLocation);
+          return;
+        }
+        isProcessing.current = false;
+        locationScan.fail(`Incorrect location scanned (${scannedLocation}). Expected: ${expectedLocationName}.`);
+      })
+    );
   };
 
   const { isSearchOpen, searchButtonProps } = useSearchButton({ onSelect: locationScan.onChange });
@@ -145,7 +179,7 @@ const PutawayItemDetail = () => {
             isEnabled={!isSearchOpen}
             danger={!!locationScan.error}
             onChange={locationScan.onChange}
-            onSubmit={formSubmit}
+            onSubmit={handleLocationScan}
           />
           <SearchButton searchType="destinationBin" {...searchButtonProps} />
         </View>
