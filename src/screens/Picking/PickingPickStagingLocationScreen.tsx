@@ -1,12 +1,14 @@
 import * as React from 'react';
-import { Alert, ScrollView, View } from 'react-native';
+import { Alert, ScrollView, ToastAndroid, View } from 'react-native';
 import { Divider, Paragraph, Subheading } from 'react-native-paper';
 
 import { ProductDetails } from '../../components/ProductDetails';
+import { ScanErrorText } from '../../components/ScanErrorText';
 import { ScannerInput } from '../../components/ScannerInput';
 import { SearchButton } from '../../components/SearchButton';
 import { useSearchButton } from '../../components/SearchButton/useSearchButton';
 import { EMPTY_STRING, HYPHEN } from '../../constants';
+import { useScanField } from '../../hooks/useScanField';
 import { resetToRoutes } from '../../NavigationService';
 import { parseFromISODateToLocaleString } from '../../utils/utils';
 import { CustomerDetails } from './CustomerDetails';
@@ -20,9 +22,9 @@ const SKIP_STAGING_LOCATION_VALIDATION = true;
 export default function PickingPickStagingLocationScreen() {
   const { tasks, dropCurrentTask, dropCurrentTaskAtStagingLocation, resetSession, setCurrentTaskIndex, homeRoute } =
     usePickingContext();
-  const [stagingLocationNumber, setStagingLocationNumber] = React.useState(EMPTY_STRING);
+  const stagingScan = useScanField();
   const [currentUniqueIndex, setCurrentUniqueIndex] = React.useState(0);
-  const { isSearchOpen, searchButtonProps } = useSearchButton({ onSelect: setStagingLocationNumber });
+  const { isSearchOpen, searchButtonProps } = useSearchButton({ onSelect: stagingScan.onChange });
 
   // Memoize unique tasks based on outbound container ID
   const uniqueTasks = React.useMemo(() => {
@@ -41,49 +43,36 @@ export default function PickingPickStagingLocationScreen() {
     }
   }, [currentTask, tasks.length, setCurrentTaskIndex, uniqueTasks.length, tasks, homeRoute]);
 
+  function handleDropResponse(response: { errorMessage?: string }) {
+    if (response.errorMessage) {
+      stagingScan.fail(response.errorMessage);
+      return;
+    }
+
+    const nextIndex = currentUniqueIndex + 1;
+    if (nextIndex < uniqueTasks.length) {
+      stagingScan.pass();
+      setCurrentUniqueIndex(nextIndex);
+      stagingScan.setValue(EMPTY_STRING);
+      return;
+    }
+
+    stagingScan.pass();
+    ToastAndroid.show('Picking session complete. You have completed all staging confirmations.', ToastAndroid.LONG);
+    resetSession();
+    resetToRoutes([{ name: 'Drawer', params: { screen: 'Dashboard' } }, { name: homeRoute }]);
+  }
+
   // Requires the scanned location to match the one suggested by the task. Used when SKIP_STAGING_LOCATION_VALIDATION is false.
   function handleScan(locationId: string) {
     const expected = currentTask.stagingLocation?.locationNumber;
 
     if (!expected || locationId !== expected) {
-      Alert.alert(
-        'Invalid Staging Location',
-        `Expected: ${expected ?? '-'}, but got: ${locationId}. Please try again.`
-      );
-      setStagingLocationNumber(EMPTY_STRING);
+      stagingScan.fail(`Incorrect staging location scanned (${locationId}). Expected: ${expected ?? '-'}.`);
       return;
     }
 
-    dropCurrentTask(currentTask, (response) => {
-      if (response.errorMessage) {
-        Alert.alert('Error', response.errorMessage);
-        setStagingLocationNumber(EMPTY_STRING);
-        return;
-      }
-
-      const nextIndex = currentUniqueIndex + 1;
-      if (nextIndex < uniqueTasks.length) {
-        Alert.alert('Success', 'Staging Location confirmed. Proceeding to the next container.', [
-          {
-            text: 'OK',
-            onPress: () => {
-              setCurrentUniqueIndex(nextIndex);
-              setStagingLocationNumber(EMPTY_STRING);
-            }
-          }
-        ]);
-      } else {
-        Alert.alert('Picking Session Complete', 'You have completed all staging confirmations.', [
-          {
-            text: 'OK',
-            onPress: () => {
-              resetSession();
-              resetToRoutes([{ name: 'Drawer', params: { screen: 'Dashboard' } }, { name: homeRoute }]);
-            }
-          }
-        ]);
-      }
-    });
+    dropCurrentTask(currentTask, handleDropResponse);
   }
 
   // Drops at whatever location the user scans, without checking it against the task's suggestion.
@@ -93,36 +82,7 @@ export default function PickingPickStagingLocationScreen() {
       return;
     }
 
-    dropCurrentTaskAtStagingLocation(currentTask, locationId, (response) => {
-      if (response.errorMessage) {
-        Alert.alert('Error', response.errorMessage);
-        setStagingLocationNumber(EMPTY_STRING);
-        return;
-      }
-
-      const nextIndex = currentUniqueIndex + 1;
-      if (nextIndex < uniqueTasks.length) {
-        Alert.alert('Success', 'Staging Location confirmed. Proceeding to the next container.', [
-          {
-            text: 'OK',
-            onPress: () => {
-              setCurrentUniqueIndex(nextIndex);
-              setStagingLocationNumber(EMPTY_STRING);
-            }
-          }
-        ]);
-      } else {
-        Alert.alert('Picking Session Complete', 'You have completed all staging confirmations.', [
-          {
-            text: 'OK',
-            onPress: () => {
-              resetSession();
-              resetToRoutes([{ name: 'Drawer', params: { screen: 'Dashboard' } }, { name: homeRoute }]);
-            }
-          }
-        ]);
-      }
-    });
+    dropCurrentTaskAtStagingLocation(currentTask, locationId, handleDropResponse);
   }
 
   // If no task is selected yet, return null to avoid rendering
@@ -197,13 +157,15 @@ export default function PickingPickStagingLocationScreen() {
             <ScannerInput
               style={styles.scannerInput}
               label="Staging Location Number"
-              value={stagingLocationNumber}
+              value={stagingScan.value}
               isEnabled={!isSearchOpen}
-              onChange={setStagingLocationNumber}
+              danger={!!stagingScan.error}
+              onChange={stagingScan.onChange}
               onSubmit={SKIP_STAGING_LOCATION_VALIDATION ? handleScanWithoutValidation : handleScan}
             />
             <SearchButton searchType="location" {...searchButtonProps} />
           </View>
+          <ScanErrorText message={stagingScan.error} />
         </View>
       </ProductDetails.Provider>
     </ScrollView>

@@ -1,13 +1,15 @@
 import * as React from 'react';
-import { Alert, ScrollView, View } from 'react-native';
+import { ScrollView, ToastAndroid, View } from 'react-native';
 import { Button, Divider, Paragraph, Subheading } from 'react-native-paper';
 import { useSelector } from 'react-redux';
 
 import { ProductDetails } from '../../components/ProductDetails';
+import { ScanErrorText } from '../../components/ScanErrorText';
 import { ScannerInput } from '../../components/ScannerInput';
 import { SearchButton } from '../../components/SearchButton';
 import { useSearchButton } from '../../components/SearchButton/useSearchButton';
 import { EMPTY_STRING, HYPHEN } from '../../constants';
+import { useScanField } from '../../hooks/useScanField';
 import { navigate, resetToRoutes } from '../../NavigationService';
 import { RootState } from '../../redux/reducers';
 import { parseFromISODateToLocaleString } from '../../utils/utils';
@@ -26,24 +28,36 @@ export default function PickingPickLocationScreen() {
     resetSession,
     homeRoute
   } = usePickingContext();
-  const [pickLocationBarcode, setPickLocationBarcode] = React.useState<string>(EMPTY_STRING);
+  const locationScan = useScanField();
+  const [isMissingBinLocation, setIsMissingBinLocation] = React.useState(false);
   const [isReallocateModalOpen, setIsReallocateModalOpen] = React.useState(false);
   const { allowReallocationDuringPicking } = useSelector((state: RootState) => state.settingsReducer);
-  const { isSearchOpen, searchButtonProps } = useSearchButton({ onSelect: setPickLocationBarcode });
+
+  const handleLocationChange = (next: string) => {
+    locationScan.onChange(next);
+    setIsMissingBinLocation(false);
+  };
+
+  const { isSearchOpen, searchButtonProps } = useSearchButton({ onSelect: handleLocationChange });
 
   if (!currentTask) {
     return null;
   }
 
   function proceedToProduct() {
+    setIsMissingBinLocation(false);
     startPickTask(({ errorMessage }) => {
       if (errorMessage) {
-        Alert.alert('Error', errorMessage);
+        locationScan.fail(errorMessage);
         return;
       }
 
-      revalidateCurrentTask(() => {
-        setPickLocationBarcode(EMPTY_STRING);
+      revalidateCurrentTask((_task, revalidateError) => {
+        if (revalidateError) {
+          ToastAndroid.show(revalidateError, ToastAndroid.LONG);
+        }
+        locationScan.setValue(EMPTY_STRING);
+        locationScan.pass();
         navigate('PickingPickProduct');
       });
     });
@@ -51,22 +65,14 @@ export default function PickingPickLocationScreen() {
 
   function handleScan(locationBarcode: string) {
     if (!currentTask?.location?.locationNumber) {
-      Alert.alert(
-        'No Bin Location',
-        'There is no bin location assigned to this task. Do you want to continue and fallback to default?',
-        [
-          { text: 'Cancel', style: 'cancel', onPress: () => setPickLocationBarcode(EMPTY_STRING) },
-          { text: 'Continue', onPress: proceedToProduct }
-        ]
-      );
+      locationScan.fail('There is no bin location assigned to this task.');
+      setIsMissingBinLocation(true);
       return;
     }
 
     if (locationBarcode !== currentTask.location.locationNumber) {
-      Alert.alert(
-        'Invalid Barcode',
-        `Incorrect location scanned. Expected: ${currentTask.location.locationNumber}. Try again.`,
-        [{ text: 'OK', onPress: () => setPickLocationBarcode(EMPTY_STRING) }]
+      locationScan.fail(
+        `Incorrect location scanned (${locationBarcode}). Expected: ${currentTask.location.locationNumber}.`
       );
       return;
     }
@@ -129,13 +135,20 @@ export default function PickingPickLocationScreen() {
             <ScannerInput
               style={styles.scannerInput}
               label="Pick Location Barcode"
-              value={pickLocationBarcode}
+              value={locationScan.value}
               isEnabled={!isReallocateModalOpen && !isSearchOpen}
-              onChange={setPickLocationBarcode}
+              danger={!!locationScan.error}
+              onChange={handleLocationChange}
               onSubmit={handleScan}
             />
             <SearchButton searchType="location" {...searchButtonProps} />
           </View>
+          <ScanErrorText message={locationScan.error} />
+          {isMissingBinLocation && (
+            <Button mode="text" style={styles.marginTop} onPress={proceedToProduct}>
+              Continue with default location
+            </Button>
+          )}
 
           {allowReallocationDuringPicking && (
             <Button

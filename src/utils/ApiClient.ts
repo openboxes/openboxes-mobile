@@ -4,6 +4,7 @@ import { createLogger } from './Logger';
 import * as NavigationService from '../NavigationService';
 import { store } from '../../App';
 import { hideScreenLoading } from '../redux/actions/main';
+import { formatServerErrorMessage } from './serverErrorMessage';
 const logger = createLogger('ApiClient.ts');
 
 class _ApiClient {
@@ -42,7 +43,8 @@ class _ApiClient {
     return JSON.parse(responseBody);
   };
   handleApiFailure = async (error: AxiosError) => {
-    let message = error.response?.data?.errorMessage;
+    const serverMessage = error.response?.data?.errorMessage;
+    let message = typeof serverMessage === 'string' ? formatServerErrorMessage(serverMessage) : serverMessage;
     const code = error.response?.status;
     switch (code) {
       case 401:

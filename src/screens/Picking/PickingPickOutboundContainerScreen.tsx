@@ -1,13 +1,15 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
 import * as React from 'react';
-import { Alert, ScrollView, View } from 'react-native';
+import { ScrollView, ToastAndroid, View } from 'react-native';
 import { Divider, Paragraph, Subheading } from 'react-native-paper';
 
 import { ProductDetails } from '../../components/ProductDetails';
+import { ScanErrorText } from '../../components/ScanErrorText';
 import { ScannerInput } from '../../components/ScannerInput';
 import { SearchButton } from '../../components/SearchButton';
 import { useSearchButton } from '../../components/SearchButton/useSearchButton';
 import { EMPTY_STRING, HYPHEN } from '../../constants';
+import { useScanField } from '../../hooks/useScanField';
 import { navigate } from '../../NavigationService';
 import { ReasonCode } from '../../types/picking';
 import { parseFromISODateToLocaleString } from '../../utils/utils';
@@ -36,8 +38,8 @@ export default function PickingPickOutboundContainerScreen() {
   const { params } = useRoute<PickingPickOutboundContainerScreenProps>();
   const parsedQuantityPicked = params?.quantityPicked ? Number(params.quantityPicked) : undefined;
 
-  const [outboundContainerId, setOutboundContainerId] = React.useState<string>(EMPTY_STRING);
-  const { isSearchOpen, searchButtonProps } = useSearchButton({ onSelect: setOutboundContainerId });
+  const containerScan = useScanField();
+  const { isSearchOpen, searchButtonProps } = useSearchButton({ onSelect: containerScan.onChange });
 
   if (!currentTask) {
     return null;
@@ -45,8 +47,7 @@ export default function PickingPickOutboundContainerScreen() {
 
   function handleScan(containerId: string) {
     if (!currentTask) {
-      Alert.alert('Error', 'No current pick task available.');
-      setOutboundContainerId(EMPTY_STRING);
+      containerScan.fail('No current pick task available.');
       return;
     }
 
@@ -57,15 +58,23 @@ export default function PickingPickOutboundContainerScreen() {
         parsedQuantityPicked,
         ({ errorMessage }) => {
           if (errorMessage) {
-            Alert.alert('Short Pick Error', errorMessage);
-            setOutboundContainerId(EMPTY_STRING);
+            containerScan.fail(errorMessage);
             return;
           }
 
+          containerScan.pass();
+
           if (params?.reasonCode?.id) {
-            revalidateCurrentTask(() => {
+            revalidateCurrentTask((_task, revalidateError) => {
+              if (revalidateError) {
+                ToastAndroid.show(revalidateError, ToastAndroid.LONG);
+              }
               // Revalidate all tasks for the requisition to get updated pick tasks
-              revalidateTasksForRequisition(currentTask.requisitionId, () => {
+              revalidateTasksForRequisition(currentTask.requisitionId, (requisitionError) => {
+                if (requisitionError) {
+                  containerScan.fail(requisitionError);
+                  return;
+                }
                 navigate('PickingPickLocation');
               });
             });
@@ -79,7 +88,8 @@ export default function PickingPickOutboundContainerScreen() {
               allTasksCount,
               goToNextTask,
               homeRoute,
-              omitStagingLocationStep
+              omitStagingLocationStep,
+              onError: containerScan.fail
             });
           }
         },
@@ -90,15 +100,22 @@ export default function PickingPickOutboundContainerScreen() {
 
     pickCurrentTask(containerId, ({ errorMessage }) => {
       if (errorMessage) {
-        Alert.alert('Pick Error', errorMessage);
-        setOutboundContainerId(EMPTY_STRING);
+        containerScan.fail(errorMessage);
         return;
       }
 
-      revalidateTaskAndProceed({ revalidateCurrentTask, currentTaskIndex, allTasksCount, goToNextTask, homeRoute });
+      containerScan.pass();
+      revalidateTaskAndProceed({
+        revalidateCurrentTask,
+        currentTaskIndex,
+        allTasksCount,
+        goToNextTask,
+        homeRoute,
+        onError: containerScan.fail
+      });
     });
 
-    setOutboundContainerId(EMPTY_STRING);
+    containerScan.setValue(EMPTY_STRING);
   }
 
   return (
@@ -167,13 +184,15 @@ export default function PickingPickOutboundContainerScreen() {
             <ScannerInput
               style={styles.scannerInput}
               label="Outbound Container ID"
-              value={outboundContainerId}
+              value={containerScan.value}
               isEnabled={!isSearchOpen}
-              onChange={setOutboundContainerId}
+              danger={!!containerScan.error}
+              onChange={containerScan.onChange}
               onSubmit={handleScan}
             />
             <SearchButton searchType="container" {...searchButtonProps} />
           </View>
+          <ScanErrorText message={containerScan.error} />
         </View>
       </ProductDetails.Provider>
     </ScrollView>

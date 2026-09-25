@@ -1,11 +1,13 @@
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { Alert, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { Button, Chip, Divider, Paragraph } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Icon, { Name } from '../../components/Icon';
+import { ScanErrorText } from '../../components/ScanErrorText';
+import { useScanFlash } from '../../components/ScanFlash';
 import { ScannerInput } from '../../components/ScannerInput';
 import { SearchButton } from '../../components/SearchButton';
 import { useSearchButton } from '../../components/SearchButton/useSearchButton';
@@ -95,6 +97,8 @@ export default function PutawayTaskListScreen({ route }: PutawayTaskListScreenPr
   const dispatch = useDispatch();
   const putawayTasks = useSelector((state: RootState) => state.putawayReducer.putawayTasks) as SortationTask[];
   const [searchTerm, setSearchTerm] = useState('');
+  const [scanError, setScanError] = useState<string | null>(null);
+  const { flash } = useScanFlash();
   const [expandedZones, setExpandedZones] = useState<{ [key: string]: boolean }>({});
   // A hardware scan fires onChange and onSubmit in the same tick, so state would still read its previous value here.
   const enteredManually = useRef(true);
@@ -117,6 +121,7 @@ export default function PutawayTaskListScreen({ route }: PutawayTaskListScreenPr
 
   const handleScanChange = (text: string) => {
     setSearchTerm(text);
+    setScanError(null);
     enteredManually.current = false;
   };
 
@@ -128,6 +133,7 @@ export default function PutawayTaskListScreen({ route }: PutawayTaskListScreenPr
     const matches = (putawayTasks ?? []).filter((task) => isProductBarcodeValid(trimmed, task.inventoryItem?.product));
 
     if (matches.length === 1) {
+      flash('pass');
       navigateToTask(matches[0], enteredManually.current);
       return;
     }
@@ -136,7 +142,9 @@ export default function PutawayTaskListScreen({ route }: PutawayTaskListScreenPr
       return;
     }
 
-    Alert.alert('No Matching Task', 'No putaway task was found for the scanned product.');
+    resetFilters();
+    setScanError(`No putaway task found for the scanned product (${trimmed}).`);
+    flash('fail');
   };
 
   const handleSearchSelect = (productCode: string) => {
@@ -244,11 +252,13 @@ export default function PutawayTaskListScreen({ route }: PutawayTaskListScreenPr
             label="Product"
             style={styles.scannerInput}
             isEnabled={!isSearchOpen}
+            danger={!!scanError}
             onChange={handleScanChange}
             onSubmit={handleScan}
           />
           <SearchButton searchType="product" {...searchButtonProps} />
         </View>
+        <ScanErrorText message={scanError} />
         {searchTerm.length > 0 && (
           <Button mode="contained" style={styles.clearButton} onPress={handleClearSearch}>
             Clear

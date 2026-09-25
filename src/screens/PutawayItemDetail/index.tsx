@@ -4,11 +4,12 @@ import { ScrollView, View } from 'react-native';
 import { Caption, Chip, Divider, Subheading, Text } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 
-import Button from '../../components/Button';
 import showPopup from '../../components/Popup';
+import { ScanErrorText } from '../../components/ScanErrorText';
 import { ScannerInput } from '../../components/ScannerInput';
 import { SearchButton } from '../../components/SearchButton';
 import { useSearchButton } from '../../components/SearchButton/useSearchButton';
+import { useScanField } from '../../hooks/useScanField';
 import { setPutawayCandidateRemainingQuantity, submitPutawayItem } from '../../redux/actions/putaways';
 import { RootState } from '../../redux/reducers';
 import { putawayCandidateKey } from '../../utils/putawayCandidate';
@@ -21,9 +22,9 @@ const PutawayItemDetail = () => {
   const [state, setState] = useState<any>({
     error: null,
     putAway: null,
-    putAwayItem: null,
-    scannedPutawayLocation: ''
+    putAwayItem: null
   });
+  const locationScan = useScanField();
   const { productSummaryConfig } = useSelector((state: RootState) => state.settingsReducer);
   const { putAway, putAwayItem, candidateQuantity }: any = route.params;
 
@@ -35,7 +36,7 @@ const PutawayItemDetail = () => {
     });
   }, []);
 
-  const formSubmit = () => {
+  const formSubmit = (scannedPutawayLocation: string) => {
     let errorTitle = '';
     let errorMessage = '';
     if (errorTitle !== '') {
@@ -66,7 +67,7 @@ const PutawayItemDetail = () => {
           putawayFacility: state.putAwayItem?.['putawayFacility.id'],
           putawayLocation: state.putAwayItem?.['putawayLocation.id'] || '',
           quantity: state.putAwayItem?.quantity,
-          scannedPutawayLocation: state.scannedPutawayLocation
+          scannedPutawayLocation
         }
       ],
       orderedBy: '',
@@ -75,42 +76,20 @@ const PutawayItemDetail = () => {
 
     const actionCallback = (data: any) => {
       if (data?.error) {
-        showPopup({
-          title: data.errorMessage ? 'Failed to submit' : 'Error',
-          message: data.errorMessage ?? 'Failed to submit details',
-          positiveButton: {
-            text: 'Retry',
-            callback: () => {
-              dispatch(submitPutawayItem(state.putAwayItem?.id as string, requestBody, actionCallback));
-            }
-          },
-          negativeButtonText: 'Cancel'
-        });
+        locationScan.fail(data.errorMessage ?? 'Failed to submit details');
       } else {
         const putAwayQuantity = Number(state.putAwayItem?.quantity ?? 0);
         const remainingQuantity = Math.max(Number(candidateQuantity ?? putAwayQuantity) - putAwayQuantity, 0);
         dispatch(setPutawayCandidateRemainingQuantity(putawayCandidateKey(state.putAwayItem), remainingQuantity));
 
-        showPopup({
-          title: ' Success',
-          message: 'Putaway was successfully submited',
-          positiveButton: {
-            text: 'ok',
-            callback: () => {
-              navigation.navigate('PutawayCandidates');
-            }
-          }
-        });
+        locationScan.pass();
+        navigation.navigate('PutawayCandidates');
       }
     };
     dispatch(submitPutawayItem(state.putAwayItem?.id as string, requestBody, actionCallback));
   };
 
-  const onChangeScannedPutawayLocation = (text: string) => {
-    setState((current: any) => ({ ...current, scannedPutawayLocation: text }));
-  };
-
-  const { isSearchOpen, searchButtonProps } = useSearchButton({ onSelect: onChangeScannedPutawayLocation });
+  const { isSearchOpen, searchButtonProps } = useSearchButton({ onSelect: locationScan.onChange });
 
   const showLotNumber = useMemo(() => productSummaryConfig?.lotNumber !== false, [productSummaryConfig]);
   const showExpirationDate = useMemo(() => productSummaryConfig?.expirationDate !== false, [productSummaryConfig]);
@@ -162,20 +141,15 @@ const PutawayItemDetail = () => {
             style={styles.scannerInput}
             label="Putaway Location Entry Field"
             placeholder={state.putAwayItem?.['putawayLocation.name'] ?? ''}
-            value={state.scannedPutawayLocation}
+            value={locationScan.value}
             isEnabled={!isSearchOpen}
-            onChange={onChangeScannedPutawayLocation}
-            onSubmit={onChangeScannedPutawayLocation}
+            danger={!!locationScan.error}
+            onChange={locationScan.onChange}
+            onSubmit={formSubmit}
           />
           <SearchButton searchType="destinationBin" {...searchButtonProps} />
         </View>
-        <Button
-          size="100%"
-          title="Confirm Putaway"
-          style={styles.buttonContainer}
-          onPress={formSubmit}
-          disabled={!state.scannedPutawayLocation}
-        />
+        <ScanErrorText message={locationScan.error} />
       </View>
     </ScrollView>
   );
