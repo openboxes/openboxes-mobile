@@ -25,7 +25,8 @@ export function useScanField() {
   const fail = useCallback(
     (message: string, onDone?: () => void) => {
       setValue(EMPTY_STRING);
-      setError(message);
+      // Callers pass saga error messages, which are untyped and can be empty or non-string.
+      setError(typeof message === 'string' && message ? message : 'Something went wrong.');
       flash('fail', onDone);
     },
     [flash]

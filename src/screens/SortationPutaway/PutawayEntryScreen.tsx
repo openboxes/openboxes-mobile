@@ -37,7 +37,7 @@ export default function PutawayEntryScreen() {
               fail(`No open tasks found for container ${containerId}.`);
             }
           } else {
-            fail(`Error while fetching putaway tasks: ${response?.errorMessage}`);
+            fail(response?.errorMessage || 'Error while fetching putaway tasks.');
           }
         })
       );

@@ -7,6 +7,14 @@ import { hideScreenLoading } from '../redux/actions/main';
 import { formatServerErrorMessage } from './serverErrorMessage';
 const logger = createLogger('ApiClient.ts');
 
+function readServerMessage(data: any): string {
+  return typeof data?.errorMessage === 'string' ? formatServerErrorMessage(data.errorMessage) : '';
+}
+
+function readTextBody(data: any): string {
+  return typeof data === 'string' ? data : '';
+}
+
 class _ApiClient {
   client: any;
 
@@ -43,29 +51,30 @@ class _ApiClient {
     return JSON.parse(responseBody);
   };
   handleApiFailure = async (error: AxiosError) => {
-    const serverMessage = error.response?.data?.errorMessage;
-    let message = typeof serverMessage === 'string' ? formatServerErrorMessage(serverMessage) : serverMessage;
+    const data = error.response?.data;
+    const serverMessage = readServerMessage(data);
+    let message: string;
     const code = error.response?.status;
     switch (code) {
       case 401:
         store.dispatch(hideScreenLoading());
         NavigationService.navigate('Login');
-        message = message ?? 'Unauthorized';
+        message = serverMessage || 'Unauthorized';
         break;
       case 403:
-        message = message ?? 'Access Denied';
+        message = serverMessage || 'Access Denied';
         break;
       case 404:
-        message = message ?? 'Not found';
+        message = serverMessage || 'Not found';
         break;
       case 409:
-        message = error.response?.data ?? 'Conflict: Resource Already Exists';
+        message = serverMessage || readTextBody(data) || 'Conflict: Resource Already Exists';
         break;
       case 500:
-        message = message ?? 'Internal Server Error';
+        message = serverMessage || 'Internal Server Error';
         break;
       default:
-        message = message ?? 'Something went wrong';
+        message = serverMessage || 'Something went wrong';
         break;
     }
     return Promise.reject({
