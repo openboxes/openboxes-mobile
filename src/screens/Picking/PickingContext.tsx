@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Alert, ToastAndroid } from 'react-native';
+import { Alert } from 'react-native';
 import { useDispatch } from 'react-redux';
 
 import { navigate, resetToRoutes } from '../../NavigationService';
@@ -222,11 +222,16 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
             return;
           }
 
-          ToastAndroid.show('No new pick tasks were created. Proceeding to staging location drop.', ToastAndroid.LONG);
-          resetToRoutes([
-            { name: 'Drawer', params: { screen: 'Dashboard' } },
-            { name: homeRoute },
-            { name: 'PickingPickStagingLocation' }
+          Alert.alert('No Additional Tasks', 'No new pick tasks were created. Proceeding to staging location drop.', [
+            {
+              text: 'OK',
+              onPress: () =>
+                resetToRoutes([
+                  { name: 'Drawer', params: { screen: 'Dashboard' } },
+                  { name: homeRoute },
+                  { name: 'PickingPickStagingLocation' }
+                ])
+            }
           ]);
           return;
         }

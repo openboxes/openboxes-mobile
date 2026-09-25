@@ -1,6 +1,6 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
 import * as React from 'react';
-import { ScrollView, ToastAndroid, View } from 'react-native';
+import { Alert, ScrollView, View } from 'react-native';
 import { Divider, Paragraph, Subheading } from 'react-native-paper';
 
 import { ProductDetails } from '../../components/ProductDetails';
@@ -67,12 +67,12 @@ export default function PickingPickOutboundContainerScreen() {
           if (params?.reasonCode?.id) {
             revalidateCurrentTask((_task, revalidateError) => {
               if (revalidateError) {
-                ToastAndroid.show(revalidateError, ToastAndroid.LONG);
+                Alert.alert('Error', revalidateError);
               }
               // Revalidate all tasks for the requisition to get updated pick tasks
               revalidateTasksForRequisition(currentTask.requisitionId, (requisitionError) => {
                 if (requisitionError) {
-                  containerScan.fail(requisitionError);
+                  Alert.alert('Error', requisitionError);
                   return;
                 }
                 navigate('PickingPickLocation');
@@ -88,8 +88,7 @@ export default function PickingPickOutboundContainerScreen() {
               allTasksCount,
               goToNextTask,
               homeRoute,
-              omitStagingLocationStep,
-              onError: containerScan.fail
+              omitStagingLocationStep
             });
           }
         },
@@ -105,14 +104,7 @@ export default function PickingPickOutboundContainerScreen() {
       }
 
       containerScan.pass();
-      revalidateTaskAndProceed({
-        revalidateCurrentTask,
-        currentTaskIndex,
-        allTasksCount,
-        goToNextTask,
-        homeRoute,
-        onError: containerScan.fail
-      });
+      revalidateTaskAndProceed({ revalidateCurrentTask, currentTaskIndex, allTasksCount, goToNextTask, homeRoute });
     });
 
     containerScan.setValue(EMPTY_STRING);

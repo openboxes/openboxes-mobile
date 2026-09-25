@@ -1,4 +1,4 @@
-import { ToastAndroid } from 'react-native';
+import { Alert } from 'react-native';
 import { navigate, resetToRoutes } from '../../NavigationService';
 import { PickTask } from '../../types/picking';
 
@@ -15,12 +15,17 @@ function returnHome(homeRoute: string) {
   resetToRoutes([{ name: 'Drawer', params: { screen: 'Dashboard' } }, { name: homeRoute }]);
 }
 
-function completeWithShortPickWithoutReasonCode(homeRoute: string) {
-  ToastAndroid.show(
+function alertShortPickWithoutReasonCode(homeRoute: string) {
+  Alert.alert(
+    'Short Pick Without Reason Code',
     'You have completed all picks with a short pick without a reason code. This task will remain available to pick.',
-    ToastAndroid.LONG
+    [
+      {
+        text: 'OK',
+        onPress: () => returnHome(homeRoute)
+      }
+    ]
   );
-  returnHome(homeRoute);
 }
 
 export function proceedToNextOrComplete({
@@ -37,15 +42,20 @@ export function proceedToNextOrComplete({
   }
 
   if (omitStagingLocationStep) {
-    completeWithShortPickWithoutReasonCode(homeRoute);
+    alertShortPickWithoutReasonCode(homeRoute);
     return;
   }
 
-  ToastAndroid.show('You have completed all picks. Proceeding to staging location drop.', ToastAndroid.LONG);
-  resetToRoutes([
-    { name: 'Drawer', params: { screen: 'Dashboard' } },
-    { name: homeRoute },
-    { name: 'PickingPickStagingLocation' }
+  Alert.alert('All Picks Complete', 'You have completed all picks. Proceeding to staging location drop.', [
+    {
+      text: 'OK',
+      onPress: () =>
+        resetToRoutes([
+          { name: 'Drawer', params: { screen: 'Dashboard' } },
+          { name: homeRoute },
+          { name: 'PickingPickStagingLocation' }
+        ])
+    }
   ]);
 }
 
@@ -55,22 +65,20 @@ export function revalidateTaskAndProceed({
   allTasksCount,
   goToNextTask,
   homeRoute,
-  omitStagingLocationStep,
-  onError
+  omitStagingLocationStep
 }: PickingFlowNavigation & {
   revalidateCurrentTask: (callback: (revalidatedTask: PickTask | undefined, errorMessage?: string) => void) => void;
-  onError: (errorMessage: string) => void;
 }) {
   revalidateCurrentTask((revalidatedTask, errorMessage) => {
     if (!revalidatedTask) {
-      onError(errorMessage ?? 'Failed to revalidate the current pick task after picking.');
+      Alert.alert('Error', errorMessage ?? 'Failed to revalidate the current pick task after picking.');
       return;
     }
 
     const isLastTask = currentTaskIndex + 1 >= allTasksCount;
 
     if (isLastTask && omitStagingLocationStep) {
-      completeWithShortPickWithoutReasonCode(homeRoute);
+      alertShortPickWithoutReasonCode(homeRoute);
       return;
     }
 

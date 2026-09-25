@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Alert, ScrollView, ToastAndroid, View } from 'react-native';
+import { Alert, ScrollView, View } from 'react-native';
 import { Divider, Paragraph, Subheading } from 'react-native-paper';
 
 import { ProductDetails } from '../../components/ProductDetails';
@@ -57,10 +57,17 @@ export default function PickingPickStagingLocationScreen() {
       return;
     }
 
-    stagingScan.pass();
-    ToastAndroid.show('Picking session complete. You have completed all staging confirmations.', ToastAndroid.LONG);
-    resetSession();
-    resetToRoutes([{ name: 'Drawer', params: { screen: 'Dashboard' } }, { name: homeRoute }]);
+    stagingScan.pass(() =>
+      Alert.alert('Picking Session Complete', 'You have completed all staging confirmations.', [
+        {
+          text: 'OK',
+          onPress: () => {
+            resetSession();
+            resetToRoutes([{ name: 'Drawer', params: { screen: 'Dashboard' } }, { name: homeRoute }]);
+          }
+        }
+      ])
+    );
   }
 
   // Requires the scanned location to match the one suggested by the task. Used when SKIP_STAGING_LOCATION_VALIDATION is false.

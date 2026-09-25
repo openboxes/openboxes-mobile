@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ScrollView, ToastAndroid, View } from 'react-native';
+import { Alert, ScrollView, View } from 'react-native';
 import { Button, Divider, Paragraph, Subheading } from 'react-native-paper';
 import { useSelector } from 'react-redux';
 
@@ -54,7 +54,7 @@ export default function PickingPickLocationScreen() {
 
       revalidateCurrentTask((_task, revalidateError) => {
         if (revalidateError) {
-          ToastAndroid.show(revalidateError, ToastAndroid.LONG);
+          Alert.alert('Error', revalidateError);
         }
         locationScan.setValue(EMPTY_STRING);
         locationScan.pass();

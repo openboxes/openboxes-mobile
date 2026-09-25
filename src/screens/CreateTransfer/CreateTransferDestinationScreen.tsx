@@ -1,6 +1,6 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
 import React, { useCallback, useMemo, useRef } from 'react';
-import { ScrollView, View } from 'react-native';
+import { Alert, ScrollView, View } from 'react-native';
 import { Divider } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
@@ -9,6 +9,7 @@ import { ScanErrorText } from '../../components/ScanErrorText';
 import { ScannerInput } from '../../components/ScannerInput';
 import { SearchButton } from '../../components/SearchButton';
 import { useSearchButton } from '../../components/SearchButton/useSearchButton';
+import { EMPTY_STRING } from '../../constants';
 import { useScanField } from '../../hooks/useScanField';
 import { replace } from '../../NavigationService';
 import { lookupLocationByCodeAction, submitCreateTransferAction } from '../../redux/actions/createTransfer';
@@ -28,7 +29,7 @@ export default function CreateTransferDestinationScreen() {
   const dispatch = useDispatch();
 
   const destinationScan = useScanField();
-  const { pass, fail } = destinationScan;
+  const { pass, fail, setValue } = destinationScan;
   const isProcessing = useRef(false);
 
   const failDestination = useCallback(
@@ -74,12 +75,14 @@ export default function CreateTransferDestinationScreen() {
               destination
             });
           } else {
-            failDestination(response?.errorMessage || 'An error occurred while creating the transfer.');
+            isProcessing.current = false;
+            setValue(EMPTY_STRING);
+            Alert.alert('Transfer Failed', response?.errorMessage || 'An error occurred while creating the transfer.');
           }
         })
       );
     },
-    [dispatch, item, quantity, pass, failDestination]
+    [dispatch, item, quantity, pass, setValue]
   );
 
   const resolveDestination = useCallback(
