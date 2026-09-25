@@ -6,11 +6,19 @@ export const PRODUCT_SUMMARY_CONFIG = 'PRODUCT_SUMMARY_CONFIG';
 export const BARCODE_SCAN_DEBOUNCE = 'BARCODE_SCAN_DEBOUNCE';
 export const SEARCH_DEBOUNCE = 'SEARCH_DEBOUNCE';
 export const ALLOW_REALLOCATION_DURING_PICKING = 'ALLOW_REALLOCATION_DURING_PICKING';
+export const SCAN_FLASH_ENABLED = 'SCAN_FLASH_ENABLED';
 
 type SetAllowReallocationDuringPickingAction = {
   type: typeof ALLOW_REALLOCATION_DURING_PICKING;
   payload: {
     allow: boolean;
+  };
+};
+
+type SetScanFlashEnabledAction = {
+  type: typeof SCAN_FLASH_ENABLED;
+  payload: {
+    enabled: boolean;
   };
 };
 
@@ -60,7 +68,8 @@ export type SettingsActionTypes =
   | SetProductSummaryConfigAction
   | SetBarcodeScanDebounceAction
   | SetSearchDebounceAction
-  | SetAllowReallocationDuringPickingAction;
+  | SetAllowReallocationDuringPickingAction
+  | SetScanFlashEnabledAction;
 
 export const setGroupLocationEntries = (group: boolean): SetGroupLocationEntriesAction => {
   return {
@@ -117,5 +126,12 @@ export const setAllowReallocationDuringPicking = (allow: boolean): SetAllowReall
   return {
     type: ALLOW_REALLOCATION_DURING_PICKING,
     payload: { allow }
+  };
+};
+
+export const setScanFlashEnabled = (enabled: boolean): SetScanFlashEnabledAction => {
+  return {
+    type: SCAN_FLASH_ENABLED,
+    payload: { enabled }
   };
 };

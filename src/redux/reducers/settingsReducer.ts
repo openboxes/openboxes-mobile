@@ -8,12 +8,14 @@ import {
   BARCODE_SCAN_DEBOUNCE,
   SEARCH_DEBOUNCE,
   SettingsActionTypes,
-  ALLOW_REALLOCATION_DURING_PICKING
+  ALLOW_REALLOCATION_DURING_PICKING,
+  SCAN_FLASH_ENABLED
 } from '../actions/settings';
 import { appConfig } from '../../constants';
 
 type SettingsState = {
   allowReallocationDuringPicking: boolean;
+  scanFlashEnabled: boolean;
   groupLocationEntries: boolean;
   dashboardEntriesVisibility: { [key: string]: boolean };
   dashboardEntriesOrder: string[];
@@ -24,6 +26,7 @@ type SettingsState = {
 
 const initialState: SettingsState = {
   allowReallocationDuringPicking: false,
+  scanFlashEnabled: true,
   groupLocationEntries: false,
   dashboardEntriesOrder: getDashboardEntriesKeys(),
   dashboardEntriesVisibility: {},
@@ -38,6 +41,11 @@ function settingsReducer(state = initialState, action: SettingsActionTypes): Set
       return {
         ...state,
         allowReallocationDuringPicking: action.payload.allow
+      };
+    case SCAN_FLASH_ENABLED:
+      return {
+        ...state,
+        scanFlashEnabled: action.payload.enabled
       };
     case GROUP_LOCATION_ENTRIES: {
       return {

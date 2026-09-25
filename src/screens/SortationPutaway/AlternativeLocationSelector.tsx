@@ -4,6 +4,7 @@ import { Paragraph, RadioButton } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
 import Button from '../../components/Button';
+import { ScanErrorText } from '../../components/ScanErrorText';
 import { ScannerInput } from '../../components/ScannerInput';
 import { SearchButton } from '../../components/SearchButton';
 import { useSearchButton } from '../../components/SearchButton/useSearchButton';
@@ -44,6 +45,7 @@ export default function AlternativeLocationSelector({
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [newLocationInput, setNewLocationInput] = useState<string>(EMPTY_STRING);
   const [resolvedNewLocation, setResolvedNewLocation] = useState<SortationLocation | null>(null);
+  const [newLocationError, setNewLocationError] = useState<string | null>(null);
 
   const handleLocationSearch = useCallback(
     (locationNumber: string) => {
@@ -58,7 +60,7 @@ export default function AlternativeLocationSelector({
             setResolvedNewLocation(data);
           } else {
             setResolvedNewLocation(null);
-            Alert.alert('Location Not Found', `Location "${trimmed}" could not be found.`);
+            setNewLocationError(`Location ${trimmed} could not be found.`);
           }
         })
       );
@@ -69,6 +71,7 @@ export default function AlternativeLocationSelector({
   const handleSearchSelect = useCallback(
     (value: string) => {
       setNewLocationInput(value);
+      setNewLocationError(null);
       handleLocationSearch(value);
     },
     [handleLocationSearch]
@@ -87,6 +90,7 @@ export default function AlternativeLocationSelector({
     }
     setNewLocationInput(EMPTY_STRING);
     setResolvedNewLocation(null);
+    setNewLocationError(null);
 
     const provisionalTarget = initialLocation ?? putawayDetails.destination;
     setSelectedId(provisionalTarget?.id ?? null);
@@ -139,6 +143,7 @@ export default function AlternativeLocationSelector({
   const handleNewLocationInputChange = (value: string) => {
     setNewLocationInput(value);
     setResolvedNewLocation(null);
+    setNewLocationError(null);
   };
 
   const isNewLocationMode = selectedId === NEW_LOCATION_OPTION;
@@ -222,12 +227,14 @@ export default function AlternativeLocationSelector({
                   placeholder="Scan or type the new ID"
                   value={newLocationInput}
                   isEnabled={!isSearchOpen}
+                  danger={!!newLocationError}
                   autoSubmitTimeout={appConfig.DEFAULT_SEARCH_DEBOUNCE_TIME}
                   onChange={handleNewLocationInputChange}
                   onSubmit={handleLocationSearch}
                 />
                 <SearchButton searchType="location" {...searchButtonProps} />
               </View>
+              <ScanErrorText message={newLocationError} />
             </View>
           )}
 

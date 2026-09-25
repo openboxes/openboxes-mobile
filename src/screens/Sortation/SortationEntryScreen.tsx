@@ -1,18 +1,21 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
 import React, { useCallback, useState } from 'react';
-import { Alert, ScrollView, View } from 'react-native';
+import { ScrollView, TouchableOpacity, View } from 'react-native';
 import { Divider, Paragraph, Text, Title } from 'react-native-paper';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useDispatch } from 'react-redux';
 
 import IconProducts from '../../assets/images/icon_products.svg';
+import { ScanErrorText } from '../../components/ScanErrorText';
 import { ScannerInput } from '../../components/ScannerInput';
 import { SearchButton } from '../../components/SearchButton';
 import { useSearchButton } from '../../components/SearchButton/useSearchButton';
 import { EMPTY_STRING } from '../../constants';
+import { useScanField } from '../../hooks/useScanField';
 import { navigate, replace } from '../../NavigationService';
 import { getSortationDetailsByBarcode } from '../../redux/actions/products';
 import { SortationTask } from '../../types/sortation';
-import { BarcodeUnrecognizedDialog } from './BarcodeUnrecognizedDialog';
+import Theme from '../../utils/Theme';
 import styles from './styles';
 
 type SortedProduct = {
@@ -23,10 +26,17 @@ type SortedProduct = {
 type SortationEntryRouteProp = RouteProp<{ Sortation: { sortedProduct?: SortedProduct } }, 'Sortation'>;
 
 export default function SortationEntryScreen() {
-  const [barcode, setBarcode] = useState<string>(EMPTY_STRING);
-  const [unrecognizedBarcode, setUnrecognizedBarcode] = useState<string | null>(null);
+  const productScan = useScanField();
+  const { pass, fail, setValue } = productScan;
+  const [isBarcodeUnrecognized, setIsBarcodeUnrecognized] = useState(false);
   const dispatch = useDispatch();
-  const { isSearchOpen, searchButtonProps } = useSearchButton({ onSelect: setBarcode });
+
+  const handleBarcodeChange = (next: string) => {
+    productScan.onChange(next);
+    setIsBarcodeUnrecognized(false);
+  };
+
+  const { isSearchOpen, searchButtonProps } = useSearchButton({ onSelect: handleBarcodeChange });
   const { params } = useRoute<SortationEntryRouteProp>();
   const sortedProduct = params?.sortedProduct;
 
@@ -40,26 +50,31 @@ export default function SortationEntryScreen() {
             const filteredTasks = (tasks || []).filter((task: SortationTask) => allowedStatuses.includes(task.status));
 
             if (filteredTasks.length === 0) {
-              Alert.alert('No Valid Tasks', 'No pending tasks found.');
-            } else if (filteredTasks.length === 1) {
+              fail(`No pending sortation tasks found for ${code}.`);
+              return;
+            }
+
+            pass();
+            setValue(EMPTY_STRING);
+            if (filteredTasks.length === 1) {
               navigate('SortationQuantity', { product, task: filteredTasks[0] });
             } else {
               navigate('SortationTaskList', { product, tasks: filteredTasks });
             }
           } else if (response?.productNotFound) {
-            setUnrecognizedBarcode(code);
+            fail(`Barcode unrecognized. Product ${code} not found.`);
+            setIsBarcodeUnrecognized(true);
           } else {
-            Alert.alert('Sortation Failed', response?.errorMessage || 'Something went wrong.');
+            fail(response?.errorMessage || 'Something went wrong.');
           }
-          setBarcode(EMPTY_STRING);
         })
       );
     },
-    [dispatch]
+    [dispatch, pass, fail, setValue]
   );
 
   const handleFindProduct = () => {
-    setUnrecognizedBarcode(null);
+    setIsBarcodeUnrecognized(false);
     navigate('Products', { fromSortation: true });
   };
 
@@ -70,12 +85,6 @@ export default function SortationEntryScreen() {
 
   return (
     <ScrollView keyboardShouldPersistTaps="always" style={styles.screen}>
-      <BarcodeUnrecognizedDialog
-        visible={unrecognizedBarcode !== null}
-        barcode={unrecognizedBarcode ?? EMPTY_STRING}
-        onFindProduct={handleFindProduct}
-        onClose={() => setUnrecognizedBarcode(null)}
-      />
       {sortedProduct && (
         <View style={styles.successBanner}>
           <Paragraph style={styles.successHeader}>{sortedProduct.productCode} was sorted </Paragraph>
@@ -97,14 +106,22 @@ export default function SortationEntryScreen() {
           style={styles.scannerInput}
           label="Product"
           placeholder="Scan product barcode"
-          value={barcode}
+          value={productScan.value}
           leftIcon={<IconProducts height={24} width={24} />}
-          isEnabled={!isSearchOpen && unrecognizedBarcode === null}
-          onChange={setBarcode}
+          isEnabled={!isSearchOpen}
+          danger={!!productScan.error}
+          onChange={handleBarcodeChange}
           onSubmit={handleScan}
         />
         <SearchButton searchType="product" {...searchButtonProps} />
       </View>
+      <ScanErrorText message={productScan.error} />
+      {isBarcodeUnrecognized && (
+        <TouchableOpacity style={styles.findProductLinkRow} onPress={handleFindProduct}>
+          <Text style={styles.findProductLink}>Find a product for this barcode</Text>
+          <MaterialCommunityIcons name="arrow-top-right" size={18} color={Theme.colors.primary} />
+        </TouchableOpacity>
+      )}
     </ScrollView>
   );
 }

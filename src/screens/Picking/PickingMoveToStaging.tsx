@@ -1,20 +1,22 @@
 import * as React from 'react';
-import { Alert, ScrollView, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { Paragraph, Title } from 'react-native-paper';
 
 import { useDispatch } from 'react-redux';
+import { ScanErrorText } from '../../components/ScanErrorText';
 import { ScannerInput } from '../../components/ScannerInput';
 import { SearchButton } from '../../components/SearchButton';
 import { useSearchButton } from '../../components/SearchButton/useSearchButton';
 import { EMPTY_STRING } from '../../constants';
+import { useScanField } from '../../hooks/useScanField';
 
 import { navigate } from '../../NavigationService';
 import { getPickedTasksByContainerAction } from '../../redux/actions/picking';
 import styles from './styles';
 
 export default function PickingMoveToStagingScreen() {
-  const [outboundContainerId, setOutboundContainerId] = React.useState<string>(EMPTY_STRING);
-  const { isSearchOpen, searchButtonProps } = useSearchButton({ onSelect: setOutboundContainerId });
+  const containerScan = useScanField();
+  const { isSearchOpen, searchButtonProps } = useSearchButton({ onSelect: containerScan.onChange });
   const dispatch = useDispatch();
 
   function handleScan(containerId: string) {
@@ -22,21 +24,22 @@ export default function PickingMoveToStagingScreen() {
     dispatch(
       getPickedTasksByContainerAction(containerId, ({ response }) => {
         if (response.errorCode) {
-          Alert.alert('Error', response.message || 'An error occurred while fetching pick tasks.');
+          containerScan.fail(response.message || 'An error occurred while fetching pick tasks.');
           return;
         }
 
         if (!response.data || response.data.length === 0) {
-          Alert.alert('No Tasks Found', 'No picked tasks found for the scanned outbound container ID.');
+          containerScan.fail(`No picked tasks found for outbound container ${containerId}.`);
           return;
         }
 
+        containerScan.pass();
         // Navigate to the staging screen with the fetched tasks
         navigate('PickingStagingDrop', { tasks: response.data });
       })
     );
 
-    setOutboundContainerId(EMPTY_STRING);
+    containerScan.setValue(EMPTY_STRING);
   }
 
   return (
@@ -49,13 +52,15 @@ export default function PickingMoveToStagingScreen() {
           <ScannerInput
             style={styles.scannerInput}
             label="Outbound Container ID"
-            value={outboundContainerId}
+            value={containerScan.value}
             isEnabled={!isSearchOpen}
-            onChange={setOutboundContainerId}
+            danger={!!containerScan.error}
+            onChange={containerScan.onChange}
             onSubmit={handleScan}
           />
           <SearchButton searchType="container" {...searchButtonProps} />
         </View>
+        <ScanErrorText message={containerScan.error} />
       </View>
     </ScrollView>
   );

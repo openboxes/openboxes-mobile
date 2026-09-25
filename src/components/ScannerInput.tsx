@@ -18,6 +18,7 @@ import { RootState } from '../redux/reducers';
 import { hideSoftKeyboard, showSoftKeyboard } from '../utils/KeyboardUtils';
 import Theme from '../utils/Theme';
 import { KeyboardIcon, ScanIcon } from './Icons';
+import { useScanFlash } from './ScanFlash';
 
 type ScannerInputProps = {
   value: string;
@@ -98,6 +99,8 @@ export function ScannerInput({
   // Track the latest submitted value to prevent double submissions
   const lastSubmittedValue = useRef<string>('');
   const shouldBeFocused = isScreenFocused && isEnabled;
+  // Scans mid-flash are ignored below; disabling the listener would re-enable DataWedge keystrokes.
+  const { isFlashing } = useScanFlash();
 
   // Focus the input — keyboard is handled via onFocus callback
   const requestFocus = useCallback(() => {
@@ -165,7 +168,7 @@ export function ScannerInput({
 
   useScanListener((result) => {
     const scanned = result.data;
-    if (!scanned || scanned === lastSubmittedValue.current) {
+    if (!scanned || isFlashing || scanned === lastSubmittedValue.current) {
       return;
     }
     lastSubmittedValue.current = scanned;
@@ -186,7 +189,7 @@ export function ScannerInput({
   };
 
   const handleChangeText = (text: string) => {
-    if (!shouldBeFocused) {
+    if (!shouldBeFocused || isFlashing) {
       return;
     }
     onChange(text);

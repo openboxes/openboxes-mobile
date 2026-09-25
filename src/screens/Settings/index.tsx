@@ -15,6 +15,7 @@ import {
   setDashboardEntriesOrder,
   setGroupLocationEntries,
   setProductSummaryConfig,
+  setScanFlashEnabled,
   setSearchDebounce,
   SettingsActionTypes
 } from '../../redux/actions/settings';
@@ -31,6 +32,7 @@ const Settings = () => {
   const {
     groupLocationEntries,
     allowReallocationDuringPicking,
+    scanFlashEnabled = true,
     productSummaryConfig,
     barcodeScanDebounceTime,
     searchDebounceTime
@@ -64,6 +66,10 @@ const Settings = () => {
   const toggleAllowReallocationDuringPicking = useCallback(() => {
     dispatch(setAllowReallocationDuringPicking(!allowReallocationDuringPicking));
   }, [dispatch, allowReallocationDuringPicking]);
+
+  const toggleScanFlash = useCallback(() => {
+    dispatch(setScanFlashEnabled(!scanFlashEnabled));
+  }, [dispatch, scanFlashEnabled]);
 
   const handleDebounceChange = useCallback(
     (text: string) => {
@@ -170,6 +176,12 @@ const Settings = () => {
           description="Enables reallocation during the picking process, allowing users to change the source location of items while picking."
           value={allowReallocationDuringPicking}
           onValueChange={toggleAllowReallocationDuringPicking}
+        />
+        <ToggleRow
+          title="Scan Flash"
+          description="Flashes the screen green when a scan is accepted and red when it is rejected."
+          value={scanFlashEnabled}
+          onValueChange={toggleScanFlash}
         />
       </ToggleCard>
 
