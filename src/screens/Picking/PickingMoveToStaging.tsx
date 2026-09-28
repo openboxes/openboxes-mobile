@@ -31,8 +31,16 @@ export default function PickingMoveToStagingScreen() {
           return;
         }
 
+        // Tasks whose facility does not track internal transactions don't need to be staged.
+        const stagingEligibleTasks = response.data.filter((task) => task.internalTransactionsEnabled !== false);
+
+        if (stagingEligibleTasks.length === 0) {
+          Alert.alert('Staging Not Required', 'The picked items for this container do not require a move to staging.');
+          return;
+        }
+
         // Navigate to the staging screen with the fetched tasks
-        navigate('PickingStagingDrop', { tasks: response.data });
+        navigate('PickingStagingDrop', { tasks: stagingEligibleTasks });
       })
     );
 

@@ -9,6 +9,9 @@ type PickingFlowNavigation = {
   /** Screen the session started from, reset to when it ends so finished screens are unreachable */
   homeRoute: string;
   omitStagingLocationStep?: boolean;
+  /** Whether the move-to-staging step should be skipped because the facility does not track internal transactions */
+  skipStagingStep?: boolean;
+  resetSession?: () => void;
 };
 
 function returnHome(homeRoute: string) {
@@ -33,7 +36,9 @@ export function proceedToNextOrComplete({
   allTasksCount,
   goToNextTask,
   homeRoute,
-  omitStagingLocationStep
+  omitStagingLocationStep,
+  skipStagingStep,
+  resetSession
 }: PickingFlowNavigation) {
   if (currentTaskIndex + 1 < allTasksCount) {
     goToNextTask();
@@ -43,6 +48,23 @@ export function proceedToNextOrComplete({
 
   if (omitStagingLocationStep) {
     alertShortPickWithoutReasonCode(homeRoute);
+    return;
+  }
+
+  if (skipStagingStep) {
+    Alert.alert(
+      'All Picks Complete',
+      'You have completed all picks. This location does not track internal transactions, so staging is not required.',
+      [
+        {
+          text: 'OK',
+          onPress: () => {
+            resetSession?.();
+            returnHome(homeRoute);
+          }
+        }
+      ]
+    );
     return;
   }
 
@@ -65,7 +87,9 @@ export function revalidateTaskAndProceed({
   allTasksCount,
   goToNextTask,
   homeRoute,
-  omitStagingLocationStep
+  omitStagingLocationStep,
+  skipStagingStep,
+  resetSession
 }: PickingFlowNavigation & {
   revalidateCurrentTask: (callback: (revalidatedTask: PickTask | undefined) => void) => void;
 }) {
@@ -82,6 +106,13 @@ export function revalidateTaskAndProceed({
       return;
     }
 
-    proceedToNextOrComplete({ currentTaskIndex, allTasksCount, goToNextTask, homeRoute });
+    proceedToNextOrComplete({
+      currentTaskIndex,
+      allTasksCount,
+      goToNextTask,
+      homeRoute,
+      skipStagingStep,
+      resetSession
+    });
   });
 }
