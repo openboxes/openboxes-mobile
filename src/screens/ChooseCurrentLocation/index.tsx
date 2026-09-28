@@ -207,7 +207,7 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
         >
           <Card.Content style={styles.cardContent}>
             <View style={styles.contentContainer}>
-              <GarageIcon width={48} height={48} />
+              <GarageIcon width={48} height={48} fill={Theme.colors.primary} />
               <View style={styles.textContainer}>
                 <Text style={styles.cardTitle}>{location.name}</Text>
                 <Text style={styles.cardSubtitle}>{location.locationGroup?.name || NO_LOCATION_GROUP_NAME}</Text>

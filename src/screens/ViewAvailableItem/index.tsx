@@ -10,6 +10,7 @@ import { LocationIcon, QuantityIcon } from '../../components/Icons';
 import { EMPTY_FALLBACK } from '../../constants';
 import { RootState } from '../../redux/reducers';
 import { DetailChip } from '../../types/sortation';
+import Theme from '../../utils/Theme';
 import styles from './styles';
 
 type ViewAvailableItemRouteParams = {
@@ -87,7 +88,11 @@ export default function ViewAvailableItem() {
           <Chip icon="barcode" style={styles.chipDefault} textStyle={styles.chipText}>
             {availableItem?.product?.productCode}
           </Chip>
-          {source ? <Image style={styles.productImage} source={source} /> : <DefaultProductIcon />}
+          {source ? (
+            <Image style={styles.productImage} source={source} />
+          ) : (
+            <DefaultProductIcon fill={Theme.colors.primary} />
+          )}
         </View>
 
         <Divider style={styles.contentDivider} />
