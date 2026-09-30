@@ -58,13 +58,12 @@ type PickingContextType = {
   revalidateTasksForRequisition: (requisitionId: string | undefined, callback?: () => void) => void;
   /** Start the pick task (API call) */
   startPickTask: (callback: (response: { errorMessage?: string }) => void) => void;
-  /** Drop the current pick task at the system-suggested staging location */
-  dropCurrentTask: (task: PickTask, callback?: (response: { errorMessage?: string }) => void) => void;
   /** Drop the current pick task at the given staging location */
   dropCurrentTaskAtStagingLocation: (
     task: PickTask,
     stagingLocationId: string,
-    callback?: (response: { errorMessage?: string }) => void
+    callback?: (response: { errorMessage?: string; overridable?: boolean }) => void,
+    overrideStagingLocationZone?: boolean
   ) => void;
   /** Revalidates the current pick task details from the server */
   revalidateCurrentTask: (callback?: (task: PickTask | undefined) => void) => void;
@@ -248,30 +247,13 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
     );
   };
 
-  const dropCurrentTask = (task: PickTask, callback?: (response: { errorMessage?: string }) => void) => {
-    if (!task) {
-      Alert.alert('Task Missing', 'No current task to drop.');
-      return;
-    }
-
-    if (!task.stagingLocation?.id) {
-      Alert.alert('Missing Input', 'Current task is missing a valid Staging Location.');
-      return;
-    }
-
-    if (!task.outboundContainer?.id) {
-      Alert.alert('Error', 'Current task does not have a valid Outbound Container.');
-      return;
-    }
-
-    dispatch(dropPickTaskAction(task.outboundContainer.id, task.stagingLocation.id, callback));
-  };
-
-  // Like dropCurrentTask but drops at the given (scanned) staging location instead of the pick task's suggested one
+  // Drops the current task at the given (scanned) staging location; the server validates it
+  // against the task's delivery type/zone (see PickTaskService.validateStagingLocationZone).
   const dropCurrentTaskAtStagingLocation = (
     task: PickTask,
     stagingLocationId: string,
-    callback?: (response: { errorMessage?: string }) => void
+    callback?: (response: { errorMessage?: string; overridable?: boolean }) => void,
+    overrideStagingLocationZone?: boolean
   ) => {
     if (!task) {
       Alert.alert('Task Missing', 'No current task to drop.');
@@ -288,7 +270,7 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    dispatch(dropPickTaskAction(task.outboundContainer.id, stagingLocationId, callback));
+    dispatch(dropPickTaskAction(task.outboundContainer.id, stagingLocationId, callback, overrideStagingLocationZone));
   };
 
   const resetSession = () => {
@@ -314,7 +296,6 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
         resetSession,
         revalidateTasksForRequisition,
         startPickTask,
-        dropCurrentTask,
         dropCurrentTaskAtStagingLocation,
         revalidateCurrentTask,
         goToNextTask
