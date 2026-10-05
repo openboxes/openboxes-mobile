@@ -68,7 +68,8 @@ class _ApiClient {
     }
     return Promise.reject({
       message: message,
-      code: code
+      code: code,
+      data: error.response?.data
     });
   };
 }
