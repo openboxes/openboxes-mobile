@@ -74,7 +74,7 @@ export default function PickingPickStagingLocationScreen() {
     }
 
     dropCurrentTaskAtStagingLocation(currentTask, locationId, (response) => {
-      if (response.overridable) {
+      if (response.allowOverride) {
         setPendingLocationId(locationId);
         setZoneMismatchMessage(response.errorMessage);
         return;

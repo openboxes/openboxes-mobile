@@ -158,7 +158,7 @@ export function shortPickTaskAction(
 export function dropPickTaskAction(
   outboundContainerId: string,
   stagingLocationId: string,
-  callback?: (response: { errorMessage?: string; overridable?: boolean }) => void,
+  callback?: (response: { errorMessage?: string; allowOverride?: boolean }) => void,
   overrideStagingLocationZone?: boolean
 ) {
   return {

@@ -236,12 +236,12 @@ function* dropPickTaskAction(action: any) {
     yield put(hideScreenLoading());
   } catch (error) {
     const errorMessage = (error as any)?.message || 'Error Dropping Pick Task';
-    const overridable = (error as any)?.data?.overridable;
+    const allowOverride = (error as any)?.data?.allowOverride;
     yield put({
       type: DROP_PICK_TASK_REQUEST_FAIL,
       payload: errorMessage
     });
-    yield action.callback({ errorMessage, overridable });
+    yield action.callback({ errorMessage, allowOverride });
     yield put(hideScreenLoading());
   }
 }

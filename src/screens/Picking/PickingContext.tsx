@@ -62,7 +62,7 @@ type PickingContextType = {
   dropCurrentTaskAtStagingLocation: (
     task: PickTask,
     stagingLocationId: string,
-    callback?: (response: { errorMessage?: string; overridable?: boolean }) => void,
+    callback?: (response: { errorMessage?: string; allowOverride?: boolean }) => void,
     overrideStagingLocationZone?: boolean
   ) => void;
   /** Revalidates the current pick task details from the server */
@@ -252,7 +252,7 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
   const dropCurrentTaskAtStagingLocation = (
     task: PickTask,
     stagingLocationId: string,
-    callback?: (response: { errorMessage?: string; overridable?: boolean }) => void,
+    callback?: (response: { errorMessage?: string; allowOverride?: boolean }) => void,
     overrideStagingLocationZone?: boolean
   ) => {
     if (!task) {
