@@ -1,15 +1,17 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
-import { Alert, ScrollView, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { Divider, Subheading } from 'react-native-paper';
 import { useSelector } from 'react-redux';
 
 import Button from '../../components/Button';
 import EmptyView from '../../components/EmptyView';
+import { ScanErrorText } from '../../components/ScanErrorText';
 import { ScannerInput } from '../../components/ScannerInput';
 import { SearchButton } from '../../components/SearchButton';
 import { useSearchButton } from '../../components/SearchButton/useSearchButton';
 import { EMPTY_STRING } from '../../constants';
+import { useScanField } from '../../hooks/useScanField';
 import { navigate } from '../../NavigationService';
 import { RootState } from '../../redux/reducers';
 import { SortationLocation, SortationTask } from '../../types/sortation';
@@ -39,9 +41,10 @@ export default function PutawayLocationScanScreen() {
   const putawayTasks = useSelector((state: RootState) => state.putawayReducer.putawayTasks) as SortationTask[];
   const putawayDetails = task ?? putawayTasks?.[currentTaskIndex];
 
-  const [putawayLocationBarcode, setPutawayLocationBarcode] = useState<string>(EMPTY_STRING);
+  const locationScan = useScanField();
+  const resetLocationScan = locationScan.setValue;
   const [isDialogVisible, setIsDialogVisible] = useState(false);
-  const { isSearchOpen, searchButtonProps } = useSearchButton({ onSelect: setPutawayLocationBarcode });
+  const { isSearchOpen, searchButtonProps } = useSearchButton({ onSelect: locationScan.onChange });
   const [selectedAlternativeDestination, setSelectedAlternativeDestination] = useState<SortationLocation | null>(
     putawayDetails?.destination
   );
@@ -51,8 +54,8 @@ export default function PutawayLocationScanScreen() {
   }, [putawayDetails]);
 
   useEffect(() => {
-    setPutawayLocationBarcode(EMPTY_STRING);
-  }, [currentTaskIndex, putawayDetails?.id]);
+    resetLocationScan(EMPTY_STRING);
+  }, [currentTaskIndex, putawayDetails?.id, resetLocationScan]);
 
   if (!putawayDetails) {
     return (
@@ -74,14 +77,11 @@ export default function PutawayLocationScanScreen() {
     const expectedLocation = selectedAlternativeDestination?.locationNumber;
 
     if (code !== expectedLocation) {
-      Alert.alert(
-        'Wrong Location',
-        `The scanned barcode (${code}) does not match the expected location: ${expectedLocation}.`,
-        [{ text: 'OK', onPress: () => setPutawayLocationBarcode(EMPTY_STRING) }]
-      );
+      locationScan.fail(`Incorrect location scanned (${code}). Expected: ${expectedLocation}.`);
       return;
     }
 
+    locationScan.pass();
     navigate(shouldValidateProduct ? 'SortationPutawayProductScan' : 'SortationPutawayQuantity', {
       currentTaskIndex,
       isDirectPutaway,
@@ -115,23 +115,15 @@ export default function PutawayLocationScanScreen() {
             <ScannerInput
               style={styles.scannerInput}
               label="Destination Entry Field"
-              value={putawayLocationBarcode}
+              value={locationScan.value}
               isEnabled={!isDialogVisible && !isSearchOpen}
-              onChange={setPutawayLocationBarcode}
+              danger={!!locationScan.error}
+              onChange={locationScan.onChange}
               onSubmit={handleProcessing}
             />
             <SearchButton searchType="location" {...searchButtonProps} />
           </View>
-
-          <Button
-            style={styles.topSpace}
-            title="Confirm"
-            mode="contained"
-            size="100%"
-            onPress={() => handleProcessing(putawayLocationBarcode)}
-          >
-            Submit
-          </Button>
+          <ScanErrorText message={locationScan.error} />
 
           {isDirectPutaway ? null : isUserDirected ? (
             <Button

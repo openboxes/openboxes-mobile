@@ -1,20 +1,21 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
 import React, { useState } from 'react';
-import { Alert, ScrollView, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { Divider } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
 import Button from '../../components/Button';
 import EmptyView from '../../components/EmptyView';
 import { ContainerIcon, LocationIcon, QuantityIcon } from '../../components/Icons';
+import { ScanErrorText } from '../../components/ScanErrorText';
 import { ScannerInput } from '../../components/ScannerInput';
 import { SearchButton } from '../../components/SearchButton';
 import { useSearchButton } from '../../components/SearchButton/useSearchButton';
 import { EMPTY_FALLBACK, EMPTY_STRING } from '../../constants';
+import { useScanField } from '../../hooks/useScanField';
 import { navigate } from '../../NavigationService';
 import { patchPutawayTaskAction } from '../../redux/actions/putaways';
 import { DetailChip, SortationProduct, SortationTask } from '../../types/sortation';
-import { ContainerMismatchDialog } from './ContainerMismatchDialog';
 import SortationProductDetails from './SortationProductDetails';
 import styles from './styles';
 
@@ -27,10 +28,15 @@ export default function SortationContainerScreen() {
   const { params } = useRoute<ContainerRouteProp>();
   const { product, quantitySorted, task } = params;
 
-  const [putawayContainerBarcode, setPutawayContainerBarcode] = useState<string>('');
-  const [isDialogVisible, setIsDialogVisible] = useState<boolean>(false);
-  const { isSearchOpen, searchButtonProps } = useSearchButton({ onSelect: setPutawayContainerBarcode });
-  const [pendingContainerCode, setPendingContainerCode] = useState<string>('');
+  const containerScan = useScanField();
+  const [mismatchedContainerCode, setMismatchedContainerCode] = useState<string>(EMPTY_STRING);
+
+  const handleContainerChange = (next: string) => {
+    containerScan.onChange(next);
+    setMismatchedContainerCode(EMPTY_STRING);
+  };
+
+  const { isSearchOpen, searchButtonProps } = useSearchButton({ onSelect: handleContainerChange });
   const dispatch = useDispatch();
 
   if (!product) {
@@ -59,16 +65,7 @@ export default function SortationContainerScreen() {
     );
   }
 
-  /**
-   * Unified logic to handle both Scanner "Enter" and "Confirm" button press.
-   * @param code - The barcode string to validate.
-   */
   function handleProcessing(code: string) {
-    if (!code || code.trim() === '') {
-      Alert.alert('Scan Required', 'Please scan the container barcode.');
-      return;
-    }
-
     const expectedContainer = task?.container?.locationNumber;
 
     // We need to send `override` as true if the expected container is not defined, otherwise we will show the mismatch dialog.
@@ -78,19 +75,17 @@ export default function SortationContainerScreen() {
     }
 
     if (code !== expectedContainer) {
-      setPendingContainerCode(code);
-      setIsDialogVisible(true);
+      containerScan.fail(`Incorrect container scanned (${code}). Expected: ${expectedContainer}.`);
+      setMismatchedContainerCode(code);
       return;
     }
 
     confirmContainer(code, false);
   }
 
-  function handleContainerOverride(resolvedCode: string) {
-    setIsDialogVisible(false);
-    setPutawayContainerBarcode(EMPTY_STRING);
-    setPendingContainerCode('');
-    confirmContainer(resolvedCode, true);
+  function handleContainerOverride() {
+    setMismatchedContainerCode(EMPTY_STRING);
+    confirmContainer(mismatchedContainerCode, true);
   }
 
   function confirmContainer(code: string, override: boolean) {
@@ -104,6 +99,7 @@ export default function SortationContainerScreen() {
     dispatch(
       patchPutawayTaskAction(task.facility.id, task.id, payload, (response) => {
         if (response && !response.error) {
+          containerScan.pass();
           navigate('Sortation', {
             sortedProduct: {
               name: product.name,
@@ -111,8 +107,7 @@ export default function SortationContainerScreen() {
             }
           });
         } else {
-          Alert.alert('Sortation Failed', response.errorMessage || 'An error occurred while sorting the product.');
-          setPutawayContainerBarcode(EMPTY_STRING);
+          containerScan.fail(response.errorMessage || 'An error occurred while sorting the product.');
         }
       })
     );
@@ -153,36 +148,27 @@ export default function SortationContainerScreen() {
             leftIcon={<ContainerIcon size={24} />}
             placeholder={task?.container?.locationNumber ?? EMPTY_FALLBACK}
             label="Container"
-            value={putawayContainerBarcode}
-            isEnabled={!isDialogVisible && !isSearchOpen}
-            onChange={setPutawayContainerBarcode}
+            value={containerScan.value}
+            isEnabled={!isSearchOpen}
+            danger={!!containerScan.error}
+            onChange={handleContainerChange}
             onSubmit={handleProcessing}
           />
           <SearchButton searchType="container" {...searchButtonProps} />
         </View>
-
-        <Button
-          style={styles.topSpace}
-          title="Confirm"
-          mode="contained"
-          size="100%"
-          onPress={() => handleProcessing(putawayContainerBarcode)}
-        >
-          Submit
-        </Button>
+        <ScanErrorText message={containerScan.error} />
+        {!!mismatchedContainerCode && (
+          <Button
+            style={styles.topSpace}
+            icon="check"
+            variant="danger"
+            title={`Use ${mismatchedContainerCode} anyway`}
+            mode="contained"
+            size="100%"
+            onPress={handleContainerOverride}
+          />
+        )}
       </View>
-
-      <ContainerMismatchDialog
-        visible={isDialogVisible}
-        scannedContainer={pendingContainerCode}
-        expectedContainer={task?.container?.locationNumber ?? ''}
-        onDismiss={() => {
-          setIsDialogVisible(false);
-          setPutawayContainerBarcode(EMPTY_STRING);
-          setPendingContainerCode('');
-        }}
-        onConfirm={handleContainerOverride}
-      />
     </ScrollView>
   );
 }

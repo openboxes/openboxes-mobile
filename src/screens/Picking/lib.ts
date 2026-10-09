@@ -67,11 +67,11 @@ export function revalidateTaskAndProceed({
   homeRoute,
   omitStagingLocationStep
 }: PickingFlowNavigation & {
-  revalidateCurrentTask: (callback: (revalidatedTask: PickTask | undefined) => void) => void;
+  revalidateCurrentTask: (callback: (revalidatedTask: PickTask | undefined, errorMessage?: string) => void) => void;
 }) {
-  revalidateCurrentTask((revalidatedTask) => {
+  revalidateCurrentTask((revalidatedTask, errorMessage) => {
     if (!revalidatedTask) {
-      Alert.alert('Error', 'Failed to revalidate the current pick task after picking.');
+      Alert.alert('Error', errorMessage ?? 'Failed to revalidate the current pick task after picking.');
       return;
     }
 
