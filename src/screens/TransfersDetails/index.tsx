@@ -10,6 +10,7 @@ import { TransferDetailsSkeleton } from '../../components/ContentSkeleton';
 import EmptyView from '../../components/EmptyView';
 import { EMPTY_FALLBACK } from '../../constants';
 import { completeStockTransfer, getStockTransfersSummary } from '../../redux/actions/transfers';
+import Theme from '../../utils/Theme';
 import styles from './styles';
 
 type TransferDetailsRouteParams = {
@@ -108,7 +109,7 @@ export default function TransferDetails() {
               {item?.originBinLocation?.name ?? EMPTY_FALLBACK}
             </Text>
           </View>
-          <ArrowRight width={20} height={20} />
+          <ArrowRight width={20} height={20} fill={Theme.colors.primary} />
           <View style={styles.binBlock}>
             <Text style={styles.binLabel}>To</Text>
             <Text style={styles.binValue} numberOfLines={1}>
@@ -161,7 +162,7 @@ export default function TransferDetails() {
               {transferDetail.origin?.name ?? EMPTY_FALLBACK}
             </Text>
           </View>
-          <ArrowRight width={18} height={18} />
+          <ArrowRight width={18} height={18} fill={Theme.colors.primary} />
           <View style={styles.binBlock}>
             <Text style={styles.binLabel}>Destination</Text>
             <Text style={styles.binValue} numberOfLines={1}>
