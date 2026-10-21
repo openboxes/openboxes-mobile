@@ -9,6 +9,7 @@ import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSea
 import EmptyView from '../../components/EmptyView';
 import ListLoadingSkeleton from '../../components/ListLoadingSkeleton';
 import showPopup from '../../components/Popup';
+import PullToRefreshControl from '../../components/PullToRefreshControl';
 import { HYPHEN } from '../../constants';
 import { Container } from '../../data/container/Container';
 import { Shipment } from '../../data/container/Shipment';
@@ -60,12 +61,22 @@ class OutboundLoadingList extends React.Component<Props, State> {
     });
   };
 
-  fetchShipmentsReadyForLoading = () => {
+  fetchShipmentsReadyForLoading = (done?: () => void) => {
     const { currentLocation } = this.props;
-    this.setState({ loading: true });
+    if (!done) {
+      this.setState({ loading: true });
+    }
     // For now were pull the same list of shipments as for packing list. Later change to the list of shipments
     // ready to be loaded
-    this.props.getShipmentsReadyToBePacked(currentLocation.id, 'PENDING', this.actionCallback, true);
+    this.props.getShipmentsReadyToBePacked(
+      currentLocation.id,
+      'PENDING',
+      (data: any) => {
+        this.actionCallback(data);
+        done?.();
+      },
+      true
+    );
   };
 
   showLoadingDetailsScreen = (shipment: any) => {
@@ -213,6 +224,7 @@ class OutboundLoadingList extends React.Component<Props, State> {
               }}
               keyExtractor={(item) => item.id}
               style={styles.list}
+              refreshControl={<PullToRefreshControl onRefresh={this.fetchShipmentsReadyForLoading} />}
             />
           )}
         </View>

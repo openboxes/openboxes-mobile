@@ -6,6 +6,7 @@ import { Button, Chip, Divider, Paragraph } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Icon, { Name } from '../../components/Icon';
+import PullToRefreshControl from '../../components/PullToRefreshControl';
 import { ScanErrorText } from '../../components/ScanErrorText';
 import { useScanFlash } from '../../components/ScanFlash';
 import { ScannerInput } from '../../components/ScannerInput';
@@ -159,9 +160,12 @@ export default function PutawayTaskListScreen({ route }: PutawayTaskListScreenPr
 
   const { isSearchOpen, searchButtonProps } = useSearchButton({ onSelect: handleSearchSelect });
 
-  const fetchTasks = useCallback(() => {
-    dispatch(getPutawayDetailsByContainerId(containerId));
-  }, [dispatch, containerId]);
+  const fetchTasks = useCallback(
+    (done?: () => void) => {
+      dispatch(getPutawayDetailsByContainerId(containerId, done, !!done));
+    },
+    [dispatch, containerId]
+  );
 
   useFocusEffect(
     useCallback(() => {
@@ -239,6 +243,7 @@ export default function PutawayTaskListScreen({ route }: PutawayTaskListScreenPr
       keyboardShouldPersistTaps="always"
       style={styles.contentWrapper}
       contentContainerStyle={styles.contentContainer}
+      refreshControl={<PullToRefreshControl onRefresh={fetchTasks} />}
     >
       <View style={styles.productDetails}>
         <View style={styles.headerRow}>

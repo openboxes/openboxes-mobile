@@ -23,7 +23,7 @@ export interface StateProps {
 export interface DispatchProps {
   showScreenLoading: (message?: string) => void;
   hideScreenLoading: () => void;
-  getShipment: (id: string, callback: (data: any) => void) => void;
+  getShipment: (id: string, callback: (data: any) => void, suppressLoading?: boolean) => void;
 }
 
 export interface OutboundDetailOwnProps {

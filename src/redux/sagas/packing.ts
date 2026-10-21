@@ -54,7 +54,9 @@ function* getShipmentsReadyToBePacked(action: any) {
 
 function* getShipment(action: any) {
   try {
-    yield put(showScreenLoading('Please wait...'));
+    if (!action.suppressLoading) {
+      yield put(showScreenLoading('Please wait...'));
+    }
     const response: ShipmentReadyToPackedResponse = yield call(
       api.getShipment,
       action.payload.id
@@ -64,13 +66,20 @@ function* getShipment(action: any) {
       payload: response.data
     });
     yield action.callback(response.data);
-    yield put(hideScreenLoading());
+    if (!action.suppressLoading) {
+      yield put(hideScreenLoading());
+    }
   } catch (e) {
     Sentry.captureException(
       `Error getting the shipment with id ${action.payload.id}`,
       e.message
     );
-    yield put(hideScreenLoading());
+    if (!action.suppressLoading) {
+      yield put(hideScreenLoading());
+    }
+    if (action.callback) {
+      yield action.callback({ error: true, errorMessage: e.message });
+    }
   }
 }
 

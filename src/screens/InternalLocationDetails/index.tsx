@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Button from '../../components/Button';
 import showPopup from '../../components/Popup';
 import PrintModal from '../../components/PrintModal';
+import PullToRefreshControl from '../../components/PullToRefreshControl';
 import { getInternalLocationDetail, getInternalLocationDetails } from '../../redux/actions/locations';
 import { hideScreenLoading } from '../../redux/actions/main';
 import { RootState } from '../../redux/reducers';
@@ -32,16 +33,18 @@ const InternalLocationDetails = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const onInternalLocation = (id: string) => {
+  const onInternalLocation = (id: string, done?: () => void) => {
     // handleBarcodeScan(barcodeNo);
     if (!id) {
       showPopup({
         message: 'Search id is empty',
         positiveButton: { text: 'Ok' }
       });
+      done?.();
       return;
     }
     const actionLocationCallback = (data: any) => {
+      done?.();
       if (data?.error) {
         showPopup({
           title: data.errorMessage ? `Failed to load search results with value = "${id}"` : null,
@@ -69,7 +72,7 @@ const InternalLocationDetails = () => {
         dispatch(hideScreenLoading());
       }
     };
-    dispatch(getInternalLocationDetails(id, location.id, actionLocationCallback));
+    dispatch(getInternalLocationDetails(id, location.id, actionLocationCallback, !!done));
   };
 
   const RenderItem = ({ title, subTitle }: any) => {
@@ -186,7 +189,11 @@ const InternalLocationDetails = () => {
             </View>
             <Text style={styles.boxHeading}>Available Items ({state.locationData.availableItems.length ?? '0'})</Text>
           </View>
-          <ScrollView>
+          <ScrollView
+            refreshControl={
+              <PullToRefreshControl onRefresh={(done) => onInternalLocation((route.params as any).id, done)} />
+            }
+          >
             {state.locationData?.availableItems?.map((item: any, index: any) => {
               return renderListItem(item, index);
             })}

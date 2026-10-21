@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import Button from '../../components/Button';
 import InputBox from '../../components/InputBox';
 import showPopup from '../../components/Popup';
+import PullToRefreshControl from '../../components/PullToRefreshControl';
 import { appConfig, HYPHEN } from '../../constants';
 import { Container } from '../../data/container/Shipment';
 import ShipmentItems from '../../data/inbound/ShipmentItems';
@@ -85,10 +86,11 @@ class OutboundStockDetails extends React.Component<Props, State> {
     return unpacked ? [unpacked, ...others] : others;
   }
 
-  fetchShipment = () => {
+  fetchShipment = (done?: () => void) => {
     const { shipment, shipmentId } = this.props.route.params;
     this.props.navigation.setParams({ refetchShipment: false });
     const actionCallback = (data: any) => {
+      done?.();
       if (!data || data?.error) {
         return Promise.resolve(null);
       } else {
@@ -96,8 +98,10 @@ class OutboundStockDetails extends React.Component<Props, State> {
       }
       this.props.hideScreenLoading();
     };
-    this.props.showScreenLoading('Loading..');
-    this.props.getShipment(shipment ? shipment.id : shipmentId, actionCallback);
+    if (!done) {
+      this.props.showScreenLoading('Loading..');
+    }
+    this.props.getShipment(shipment ? shipment.id : shipmentId, actionCallback, !!done);
   };
 
   onScanValueChange = (value: string) => {
@@ -188,7 +192,7 @@ class OutboundStockDetails extends React.Component<Props, State> {
 
     return (
       <>
-        <ScrollView>
+        <ScrollView refreshControl={<PullToRefreshControl onRefresh={this.fetchShipment} />}>
           <View style={[styles.contentContainer, { backgroundColor: Theme.colors.surface }]}>
             <View style={styles.headerRow}>
               <View style={styles.identifierContainer}>

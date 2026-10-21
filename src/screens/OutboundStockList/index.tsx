@@ -9,6 +9,7 @@ import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSea
 import EmptyView from '../../components/EmptyView';
 import ListLoadingSkeleton from '../../components/ListLoadingSkeleton';
 import showPopup from '../../components/Popup';
+import PullToRefreshControl from '../../components/PullToRefreshControl';
 import { HYPHEN } from '../../constants';
 import { Container } from '../../data/container/Container';
 import { Shipment } from '../../data/container/Shipment';
@@ -38,11 +39,14 @@ class OutboundStockList extends React.Component<Props, State> {
     this.fetchPacking();
   }
 
-  fetchPacking = () => {
-    this.setState({ loading: true });
+  fetchPacking = (done?: () => void) => {
+    if (!done) {
+      this.setState({ loading: true });
+    }
     const { currentLocation } = this.props;
     const actionCallback = (data: any) => {
       this.setState({ loading: false });
+      done?.();
       if (!data || data?.error) {
         showPopup({
           title: data?.errorMessage ? 'Shipment details' : null,
@@ -218,6 +222,7 @@ class OutboundStockList extends React.Component<Props, State> {
               }}
               keyExtractor={(item) => item.id}
               style={styles.list}
+              refreshControl={<PullToRefreshControl onRefresh={this.fetchPacking} />}
             />
           )}
         </View>

@@ -5,11 +5,12 @@ import { SectionList, Text, View } from 'react-native';
 import { Card, Chip, Divider, Subheading } from 'react-native-paper';
 
 import { LayoutStyle } from '../../assets/styles';
+import PullToRefreshControl from '../../components/PullToRefreshControl';
 import { parseDateToISODate, parseFromISODateToLocaleString } from '../../utils/utils';
 import styles from './styles';
 import InboundDetailProps from './types';
 
-const InboundOrderContainer = ({ data, shipmentId, shipmentData }: InboundDetailProps) => {
+const InboundOrderContainer = ({ data, shipmentId, shipmentData, onRefresh }: InboundDetailProps) => {
   const navigation = useNavigation<any>();
 
   const RenderData = ({ title, subText }: any): JSX.Element => {
@@ -133,6 +134,7 @@ const InboundOrderContainer = ({ data, shipmentId, shipmentData }: InboundDetail
       renderItem={({ item, index }) => renderListItem(item, index)}
       sections={data}
       keyExtractor={(item, index) => item + index}
+      refreshControl={<PullToRefreshControl onRefresh={onRefresh} />}
     />
   );
 };

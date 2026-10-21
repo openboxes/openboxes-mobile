@@ -26,11 +26,12 @@ export const getShipmentsReadyToBePacked = (
   };
 };
 
-export const getShipment = (id: any, callback: (products: any) => void) => {
+export const getShipment = (id: any, callback: (products: any) => void, suppressLoading?: boolean) => {
   return {
     type: GET_SHIPMENT_REQUEST,
     payload: { id },
-    callback
+    callback,
+    suppressLoading
   };
 };
 

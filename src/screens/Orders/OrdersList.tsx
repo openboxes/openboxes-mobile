@@ -13,6 +13,7 @@ export interface Props {
   orders: Order[] | null;
   onOrderTapped: (order: Order) => void;
   emptyDescription?: string;
+  refreshControl?: ReactElement;
 }
 
 export default function OrdersList(props: Props) {
@@ -27,6 +28,7 @@ export default function OrdersList(props: Props) {
       }
       keyExtractor={(order) => order.id}
       style={styles.list}
+      refreshControl={props.refreshControl}
     />
   ) : null;
 }

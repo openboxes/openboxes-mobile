@@ -9,6 +9,7 @@ import { LayoutStyle } from '../../assets/styles';
 import EmptyView from '../../components/EmptyView';
 import InputBox from '../../components/InputBox';
 import ListLoadingSkeleton from '../../components/ListLoadingSkeleton';
+import PullToRefreshControl from '../../components/PullToRefreshControl';
 import { HYPHEN } from '../../constants';
 import PutAway from '../../data/putaway/PutAway';
 import PutAwayItems from '../../data/putaway/PutAwayItems';
@@ -48,11 +49,14 @@ class PutawayList extends React.Component<Props, State> {
     }
   }
 
-  fetchPutAways = (query: any) => {
+  fetchPutAways = (query: any, done?: () => void) => {
     this.props.navigation.setParams({ refetchPutaways: false });
-    this.setState({ loading: true });
+    if (!done) {
+      this.setState({ loading: true });
+    }
     const actionCallback = (putAwayList: any) => {
       this.setState({ loading: false });
+      done?.();
       if (!putAwayList || putAwayList?.error) {
         this.setState({ showList: true, putAwayList: [] });
         return Promise.resolve(null);
@@ -181,6 +185,7 @@ class PutawayList extends React.Component<Props, State> {
               )}
               keyExtractor={(item) => item.id}
               style={styles.list}
+              refreshControl={<PullToRefreshControl onRefresh={(done) => this.fetchPutAways(null, done)} />}
             />
           </View>
         ) : null}

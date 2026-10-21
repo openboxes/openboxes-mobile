@@ -1,11 +1,8 @@
-/* eslint-disable complexity */
 import Location from '../../data/location/Location';
 import { Session } from '../../data/auth/Session';
-import { SHOW_SCREEN_LOADING, HIDE_SCREEN_LOADING, GET_SESSION_REQUEST_SUCCESS, REFRESH_SCREEN } from '../actions/main';
+import { SHOW_SCREEN_LOADING, HIDE_SCREEN_LOADING, GET_SESSION_REQUEST_SUCCESS } from '../actions/main';
 import { SET_CURRENT_LOCATION_REQUEST_SUCCESS } from '../actions/locations';
 import { LOGIN_REQUEST_SUCCESS, LOGOUT_REQUEST_SUCCESS } from '../actions/auth';
-import { GET_PUTAWAY_CANDIDATES_REQUEST_SUCCESS } from '../actions/putaways';
-import { GET_PRODUCT_BY_ID_REQUEST_SUCCESS, GET_PRODUCTS_REQUEST_SUCCESS } from '../actions/products';
 import { FETCH_STOCK_TRANSFERS_SUCCESS } from '../actions/transfers';
 
 export interface State {
@@ -16,7 +13,6 @@ export interface State {
   };
   currentLocation?: Location | null;
   session?: Session | null;
-  refreshing: boolean;
 }
 
 const initialState: State = {
@@ -26,18 +22,11 @@ const initialState: State = {
     message: null
   },
   currentLocation: null,
-  session: null,
-  refreshing: false
+  session: null
 };
 
 function reducer(state = initialState, action: any) {
   switch (action.type) {
-    case REFRESH_SCREEN: {
-      return {
-        ...state,
-        refreshing: true
-      };
-    }
     case GET_SESSION_REQUEST_SUCCESS: {
       const { location } = action.payload;
       return {
@@ -81,14 +70,6 @@ function reducer(state = initialState, action: any) {
       return {
         ...state,
         currentLocation: location
-      };
-    }
-    case GET_PUTAWAY_CANDIDATES_REQUEST_SUCCESS:
-    case GET_PRODUCT_BY_ID_REQUEST_SUCCESS:
-    case GET_PRODUCTS_REQUEST_SUCCESS: {
-      return {
-        ...state,
-        refreshing: false
       };
     }
     case FETCH_STOCK_TRANSFERS_SUCCESS: {

@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import EmptyView from '../../components/EmptyView';
 import InputBox from '../../components/InputBox';
 import showPopup from '../../components/Popup';
+import PullToRefreshControl from '../../components/PullToRefreshControl';
 import { HYPHEN } from '../../constants';
 import { Container, Shipment } from '../../data/container/Shipment';
 import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
@@ -73,11 +74,20 @@ class OutboundLoadingDetails extends React.Component<Props, State> {
     this.props.hideScreenLoading();
   };
 
-  fetchShipment = () => {
+  fetchShipment = (done?: () => void) => {
     const { shipmentId } = this.props.route.params;
     this.props.navigation.setParams({ refetchShipment: false });
-    this.props.showScreenLoading('Loading..');
-    this.props.getShipment(shipmentId, this.actionCallback);
+    if (!done) {
+      this.props.showScreenLoading('Loading..');
+    }
+    this.props.getShipment(
+      shipmentId,
+      (data: any) => {
+        done?.();
+        return this.actionCallback(data);
+      },
+      !!done
+    );
   };
 
   showLoadingLPNScreen = (container: Container, shipment: Shipment | null, scanned?: boolean) => {
@@ -173,7 +183,7 @@ class OutboundLoadingDetails extends React.Component<Props, State> {
 
   render() {
     return (
-      <ScrollView>
+      <ScrollView refreshControl={<PullToRefreshControl onRefresh={this.fetchShipment} />}>
         <View style={[styles.contentContainer, { backgroundColor: Theme.colors.surface }]}>
           <OrderDetailsSection shipment={this.state.shipment} />
         </View>

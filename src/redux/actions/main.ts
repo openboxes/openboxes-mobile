@@ -2,7 +2,6 @@ export const SHOW_SCREEN_LOADING = 'SHOW_SCREEN_LOADING';
 export const HIDE_SCREEN_LOADING = 'HIDE_SCREEN_LOADING';
 export const GET_SESSION_REQUEST = 'GET_SESSION_REQUEST';
 export const GET_SESSION_REQUEST_SUCCESS = 'GET_SESSION_REQUEST_SUCCESS';
-export const REFRESH_SCREEN = 'REFRESH_SCREEN';
 
 export function showScreenLoading(message?: string) {
   return {
@@ -16,12 +15,6 @@ export function hideScreenLoading() {
     type: HIDE_SCREEN_LOADING
   };
 }
-export function refreshScreenAction() {
-  return {
-    type: REFRESH_SCREEN
-  };
-}
-
 export function getSessionAction(callback: (data: any) => void, suppressLoading?: boolean) {
   return {
     type: GET_SESSION_REQUEST,

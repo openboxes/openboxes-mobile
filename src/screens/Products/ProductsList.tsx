@@ -12,6 +12,7 @@ import { Card, Chip, Divider, Subheading } from 'react-native-paper';
 
 import { LayoutStyle } from '../../assets/styles';
 import EmptyView from '../../components/EmptyView';
+import PullToRefreshControl from '../../components/PullToRefreshControl';
 import { appConfig, HYPHEN } from '../../constants';
 import Product from '../../data/product/Product';
 import Theme from '../../utils/Theme';
@@ -20,12 +21,13 @@ export interface Props {
   products: Product[] | null;
   onProductTapped: (product: Product) => void;
   onEndReached?: () => void;
+  onRefresh?: (done: () => void) => void;
   loadingMore?: boolean;
   hasMore?: boolean;
 }
 
 export default function ProductsList(props: Props) {
-  const { products, onProductTapped, onEndReached, loadingMore, hasMore } = props;
+  const { products, onProductTapped, onEndReached, onRefresh, loadingMore, hasMore } = props;
 
   if (!products) {
     return <EmptyView title="Product List" description="There are no products on the list" />;
@@ -59,6 +61,7 @@ export default function ProductsList(props: Props) {
       style={styles.list}
       keyboardShouldPersistTaps="handled"
       ListFooterComponent={renderFooter}
+      refreshControl={onRefresh ? <PullToRefreshControl onRefresh={onRefresh} /> : undefined}
       onEndReached={onEndReached}
       onEndReachedThreshold={appConfig.LIST_END_REACHED_THRESHOLD}
     />

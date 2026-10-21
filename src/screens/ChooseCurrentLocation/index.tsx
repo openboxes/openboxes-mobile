@@ -9,6 +9,7 @@ import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSea
 import EmptyView from '../../components/EmptyView';
 import ListLoadingSkeleton from '../../components/ListLoadingSkeleton';
 import showPopup from '../../components/Popup';
+import PullToRefreshControl from '../../components/PullToRefreshControl';
 import Location from '../../data/location/Location';
 import { getLocationsAction, setCurrentLocationAction } from '../../redux/actions/locations';
 import { RootState } from '../../redux/reducers';
@@ -83,8 +84,13 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
   };
 
   componentDidMount = () => {
+    this.fetchLocations();
+  };
+
+  fetchLocations = (done?: () => void) => {
     const actionCallback = (data: any) => {
       this.setState({ loading: false });
+      done?.();
       if (data?.error) {
         showPopup({
           title: data.errorMessage ? 'Failed to load locations' : 'Error',
@@ -252,7 +258,11 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
     }
 
     return (
-      <ScrollView style={styles.scrollView} keyboardShouldPersistTaps="handled">
+      <ScrollView
+        style={styles.scrollView}
+        keyboardShouldPersistTaps="handled"
+        refreshControl={<PullToRefreshControl onRefresh={this.fetchLocations} />}
+      >
         {groupLocationEntries
           ? this.renderGroupedLocations(this.getSortedOrgNameAndLocationsDictionary(filteredLocations), currentLocation)
           : this.renderAllLocations(filteredLocations, currentLocation)}

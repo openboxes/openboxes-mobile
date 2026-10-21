@@ -7,6 +7,7 @@ import Button from '../../components/Button';
 import EmptyView from '../../components/EmptyView';
 import showPopup from '../../components/Popup';
 import PrintModal from '../../components/PrintModal';
+import PullToRefreshControl from '../../components/PullToRefreshControl';
 import { HYPHEN } from '../../constants';
 import { Container } from '../../data/container/Container';
 import { ContainerShipmentItem } from '../../data/container/ContainerShipmentItem';
@@ -113,8 +114,12 @@ class LpnDetail extends React.Component<Props, State> {
     this.fetchContainerDetail(id);
   }
 
-  fetchContainerDetail = (id: string) => {
+  fetchContainerDetail = (id: string, done?: () => void) => {
     const actionCallback = (data: any) => {
+      done?.();
+      if (done && data?.error) {
+        return;
+      }
       const { shipmentNumber } = this.props.route.params;
       data.shipmentNumber = shipmentNumber;
       this.setState({
@@ -130,7 +135,12 @@ class LpnDetail extends React.Component<Props, State> {
 
   render() {
     return (
-      <ScrollView style={styles.contentContainer}>
+      <ScrollView
+        style={styles.contentContainer}
+        refreshControl={
+          <PullToRefreshControl onRefresh={(done) => this.fetchContainerDetail(this.props.route.params.id, done)} />
+        }
+      >
         <View style={styles.lpnDetailsContainer}>
           <View style={styles.headerRow}>
             <Chip icon="barcode" style={styles.chipDefault} textStyle={styles.chipText}>

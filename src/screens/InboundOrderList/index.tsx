@@ -12,6 +12,7 @@ import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSea
 import EmptyView from '../../components/EmptyView';
 import ListLoadingSkeleton from '../../components/ListLoadingSkeleton';
 import showPopup from '../../components/Popup';
+import PullToRefreshControl from '../../components/PullToRefreshControl';
 import { fetchInboundOrderList } from '../../redux/actions/inboundorder';
 import { RootState } from '../../redux/reducers';
 import { emptyStateMessage } from '../../utils/emptyStateMessage';
@@ -45,11 +46,14 @@ const InboundOrderList = () => {
     });
   }, [route]);
 
-  const getInboundOrderList = (id: string = '') => {
+  const getInboundOrderList = (id: string = '', done?: () => void) => {
     navigation.setParams({ refetchOrders: false });
-    setLoading(true);
+    if (!done) {
+      setLoading(true);
+    }
     const callback = (data: any) => {
       setLoading(false);
+      done?.();
       if (data?.error) {
         showPopup({
           title: data.errorMessage ? 'Inbound order details' : null,
@@ -181,6 +185,7 @@ const InboundOrderList = () => {
           keyboardDismissMode="on-drag"
           keyExtractor={(inboundOrder) => inboundOrder.id}
           renderItem={RenderListItem}
+          refreshControl={<PullToRefreshControl onRefresh={(done) => getInboundOrderList(location?.id, done)} />}
           ListEmptyComponent={
             <EmptyView
               title="Receiving"

@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSearchHeader';
 import ListLoadingSkeleton from '../../components/ListLoadingSkeleton';
 import showPopup from '../../components/Popup';
+import PullToRefreshControl from '../../components/PullToRefreshControl';
 import { Order } from '../../data/order/Order';
 import { getOrdersAction } from '../../redux/actions/orders';
 import { emptyStateMessage } from '../../utils/emptyStateMessage';
@@ -33,11 +34,12 @@ class Index extends React.Component<Props, State> {
     }
   }
 
-  searchOrders = (query: string | null) => {
+  searchOrders = (query: string | null, done?: () => void) => {
     this.props.navigation.setParams({ refetchOrders: false });
-    this.setState({ searchTerm: query ?? '', loading: true });
+    this.setState({ searchTerm: query ?? '', loading: !done });
     const actionCallback = (data: any) => {
       this.setState({ loading: false });
+      done?.();
       if (data?.error) {
         showPopup({
           title: data.errorMessage ? 'Failed to fetch orders' : 'Error',
@@ -87,6 +89,9 @@ class Index extends React.Component<Props, State> {
             <OrdersList
               orders={allOrders}
               emptyDescription={emptyStateMessage('orders', searchTerm, 'No outbound orders found')}
+              refreshControl={
+                <PullToRefreshControl onRefresh={(done) => this.searchOrders(this.state.searchTerm || null, done)} />
+              }
               onOrderTapped={this.goToOrderDetailsScreen}
             />
           )}

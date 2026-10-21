@@ -9,6 +9,7 @@ import { LayoutStyle } from '../../assets/styles';
 import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSearchHeader';
 import EmptyView from '../../components/EmptyView';
 import ListLoadingSkeleton from '../../components/ListLoadingSkeleton';
+import PullToRefreshControl from '../../components/PullToRefreshControl';
 import { getLocationProductSummary } from '../../redux/actions/locations';
 import { RootState } from '../../redux/reducers';
 import { emptyStateMessage } from '../../utils/emptyStateMessage';
@@ -29,10 +30,13 @@ const ProductSummary = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const getProductSummary = (id: string) => {
-    setIsLoading(true);
+  const getProductSummary = (id: string, done?: () => void) => {
+    if (!done) {
+      setIsLoading(true);
+    }
     const callback = (data: any) => {
       setIsLoading(false);
+      done?.();
       if (data?.error) {
         Alert.alert('Product Summary', data.errorMessage ?? 'Failed to load Product Summary details.', [
           { text: 'Retry', onPress: () => dispatch(getLocationProductSummary(id, callback)) },
@@ -117,6 +121,7 @@ const ProductSummary = () => {
             />
           }
           keyExtractor={(item, index) => item?.productCode?.toString() ?? index.toString()}
+          refreshControl={<PullToRefreshControl onRefresh={(done) => getProductSummary(location.id, done)} />}
         />
       )}
     </View>
