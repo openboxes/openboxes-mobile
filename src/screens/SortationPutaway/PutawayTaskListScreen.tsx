@@ -21,6 +21,7 @@ import styles from './styles';
 type RootStackParamList = {
   SortationPutawayLocationScan: {
     currentTaskIndex: number;
+    task: SortationTask;
     isUserDirected?: boolean;
     containerId?: string;
     requiresValidationScan?: boolean;
@@ -114,6 +115,8 @@ export default function PutawayTaskListScreen({ route }: PutawayTaskListScreenPr
     resetFilters();
     navigation.navigate('SortationPutawayLocationScan', {
       currentTaskIndex: globalIndex >= 0 ? globalIndex : 0,
+      // An in-flight refresh can change the task at this index after navigation.
+      task,
       isUserDirected: true,
       containerId,
       requiresValidationScan

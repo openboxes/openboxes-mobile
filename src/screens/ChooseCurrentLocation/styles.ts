@@ -17,6 +17,9 @@ export default StyleSheet.create({
     borderRadius: Theme.roundness,
     margin: Theme.spacing.small
   },
+  scrollContent: {
+    flexGrow: 1
+  },
   cardContainer: {
     marginHorizontal: Theme.spacing.small / 4,
     marginVertical: Theme.spacing.small

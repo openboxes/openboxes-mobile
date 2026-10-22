@@ -56,7 +56,9 @@ class PutawayList extends React.Component<Props, State> {
       this.setState({ loading: false });
       done?.();
       if (!putAwayList || putAwayList?.error) {
-        this.setState({ showList: true, putAwayList: [] });
+        if (!done) {
+          this.setState({ showList: true, putAwayList: [] });
+        }
         return Promise.resolve(null);
       }
       this.setState({

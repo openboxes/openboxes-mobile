@@ -236,8 +236,11 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
       );
     }
 
+    const filteredLocations = availableLocations?.length ? this.getFilteredLocations() : [];
+    let content: React.ReactNode;
+
     if (!availableLocations || availableLocations.length === 0) {
-      return (
+      content = (
         <View style={styles.emptyContainer}>
           <EmptyView
             title="No Locations Available"
@@ -245,27 +248,26 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
           />
         </View>
       );
-    }
-
-    const filteredLocations = this.getFilteredLocations();
-
-    if (filteredLocations.length === 0) {
-      return (
+    } else if (filteredLocations.length === 0) {
+      content = (
         <View style={styles.emptyContainer}>
           <EmptyView title="No Locations Found" description={`No locations match "${searchTerm}".`} />
         </View>
       );
+    } else {
+      content = groupLocationEntries
+        ? this.renderGroupedLocations(this.getSortedOrgNameAndLocationsDictionary(filteredLocations), currentLocation)
+        : this.renderAllLocations(filteredLocations, currentLocation);
     }
 
     return (
       <ScrollView
         style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
         refreshControl={<PullToRefreshControl onRefresh={this.fetchLocations} />}
       >
-        {groupLocationEntries
-          ? this.renderGroupedLocations(this.getSortedOrgNameAndLocationsDictionary(filteredLocations), currentLocation)
-          : this.renderAllLocations(filteredLocations, currentLocation)}
+        {content}
       </ScrollView>
     );
   };

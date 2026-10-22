@@ -9,7 +9,7 @@ import InputBox from '../../components/InputBox';
 import showPopup from '../../components/Popup';
 import PullToRefreshControl from '../../components/PullToRefreshControl';
 import { appConfig, HYPHEN } from '../../constants';
-import { Container } from '../../data/container/Shipment';
+import { Container, Shipment } from '../../data/container/Shipment';
 import ShipmentItems from '../../data/inbound/ShipmentItems';
 import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
 import { getShipment } from '../../redux/actions/packing';
@@ -94,7 +94,16 @@ class OutboundStockDetails extends React.Component<Props, State> {
       if (!data || data?.error) {
         return Promise.resolve(null);
       } else {
-        this.setState({ shipment: data });
+        this.setState(({ scannedValue }) => {
+          const matchingShipmentItemIds = scannedValue
+            ? this.findMatchingShipmentItem(scannedValue, data).map(({ id }) => id)
+            : [];
+          const matchingContainerIds =
+            scannedValue && matchingShipmentItemIds.length === 0
+              ? this.findMatchingContainer(scannedValue, data).map(({ id }) => id)
+              : [];
+          return { shipment: data, matchingShipmentItemIds, matchingContainerIds };
+        });
       }
       this.props.hideScreenLoading();
     };
@@ -147,10 +156,10 @@ class OutboundStockDetails extends React.Component<Props, State> {
     });
   };
 
-  findMatchingShipmentItem = (input: string): ShipmentItems[] => {
+  findMatchingShipmentItem = (input: string, shipment: Shipment | null = this.state.shipment): ShipmentItems[] => {
     const searchTerm = input.toLowerCase();
     return (
-      this.state.shipment?.shipmentItems?.filter(
+      shipment?.shipmentItems?.filter(
         (item: ShipmentItems) =>
           item.inventoryItem?.lotNumber?.toLowerCase().includes(searchTerm) ||
           item.lotNumber?.toLowerCase().includes(searchTerm) ||
@@ -160,10 +169,10 @@ class OutboundStockDetails extends React.Component<Props, State> {
     );
   };
 
-  findMatchingContainer = (input: string): Container[] => {
+  findMatchingContainer = (input: string, shipment: Shipment | null = this.state.shipment): Container[] => {
     const searchTerm = input.toLowerCase();
     return (
-      this.state.shipment?.containers?.filter(
+      shipment?.containers?.filter(
         (container: Container) =>
           container.containerNumber?.toLowerCase()?.includes(searchTerm) ||
           container?.name?.toLowerCase().includes(searchTerm)

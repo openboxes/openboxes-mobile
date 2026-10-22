@@ -95,7 +95,7 @@ export default function CreateTransferItemListScreen() {
             done?.();
             if (response && !response.error && Array.isArray(response.data)) {
               setCandidates(response.data as StockTransferCandidate[]);
-            } else {
+            } else if (!done) {
               setCandidates([]);
             }
           },
