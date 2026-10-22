@@ -94,7 +94,9 @@ function* createReceivingBinLocation(action: any) {
 
 function* fetchPartialReceiving(action: any) {
   try {
-    yield put(showScreenLoading('Please wait...'));
+    if (!action.suppressLoading) {
+      yield put(showScreenLoading('Please wait...'));
+    }
     const response: any = yield call(
       api.fetchPartialReceiving,
       action.payload.id ?? ''
@@ -104,10 +106,18 @@ function* fetchPartialReceiving(action: any) {
       payload: response.data
     });
     yield action.callback(response.data);
-    yield put(hideScreenLoading());
+    if (!action.suppressLoading) {
+      yield put(hideScreenLoading());
+    }
   } catch (e) {
-    Alert.alert(e.message);
-    yield put(hideScreenLoading());
+    if (action.callback) {
+      yield action.callback({ error: true, errorMessage: e.message });
+    } else {
+      Alert.alert(e.message);
+    }
+    if (!action.suppressLoading) {
+      yield put(hideScreenLoading());
+    }
   }
 }
 

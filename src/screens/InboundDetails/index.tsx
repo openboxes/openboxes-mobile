@@ -25,8 +25,9 @@ const InboundDetails = () => {
     return unsubscribe;
   }, [navigation]);
 
-  const getPartialReceiving = (id: string = '') => {
+  const getPartialReceiving = (id: string = '', done?: () => void) => {
     const callback = (data: any) => {
+      done?.();
       if (data?.error) {
         showPopup({
           title: data.errorMessage ? 'Inbound order details' : null,
@@ -75,7 +76,7 @@ const InboundDetails = () => {
         setState({ ...state });
       }
     };
-    dispatch(fetchPartialReceiving(callback, id));
+    dispatch(fetchPartialReceiving(callback, id, !!done));
   };
 
   return (
@@ -83,6 +84,7 @@ const InboundDetails = () => {
       data={state.inboundData?.sectionData ?? []}
       shipmentId={state.inboundData?.shipmentId}
       shipmentData={shipmentDetails}
+      onRefresh={(done) => getPartialReceiving(shipmentDetails.id, done)}
     />
   );
 };

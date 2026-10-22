@@ -81,11 +81,17 @@ export function searchInternalLocations(
   };
 }
 
-export function getInternalLocationDetails(id: string, location: string, callback: (data: any) => void) {
+export function getInternalLocationDetails(
+  id: string,
+  location: string,
+  callback: (data: any) => void,
+  suppressLoading?: boolean
+) {
   return {
     type: GET_INTERNAL_LOCATION_DETAIL,
     payload: { id, location },
-    callback
+    callback,
+    suppressLoading
   };
 }
 

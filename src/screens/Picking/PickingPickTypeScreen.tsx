@@ -4,6 +4,7 @@ import { Alert, ScrollView, TouchableOpacity, View } from 'react-native';
 import { Button, RadioButton, TextInput as PaperTextInput, Paragraph, Title } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
+import PullToRefreshControl from '../../components/PullToRefreshControl';
 import { navigate } from '../../NavigationService';
 import { getPickTaskCountsAction } from '../../redux/actions/picking';
 import { DeliveryType, DeliveryTypeCode, DeliveryTypeOrderCount } from '../../types/picking';
@@ -23,23 +24,34 @@ export default function PickingPickTypeScreen() {
   const [numberOfOrdersToGroup, setNumberOfOrdersToGroup] = React.useState<string>('');
   const [counts, setCounts] = React.useState<Record<string, DeliveryTypeOrderCount>>({});
   const [hasLoadedCounts, setHasLoadedCounts] = React.useState<boolean>(false);
+  // A replacement count request must also settle a pull cancelled by takeLatest.
+  const pendingPullDone = React.useRef<() => void>();
 
-  const fetchCounts = React.useCallback(() => {
-    dispatch(
-      getPickTaskCountsAction(({ response, errorMessage }) => {
-        setHasLoadedCounts(true);
-        if (errorMessage || !response?.data) {
-          Alert.alert('Error', 'Failed to load pick task counts. Please try again.');
-          return;
-        }
-        const byCode = response.data.reduce<Record<string, DeliveryTypeOrderCount>>((acc, item) => {
-          acc[item.deliveryTypeCode] = item;
-          return acc;
-        }, {});
-        setCounts(byCode);
-      })
-    );
-  }, [dispatch]);
+  const fetchCounts = React.useCallback(
+    (done?: () => void) => {
+      if (done) {
+        pendingPullDone.current = done;
+      }
+      dispatch(
+        getPickTaskCountsAction(({ response, errorMessage }) => {
+          setHasLoadedCounts(true);
+          const pullDone = pendingPullDone.current;
+          pendingPullDone.current = undefined;
+          pullDone?.();
+          if (errorMessage || !response?.data) {
+            Alert.alert('Error', 'Failed to load pick task counts. Please try again.');
+            return;
+          }
+          const byCode = response.data.reduce<Record<string, DeliveryTypeOrderCount>>((acc, item) => {
+            acc[item.deliveryTypeCode] = item;
+            return acc;
+          }, {});
+          setCounts(byCode);
+        })
+      );
+    },
+    [dispatch]
+  );
 
   React.useEffect(() => {
     setDeliveryType(DELIVERY_TYPES[0]);
@@ -96,6 +108,7 @@ export default function PickingPickTypeScreen() {
       style={styles.mainWrapper}
       contentContainerStyle={{ paddingBottom: Theme.spacing.large }}
       keyboardShouldPersistTaps="handled"
+      refreshControl={<PullToRefreshControl onRefresh={fetchCounts} />}
     >
       <View style={styles.wrapperWithPadding}>
         <Title>Select Pick Type and Grouping</Title>

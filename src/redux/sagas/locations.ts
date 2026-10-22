@@ -151,16 +151,22 @@ function* searchInternalLocations(action: any) {
 
 function* getInternalLocationsDetails(action: any) {
   try {
-    yield put(showScreenLoading('Loading...'));
+    if (!action.suppressLoading) {
+      yield put(showScreenLoading('Loading...'));
+    }
     const response = yield call(api.internalLocationsDetails, action.payload.id, action.payload.location);
     yield put({
       type: GET_INTERNAL_LOCATIONS_DETAIL_SUCCESS,
       payload: response.data
     });
     yield action.callback(response);
-    yield put(hideScreenLoading());
+    if (!action.suppressLoading) {
+      yield put(hideScreenLoading());
+    }
   } catch (e) {
-    yield put(hideScreenLoading());
+    if (!action.suppressLoading) {
+      yield put(hideScreenLoading());
+    }
     yield action.callback({
       error: true,
       errorMessage: e.message

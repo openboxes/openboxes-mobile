@@ -74,10 +74,15 @@ export function setPutawayCandidateRemainingQuantity(key: string, remainingQuant
   };
 }
 
-export function getPutawayDetailsByContainerId(containerId: string, callback?: (data: any) => void) {
+export function getPutawayDetailsByContainerId(
+  containerId: string,
+  callback?: (data: any) => void,
+  suppressLoading?: boolean
+) {
   return {
     type: GET_PUTAWAY_DETAILS_BY_CONTAINER_ID_REQUEST,
     payload: { containerId },
-    callback
+    callback,
+    suppressLoading
   };
 }

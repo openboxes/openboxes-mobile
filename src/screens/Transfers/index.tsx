@@ -7,6 +7,7 @@ import { LayoutStyle } from '../../assets/styles';
 import EmptyView from '../../components/EmptyView';
 import ListLoadingSkeleton from '../../components/ListLoadingSkeleton';
 import showPopup from '../../components/Popup';
+import PullToRefreshControl from '../../components/PullToRefreshControl';
 import { appConfig, DEFAULT_DATE_FORMAT_OPTIONS } from '../../constants';
 import { getOrdersAction } from '../../redux/actions/orders';
 import { getStockTransfers } from '../../redux/actions/transfers';
@@ -29,11 +30,12 @@ class Transfers extends React.Component<Props, State> {
     this._getTransfersList();
   }
 
-  _getTransfersList = () => {
+  _getTransfersList = (done?: () => void) => {
     const { getStockTransfers, currentLocation } = this.props;
 
     if (!currentLocation || !currentLocation.id) {
       this.setState({ loading: false });
+      done?.();
       showPopup({
         title: 'Error',
         message: 'Current location is not set. Please try again later.',
@@ -42,9 +44,12 @@ class Transfers extends React.Component<Props, State> {
       return;
     }
 
-    this.setState({ loading: true });
+    if (!done) {
+      this.setState({ loading: true });
+    }
     const callback = (data: any) => {
       this.setState({ loading: false });
+      done?.();
       if (data?.error) {
         showPopup({
           title: data.errorMessage ? 'Transfer list' : null,
@@ -103,6 +108,7 @@ class Transfers extends React.Component<Props, State> {
           <ListLoadingSkeleton visible count={5} CardComponent={TransferCardSkeleton} />
         ) : (
           <FlatList
+            refreshControl={<PullToRefreshControl onRefresh={this._getTransfersList} />}
             data={transfersList ?? []}
             ListEmptyComponent={<EmptyView title="Transfers" description="There are no items for Transfer" />}
             renderItem={(item: ListRenderItemInfo<any>) => {

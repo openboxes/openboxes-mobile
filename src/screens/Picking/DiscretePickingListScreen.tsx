@@ -1,5 +1,5 @@
 import { useFocusEffect } from '@react-navigation/native';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { FlatList, ScrollView, View } from 'react-native';
 import { Chip, Text } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
@@ -7,6 +7,7 @@ import { useDispatch } from 'react-redux';
 import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSearchHeader';
 import EmptyView from '../../components/EmptyView';
 import ListLoadingSkeleton from '../../components/ListLoadingSkeleton';
+import PullToRefreshControl from '../../components/PullToRefreshControl';
 import { navigate } from '../../NavigationService';
 import { getOpenPickTasksAction } from '../../redux/actions/picking';
 import { DiscretePickingOrder, PickTask } from '../../types/picking';
@@ -36,15 +37,17 @@ export default function DiscretePickingListScreen() {
   const [selectedQueueType, setSelectedQueueType] = useState<QueueTypeFilter>(ALL_QUEUE_TYPES);
   const [excludeAssignedRequisitions, setExcludeAssignedRequisitions] = useState<boolean>(true);
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
-  const [isPullRefreshing, setIsPullRefreshing] = useState<boolean>(false);
   const [hasLoaded, setHasLoaded] = useState<boolean>(false);
   const [isStartingOrder, setIsStartingOrder] = useState<boolean>(false);
+  // takeLatest cancels a superseded pull without its callback, so any completion settles it
+  const pendingPullDone = useRef<() => void>();
 
   const fetchOrders = useCallback(
-    (excludeAssignedRequisitionsParam: boolean, fromPull = false) => {
-      setIsRefreshing(true);
-      if (fromPull) {
-        setIsPullRefreshing(true);
+    (excludeAssignedRequisitionsParam: boolean, done?: () => void) => {
+      if (done) {
+        pendingPullDone.current = done;
+      } else {
+        setIsRefreshing(true);
       }
       dispatch(
         getOpenPickTasksAction(excludeAssignedRequisitionsParam, ({ response, errorMessage }) => {
@@ -52,8 +55,9 @@ export default function DiscretePickingListScreen() {
             setTasks(response.data);
           }
           setIsRefreshing(false);
-          setIsPullRefreshing(false);
           setHasLoaded(true);
+          pendingPullDone.current?.();
+          pendingPullDone.current = undefined;
         })
       );
     },
@@ -104,7 +108,7 @@ export default function DiscretePickingListScreen() {
         placeholder="Search by order, customer, or product"
         resetSearch={() => setSearchTerm('')}
         accessibilityLabel="Search open orders"
-        loading={hasLoaded && isRefreshing && !isPullRefreshing && !isStartingOrder}
+        loading={hasLoaded && isRefreshing && !isStartingOrder}
         onSearchTermSubmit={setSearchTerm}
       />
 
@@ -165,14 +169,13 @@ export default function DiscretePickingListScreen() {
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="on-drag"
           contentContainerStyle={styles.listContent}
-          refreshing={isPullRefreshing}
           ListEmptyComponent={
             <EmptyView
               title="Orders"
               description={emptyStateMessage('orders', searchTerm, 'No open orders ready for picking')}
             />
           }
-          onRefresh={() => fetchOrders(excludeAssignedRequisitions, true)}
+          refreshControl={<PullToRefreshControl onRefresh={(done) => fetchOrders(excludeAssignedRequisitions, done)} />}
         />
       )}
     </View>

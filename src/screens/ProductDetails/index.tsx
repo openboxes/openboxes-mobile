@@ -8,6 +8,7 @@ import Button from '../../components/Button';
 import { CardSkeleton, ProductDetailsSkeleton } from '../../components/ContentSkeleton';
 import EmptyView from '../../components/EmptyView';
 import PrintModal from '../../components/PrintModal';
+import PullToRefreshControl from '../../components/PullToRefreshControl';
 import { HYPHEN } from '../../constants';
 import { resetToRoutes } from '../../NavigationService';
 import { getProductByIdAction, updateProductIdentifierAction } from '../../redux/actions/products';
@@ -52,6 +53,8 @@ function RowDetail({ label, value }: { label: string; value: string }) {
 }
 
 class ProductDetails extends React.Component<Props, State> {
+  pendingPullDone?: () => void;
+
   constructor(props: Props) {
     super(props);
     this.state = {
@@ -78,18 +81,31 @@ class ProductDetails extends React.Component<Props, State> {
     this.getProductDetails(product.id);
   };
 
-  getProductDetails = (id: string) => {
+  finishPullRefresh = () => {
+    const done = this.pendingPullDone;
+    this.pendingPullDone = undefined;
+    done?.();
+  };
+
+  getProductDetails = (id: string, done?: () => void) => {
+    if (done) {
+      this.pendingPullDone = done;
+    }
     this.props.navigation.setParams({ refetchProduct: false });
 
     if (!id) {
       Alert.alert('Error', 'Product ID is empty.');
+      this.finishPullRefresh();
       return;
     }
 
-    this.setState({ isLoading: true });
+    if (!done) {
+      this.setState({ isLoading: true });
+    }
 
     const actionCallback = (data: any) => {
       this.setState({ isLoading: false });
+      this.finishPullRefresh();
       if (data?.error) {
         Alert.alert('Failed to Load', data.errorMessage ?? 'Failed to load product details.', [
           { text: 'Retry', onPress: () => this.getProductDetails(id) },
@@ -106,6 +122,7 @@ class ProductDetails extends React.Component<Props, State> {
   handlePrint = () => {
     const { product } = this.props.route.params;
     this.props.getProductByIdAction(product.id, () => {
+      this.finishPullRefresh();
       this.setState({ visible: true });
     });
   };
@@ -236,7 +253,13 @@ class ProductDetails extends React.Component<Props, State> {
           onSave={this.handleSaveBarcode}
         />
 
-        <ScrollView>
+        <ScrollView
+          refreshControl={
+            <PullToRefreshControl
+              onRefresh={(done) => this.getProductDetails(this.props.route.params.product.id, done)}
+            />
+          }
+        >
           <View style={styles.header}>
             {fromSortation && (
               <>

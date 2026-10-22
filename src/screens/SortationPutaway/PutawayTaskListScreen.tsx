@@ -6,6 +6,7 @@ import { Button, Chip, Divider, Paragraph } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Icon, { Name } from '../../components/Icon';
+import PullToRefreshControl from '../../components/PullToRefreshControl';
 import { ScanErrorText } from '../../components/ScanErrorText';
 import { useScanFlash } from '../../components/ScanFlash';
 import { ScannerInput } from '../../components/ScannerInput';
@@ -20,6 +21,7 @@ import styles from './styles';
 type RootStackParamList = {
   SortationPutawayLocationScan: {
     currentTaskIndex: number;
+    task: SortationTask;
     isUserDirected?: boolean;
     containerId?: string;
     requiresValidationScan?: boolean;
@@ -113,6 +115,8 @@ export default function PutawayTaskListScreen({ route }: PutawayTaskListScreenPr
     resetFilters();
     navigation.navigate('SortationPutawayLocationScan', {
       currentTaskIndex: globalIndex >= 0 ? globalIndex : 0,
+      // An in-flight refresh can change the task at this index after navigation.
+      task,
       isUserDirected: true,
       containerId,
       requiresValidationScan
@@ -159,9 +163,12 @@ export default function PutawayTaskListScreen({ route }: PutawayTaskListScreenPr
 
   const { isSearchOpen, searchButtonProps } = useSearchButton({ onSelect: handleSearchSelect });
 
-  const fetchTasks = useCallback(() => {
-    dispatch(getPutawayDetailsByContainerId(containerId));
-  }, [dispatch, containerId]);
+  const fetchTasks = useCallback(
+    (done?: () => void) => {
+      dispatch(getPutawayDetailsByContainerId(containerId, done, !!done));
+    },
+    [dispatch, containerId]
+  );
 
   useFocusEffect(
     useCallback(() => {
@@ -239,6 +246,7 @@ export default function PutawayTaskListScreen({ route }: PutawayTaskListScreenPr
       keyboardShouldPersistTaps="always"
       style={styles.contentWrapper}
       contentContainerStyle={styles.contentContainer}
+      refreshControl={<PullToRefreshControl onRefresh={fetchTasks} />}
     >
       <View style={styles.productDetails}>
         <View style={styles.headerRow}>

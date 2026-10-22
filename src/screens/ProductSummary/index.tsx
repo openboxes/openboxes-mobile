@@ -9,6 +9,7 @@ import { LayoutStyle } from '../../assets/styles';
 import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSearchHeader';
 import EmptyView from '../../components/EmptyView';
 import ListLoadingSkeleton from '../../components/ListLoadingSkeleton';
+import PullToRefreshControl from '../../components/PullToRefreshControl';
 import { getLocationProductSummary } from '../../redux/actions/locations';
 import { RootState } from '../../redux/reducers';
 import { emptyStateMessage } from '../../utils/emptyStateMessage';
@@ -19,7 +20,6 @@ const ProductSummary = () => {
   const navigation = useNavigation<any>();
   const dispatch = useDispatch();
   const location = useSelector((state: RootState) => state.mainReducer.currentLocation);
-  const [productSummary, setProductSummary] = useState<any[]>([]);
   const [productData, setProductData] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -29,10 +29,13 @@ const ProductSummary = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const getProductSummary = (id: string) => {
-    setIsLoading(true);
+  const getProductSummary = (id: string, done?: () => void) => {
+    if (!done) {
+      setIsLoading(true);
+    }
     const callback = (data: any) => {
       setIsLoading(false);
+      done?.();
       if (data?.error) {
         Alert.alert('Product Summary', data.errorMessage ?? 'Failed to load Product Summary details.', [
           { text: 'Retry', onPress: () => dispatch(getLocationProductSummary(id, callback)) },
@@ -40,28 +43,20 @@ const ProductSummary = () => {
         ]);
       } else if (data) {
         const filtered = _.filter(data, (item: { quantityOnHand: number }) => item.quantityOnHand > 0);
-        setProductSummary(filtered);
         setProductData(filtered);
       }
     };
     dispatch(getLocationProductSummary(id, callback));
   };
 
-  const searchProduct = (query: string) => {
-    setSearchTerm(query);
-    if (query) {
-      setProductSummary(
-        _.filter(
-          productData,
-          (item: { productCode: string; productName: string }) =>
-            item.productCode.toLowerCase().includes(query.toLowerCase()) ||
-            item.productName.toLowerCase().includes(query.toLowerCase())
-        )
-      );
-    } else {
-      setProductSummary(productData);
-    }
-  };
+  const productSummary = searchTerm
+    ? _.filter(
+        productData,
+        (item: { productCode: string; productName: string }) =>
+          item.productCode.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item.productName.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : productData;
 
   const navigateToDetails = (item: any) => {
     navigation.navigate('ProductDetails', { product: { id: item.productCode } });
@@ -95,11 +90,11 @@ const ProductSummary = () => {
         autoSearch
         autoFocus
         placeholder={'Search by product code or name'}
-        resetSearch={() => searchProduct('')}
+        resetSearch={() => setSearchTerm('')}
         searchBox={false}
         loading={isLoading}
         accessibilityLabel="Search inventory"
-        onSearchTermSubmit={(query) => searchProduct(query)}
+        onSearchTermSubmit={setSearchTerm}
       />
       {isLoading ? (
         <ListLoadingSkeleton visible count={5} CardComponent={ProductSummaryCardSkeleton} />
@@ -117,6 +112,7 @@ const ProductSummary = () => {
             />
           }
           keyExtractor={(item, index) => item?.productCode?.toString() ?? index.toString()}
+          refreshControl={<PullToRefreshControl onRefresh={(done) => getProductSummary(location.id, done)} />}
         />
       )}
     </View>
