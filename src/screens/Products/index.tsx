@@ -55,6 +55,7 @@ class Products extends React.Component<Props, State> {
   };
 
   getProducts = () => {
+    this.isPullRefreshing = false;
     this.setState({
       loading: true,
       searchTerm: '',

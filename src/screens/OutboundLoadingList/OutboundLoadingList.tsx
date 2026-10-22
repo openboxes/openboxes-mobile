@@ -21,6 +21,16 @@ import OutboundShipmentCardSkeleton from '../OutboundStockList/OutboundShipmentC
 import styles from '../OutboundStockList/styles';
 import { DispatchProps, Props, State } from '../OutboundStockList/types';
 
+const matchesShipmentOrLoadingLocation = (shipment: Shipment, query: string) => {
+  const matchingShipmentNumber = shipment?.shipmentNumber?.toLowerCase()?.includes(query.toLowerCase());
+
+  const matchingLoadingLocation =
+    shipment?.loadingLocationNumber?.toLowerCase()?.includes(query.toLowerCase()) ||
+    shipment?.loadingLocation?.toLowerCase()?.includes(query.toLowerCase());
+
+  return matchingShipmentNumber || matchingLoadingLocation;
+};
+
 // List of shipments ready for loading
 class OutboundLoadingList extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -28,7 +38,6 @@ class OutboundLoadingList extends React.Component<Props, State> {
     this.state = {
       error: null,
       shipments: [],
-      filteredShipments: [],
       loading: true,
       searchTerm: ''
     };
@@ -113,27 +122,15 @@ class OutboundLoadingList extends React.Component<Props, State> {
       }
 
       // If no exact match by LPN, then filter by <shipment number or loading location> containing the search term
-      const filteredShipments = _.filter(this.state.shipments, (shipment: Shipment) => {
-        const matchingShipmentNumber = shipment?.shipmentNumber?.toLowerCase()?.includes(query.toLowerCase());
-
-        const matchingLoadingLocation =
-          shipment?.loadingLocationNumber?.toLowerCase()?.includes(query.toLowerCase()) ||
-          shipment?.loadingLocation?.toLowerCase()?.includes(query.toLowerCase());
-
-        return matchingShipmentNumber || matchingLoadingLocation;
-      });
+      const filteredShipments = _.filter(this.state.shipments, (shipment: Shipment) =>
+        matchesShipmentOrLoadingLocation(shipment, query)
+      );
 
       // if only one match, then redirect to loading order details
       if (filteredShipments.length === 1) {
         this.resetFiltering();
         this.showLoadingDetailsScreen(filteredShipments[0]);
-        return;
       }
-
-      this.setState({
-        ...this.state,
-        filteredShipments
-      });
 
       return;
     }
@@ -144,14 +141,16 @@ class OutboundLoadingList extends React.Component<Props, State> {
   resetFiltering = () => {
     this.setState({
       ...this.state,
-      searchTerm: '',
-      filteredShipments: []
+      searchTerm: ''
     });
   };
 
   render() {
-    const { loading, searchTerm } = this.state;
-    const visibleData = this.state.filteredShipments.length > 0 ? this.state.filteredShipments : this.state.shipments;
+    const { loading, searchTerm, shipments } = this.state;
+    const filteredShipments = searchTerm
+      ? _.filter(shipments, (shipment: Shipment) => matchesShipmentOrLoadingLocation(shipment, searchTerm))
+      : [];
+    const visibleData = filteredShipments.length > 0 ? filteredShipments : shipments;
     return (
       <View style={styles.screenContainer}>
         <BarcodeSearchHeader

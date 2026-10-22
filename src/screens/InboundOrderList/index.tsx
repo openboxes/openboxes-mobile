@@ -20,16 +20,16 @@ import { parseDateToISODate, parseFromISODateToLocaleString } from '../../utils/
 import ShipmentCardSkeleton from './ShipmentCardSkeleton';
 import styles from './styles';
 
+const matchesShipmentNumber = (inboundOrder: any, query: string) =>
+  inboundOrder?.shipmentNumber?.toLowerCase()?.includes(query.toLowerCase());
+
 const InboundOrderList = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation<any>();
   const route = useRoute<any>();
   const location = useSelector((rootState: RootState) => rootState.mainReducer.currentLocation);
 
-  const [state, setState] = useState<any>({
-    inboundOrders: [],
-    filteredInboundOrders: []
-  });
+  const [inboundOrders, setInboundOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -69,10 +69,7 @@ const InboundOrderList = () => {
         return;
       }
       if (data && Object.keys(data).length !== 0) {
-        setState((prevState: any) => ({
-          ...prevState,
-          inboundOrders: data.filter((item: any) => item.status === 'SHIPPED' || item.status === 'PARTIALLY_RECEIVED')
-        }));
+        setInboundOrders(data.filter((item: any) => item.status === 'SHIPPED' || item.status === 'PARTIALLY_RECEIVED'));
       }
     };
     dispatch(fetchInboundOrderList(callback, id, true));
@@ -132,21 +129,13 @@ const InboundOrderList = () => {
     setSearchTerm(query);
     if (query) {
       const exactInboundOrder = _.find(
-        state.inboundOrders,
+        inboundOrders,
         (inboundOrder: any) => inboundOrder?.shipmentNumber?.toLowerCase() === query.toLowerCase()
       );
 
       if (exactInboundOrder) {
         resetFiltering();
         navigateToInboundDetails(exactInboundOrder);
-      } else {
-        const filteredInboundOrders = _.filter(state.inboundOrders, (inboundOrder: any) =>
-          inboundOrder?.shipmentNumber?.toLowerCase()?.includes(query.toLowerCase())
-        );
-        setState({
-          ...state,
-          filteredInboundOrders
-        });
       }
 
       return;
@@ -157,13 +146,12 @@ const InboundOrderList = () => {
 
   const resetFiltering = () => {
     setSearchTerm('');
-    setState({
-      ...state,
-      filteredInboundOrders: []
-    });
   };
 
-  const visibleData = state.filteredInboundOrders.length > 0 ? state.filteredInboundOrders : state.inboundOrders;
+  const filteredInboundOrders = searchTerm
+    ? _.filter(inboundOrders, (inboundOrder: any) => matchesShipmentNumber(inboundOrder, searchTerm))
+    : [];
+  const visibleData = filteredInboundOrders.length > 0 ? filteredInboundOrders : inboundOrders;
 
   return (
     <View style={styles.container}>

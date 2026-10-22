@@ -3,7 +3,6 @@ import { Shipment } from '../../data/container/Shipment';
 export interface State {
   error: string | null;
   shipments: Shipment[];
-  filteredShipments: Shipment[];
   loading: boolean;
   searchTerm: string;
 }

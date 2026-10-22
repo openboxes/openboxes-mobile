@@ -29,10 +29,6 @@ export interface Props {
 export default function ProductsList(props: Props) {
   const { products, onProductTapped, onEndReached, onRefresh, loadingMore, hasMore } = props;
 
-  if (!products) {
-    return <EmptyView title="Product List" description="There are no products on the list" />;
-  }
-
   const renderFooter = () => {
     if (loadingMore) {
       return (
@@ -55,12 +51,16 @@ export default function ProductsList(props: Props) {
 
   return (
     <FlatList
-      data={products}
+      data={products ?? []}
       renderItem={(item: ListRenderItemInfo<Product>) => renderProduct(item.item, () => onProductTapped(item.item))}
       keyExtractor={(product) => product.id}
       style={styles.list}
       keyboardShouldPersistTaps="handled"
       ListFooterComponent={renderFooter}
+      ListEmptyComponent={
+        products ? null : <EmptyView title="Product List" description="There are no products on the list" />
+      }
+      contentContainerStyle={products ? undefined : styles.emptyContent}
       refreshControl={onRefresh ? <PullToRefreshControl onRefresh={onRefresh} /> : undefined}
       onEndReached={onEndReached}
       onEndReachedThreshold={appConfig.LIST_END_REACHED_THRESHOLD}
@@ -100,6 +100,9 @@ function renderProduct(product: Product, onProductTapped: () => void): ReactElem
 const styles = StyleSheet.create({
   list: {
     width: '100%'
+  },
+  emptyContent: {
+    flexGrow: 1
   },
   footer: {
     paddingBottom: Theme.spacing.medium,

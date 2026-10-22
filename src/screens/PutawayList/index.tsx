@@ -1,4 +1,3 @@
-/* eslint-disable complexity */
 import _ from 'lodash';
 import React from 'react';
 import { FlatList, ListRenderItemInfo, View } from 'react-native';
@@ -27,7 +26,6 @@ class PutawayList extends React.Component<Props, State> {
     this.state = {
       error: null,
       putAwayList: null,
-      putAwayListFiltered: null,
       putAway: null,
       orderId: null,
       showList: false,
@@ -96,26 +94,22 @@ class PutawayList extends React.Component<Props, State> {
         );
 
         if (exactPutaway) {
-          this.setState({ lpnFilter: '', searchTerm: '', putAwayListFiltered: [] }, () =>
+          this.setState({ lpnFilter: '', searchTerm: '' }, () =>
             this.goToPutawayItemDetailScreen(exactPutaway, exactPutaway.putawayItem)
           );
-        } else {
-          const putAwayListFiltered = _.filter(this.state.putAwayList, (putaway) =>
-            putaway?.putawayItem?.['inventoryItem.lotNumber']?.includes(text)
-          );
-          this.setState({ putAwayListFiltered: putAwayListFiltered });
         }
-      } else {
-        this.setState({ putAwayListFiltered: [] });
       }
     });
   };
 
   render() {
-    const { showList, putAwayList, putAwayListFiltered, lpnFilter, loading, searchTerm } = this.state;
+    const { showList, putAwayList, lpnFilter, loading, searchTerm } = this.state;
     const { productSummaryConfig } = this.props;
     const showLotNumber = productSummaryConfig?.lotNumber !== false;
-    const visibleData = putAwayListFiltered?.length ? putAwayListFiltered : putAwayList;
+    const putAwayListFiltered = lpnFilter
+      ? _.filter(putAwayList, (putaway) => putaway?.putawayItem?.['inventoryItem.lotNumber']?.includes(lpnFilter))
+      : [];
+    const visibleData = putAwayListFiltered.length ? putAwayListFiltered : putAwayList;
 
     return (
       <View style={styles.screenContainer}>

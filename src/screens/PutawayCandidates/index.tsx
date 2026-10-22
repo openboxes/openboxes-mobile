@@ -1,5 +1,5 @@
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { FlatList, SafeAreaView, View } from 'react-native';
 import { Caption, Card, Chip, Divider, Subheading } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
@@ -42,6 +42,8 @@ export default function PutawayCandidates() {
   const [searchTerm, setSearchTerm] = useState<string>(EMPTY_STRING);
   const [refreshing, setRefreshing] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
+  // takeLatest cancels a superseded pull without its callback, so any completion settles it
+  const pendingPullDone = useRef<() => void>();
 
   const showLotNumber = productSummaryConfig?.lotNumber !== false;
   const showExpirationDate = productSummaryConfig?.expirationDate !== false;
@@ -60,7 +62,9 @@ export default function PutawayCandidates() {
         return;
       }
 
-      if (!done) {
+      if (done) {
+        pendingPullDone.current = done;
+      } else {
         setRefreshing(true);
       }
       dispatch(
@@ -69,7 +73,8 @@ export default function PutawayCandidates() {
           (data: any) => {
             setRefreshing(false);
             setInitialLoading(false);
-            done?.();
+            pendingPullDone.current?.();
+            pendingPullDone.current = undefined;
             if (data?.error) {
               showPopup({
                 title: 'Putaway Candidates',

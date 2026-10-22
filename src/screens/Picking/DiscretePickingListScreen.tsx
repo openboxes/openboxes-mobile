@@ -1,5 +1,5 @@
 import { useFocusEffect } from '@react-navigation/native';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { FlatList, ScrollView, View } from 'react-native';
 import { Chip, Text } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
@@ -39,10 +39,14 @@ export default function DiscretePickingListScreen() {
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [hasLoaded, setHasLoaded] = useState<boolean>(false);
   const [isStartingOrder, setIsStartingOrder] = useState<boolean>(false);
+  // takeLatest cancels a superseded pull without its callback, so any completion settles it
+  const pendingPullDone = useRef<() => void>();
 
   const fetchOrders = useCallback(
     (excludeAssignedRequisitionsParam: boolean, done?: () => void) => {
-      if (!done) {
+      if (done) {
+        pendingPullDone.current = done;
+      } else {
         setIsRefreshing(true);
       }
       dispatch(
@@ -52,7 +56,8 @@ export default function DiscretePickingListScreen() {
           }
           setIsRefreshing(false);
           setHasLoaded(true);
-          done?.();
+          pendingPullDone.current?.();
+          pendingPullDone.current = undefined;
         })
       );
     },

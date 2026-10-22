@@ -20,7 +20,6 @@ const ProductSummary = () => {
   const navigation = useNavigation<any>();
   const dispatch = useDispatch();
   const location = useSelector((state: RootState) => state.mainReducer.currentLocation);
-  const [productSummary, setProductSummary] = useState<any[]>([]);
   const [productData, setProductData] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -44,28 +43,20 @@ const ProductSummary = () => {
         ]);
       } else if (data) {
         const filtered = _.filter(data, (item: { quantityOnHand: number }) => item.quantityOnHand > 0);
-        setProductSummary(filtered);
         setProductData(filtered);
       }
     };
     dispatch(getLocationProductSummary(id, callback));
   };
 
-  const searchProduct = (query: string) => {
-    setSearchTerm(query);
-    if (query) {
-      setProductSummary(
-        _.filter(
-          productData,
-          (item: { productCode: string; productName: string }) =>
-            item.productCode.toLowerCase().includes(query.toLowerCase()) ||
-            item.productName.toLowerCase().includes(query.toLowerCase())
-        )
-      );
-    } else {
-      setProductSummary(productData);
-    }
-  };
+  const productSummary = searchTerm
+    ? _.filter(
+        productData,
+        (item: { productCode: string; productName: string }) =>
+          item.productCode.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item.productName.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : productData;
 
   const navigateToDetails = (item: any) => {
     navigation.navigate('ProductDetails', { product: { id: item.productCode } });
@@ -99,11 +90,11 @@ const ProductSummary = () => {
         autoSearch
         autoFocus
         placeholder={'Search by product code or name'}
-        resetSearch={() => searchProduct('')}
+        resetSearch={() => setSearchTerm('')}
         searchBox={false}
         loading={isLoading}
         accessibilityLabel="Search inventory"
-        onSearchTermSubmit={(query) => searchProduct(query)}
+        onSearchTermSubmit={setSearchTerm}
       />
       {isLoading ? (
         <ListLoadingSkeleton visible count={5} CardComponent={ProductSummaryCardSkeleton} />
