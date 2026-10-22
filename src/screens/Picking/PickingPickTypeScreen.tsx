@@ -24,13 +24,20 @@ export default function PickingPickTypeScreen() {
   const [numberOfOrdersToGroup, setNumberOfOrdersToGroup] = React.useState<string>('');
   const [counts, setCounts] = React.useState<Record<string, DeliveryTypeOrderCount>>({});
   const [hasLoadedCounts, setHasLoadedCounts] = React.useState<boolean>(false);
+  // A replacement count request must also settle a pull cancelled by takeLatest.
+  const pendingPullDone = React.useRef<() => void>();
 
   const fetchCounts = React.useCallback(
     (done?: () => void) => {
+      if (done) {
+        pendingPullDone.current = done;
+      }
       dispatch(
         getPickTaskCountsAction(({ response, errorMessage }) => {
           setHasLoadedCounts(true);
-          done?.();
+          const pullDone = pendingPullDone.current;
+          pendingPullDone.current = undefined;
+          pullDone?.();
           if (errorMessage || !response?.data) {
             Alert.alert('Error', 'Failed to load pick task counts. Please try again.');
             return;

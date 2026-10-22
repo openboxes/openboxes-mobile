@@ -383,7 +383,7 @@ class Products extends React.Component<Props, State> {
           searchByProductCode: { query, results: null },
           error: emptyStateMessage('products', query, 'No products available')
         });
-      } else if (productList.length === 1) {
+      } else if (productList.length === 1 && !done) {
         this.goToProductDetails(productList[0]);
       } else {
         this.setState({

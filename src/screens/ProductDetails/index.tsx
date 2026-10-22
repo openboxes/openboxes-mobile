@@ -53,6 +53,8 @@ function RowDetail({ label, value }: { label: string; value: string }) {
 }
 
 class ProductDetails extends React.Component<Props, State> {
+  pendingPullDone?: () => void;
+
   constructor(props: Props) {
     super(props);
     this.state = {
@@ -79,12 +81,21 @@ class ProductDetails extends React.Component<Props, State> {
     this.getProductDetails(product.id);
   };
 
+  finishPullRefresh = () => {
+    const done = this.pendingPullDone;
+    this.pendingPullDone = undefined;
+    done?.();
+  };
+
   getProductDetails = (id: string, done?: () => void) => {
+    if (done) {
+      this.pendingPullDone = done;
+    }
     this.props.navigation.setParams({ refetchProduct: false });
 
     if (!id) {
       Alert.alert('Error', 'Product ID is empty.');
-      done?.();
+      this.finishPullRefresh();
       return;
     }
 
@@ -94,7 +105,7 @@ class ProductDetails extends React.Component<Props, State> {
 
     const actionCallback = (data: any) => {
       this.setState({ isLoading: false });
-      done?.();
+      this.finishPullRefresh();
       if (data?.error) {
         Alert.alert('Failed to Load', data.errorMessage ?? 'Failed to load product details.', [
           { text: 'Retry', onPress: () => this.getProductDetails(id) },
@@ -111,6 +122,7 @@ class ProductDetails extends React.Component<Props, State> {
   handlePrint = () => {
     const { product } = this.props.route.params;
     this.props.getProductByIdAction(product.id, () => {
+      this.finishPullRefresh();
       this.setState({ visible: true });
     });
   };

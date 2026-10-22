@@ -68,7 +68,7 @@ const InboundOrderList = () => {
         });
         return;
       }
-      if (data && Object.keys(data).length !== 0) {
+      if (Array.isArray(data)) {
         setInboundOrders(data.filter((item: any) => item.status === 'SHIPPED' || item.status === 'PARTIALLY_RECEIVED'));
       }
     };
