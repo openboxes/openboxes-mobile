@@ -4,6 +4,7 @@ import { FlatList, Text, TouchableOpacity, View } from 'react-native';
 import { Chip, Divider, Paragraph } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 
+import PullToRefreshControl from '../../components/PullToRefreshControl';
 import { ScannerInput } from '../../components/ScannerInput';
 import { EMPTY_FALLBACK, EMPTY_STRING } from '../../constants';
 import { navigate } from '../../NavigationService';
@@ -77,26 +78,33 @@ export default function CreateTransferItemListScreen() {
   const [searchTerm, setSearchTerm] = useState<string>(initialSearchTerm ?? EMPTY_STRING);
   const [isLoading, setIsLoading] = useState(false);
 
-  const fetchCandidates = useCallback(() => {
-    if (!currentLocation?.id) {
-      return;
-    }
-    setIsLoading(true);
-    dispatch(
-      getStockTransferCandidatesAction(
-        currentLocation.id,
-        (response: any) => {
-          setIsLoading(false);
-          if (response && !response.error && Array.isArray(response.data)) {
-            setCandidates(response.data as StockTransferCandidate[]);
-          } else {
-            setCandidates([]);
-          }
-        },
-        true
-      )
-    );
-  }, [dispatch, currentLocation?.id]);
+  const fetchCandidates = useCallback(
+    (done?: () => void) => {
+      if (!currentLocation?.id) {
+        done?.();
+        return;
+      }
+      if (!done) {
+        setIsLoading(true);
+      }
+      dispatch(
+        getStockTransferCandidatesAction(
+          currentLocation.id,
+          (response: any) => {
+            setIsLoading(false);
+            done?.();
+            if (response && !response.error && Array.isArray(response.data)) {
+              setCandidates(response.data as StockTransferCandidate[]);
+            } else if (!done) {
+              setCandidates([]);
+            }
+          },
+          true
+        )
+      );
+    },
+    [dispatch, currentLocation?.id]
+  );
 
   useFocusEffect(
     useCallback(() => {
@@ -221,6 +229,7 @@ export default function CreateTransferItemListScreen() {
       renderItem={renderItem}
       ListHeaderComponent={ListHeader}
       ListEmptyComponent={ListEmpty}
+      refreshControl={<PullToRefreshControl onRefresh={fetchCandidates} />}
     />
   );
 }

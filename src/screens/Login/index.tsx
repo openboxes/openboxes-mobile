@@ -117,7 +117,11 @@ const Login = () => {
             right={
               <TextInput.Icon
                 icon={() =>
-                  state.isSeePassword ? <EyeIcon width={24} height={24} /> : <EyeSlashIcon width={24} height={24} />
+                  state.isSeePassword ? (
+                    <EyeIcon width={24} height={24} fill={Theme.colors.primary} />
+                  ) : (
+                    <EyeSlashIcon width={24} height={24} fill={Theme.colors.primary} />
+                  )
                 }
                 onPress={onPasswordClick}
               />

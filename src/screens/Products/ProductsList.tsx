@@ -12,6 +12,7 @@ import { Card, Chip, Divider, Subheading } from 'react-native-paper';
 
 import { LayoutStyle } from '../../assets/styles';
 import EmptyView from '../../components/EmptyView';
+import PullToRefreshControl from '../../components/PullToRefreshControl';
 import { appConfig, HYPHEN } from '../../constants';
 import Product from '../../data/product/Product';
 import Theme from '../../utils/Theme';
@@ -20,16 +21,13 @@ export interface Props {
   products: Product[] | null;
   onProductTapped: (product: Product) => void;
   onEndReached?: () => void;
+  onRefresh?: (done: () => void) => void;
   loadingMore?: boolean;
   hasMore?: boolean;
 }
 
 export default function ProductsList(props: Props) {
-  const { products, onProductTapped, onEndReached, loadingMore, hasMore } = props;
-
-  if (!products) {
-    return <EmptyView title="Product List" description="There are no products on the list" />;
-  }
+  const { products, onProductTapped, onEndReached, onRefresh, loadingMore, hasMore } = props;
 
   const renderFooter = () => {
     if (loadingMore) {
@@ -53,12 +51,17 @@ export default function ProductsList(props: Props) {
 
   return (
     <FlatList
-      data={products}
+      data={products ?? []}
       renderItem={(item: ListRenderItemInfo<Product>) => renderProduct(item.item, () => onProductTapped(item.item))}
       keyExtractor={(product) => product.id}
       style={styles.list}
       keyboardShouldPersistTaps="handled"
       ListFooterComponent={renderFooter}
+      ListEmptyComponent={
+        products ? null : <EmptyView title="Product List" description="There are no products on the list" />
+      }
+      contentContainerStyle={products ? undefined : styles.emptyContent}
+      refreshControl={onRefresh ? <PullToRefreshControl onRefresh={onRefresh} /> : undefined}
       onEndReached={onEndReached}
       onEndReachedThreshold={appConfig.LIST_END_REACHED_THRESHOLD}
     />
@@ -97,6 +100,9 @@ function renderProduct(product: Product, onProductTapped: () => void): ReactElem
 const styles = StyleSheet.create({
   list: {
     width: '100%'
+  },
+  emptyContent: {
+    flexGrow: 1
   },
   footer: {
     paddingBottom: Theme.spacing.medium,

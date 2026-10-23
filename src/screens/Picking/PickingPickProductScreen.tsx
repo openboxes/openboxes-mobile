@@ -1,12 +1,14 @@
 import * as React from 'react';
-import { Alert, ScrollView, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { Divider, Paragraph, Subheading } from 'react-native-paper';
 
 import { ProductDetails } from '../../components/ProductDetails';
+import { ScanErrorText } from '../../components/ScanErrorText';
 import { ScannerInput } from '../../components/ScannerInput';
 import { SearchButton } from '../../components/SearchButton';
 import { useSearchButton } from '../../components/SearchButton/useSearchButton';
 import { EMPTY_STRING, HYPHEN } from '../../constants';
+import { useScanField } from '../../hooks/useScanField';
 import { navigate } from '../../NavigationService';
 import { isProductBarcodeValid, parseFromISODateToLocaleString } from '../../utils/utils';
 import { CustomerDetails } from './CustomerDetails';
@@ -15,8 +17,8 @@ import styles from './styles';
 
 export default function PickingPickProductScreen() {
   const { currentTask, currentTaskIndex, allTasksCount } = usePickingContext();
-  const [productBarcode, setProductBarcode] = React.useState<string>(EMPTY_STRING);
-  const { isSearchOpen, searchButtonProps } = useSearchButton({ onSelect: setProductBarcode });
+  const productScan = useScanField();
+  const { isSearchOpen, searchButtonProps } = useSearchButton({ onSelect: productScan.onChange });
 
   if (!currentTask) {
     return null;
@@ -26,17 +28,14 @@ export default function PickingPickProductScreen() {
     const isValid = isProductBarcodeValid(scannedBarcode, currentTask?.product);
 
     if (!isValid) {
-      Alert.alert(
-        'Invalid Barcode',
-        `Incorrect product scanned. Expected: ${currentTask?.product.productCode}. Please try again.`,
-        [{ text: 'OK', onPress: () => setProductBarcode(EMPTY_STRING) }]
-      );
+      productScan.fail(`Incorrect product scanned (${scannedBarcode}). Expected: ${currentTask?.product.productCode}.`);
       return;
     }
 
+    productScan.pass();
     navigate('PickingPickQuantity');
 
-    setProductBarcode(EMPTY_STRING);
+    productScan.setValue(EMPTY_STRING);
   }
 
   return (
@@ -101,13 +100,15 @@ export default function PickingPickProductScreen() {
             <ScannerInput
               style={styles.scannerInput}
               label="Product Barcode"
-              value={productBarcode}
+              value={productScan.value}
               isEnabled={!isSearchOpen}
-              onChange={setProductBarcode}
+              danger={!!productScan.error}
+              onChange={productScan.onChange}
               onSubmit={handleScan}
             />
             <SearchButton searchType="product" {...searchButtonProps} />
           </View>
+          <ScanErrorText message={productScan.error} />
         </View>
       </ProductDetails.Provider>
     </ScrollView>

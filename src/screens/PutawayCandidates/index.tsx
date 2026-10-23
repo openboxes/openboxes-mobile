@@ -1,6 +1,6 @@
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import React, { useCallback, useMemo, useState } from 'react';
-import { FlatList, RefreshControl, SafeAreaView, View } from 'react-native';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
+import { FlatList, SafeAreaView, View } from 'react-native';
 import { Caption, Card, Chip, Divider, Subheading } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -9,6 +9,7 @@ import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSea
 import Button from '../../components/Button';
 import EmptyView from '../../components/EmptyView';
 import ListLoadingSkeleton from '../../components/ListLoadingSkeleton';
+import PullToRefreshControl from '../../components/PullToRefreshControl';
 import showPopup from '../../components/Popup';
 import { EMPTY_STRING } from '../../constants';
 import { getCandidates } from '../../redux/actions/putaways';
@@ -41,6 +42,8 @@ export default function PutawayCandidates() {
   const [searchTerm, setSearchTerm] = useState<string>(EMPTY_STRING);
   const [refreshing, setRefreshing] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
+  // takeLatest cancels a superseded pull without its callback, so any completion settles it
+  const pendingPullDone = useRef<() => void>();
 
   const showLotNumber = productSummaryConfig?.lotNumber !== false;
   const showExpirationDate = productSummaryConfig?.expirationDate !== false;
@@ -50,36 +53,46 @@ export default function PutawayCandidates() {
     [navigation]
   );
 
-  const getScreenData = useCallback(() => {
-    if (!currentLocation?.id) {
-      setRefreshing(false);
-      setInitialLoading(false);
-      return;
-    }
+  const getScreenData = useCallback(
+    (done?: () => void) => {
+      if (!currentLocation?.id) {
+        setRefreshing(false);
+        setInitialLoading(false);
+        done?.();
+        return;
+      }
 
-    setRefreshing(true);
-    dispatch(
-      getCandidates(
-        currentLocation.id,
-        (data: any) => {
-          setRefreshing(false);
-          setInitialLoading(false);
-          if (data?.error) {
-            showPopup({
-              title: 'Putaway Candidates',
-              message: data.errorMessage ?? 'Failed to load putaway candidates',
-              positiveButton: {
-                text: 'Retry',
-                callback: () => getScreenData()
-              },
-              negativeButtonText: 'Cancel'
-            });
-          }
-        },
-        true
-      )
-    );
-  }, [dispatch, currentLocation?.id]);
+      if (done) {
+        pendingPullDone.current = done;
+      } else {
+        setRefreshing(true);
+      }
+      dispatch(
+        getCandidates(
+          currentLocation.id,
+          (data: any) => {
+            setRefreshing(false);
+            setInitialLoading(false);
+            pendingPullDone.current?.();
+            pendingPullDone.current = undefined;
+            if (data?.error) {
+              showPopup({
+                title: 'Putaway Candidates',
+                message: data.errorMessage ?? 'Failed to load putaway candidates',
+                positiveButton: {
+                  text: 'Retry',
+                  callback: () => getScreenData()
+                },
+                negativeButtonText: 'Cancel'
+              });
+            }
+          },
+          true
+        )
+      );
+    },
+    [dispatch, currentLocation?.id]
+  );
 
   useFocusEffect(
     useCallback(() => {
@@ -183,12 +196,17 @@ export default function PutawayCandidates() {
         accessibilityLabel="Search putaway candidates"
         onSearchTermSubmit={onSearchTermSubmit}
       />
-      <Button style={styles.refreshButton} size="90%" title="Refresh (Get Latest Data)" onPress={getScreenData} />
+      <Button
+        style={styles.refreshButton}
+        size="90%"
+        title="Refresh (Get Latest Data)"
+        onPress={() => getScreenData()}
+      />
       {initialLoading ? (
         <ListLoadingSkeleton visible count={SKELETON_CARD_COUNT} CardComponent={PutawayCandidateCardSkeleton} />
       ) : (
         <FlatList
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={getScreenData} />}
+          refreshControl={<PullToRefreshControl onRefresh={getScreenData} />}
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="on-drag"
           data={visibleData}

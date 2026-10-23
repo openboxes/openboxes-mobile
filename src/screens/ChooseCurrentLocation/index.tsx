@@ -9,6 +9,7 @@ import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSea
 import EmptyView from '../../components/EmptyView';
 import ListLoadingSkeleton from '../../components/ListLoadingSkeleton';
 import showPopup from '../../components/Popup';
+import PullToRefreshControl from '../../components/PullToRefreshControl';
 import Location from '../../data/location/Location';
 import { getLocationsAction, setCurrentLocationAction } from '../../redux/actions/locations';
 import { RootState } from '../../redux/reducers';
@@ -83,8 +84,13 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
   };
 
   componentDidMount = () => {
+    this.fetchLocations();
+  };
+
+  fetchLocations = (done?: () => void) => {
     const actionCallback = (data: any) => {
       this.setState({ loading: false });
+      done?.();
       if (data?.error) {
         showPopup({
           title: data.errorMessage ? 'Failed to load locations' : 'Error',
@@ -207,7 +213,7 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
         >
           <Card.Content style={styles.cardContent}>
             <View style={styles.contentContainer}>
-              <GarageIcon width={48} height={48} />
+              <GarageIcon width={48} height={48} fill={Theme.colors.primary} />
               <View style={styles.textContainer}>
                 <Text style={styles.cardTitle}>{location.name}</Text>
                 <Text style={styles.cardSubtitle}>{location.locationGroup?.name || NO_LOCATION_GROUP_NAME}</Text>
@@ -230,8 +236,11 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
       );
     }
 
+    const filteredLocations = availableLocations?.length ? this.getFilteredLocations() : [];
+    let content: React.ReactNode;
+
     if (!availableLocations || availableLocations.length === 0) {
-      return (
+      content = (
         <View style={styles.emptyContainer}>
           <EmptyView
             title="No Locations Available"
@@ -239,23 +248,26 @@ class ChooseCurrentLocation extends React.Component<Props, State> {
           />
         </View>
       );
-    }
-
-    const filteredLocations = this.getFilteredLocations();
-
-    if (filteredLocations.length === 0) {
-      return (
+    } else if (filteredLocations.length === 0) {
+      content = (
         <View style={styles.emptyContainer}>
           <EmptyView title="No Locations Found" description={`No locations match "${searchTerm}".`} />
         </View>
       );
+    } else {
+      content = groupLocationEntries
+        ? this.renderGroupedLocations(this.getSortedOrgNameAndLocationsDictionary(filteredLocations), currentLocation)
+        : this.renderAllLocations(filteredLocations, currentLocation);
     }
 
     return (
-      <ScrollView style={styles.scrollView} keyboardShouldPersistTaps="handled">
-        {groupLocationEntries
-          ? this.renderGroupedLocations(this.getSortedOrgNameAndLocationsDictionary(filteredLocations), currentLocation)
-          : this.renderAllLocations(filteredLocations, currentLocation)}
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
+        refreshControl={<PullToRefreshControl onRefresh={this.fetchLocations} />}
+      >
+        {content}
       </ScrollView>
     );
   };

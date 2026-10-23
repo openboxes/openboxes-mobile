@@ -7,6 +7,7 @@ import { useDispatch } from 'react-redux';
 import Button from '../../components/Button';
 import { ContentBody, ContentContainer, ContentFooter, ContentHeader } from '../../components/ContentLayout';
 import showPopup from '../../components/Popup';
+import PullToRefreshControl from '../../components/PullToRefreshControl';
 import PickList from '../../data/picklist/PickList';
 import { PicklistItem } from '../../data/picklist/PicklistItem';
 import { hideScreenLoading, showScreenLoading } from '../../redux/actions/main';
@@ -28,11 +29,17 @@ const OrderDetails: React.FC<Props> = (props) => {
     return _.findIndex(picklistItems, (item: any) => Number(item.quantityRemaining) > 0);
   };
 
-  const getOrderDetails = () => {
-    dispatch(showScreenLoading('Loading'));
+  const getOrderDetails = (done?: () => void) => {
+    if (!done) {
+      dispatch(showScreenLoading('Loading'));
+    }
     const { order } = props.route.params;
 
     const actionCallback = (data: any) => {
+      done?.();
+      if (done && data?.error) {
+        return;
+      }
       if (data?.length === 0) {
         dispatch(hideScreenLoading());
         setPickList(null);
@@ -109,7 +116,7 @@ const OrderDetails: React.FC<Props> = (props) => {
   const statusMessage = _.get(pickList, 'statusMessage', '0');
 
   return (
-    <ContentContainer>
+    <ContentContainer refreshControl={<PullToRefreshControl onRefresh={getOrderDetails} />}>
       <ContentHeader style={styles.contentHeader}>
         <View style={styles.headerRow}>
           <View style={styles.identifierContainer}>

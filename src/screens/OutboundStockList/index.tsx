@@ -9,6 +9,7 @@ import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSea
 import EmptyView from '../../components/EmptyView';
 import ListLoadingSkeleton from '../../components/ListLoadingSkeleton';
 import showPopup from '../../components/Popup';
+import PullToRefreshControl from '../../components/PullToRefreshControl';
 import { HYPHEN } from '../../constants';
 import { Container } from '../../data/container/Container';
 import { Shipment } from '../../data/container/Shipment';
@@ -21,6 +22,29 @@ import OutboundShipmentCardSkeleton from './OutboundShipmentCardSkeleton';
 import styles from './styles';
 import { DispatchProps, Props, State } from './types';
 
+const matchesPackingSearch = (shipment: Shipment, query: string) => {
+  const matchingShipmentNumber = shipment?.shipmentNumber?.toLowerCase()?.includes(query.toLowerCase());
+
+  const matchingContainer = _.find(shipment?.availableContainers, (container: Container) =>
+    container.containerNumber?.toLowerCase()?.includes(query.toLowerCase())
+  );
+
+  const matchingLotNumberOrProduct = _.find(shipment?.shipmentItems, (item: ShipmentItems) => {
+    const matchingLotNumber =
+      item.lotNumber?.toLowerCase()?.includes(query.toLowerCase()) ||
+      item.inventoryItem?.lotNumber?.toLowerCase()?.includes(query.toLowerCase());
+    const matchingCode = item.inventoryItem?.product?.productCode?.toLowerCase()?.includes(query.toLowerCase());
+    const matchingName = item.inventoryItem?.product?.name?.toLowerCase()?.includes(query.toLowerCase());
+    return matchingLotNumber || matchingCode || matchingName;
+  });
+
+  const matchingPackingLocation =
+    shipment?.packingStatusDetails?.packingLocation?.locationNumber?.toLowerCase()?.includes(query.toLowerCase()) ||
+    shipment?.packingStatusDetails?.packingLocation?.name?.toLowerCase()?.includes(query.toLowerCase());
+
+  return !!(matchingShipmentNumber || matchingContainer || matchingLotNumberOrProduct || matchingPackingLocation);
+};
+
 // List of shipments ready for packing
 class OutboundStockList extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -28,7 +52,6 @@ class OutboundStockList extends React.Component<Props, State> {
     this.state = {
       error: null,
       shipments: [],
-      filteredShipments: [],
       loading: true,
       searchTerm: ''
     };
@@ -38,11 +61,14 @@ class OutboundStockList extends React.Component<Props, State> {
     this.fetchPacking();
   }
 
-  fetchPacking = () => {
-    this.setState({ loading: true });
+  fetchPacking = (done?: () => void) => {
+    if (!done) {
+      this.setState({ loading: true });
+    }
     const { currentLocation } = this.props;
     const actionCallback = (data: any) => {
       this.setState({ loading: false });
+      done?.();
       if (!data || data?.error) {
         showPopup({
           title: data?.errorMessage ? 'Shipment details' : null,
@@ -89,43 +115,6 @@ class OutboundStockList extends React.Component<Props, State> {
       if (exactOutboundOrder) {
         this.resetFiltering();
         this.showShipmentReadyToPackScreen(exactOutboundOrder);
-      } else {
-        // If no exact match, then filter by <shipment number, container number, lot number on item> containing the search term
-        const filteredShipments = _.filter(this.state.shipments, (shipment: Shipment) => {
-          const matchingShipmentNumber = shipment?.shipmentNumber?.toLowerCase()?.includes(query.toLowerCase());
-
-          const matchingContainer = _.find(shipment?.availableContainers, (container: Container) =>
-            container.containerNumber?.toLowerCase()?.includes(query.toLowerCase())
-          );
-
-          const matchingLotNumberOrProduct = _.find(shipment?.shipmentItems, (item: ShipmentItems) => {
-            const matchingLotNumber =
-              item.lotNumber?.toLowerCase()?.includes(query.toLowerCase()) ||
-              item.inventoryItem?.lotNumber?.toLowerCase()?.includes(query.toLowerCase());
-            const matchingCode = item.inventoryItem?.product?.productCode?.toLowerCase()?.includes(query.toLowerCase());
-            const matchingName = item.inventoryItem?.product?.name?.toLowerCase()?.includes(query.toLowerCase());
-            return matchingLotNumber || matchingCode || matchingName;
-          });
-
-          const matchingPackingLocation =
-            shipment?.packingStatusDetails?.packingLocation?.locationNumber
-              ?.toLowerCase()
-              ?.includes(query.toLowerCase()) ||
-            shipment?.packingStatusDetails?.packingLocation?.name?.toLowerCase()?.includes(query.toLowerCase());
-
-          // Return as bool
-          return !!(
-            matchingShipmentNumber ||
-            matchingContainer ||
-            matchingLotNumberOrProduct ||
-            matchingPackingLocation
-          );
-        });
-
-        this.setState({
-          ...this.state,
-          filteredShipments
-        });
       }
 
       return;
@@ -137,14 +126,16 @@ class OutboundStockList extends React.Component<Props, State> {
   resetFiltering = () => {
     this.setState({
       ...this.state,
-      searchTerm: '',
-      filteredShipments: []
+      searchTerm: ''
     });
   };
 
   render() {
-    const { loading, searchTerm } = this.state;
-    const visibleData = this.state.filteredShipments.length > 0 ? this.state.filteredShipments : this.state.shipments;
+    const { loading, searchTerm, shipments } = this.state;
+    const filteredShipments = searchTerm
+      ? _.filter(shipments, (shipment: Shipment) => matchesPackingSearch(shipment, searchTerm))
+      : [];
+    const visibleData = filteredShipments.length > 0 ? filteredShipments : shipments;
     return (
       <View style={styles.screenContainer}>
         <BarcodeSearchHeader
@@ -218,6 +209,7 @@ class OutboundStockList extends React.Component<Props, State> {
               }}
               keyExtractor={(item) => item.id}
               style={styles.list}
+              refreshControl={<PullToRefreshControl onRefresh={this.fetchPacking} />}
             />
           )}
         </View>

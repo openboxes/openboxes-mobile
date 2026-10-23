@@ -1,21 +1,24 @@
-import React, { useCallback, useState } from 'react';
-import { Alert, ScrollView, View } from 'react-native';
+import React, { useCallback } from 'react';
+import { ScrollView, View } from 'react-native';
 import { Paragraph, Title } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
+import { ScanErrorText } from '../../components/ScanErrorText';
 import { ScannerInput } from '../../components/ScannerInput';
 import { SearchButton } from '../../components/SearchButton';
 import { useSearchButton } from '../../components/SearchButton/useSearchButton';
 import { EMPTY_STRING } from '../../constants';
+import { useScanField } from '../../hooks/useScanField';
 import { navigate } from '../../NavigationService';
 import { getPutawayDetailsByContainerId } from '../../redux/actions/putaways';
 import { SortationTask } from '../../types/sortation';
 import styles from './styles';
 
 export default function PutawayEntryScreen() {
-  const [putawayContainerId, setPutawayContainerId] = useState<string>(EMPTY_STRING);
+  const containerScan = useScanField();
+  const { pass, fail, setValue } = containerScan;
   const dispatch = useDispatch();
-  const { isSearchOpen, searchButtonProps } = useSearchButton({ onSelect: setPutawayContainerId });
+  const { isSearchOpen, searchButtonProps } = useSearchButton({ onSelect: containerScan.onChange });
 
   const performScan = useCallback(
     (containerId: string) => {
@@ -25,21 +28,21 @@ export default function PutawayEntryScreen() {
             const allTasks: SortationTask[] = response?.response?.data || [];
 
             if (allTasks.length > 0) {
+              pass();
+              setValue(EMPTY_STRING);
               navigate('SortationPutawayMode', {
                 containerId
               });
             } else {
-              Alert.alert('No Valid Tasks Found', `No open tasks found for container ${containerId}`);
+              fail(`No open tasks found for container ${containerId}.`);
             }
           } else {
-            Alert.alert('Error', `Error while fetching putaway tasks: ${response?.errorMessage}`);
+            fail(response?.errorMessage || 'Error while fetching putaway tasks.');
           }
-
-          setPutawayContainerId(EMPTY_STRING);
         })
       );
     },
-    [dispatch]
+    [dispatch, pass, fail, setValue]
   );
 
   return (
@@ -51,13 +54,15 @@ export default function PutawayEntryScreen() {
         <ScannerInput
           style={styles.scannerInput}
           label="Putaway Container ID"
-          value={putawayContainerId}
+          value={containerScan.value}
           isEnabled={!isSearchOpen}
-          onChange={setPutawayContainerId}
+          danger={!!containerScan.error}
+          onChange={containerScan.onChange}
           onSubmit={performScan}
         />
         <SearchButton searchType="container" {...searchButtonProps} />
       </View>
+      <ScanErrorText message={containerScan.error} />
     </ScrollView>
   );
 }

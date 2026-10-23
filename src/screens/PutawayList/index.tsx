@@ -1,4 +1,3 @@
-/* eslint-disable complexity */
 import _ from 'lodash';
 import React from 'react';
 import { FlatList, ListRenderItemInfo, View } from 'react-native';
@@ -9,6 +8,7 @@ import { LayoutStyle } from '../../assets/styles';
 import EmptyView from '../../components/EmptyView';
 import InputBox from '../../components/InputBox';
 import ListLoadingSkeleton from '../../components/ListLoadingSkeleton';
+import PullToRefreshControl from '../../components/PullToRefreshControl';
 import { HYPHEN } from '../../constants';
 import PutAway from '../../data/putaway/PutAway';
 import PutAwayItems from '../../data/putaway/PutAwayItems';
@@ -26,7 +26,6 @@ class PutawayList extends React.Component<Props, State> {
     this.state = {
       error: null,
       putAwayList: null,
-      putAwayListFiltered: null,
       putAway: null,
       orderId: null,
       showList: false,
@@ -48,13 +47,18 @@ class PutawayList extends React.Component<Props, State> {
     }
   }
 
-  fetchPutAways = (query: any) => {
+  fetchPutAways = (query: any, done?: () => void) => {
     this.props.navigation.setParams({ refetchPutaways: false });
-    this.setState({ loading: true });
+    if (!done) {
+      this.setState({ loading: true });
+    }
     const actionCallback = (putAwayList: any) => {
       this.setState({ loading: false });
+      done?.();
       if (!putAwayList || putAwayList?.error) {
-        this.setState({ showList: true, putAwayList: [] });
+        if (!done) {
+          this.setState({ showList: true, putAwayList: [] });
+        }
         return Promise.resolve(null);
       }
       this.setState({
@@ -92,26 +96,22 @@ class PutawayList extends React.Component<Props, State> {
         );
 
         if (exactPutaway) {
-          this.setState({ lpnFilter: '', searchTerm: '', putAwayListFiltered: [] }, () =>
+          this.setState({ lpnFilter: '', searchTerm: '' }, () =>
             this.goToPutawayItemDetailScreen(exactPutaway, exactPutaway.putawayItem)
           );
-        } else {
-          const putAwayListFiltered = _.filter(this.state.putAwayList, (putaway) =>
-            putaway?.putawayItem?.['inventoryItem.lotNumber']?.includes(text)
-          );
-          this.setState({ putAwayListFiltered: putAwayListFiltered });
         }
-      } else {
-        this.setState({ putAwayListFiltered: [] });
       }
     });
   };
 
   render() {
-    const { showList, putAwayList, putAwayListFiltered, lpnFilter, loading, searchTerm } = this.state;
+    const { showList, putAwayList, lpnFilter, loading, searchTerm } = this.state;
     const { productSummaryConfig } = this.props;
     const showLotNumber = productSummaryConfig?.lotNumber !== false;
-    const visibleData = putAwayListFiltered?.length ? putAwayListFiltered : putAwayList;
+    const putAwayListFiltered = lpnFilter
+      ? _.filter(putAwayList, (putaway) => putaway?.putawayItem?.['inventoryItem.lotNumber']?.includes(lpnFilter))
+      : [];
+    const visibleData = putAwayListFiltered.length ? putAwayListFiltered : putAwayList;
 
     return (
       <View style={styles.screenContainer}>
@@ -181,6 +181,7 @@ class PutawayList extends React.Component<Props, State> {
               )}
               keyExtractor={(item) => item.id}
               style={styles.list}
+              refreshControl={<PullToRefreshControl onRefresh={(done) => this.fetchPutAways(null, done)} />}
             />
           </View>
         ) : null}

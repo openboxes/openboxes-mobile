@@ -55,19 +55,18 @@ type PickingContextType = {
     reasonCodeName?: string
   ) => void;
   /** Revalidates all tasks for a given requisition ID */
-  revalidateTasksForRequisition: (requisitionId: string | undefined, callback?: () => void) => void;
+  revalidateTasksForRequisition: (requisitionId: string | undefined, callback: (errorMessage?: string) => void) => void;
   /** Start the pick task (API call) */
   startPickTask: (callback: (response: { errorMessage?: string }) => void) => void;
-  /** Drop the current pick task at the system-suggested staging location */
-  dropCurrentTask: (task: PickTask, callback?: (response: { errorMessage?: string }) => void) => void;
   /** Drop the current pick task at the given staging location */
   dropCurrentTaskAtStagingLocation: (
     task: PickTask,
     stagingLocationId: string,
-    callback?: (response: { errorMessage?: string }) => void
+    callback?: (response: { errorMessage?: string; allowOverride?: boolean }) => void,
+    overrideStagingLocationZone?: boolean
   ) => void;
   /** Revalidates the current pick task details from the server */
-  revalidateCurrentTask: (callback?: (task: PickTask | undefined) => void) => void;
+  revalidateCurrentTask: (callback?: (task: PickTask | undefined, errorMessage?: string) => void) => void;
   /** Advances to the next task in the list */
   goToNextTask: () => void;
 };
@@ -165,14 +164,14 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
     reasonCodeName?: string
   ) => {
     if (!currentTask || parsedQuantityPicked === undefined) {
-      Alert.alert('Error', 'Missing required fields for short pick.');
+      callback({ errorMessage: 'Missing required fields for short pick.' });
       return;
     }
 
     dispatch(shortPickTaskAction(currentTask.id, outboundContainerId, parsedQuantityPicked, callback, reasonCodeName));
   };
 
-  const revalidateCurrentTask = (callback?: (task: PickTask | undefined) => void) => {
+  const revalidateCurrentTask = (callback?: (task: PickTask | undefined, errorMessage?: string) => void) => {
     if (!currentTask) {
       return;
     }
@@ -180,8 +179,7 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
     dispatch(
       getPickTaskByIdAction(currentTask.id, ({ response, errorMessage }) => {
         if (errorMessage || !response?.data) {
-          Alert.alert('Error', errorMessage ?? 'Failed to revalidate the current pick task.');
-          callback?.(undefined);
+          callback?.(undefined, errorMessage ?? 'Failed to revalidate the current pick task.');
           return;
         }
 
@@ -196,16 +194,19 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
     setCurrentTaskIndex((prevIndex) => prevIndex + 1);
   };
 
-  const revalidateTasksForRequisition = (requisitionId: string | undefined, callback?: () => void) => {
+  const revalidateTasksForRequisition = (
+    requisitionId: string | undefined,
+    callback: (errorMessage?: string) => void
+  ) => {
     if (!requisitionId) {
-      Alert.alert('Error', 'Requisition ID is required to revalidate tasks.');
+      callback('Requisition ID is required to revalidate tasks.');
       return;
     }
 
     dispatch(
       getPickTasksByRequisitionAction(requisitionId, (res) => {
         if ('errorMessage' in res || !res.response?.data) {
-          Alert.alert('Error', 'Failed to revalidate pick tasks for the requisition.');
+          callback('Failed to revalidate pick tasks for the requisition.');
           return;
         }
 
@@ -216,7 +217,7 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
 
           if (hasNextExistingTask) {
             goToNextTask();
-            callback?.();
+            callback();
             return;
           }
 
@@ -243,52 +244,35 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
         });
 
         goToNextTask();
-        callback?.();
+        callback();
       })
     );
   };
 
-  const dropCurrentTask = (task: PickTask, callback?: (response: { errorMessage?: string }) => void) => {
-    if (!task) {
-      Alert.alert('Task Missing', 'No current task to drop.');
-      return;
-    }
-
-    if (!task.stagingLocation?.id) {
-      Alert.alert('Missing Input', 'Current task is missing a valid Staging Location.');
-      return;
-    }
-
-    if (!task.outboundContainer?.id) {
-      Alert.alert('Error', 'Current task does not have a valid Outbound Container.');
-      return;
-    }
-
-    dispatch(dropPickTaskAction(task.outboundContainer.id, task.stagingLocation.id, callback));
-  };
-
-  // Like dropCurrentTask but drops at the given (scanned) staging location instead of the pick task's suggested one
+  // Drops the current task at the given (scanned) staging location; the server validates it
+  // against the task's delivery type/zone (see PickTaskService.validateStagingLocationZone).
   const dropCurrentTaskAtStagingLocation = (
     task: PickTask,
     stagingLocationId: string,
-    callback?: (response: { errorMessage?: string }) => void
+    callback?: (response: { errorMessage?: string; allowOverride?: boolean }) => void,
+    overrideStagingLocationZone?: boolean
   ) => {
     if (!task) {
-      Alert.alert('Task Missing', 'No current task to drop.');
+      callback?.({ errorMessage: 'No current task to drop.' });
       return;
     }
 
     if (!stagingLocationId) {
-      Alert.alert('Missing Input', 'Please scan or enter a staging location.');
+      callback?.({ errorMessage: 'Please scan or enter a staging location.' });
       return;
     }
 
     if (!task.outboundContainer?.id) {
-      Alert.alert('Error', 'Current task does not have a valid Outbound Container.');
+      callback?.({ errorMessage: 'Current task does not have a valid Outbound Container.' });
       return;
     }
 
-    dispatch(dropPickTaskAction(task.outboundContainer.id, stagingLocationId, callback));
+    dispatch(dropPickTaskAction(task.outboundContainer.id, stagingLocationId, callback, overrideStagingLocationZone));
   };
 
   const resetSession = () => {
@@ -314,7 +298,6 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
         resetSession,
         revalidateTasksForRequisition,
         startPickTask,
-        dropCurrentTask,
         dropCurrentTaskAtStagingLocation,
         revalidateCurrentTask,
         goToNextTask

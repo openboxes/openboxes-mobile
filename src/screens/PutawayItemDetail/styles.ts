@@ -41,9 +41,6 @@ export default StyleSheet.create({
     flexDirection: 'column',
     flex: 0
   },
-  buttonContainer: {
-    marginTop: 8
-  },
   headerRow: {
     flexDirection: 'row',
     justifyContent: 'space-between'

@@ -3,6 +3,7 @@ import { Alert, FlatList, TouchableOpacity, View } from 'react-native';
 import { Caption, Card, Chip, Divider, Paragraph, Title } from 'react-native-paper';
 
 import ListLoadingSkeleton from '../../components/ListLoadingSkeleton';
+import PullToRefreshControl from '../../components/PullToRefreshControl';
 import { navigate } from '../../NavigationService';
 import { getOutboundOrders } from '../../apis/pua';
 import { useFocusEffect } from '@react-navigation/native';
@@ -13,19 +14,17 @@ import { AllocationOrder } from './types';
 
 export function PickUpEntryScreen() {
   const [orders, setOrders] = useState<any[]>([]);
-  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [hasLoaded, setHasLoaded] = useState<boolean>(false);
 
-  const fetchOrders = async () => {
+  const fetchOrders = async (done?: () => void) => {
     try {
-      setIsRefreshing(true);
       const response = await getOutboundOrders();
       setOrders(response.data || []);
     } catch (error) {
       Alert.alert('Error', 'Failed to fetch orders data');
     } finally {
-      setIsRefreshing(false);
       setHasLoaded(true);
+      done?.();
     }
   };
 
@@ -53,8 +52,7 @@ export function PickUpEntryScreen() {
           keyExtractor={(item: AllocationOrder) => item.id}
           numColumns={1}
           ItemSeparatorComponent={() => <View style={styles.itemSeparator} />}
-          refreshing={isRefreshing}
-          onRefresh={fetchOrders}
+          refreshControl={<PullToRefreshControl onRefresh={fetchOrders} />}
         />
       )}
     </View>

@@ -9,6 +9,7 @@ import { useFilteredDashboardEntries } from '../../hooks/useFilteredDashboardEnt
 import { useOrderedDashboardEntries } from '../../hooks/useOrderedDashboardEntries';
 import { useResponsiveColumns } from '../../hooks/useResponsiveColumns';
 import { RootState } from '../../redux/reducers';
+import Theme from '../../utils/Theme';
 import { DashboardCard } from './DashboardCard';
 import {
   DashboardEntry,
@@ -79,7 +80,7 @@ export default function Dashboard({ navigation }: Props) {
     return (
       <View style={styles.screenContainer}>
         <View style={styles.emptyScreenContainer}>
-          <EmptyIcon />
+          <EmptyIcon fill={Theme.colors.primary} />
           <Text style={styles.emptyScreenTitle}>No Dashboard Entries</Text>
           <Text style={styles.emptyScreenDescription}>Please check your settings to enable dashboard entries.</Text>
           <Button

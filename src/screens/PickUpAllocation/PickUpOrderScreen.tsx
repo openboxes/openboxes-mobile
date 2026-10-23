@@ -4,6 +4,7 @@ import { Alert, Modal, ScrollView, View } from 'react-native';
 import { Button, DataTable, Headline, List, Paragraph, TextInput, Title } from 'react-native-paper';
 
 import EmptyView from '../../components/EmptyView';
+import PullToRefreshControl from '../../components/PullToRefreshControl';
 import Theme from '../../utils/Theme';
 import styles from './styles';
 import { AllocationOrderLine, AllocationStrategy, AvailableItem } from './types';
@@ -19,14 +20,19 @@ export function PickUpOrderScreen() {
   const [allAllocatedAlertShown, setAllAllocatedAlertShown] = useState(false);
   const [fullOrder, setFullOrder] = useState<any>(null);
 
-  const fetchDetails = useCallback(async () => {
-    try {
-      const response = await getOutboundOrderDetails(orderId);
-      setFullOrder(response.data || []);
-    } catch (error) {
-      Alert.alert('Error', 'Failed to load order details.');
-    }
-  }, [orderId]);
+  const fetchDetails = useCallback(
+    async (done?: () => void) => {
+      try {
+        const response = await getOutboundOrderDetails(orderId);
+        setFullOrder(response.data || []);
+      } catch (error) {
+        Alert.alert('Error', 'Failed to load order details.');
+      } finally {
+        done?.();
+      }
+    },
+    [orderId]
+  );
 
   useEffect(() => {
     fetchDetails();
@@ -105,7 +111,7 @@ export function PickUpOrderScreen() {
     <View style={styles.screenContainer}>
       <Title style={styles.titleText}>Order Line Allocation ({fullOrder.lineItems.length})</Title>
 
-      <ScrollView>
+      <ScrollView refreshControl={<PullToRefreshControl onRefresh={fetchDetails} />}>
         <List.Section>
           {fullOrder.lineItems.map((line, index) => (
             <AllocationOrderItem

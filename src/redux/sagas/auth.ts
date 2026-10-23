@@ -53,7 +53,17 @@ function* login(action: any) {
       type: LOGIN_REQUEST_SUCCESS,
       payload: data
     });
-    yield NavigationService.navigate('Drawer');
+    const sessionResponse: GetSessionApiResponse = yield call(api.getSession);
+    yield put({
+      type: GET_SESSION_REQUEST_SUCCESS,
+      payload: sessionResponse.data
+    });
+    if (sessionResponse.data.location) {
+      global.location = sessionResponse.data.location;
+      yield NavigationService.navigate('Drawer', { screen: 'Dashboard' });
+    } else {
+      yield NavigationService.navigate('Drawer');
+    }
     yield put(hideScreenLoading());
   } catch (e) {
     yield put(hideScreenLoading());

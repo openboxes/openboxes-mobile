@@ -28,6 +28,8 @@ import { DispatchProps, Props, State } from './types';
 import vmMapper from './VMMapper';
 
 class Products extends React.Component<Props, State> {
+  isPullRefreshing = false;
+
   constructor(props: Props) {
     super(props);
     this.state = {
@@ -53,6 +55,7 @@ class Products extends React.Component<Props, State> {
   };
 
   getProducts = () => {
+    this.isPullRefreshing = false;
     this.setState({
       loading: true,
       searchTerm: '',
@@ -63,8 +66,23 @@ class Products extends React.Component<Props, State> {
     this.fetchProductsPage(0);
   };
 
-  fetchProductsPage = (offset: number) => {
+  refreshProducts = (done: () => void) => {
+    const { searchByProductCode, searchTerm } = this.state;
+    const onDone = () => {
+      this.isPullRefreshing = false;
+      done();
+    };
+    this.isPullRefreshing = true;
+    if (searchByProductCode && searchTerm.trim().length >= appConfig.MIN_SEARCH_LENGTH) {
+      this.onSearchTermSubmit(searchTerm, onDone);
+      return;
+    }
+    this.fetchProductsPage(0, onDone);
+  };
+
+  fetchProductsPage = (offset: number, done?: () => void) => {
     const actionCallback = (data: any) => {
+      done?.();
       if (data?.error) {
         this.setState({ loading: false, loadingMore: false });
         showPopup({
@@ -102,7 +120,7 @@ class Products extends React.Component<Props, State> {
 
   loadMoreProducts = () => {
     const { allProducts, allProductsHasMore, loadingMore, loading } = this.state;
-    if (loading || loadingMore || !allProductsHasMore) {
+    if (loading || loadingMore || !allProductsHasMore || this.isPullRefreshing) {
       return;
     }
     const loaded = allProducts?.length ?? 0;
@@ -308,7 +326,7 @@ class Products extends React.Component<Props, State> {
     }
   };
 
-  onSearchTermSubmit = (query: string) => {
+  onSearchTermSubmit = (query: string, done?: () => void) => {
     const trimmed = query.trim();
 
     if (trimmed.length === 0) {
@@ -321,6 +339,7 @@ class Products extends React.Component<Props, State> {
         error: null
       });
       this.getProducts();
+      done?.();
       return;
     }
 
@@ -333,12 +352,16 @@ class Products extends React.Component<Props, State> {
         searchTerm: trimmed,
         error: null
       });
+      done?.();
       return;
     }
 
-    this.setState({ loading: true, searchTerm: query });
+    if (!done) {
+      this.setState({ loading: true, searchTerm: query });
+    }
     const actionCallback = (data: any) => {
       this.setState({ loading: false });
+      done?.();
       if (data?.error) {
         showPopup({
           title: data.errorMessage ? `Failed to load search results with value = "${query}"` : null,
@@ -360,7 +383,7 @@ class Products extends React.Component<Props, State> {
           searchByProductCode: { query, results: null },
           error: emptyStateMessage('products', query, 'No products available')
         });
-      } else if (productList.length === 1) {
+      } else if (productList.length === 1 && !done) {
         this.goToProductDetails(productList[0]);
       } else {
         this.setState({
@@ -414,6 +437,7 @@ class Products extends React.Component<Props, State> {
                 hasMore={vm.showingAllProducts ? vm.allProductsHasMore : undefined}
                 onProductTapped={this.goToProductDetails}
                 onEndReached={vm.showingAllProducts ? this.loadMoreProducts : undefined}
+                onRefresh={this.refreshProducts}
               />
               {vm?.list?.length === 0 && <CentralMessage message={vm.centralErrorMessage} />}
             </>

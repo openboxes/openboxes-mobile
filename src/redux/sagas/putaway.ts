@@ -143,18 +143,24 @@ function* getPutawayDetailsByContainerId(action: any) {
     if (!location || !location.id) {
       return;
     }
-    yield put(showScreenLoading('Loading..'));
+    if (!action.suppressLoading) {
+      yield put(showScreenLoading('Loading..'));
+    }
     const response = yield call(api.getPutawayDetails, location.id, action.payload.containerId);
     yield put({
       type: GET_PUTAWAY_DETAILS_BY_CONTAINER_ID_REQUEST_SUCCESS,
       payload: response.data
     });
-    yield put(hideScreenLoading());
+    if (!action.suppressLoading) {
+      yield put(hideScreenLoading());
+    }
     if (action.callback) {
       yield action.callback({ response, message: 'Putaway details fetched successfully' });
     }
   } catch (error) {
-    yield put(hideScreenLoading());
+    if (!action.suppressLoading) {
+      yield put(hideScreenLoading());
+    }
     if (action.callback) {
       yield action.callback({
         error: true,

@@ -1,15 +1,16 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
-import React, { useEffect, useState } from 'react';
-import { Alert, ScrollView, View } from 'react-native';
+import React, { useEffect } from 'react';
+import { ScrollView, View } from 'react-native';
 import { Divider, Subheading } from 'react-native-paper';
 import { useSelector } from 'react-redux';
 
-import Button from '../../components/Button';
 import EmptyView from '../../components/EmptyView';
+import { ScanErrorText } from '../../components/ScanErrorText';
 import { ScannerInput } from '../../components/ScannerInput';
 import { SearchButton } from '../../components/SearchButton';
 import { useSearchButton } from '../../components/SearchButton/useSearchButton';
 import { EMPTY_STRING } from '../../constants';
+import { useScanField } from '../../hooks/useScanField';
 import { navigate } from '../../NavigationService';
 import { RootState } from '../../redux/reducers';
 import { SortationTask } from '../../types/sortation';
@@ -36,12 +37,13 @@ export default function PutawayProductScanScreen() {
   const { currentTaskIndex, isDirectPutaway, isUserDirected, containerId, task } = params;
   const putawayTasks = useSelector((state: RootState) => state.putawayReducer.putawayTasks) as SortationTask[];
   const putawayDetails = task ?? putawayTasks?.[currentTaskIndex];
-  const [putawayProductBarcode, setPutawayProductBarcode] = useState<string>(EMPTY_STRING);
-  const { isSearchOpen, searchButtonProps } = useSearchButton({ onSelect: setPutawayProductBarcode });
+  const productScan = useScanField();
+  const resetProductScan = productScan.setValue;
+  const { isSearchOpen, searchButtonProps } = useSearchButton({ onSelect: productScan.onChange });
 
   useEffect(() => {
-    setPutawayProductBarcode(EMPTY_STRING);
-  }, [currentTaskIndex, putawayDetails?.id]);
+    resetProductScan(EMPTY_STRING);
+  }, [currentTaskIndex, putawayDetails?.id, resetProductScan]);
 
   if (!putawayDetails) {
     return (
@@ -59,14 +61,11 @@ export default function PutawayProductScanScreen() {
     const isValid = isProductBarcodeValid(code, product);
 
     if (!isValid) {
-      Alert.alert(
-        'Wrong Product',
-        `The scanned barcode does not match the expected putaway product (${product?.productCode}).`,
-        [{ text: 'OK', onPress: () => setPutawayProductBarcode(EMPTY_STRING) }]
-      );
+      productScan.fail(`Incorrect product scanned (${code}). Expected: ${product?.productCode}.`);
       return;
     }
 
+    productScan.pass();
     navigate('SortationPutawayQuantity', {
       currentTaskIndex,
       isDirectPutaway,
@@ -98,21 +97,15 @@ export default function PutawayProductScanScreen() {
           <ScannerInput
             style={styles.scannerInput}
             label="Putaway Product Entry Field"
-            value={putawayProductBarcode}
+            value={productScan.value}
             isEnabled={!isSearchOpen}
-            onChange={setPutawayProductBarcode}
+            danger={!!productScan.error}
+            onChange={productScan.onChange}
             onSubmit={handleProcessing}
           />
           <SearchButton searchType="product" {...searchButtonProps} />
         </View>
-
-        <Button
-          style={styles.topSpace}
-          title="Submit"
-          mode="contained"
-          size="100%"
-          onPress={() => handleProcessing(putawayProductBarcode)}
-        />
+        <ScanErrorText message={productScan.error} />
 
         {!isUserDirected && (
           <SkipButton

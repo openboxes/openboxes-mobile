@@ -8,7 +8,7 @@ import styles from './styles';
 import { Props } from './types';
 
 const ContentContainer: React.FC<Props> = (props) => {
-  const { children, style, ...otherProps } = props;
+  const { children, style, refreshControl, ...otherProps } = props;
 
   const arrayChildren = React.Children.toArray(children) as React.ReactElement[];
   const header = _.find(arrayChildren, (child) => _.get(child, 'type.name') === ContentHeader.name);
@@ -18,7 +18,7 @@ const ContentContainer: React.FC<Props> = (props) => {
   return (
     <View {...otherProps} style={[style, styles.container]}>
       {header?.props?.fixed ? header : null}
-      <ScrollView contentContainerStyle={styles.scrollContentContainer}>
+      <ScrollView contentContainerStyle={styles.scrollContentContainer} refreshControl={refreshControl}>
         {header?.props?.fixed ? null : header}
         {body}
         {footer?.props?.fixed ? null : footer}

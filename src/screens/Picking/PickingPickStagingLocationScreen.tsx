@@ -2,27 +2,28 @@ import * as React from 'react';
 import { Alert, ScrollView, View } from 'react-native';
 import { Divider, Paragraph, Subheading } from 'react-native-paper';
 
+import StagingLocationZoneMismatchModal from '../../components/StagingLocationZoneMismatchModal';
 import { ProductDetails } from '../../components/ProductDetails';
+import { ScanErrorText } from '../../components/ScanErrorText';
 import { ScannerInput } from '../../components/ScannerInput';
 import { SearchButton } from '../../components/SearchButton';
 import { useSearchButton } from '../../components/SearchButton/useSearchButton';
 import { EMPTY_STRING, HYPHEN } from '../../constants';
+import { useScanField } from '../../hooks/useScanField';
 import { resetToRoutes } from '../../NavigationService';
 import { parseFromISODateToLocaleString } from '../../utils/utils';
 import { CustomerDetails } from './CustomerDetails';
 import { usePickingContext } from './PickingContext';
 import styles from './styles';
 
-// Lets the user stage at any scanned location. Set to false to require the scanned location to
-// match the one suggested by the pick task.
-const SKIP_STAGING_LOCATION_VALIDATION = true;
-
 export default function PickingPickStagingLocationScreen() {
-  const { tasks, dropCurrentTask, dropCurrentTaskAtStagingLocation, resetSession, setCurrentTaskIndex, homeRoute } =
-    usePickingContext();
-  const [stagingLocationNumber, setStagingLocationNumber] = React.useState(EMPTY_STRING);
+  const { tasks, dropCurrentTaskAtStagingLocation, resetSession, setCurrentTaskIndex, homeRoute } = usePickingContext();
+  const stagingScan = useScanField();
   const [currentUniqueIndex, setCurrentUniqueIndex] = React.useState(0);
-  const { isSearchOpen, searchButtonProps } = useSearchButton({ onSelect: setStagingLocationNumber });
+  const { isSearchOpen, searchButtonProps } = useSearchButton({ onSelect: stagingScan.onChange });
+
+  const [pendingLocationId, setPendingLocationId] = React.useState(EMPTY_STRING);
+  const [zoneMismatchMessage, setZoneMismatchMessage] = React.useState<string | undefined>(undefined);
 
   // Memoize unique tasks based on outbound container ID
   const uniqueTasks = React.useMemo(() => {
@@ -41,88 +42,68 @@ export default function PickingPickStagingLocationScreen() {
     }
   }, [currentTask, tasks.length, setCurrentTaskIndex, uniqueTasks.length, tasks, homeRoute]);
 
-  // Requires the scanned location to match the one suggested by the task. Used when SKIP_STAGING_LOCATION_VALIDATION is false.
-  function handleScan(locationId: string) {
-    const expected = currentTask.stagingLocation?.locationNumber;
-
-    if (!expected || locationId !== expected) {
-      Alert.alert(
-        'Invalid Staging Location',
-        `Expected: ${expected ?? '-'}, but got: ${locationId}. Please try again.`
-      );
-      setStagingLocationNumber(EMPTY_STRING);
+  function advanceOrComplete() {
+    const nextIndex = currentUniqueIndex + 1;
+    if (nextIndex < uniqueTasks.length) {
+      stagingScan.pass();
+      setCurrentUniqueIndex(nextIndex);
+      stagingScan.setValue(EMPTY_STRING);
       return;
     }
 
-    dropCurrentTask(currentTask, (response) => {
-      if (response.errorMessage) {
-        Alert.alert('Error', response.errorMessage);
-        setStagingLocationNumber(EMPTY_STRING);
-        return;
-      }
-
-      const nextIndex = currentUniqueIndex + 1;
-      if (nextIndex < uniqueTasks.length) {
-        Alert.alert('Success', 'Staging Location confirmed. Proceeding to the next container.', [
-          {
-            text: 'OK',
-            onPress: () => {
-              setCurrentUniqueIndex(nextIndex);
-              setStagingLocationNumber(EMPTY_STRING);
-            }
+    stagingScan.pass(() =>
+      Alert.alert('Picking Session Complete', 'You have completed all staging confirmations.', [
+        {
+          text: 'OK',
+          onPress: () => {
+            resetSession();
+            resetToRoutes([{ name: 'Drawer', params: { screen: 'Dashboard' } }, { name: homeRoute }]);
           }
-        ]);
-      } else {
-        Alert.alert('Picking Session Complete', 'You have completed all staging confirmations.', [
-          {
-            text: 'OK',
-            onPress: () => {
-              resetSession();
-              resetToRoutes([{ name: 'Drawer', params: { screen: 'Dashboard' } }, { name: homeRoute }]);
-            }
-          }
-        ]);
-      }
-    });
+        }
+      ])
+    );
   }
 
-  // Drops at whatever location the user scans, without checking it against the task's suggestion.
-  // Used when SKIP_STAGING_LOCATION_VALIDATION is true.
-  function handleScanWithoutValidation(locationId: string) {
+  // Always defers to the server: it's the authority on whether the scanned location is valid for
+  // this delivery type's zone (per-facility configurable). A mismatch surfaces a modal offering
+  // to stage at the scanned location anyway, rather than an inline error.
+  function handleScan(locationId: string) {
     if (!locationId) {
       return;
     }
 
     dropCurrentTaskAtStagingLocation(currentTask, locationId, (response) => {
-      if (response.errorMessage) {
-        Alert.alert('Error', response.errorMessage);
-        setStagingLocationNumber(EMPTY_STRING);
+      if (response.allowOverride) {
+        setPendingLocationId(locationId);
+        setZoneMismatchMessage(response.errorMessage);
         return;
       }
 
-      const nextIndex = currentUniqueIndex + 1;
-      if (nextIndex < uniqueTasks.length) {
-        Alert.alert('Success', 'Staging Location confirmed. Proceeding to the next container.', [
-          {
-            text: 'OK',
-            onPress: () => {
-              setCurrentUniqueIndex(nextIndex);
-              setStagingLocationNumber(EMPTY_STRING);
-            }
-          }
-        ]);
-      } else {
-        Alert.alert('Picking Session Complete', 'You have completed all staging confirmations.', [
-          {
-            text: 'OK',
-            onPress: () => {
-              resetSession();
-              resetToRoutes([{ name: 'Drawer', params: { screen: 'Dashboard' } }, { name: homeRoute }]);
-            }
-          }
-        ]);
+      if (response.errorMessage) {
+        stagingScan.fail(response.errorMessage);
+        return;
       }
+
+      advanceOrComplete();
     });
+  }
+
+  function handleStageAnyway() {
+    setZoneMismatchMessage(undefined);
+
+    dropCurrentTaskAtStagingLocation(
+      currentTask,
+      pendingLocationId,
+      (response) => {
+        if (response.errorMessage) {
+          stagingScan.fail(response.errorMessage);
+          return;
+        }
+
+        advanceOrComplete();
+      },
+      true
+    );
   }
 
   // If no task is selected yet, return null to avoid rendering
@@ -197,15 +178,27 @@ export default function PickingPickStagingLocationScreen() {
             <ScannerInput
               style={styles.scannerInput}
               label="Staging Location Number"
-              value={stagingLocationNumber}
-              isEnabled={!isSearchOpen}
-              onChange={setStagingLocationNumber}
-              onSubmit={SKIP_STAGING_LOCATION_VALIDATION ? handleScanWithoutValidation : handleScan}
+              value={stagingScan.value}
+              isEnabled={!isSearchOpen && !zoneMismatchMessage}
+              danger={!!stagingScan.error}
+              onChange={stagingScan.onChange}
+              onSubmit={handleScan}
             />
             <SearchButton searchType="location" {...searchButtonProps} />
           </View>
+          <ScanErrorText message={stagingScan.error} />
         </View>
       </ProductDetails.Provider>
+
+      <StagingLocationZoneMismatchModal
+        visible={!!zoneMismatchMessage}
+        message={zoneMismatchMessage}
+        onScanAnother={() => {
+          setZoneMismatchMessage(undefined);
+          stagingScan.setValue(EMPTY_STRING);
+        }}
+        onStageAnyway={handleStageAnyway}
+      />
     </ScrollView>
   );
 }

@@ -175,6 +175,7 @@ For each brand you want to create (e.g., "vipr"), you'll need to prepare several
           "app_name": "VIPR"
         }
         ```
+      - Optionally, `primary_color` overrides the app's primary color (e.g., `"primary_color": "#005BC8"`). It must be a 6-digit hex color. When it is omitted, the app keeps its default colors.
       - _Note: If your app name contains special XML characters (`&`, `<`, `>`, `"`, `'`) and you are relying on `sed` (the script's primary method), ensure they are XML-escaped in this file (e.g., `My App &amp; Co.`)._
 
 ### Step 2: Verify Your Brand's Directory Structure
@@ -192,7 +193,7 @@ After preparing and placing all assets, your brand's directory (e.g., `branding/
 | `appstore.png`                           | 1024x1024 icon for iOS App Store submission (typically renamed from AppIcon.co output like `iTunesArtwork.png`)   | No (Manual)     |
 | `logo.png`                               | In-app logo, replaces `src/assets/images/logo.png`                                                                | **Yes**         |
 | `playstore.png`                          | 512x512 icon for Google Play Store submission (typically renamed from AppIcon.co output like `PlayStoreIcon.png`) | No (Manual)     |
-| `settings.json`                          | Configuration file (e.g., for `app_name`)                                                                         | **Yes**         |
+| `settings.json`                          | Configuration file (e.g., for `app_name` and `primary_color`)                                                     | **Yes**         |
 | `splash.png`                             | 1024x1024 master source icon, also used as the source for Android splash screens                                  | **Yes**         |
 
 **Important Notes on Asset Usage by the Current Script:**
@@ -218,6 +219,7 @@ After preparing and placing all assets, your brand's directory (e.g., `branding/
     - Copying the splash screen (from `branding/<brand_name>/splash.png`, renaming to `logo_splash.png` for Android).
     - Copying the in-app logo to `src/assets/images/logo.png`.
     - Updating the Android app display name in `strings.xml` using the `app_name` from your brand's `settings.json`.
+    - Setting the app's primary color in `src/utils/Theme.ts` using the `primary_color` from your brand's `settings.json`.
 
 ### Step 4: Clean, Build, and Run Your Application
 

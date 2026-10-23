@@ -1,6 +1,6 @@
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Alert, FlatList, ListRenderItemInfo, RefreshControl, ToastAndroid, View } from 'react-native';
+import { Alert, FlatList, ListRenderItemInfo, ToastAndroid, View } from 'react-native';
 import { Caption, Card, Chip, Divider, Text, Title } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
@@ -8,8 +8,10 @@ import ArrowRight from '../../assets/images/arrow_right.svg';
 import Button from '../../components/Button';
 import { TransferDetailsSkeleton } from '../../components/ContentSkeleton';
 import EmptyView from '../../components/EmptyView';
+import PullToRefreshControl from '../../components/PullToRefreshControl';
 import { EMPTY_FALLBACK } from '../../constants';
 import { completeStockTransfer, getStockTransfersSummary } from '../../redux/actions/transfers';
+import Theme from '../../utils/Theme';
 import styles from './styles';
 
 type TransferDetailsRouteParams = {
@@ -33,22 +35,28 @@ export default function TransferDetails() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const fetchTransferSummary = useCallback(() => {
-    setIsLoading(true);
-    dispatch(
-      getStockTransfersSummary(transfers?.id, (data: any) => {
-        setIsLoading(false);
-        if (data?.error) {
-          Alert.alert('Failed to Load', data.errorMessage ?? 'Could not load transfer details.', [
-            { text: 'Retry', onPress: fetchTransferSummary },
-            { text: 'Cancel', style: 'cancel' }
-          ]);
-        } else if (data) {
-          setTransferDetail(data);
-        }
-      })
-    );
-  }, [dispatch, transfers?.id]);
+  const fetchTransferSummary = useCallback(
+    (done?: () => void) => {
+      if (!done) {
+        setIsLoading(true);
+      }
+      dispatch(
+        getStockTransfersSummary(transfers?.id, (data: any) => {
+          setIsLoading(false);
+          done?.();
+          if (data?.error) {
+            Alert.alert('Failed to Load', data.errorMessage ?? 'Could not load transfer details.', [
+              { text: 'Retry', onPress: () => fetchTransferSummary() },
+              { text: 'Cancel', style: 'cancel' }
+            ]);
+          } else if (data) {
+            setTransferDetail(data);
+          }
+        })
+      );
+    },
+    [dispatch, transfers?.id]
+  );
 
   useEffect(() => {
     fetchTransferSummary();
@@ -108,7 +116,7 @@ export default function TransferDetails() {
               {item?.originBinLocation?.name ?? EMPTY_FALLBACK}
             </Text>
           </View>
-          <ArrowRight width={20} height={20} />
+          <ArrowRight width={20} height={20} fill={Theme.colors.primary} />
           <View style={styles.binBlock}>
             <Text style={styles.binLabel}>To</Text>
             <Text style={styles.binValue} numberOfLines={1}>
@@ -131,7 +139,7 @@ export default function TransferDetails() {
           isRefresh
           title="Transfer Not Found"
           description="Could not load transfer details."
-          onPress={fetchTransferSummary}
+          onPress={() => fetchTransferSummary()}
         />
       </View>
     );
@@ -161,7 +169,7 @@ export default function TransferDetails() {
               {transferDetail.origin?.name ?? EMPTY_FALLBACK}
             </Text>
           </View>
-          <ArrowRight width={18} height={18} />
+          <ArrowRight width={18} height={18} fill={Theme.colors.primary} />
           <View style={styles.binBlock}>
             <Text style={styles.binLabel}>Destination</Text>
             <Text style={styles.binValue} numberOfLines={1}>
@@ -178,14 +186,12 @@ export default function TransferDetails() {
         data={items}
         keyExtractor={(item, index) => item?.id ?? String(index)}
         ListHeaderComponent={
-          items.length > 0 ? (
-            <Text style={styles.listSectionLabel}>{`Items To Transfer (${items.length})`}</Text>
-          ) : null
+          items.length > 0 ? <Text style={styles.listSectionLabel}>{`Items To Transfer (${items.length})`}</Text> : null
         }
         ListEmptyComponent={<EmptyView title="No Items" description="There are no items in this transfer." />}
         renderItem={renderItem}
         contentContainerStyle={styles.itemListContainer}
-        refreshControl={<RefreshControl refreshing={isLoading} onRefresh={fetchTransferSummary} />}
+        refreshControl={<PullToRefreshControl onRefresh={fetchTransferSummary} />}
       />
 
       {canComplete && (

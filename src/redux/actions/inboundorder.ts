@@ -19,11 +19,12 @@ export function fetchInboundOrderList(callback: (data: any) => void, id?: any, s
   };
 }
 
-export function fetchPartialReceiving(callback: (data: any) => void, id?: any) {
+export function fetchPartialReceiving(callback: (data: any) => void, id?: any, suppressLoading?: boolean) {
   return {
     type: FETCH_PARTIAL_RECEIVING_REQUEST,
     payload: { id },
-    callback
+    callback,
+    suppressLoading
   };
 }
 

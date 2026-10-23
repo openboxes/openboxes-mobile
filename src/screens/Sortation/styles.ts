@@ -114,7 +114,6 @@ export default StyleSheet.create({
   },
   topSpace: { marginTop: Theme.spacing.small },
   bottomSpace: { marginBottom: Theme.spacing.small },
-  rightSpace: { marginRight: Theme.spacing.small },
   cardAnnotation: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -156,37 +155,6 @@ export default StyleSheet.create({
   cardContainer: {
     paddingVertical: Theme.spacing.large
   },
-  dialogOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: Theme.spacing.large
-  },
-  dialogContent: {
-    backgroundColor: 'white',
-    borderRadius: Theme.roundness * 2,
-    padding: Theme.spacing.large,
-    width: '100%',
-    maxWidth: 400
-  },
-  dialogTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: Theme.spacing.medium
-  },
-  dialogText: {
-    fontSize: 16,
-    color: Theme.colors.text,
-    marginBottom: Theme.spacing.medium
-  },
-  dialogActions: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end'
-  },
-  dialogButton: {
-    flex: 1
-  },
   successBanner: {
     display: 'flex',
     flexDirection: 'column',
@@ -208,18 +176,12 @@ export default StyleSheet.create({
     color: Theme.colors.primary,
     textDecorationLine: 'underline'
   },
-  dialogDivider: {
-    height: 1,
-    backgroundColor: Theme.colors.disabled,
-    opacity: 0.3,
-    marginVertical: Theme.spacing.large
-  },
-  dialogLinkRow: {
+  findProductLinkRow: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: Theme.spacing.small
   },
-  dialogLink: {
+  findProductLink: {
     fontSize: 15,
     fontWeight: 'bold',
     color: Theme.colors.primary,

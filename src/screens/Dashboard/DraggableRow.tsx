@@ -3,6 +3,7 @@ import React from 'react';
 import { Animated, StyleSheet, TouchableOpacity, View, ViewStyle } from 'react-native';
 
 import IconDrag from '../../assets/images/icon_drag.svg';
+import Theme from '../../utils/Theme';
 
 export type DraggableRowProps = {
   children: React.ReactNode;
@@ -16,7 +17,7 @@ export function DraggableRow({ children, drag, isActive, style }: DraggableRowPr
     <Animated.View style={[styles.container, style, { opacity: isActive ? 0.75 : 1 }]}>
       <View style={styles.row}>
         <TouchableOpacity delayLongPress={0} style={styles.handle} onLongPress={drag}>
-          <IconDrag width={24} height={24} />
+          <IconDrag width={24} height={24} fill={Theme.colors.primary} />
         </TouchableOpacity>
 
         <View style={styles.content}>{children}</View>

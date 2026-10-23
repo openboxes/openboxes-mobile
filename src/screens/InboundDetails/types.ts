@@ -5,6 +5,7 @@ type InboundDetailProps = {
   data: any;
   shipmentId: any;
   shipmentData: any;
+  onRefresh: (done: () => void) => void;
 };
 
 export interface InboundDetailOwnProps {
