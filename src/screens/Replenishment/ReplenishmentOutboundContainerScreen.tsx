@@ -102,7 +102,7 @@ export default function ReplenishmentOutboundContainerScreen() {
             revalidateTaskAndProceed();
           }
         },
-        params?.reasonCode?.name
+        params?.reasonCode?.id
       );
       return;
     }

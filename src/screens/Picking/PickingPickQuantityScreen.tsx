@@ -114,7 +114,7 @@ export default function PickingPickQuantityScreen() {
             omitStagingLocationStep
           });
         },
-        reasonCode?.name
+        reasonCode?.id
       );
       return;
     }
