@@ -1,4 +1,4 @@
-import { PickTaskParams } from '../../apis';
+import { PickTaskDropScope, PickTaskParams } from '../../apis';
 import { DeliveryTypeOrderCount, PickPageItem, PickTask, ReallocatePicklistItem } from '../../types/picking';
 
 export const GET_PICK_TASKS_REQUEST = 'GET_PICK_TASKS_REQUEST';
@@ -29,9 +29,13 @@ export const GET_PICK_TASK_BY_ID_REQUEST = 'GET_PICK_TASK_BY_ID_REQUEST';
 export const GET_PICK_TASK_BY_ID_REQUEST_SUCCESS = 'GET_PICK_TASK_BY_ID_REQUEST_SUCCESS';
 export const GET_PICK_TASK_BY_ID_REQUEST_FAIL = 'GET_PICK_TASK_BY_ID_REQUEST_FAIL';
 
-export const GET_PICKED_TASKS_BY_CONTAINER_REQUEST = 'GET_PICKED_TASKS_BY_CONTAINER_REQUEST';
-export const GET_PICKED_TASKS_BY_CONTAINER_REQUEST_SUCCESS = 'GET_PICKED_TASKS_BY_CONTAINER_REQUEST_SUCCESS';
-export const GET_PICKED_TASKS_BY_CONTAINER_REQUEST_FAIL = 'GET_PICKED_TASKS_BY_CONTAINER_REQUEST_FAIL';
+export const GET_STAGING_WORK_REQUEST = 'GET_STAGING_WORK_REQUEST';
+export const GET_STAGING_WORK_REQUEST_SUCCESS = 'GET_STAGING_WORK_REQUEST_SUCCESS';
+export const GET_STAGING_WORK_REQUEST_FAIL = 'GET_STAGING_WORK_REQUEST_FAIL';
+
+export const GET_ORDER_STAGING_DETAIL_REQUEST = 'GET_ORDER_STAGING_DETAIL_REQUEST';
+export const GET_ORDER_STAGING_DETAIL_REQUEST_SUCCESS = 'GET_ORDER_STAGING_DETAIL_REQUEST_SUCCESS';
+export const GET_ORDER_STAGING_DETAIL_REQUEST_FAIL = 'GET_ORDER_STAGING_DETAIL_REQUEST_FAIL';
 
 export const SHORT_PICK_TASK_REQUEST = 'SHORT_PICK_TASK_REQUEST';
 export const SHORT_PICK_TASK_REQUEST_SUCCESS = 'SHORT_PICK_TASK_REQUEST_SUCCESS';
@@ -131,7 +135,7 @@ export function startPickTaskAction(taskId: string, callback: (response: { error
 
 export function pickPickTaskAction(
   taskId: string,
-  outboundContainerId: string,
+  outboundContainerId: string | null,
   callback: (response: { errorMessage?: string }) => void
 ) {
   return {
@@ -156,14 +160,14 @@ export function shortPickTaskAction(
 }
 
 export function dropPickTaskAction(
-  outboundContainerId: string,
+  scope: PickTaskDropScope,
   stagingLocationId: string,
   callback?: (response: { errorMessage?: string; allowOverride?: boolean }) => void,
   overrideStagingLocationZone?: boolean
 ) {
   return {
     type: DROP_PICK_TASK_REQUEST,
-    payload: { outboundContainerId, stagingLocationId, overrideStagingLocationZone },
+    payload: { scope, stagingLocationId, overrideStagingLocationZone },
     callback
   };
 }
@@ -186,22 +190,37 @@ export function getPickTaskByIdAction(
   };
 }
 
-export function getPickedTasksByContainerAction(
-  outboundContainerId: string,
-  callback: (response: {
-    response: {
-      data: PickTask[];
-      errorCode?: string;
-      message?: string;
-      max?: number;
-      offset?: number;
-      totalCount?: number;
-    };
-  }) => void
+type PickTaskListResponse = {
+  response?: {
+    data: PickTask[];
+    errorCode?: string;
+    message?: string;
+    max?: number;
+    offset?: number;
+    totalCount?: number;
+  };
+  errorMessage?: string;
+};
+
+export function getStagingWorkAction(
+  params: { outboundContainerId?: string; max?: number; offset?: number },
+  callback: (response: PickTaskListResponse) => void
 ) {
   return {
-    type: GET_PICKED_TASKS_BY_CONTAINER_REQUEST,
-    payload: { outboundContainerId },
+    type: GET_STAGING_WORK_REQUEST,
+    payload: params,
+    callback
+  };
+}
+
+export function getOrderStagingDetailAction(
+  requisitionId: string,
+  outboundContainerId: string | undefined,
+  callback: (response: PickTaskListResponse) => void
+) {
+  return {
+    type: GET_ORDER_STAGING_DETAIL_REQUEST,
+    payload: { requisitionId, outboundContainerId },
     callback
   };
 }

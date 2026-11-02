@@ -111,10 +111,10 @@ const dashboardEntries: DashboardEntry[] = [
   },
   {
     key: 'moveToStaging',
-    screenName: 'Move To Staging',
+    screenName: 'Move to Staging',
     entryDescription: 'Manage moving picked items to staging area.',
     icon: IconGarage,
-    navigationScreenName: 'PickingMoveToStaging',
+    navigationScreenName: 'MoveToStagingList',
     group: 'OUTBOUND'
   },
   {

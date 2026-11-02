@@ -74,9 +74,10 @@ import PickingPickLocationScreen from './screens/Picking/PickingPickLocationScre
 import PickingPickProductScreen from './screens/Picking/PickingPickProductScreen';
 import PickingPickQuantityScreen from './screens/Picking/PickingPickQuantityScreen';
 import PickingPickOutboundContainerScreen from './screens/Picking/PickingPickOutboundContainerScreen';
-import PickingPickStagingLocationScreen from './screens/Picking/PickingPickStagingLocationScreen';
-import PickingMoveToStagingScreen from './screens/Picking/PickingMoveToStaging';
-import PickingStagingDropScreen from './screens/Picking/PickingStagingDrop';
+import PickCompleteScreen from './screens/Picking/PickCompleteScreen';
+import MoveToStagingListScreen from './screens/MoveToStaging/MoveToStagingListScreen';
+import MoveToStagingOrderScreen from './screens/MoveToStaging/MoveToStagingOrderScreen';
+import StagingLocationScreen from './screens/MoveToStaging/StagingLocationScreen';
 import { ReplenishmentLocationScreen } from './screens/Replenishment/ReplenishmentLocationScreen';
 import { ReplenishmentProductScreen } from './screens/Replenishment/ReplenishmentProductScreen';
 import ReplenishmentOutboundContainerScreen from './screens/Replenishment/ReplenishmentOutboundContainerScreen';
@@ -399,20 +400,21 @@ class Main extends Component<Props, State> {
                 component={PickingPickOutboundContainerScreen}
                 options={{ title: 'Pick Outbound Container' }}
               />
+              <Stack.Screen name="PickComplete" component={PickCompleteScreen} options={{ title: 'Pick Complete' }} />
               <Stack.Screen
-                name="PickingPickStagingLocation"
-                component={PickingPickStagingLocationScreen}
-                options={{ title: 'Pick Staging Location' }}
+                name="MoveToStagingList"
+                component={MoveToStagingListScreen}
+                options={{ title: 'Move to Staging' }}
               />
               <Stack.Screen
-                name="PickingMoveToStaging"
-                component={PickingMoveToStagingScreen}
-                options={{ title: 'Move To Staging' }}
+                name="MoveToStagingOrder"
+                component={MoveToStagingOrderScreen}
+                options={{ title: 'Order' }}
               />
               <Stack.Screen
-                name="PickingStagingDrop"
-                component={PickingStagingDropScreen}
-                options={{ title: 'Staging Location Drop' }}
+                name="StagingLocation"
+                component={StagingLocationScreen}
+                options={{ title: 'Staging Location' }}
               />
               <Stack.Screen
                 name="ReplenishmentPickingLocation"

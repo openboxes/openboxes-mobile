@@ -79,6 +79,17 @@ function createLocationAction(term: string, callback: SearchCallback) {
   );
 }
 
+// Employee locations have no barcode and belong to one picker, so they stay out of the picker's search.
+function createOutboundContainerAction(term: string, callback: SearchCallback) {
+  return searchInternalLocations(
+    term,
+    { activityCodes: 'OUTBOUND_CONTAINER', ignoreActivityCodes: 'EMPLOYEE_LOCATION' },
+    (response: SearchResponse<Location>) =>
+      handleLocationSearchResponse(response, callback, 'Failed to search containers.'),
+    true
+  );
+}
+
 function createProductOrLocationAction(term: string, callback: SearchCallback) {
   return searchProductOrLocationAction(
     term,
@@ -135,6 +146,12 @@ export const searchProviders = {
     placeholder: 'Search by name or number...',
     inputLabel: 'Container ID',
     createAction: createLocationAction
+  },
+  outboundContainer: {
+    title: 'Search Outbound Container',
+    placeholder: 'Search by name or number...',
+    inputLabel: 'Outbound Container',
+    createAction: createOutboundContainerAction
   },
   destinationBin: {
     title: 'Search Destination Bin',

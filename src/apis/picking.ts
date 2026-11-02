@@ -1,6 +1,9 @@
 import { DeliveryTypeCode, ReallocatePicklistItem, ReasonCode } from '../types/picking';
 import ApiClient from '../utils/ApiClient';
 
+/** Page size shared by the staging list and the order detail query so both show the same slice. */
+export const PICK_TASK_PAGE_SIZE = 250;
+
 export type PickTaskParams = {
   deliveryTypeCode: DeliveryTypeCode;
   ordersCount: number;
@@ -14,7 +17,7 @@ export type PickTaskActionParams =
     }
   | {
       action: 'pick';
-      outboundContainerId: string;
+      outboundContainerId: string | null;
       // User Id
       pickedById: string;
     }
@@ -26,11 +29,16 @@ export type PickTaskActionParams =
       reasonCode?: Pick<ReasonCode, 'id'>;
     };
 
-export type PickTaskDropParams = {
+// The three scope fields are independent filters combined with AND; at least one is required.
+export type PickTaskDropScope = {
+  outboundContainerId?: string;
+  requisitionId?: string;
+  pickTaskIds?: string[];
+};
+
+export type PickTaskDropParams = PickTaskDropScope & {
   action: 'drop';
   stagingLocationId: string;
-  // User Id
-  stagedById: string;
   // True when the caller is overriding a previously reported staging location zone mismatch
   overrideStagingLocationZone?: boolean;
 };
@@ -70,20 +78,43 @@ export function patchPickTaskApi(facilityId: string, taskId: string, params: Pic
   return ApiClient.patch(`/facilities/${facilityId}/pick-tasks/${taskId}`, params);
 }
 
-export function dropPickTaskApi(facilityId: string, outboundContainerId: string, params: PickTaskDropParams) {
-  return ApiClient.patch(`/facilities/${facilityId}/pick-tasks/containers/${outboundContainerId}`, params);
+export function dropPickTaskApi(facilityId: string, params: PickTaskDropParams) {
+  return ApiClient.patch(`/facilities/${facilityId}/pick-tasks/drop`, params);
 }
 
 export function getPickTaskByIdApi(facilityId: string, taskId: string) {
   return ApiClient.get(`/facilities/${facilityId}/pick-tasks/${taskId}`);
 }
 
-export function getPickTasksByStatusAndContainerApi(facilityId: string, outboundContainerId: string, status: 'PICKED') {
-  return ApiClient.get(
-    `/facilities/${facilityId}/pick-tasks?outboundContainerId=${encodeURIComponent(
-      outboundContainerId
-    )}&status=${encodeURIComponent(status)}`
-  );
+export function getStagingWorkApi(
+  facilityId: string,
+  params?: { outboundContainerId?: string; max?: number; offset?: number }
+) {
+  const query = ['status=PICKED'];
+
+  if (params?.outboundContainerId) {
+    query.push(`outboundContainerId=${encodeURIComponent(params.outboundContainerId)}`);
+  }
+  if (params?.max !== undefined) {
+    query.push(`max=${params.max}`);
+  }
+  if (params?.offset !== undefined) {
+    query.push(`offset=${params.offset}`);
+  }
+
+  return ApiClient.get(`/facilities/${facilityId}/pick-tasks?${query.join('&')}`);
+}
+
+// No status filter on purpose: with a requisitionId the backend returns every status for that
+// order, so the picked lines and the already-staged panel arrive in a single request.
+export function getOrderStagingDetailApi(facilityId: string, requisitionId: string, outboundContainerId?: string) {
+  const query = [`requisitionId=${encodeURIComponent(requisitionId)}`, `max=${PICK_TASK_PAGE_SIZE}`];
+
+  if (outboundContainerId) {
+    query.push(`outboundContainerId=${encodeURIComponent(outboundContainerId)}`);
+  }
+
+  return ApiClient.get(`/facilities/${facilityId}/pick-tasks?${query.join('&')}`);
 }
 
 export function getPickTasksByRequisitionApi(facilityId: string, requisitionId: string, statuses: string[]) {
