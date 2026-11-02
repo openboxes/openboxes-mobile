@@ -1,7 +1,7 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
 import * as React from 'react';
 import { Alert, ScrollView, View } from 'react-native';
-import { Divider, Paragraph, Subheading } from 'react-native-paper';
+import { Button, Divider, Paragraph, Subheading } from 'react-native-paper';
 
 import { ProductDetails } from '../../components/ProductDetails';
 import { ScanErrorText } from '../../components/ScanErrorText';
@@ -46,6 +46,9 @@ export default function PickingPickOutboundContainerScreen() {
   }
 
   function handleScan(containerId: string) {
+    // An empty value means the picker bypassed the scan; the backend then substitutes their own container.
+    const containerIdOrNull = containerId || null;
+
     if (!currentTask) {
       containerScan.fail('No current pick task available.');
       return;
@@ -54,7 +57,7 @@ export default function PickingPickOutboundContainerScreen() {
     if (parsedQuantityPicked !== undefined && parsedQuantityPicked < currentTask.quantityRequired) {
       // Handle Short Pick
       shortPickTask(
-        containerId,
+        containerIdOrNull,
         parsedQuantityPicked,
         ({ errorMessage }) => {
           if (errorMessage) {
@@ -97,7 +100,7 @@ export default function PickingPickOutboundContainerScreen() {
       return;
     }
 
-    pickCurrentTask(containerId, ({ errorMessage }) => {
+    pickCurrentTask(containerIdOrNull, ({ errorMessage }) => {
       if (errorMessage) {
         containerScan.fail(errorMessage);
         return;
@@ -182,9 +185,20 @@ export default function PickingPickOutboundContainerScreen() {
               onChange={containerScan.onChange}
               onSubmit={handleScan}
             />
-            <SearchButton searchType="container" {...searchButtonProps} />
+            <SearchButton searchType="outboundContainer" {...searchButtonProps} />
           </View>
           <ScanErrorText message={containerScan.error} />
+
+          {currentTask.outboundContainerBypassAllowed ? (
+            <Button
+              mode="outlined"
+              icon="cart-off"
+              style={[styles.marginTop, styles.fullWidth]}
+              onPress={() => handleScan(EMPTY_STRING)}
+            >
+              Continue without a container
+            </Button>
+          ) : null}
         </View>
       </ProductDetails.Provider>
     </ScrollView>

@@ -14,6 +14,8 @@ interface OwnProps {
   placeholder?: string;
   searchBox: boolean;
   onSearchTermSubmit: (query: string) => void;
+  /** Fires only on an explicit submit (search key or scanner Enter), never on an autoSearch debounce tick. */
+  onSearchTermScan?: (query: string) => void;
   resetSearch?: () => void;
   autoSearch: boolean;
   autoFocus?: boolean;
@@ -68,6 +70,9 @@ const BarcodeSearchHeader: React.FC<OwnProps> = (props) => {
   const onSubmitEditing = () => {
     debouncedSubmit.cancel();
     props.onSearchTermSubmit(searchTerm);
+    if (props.onSearchTermScan) {
+      props.onSearchTermScan(searchTerm);
+    }
   };
 
   return (
