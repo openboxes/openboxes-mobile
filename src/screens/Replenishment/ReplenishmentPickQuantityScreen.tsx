@@ -10,7 +10,6 @@ import { useInputFocus } from '../../hooks/useInputFocus';
 import { navigate } from '../../NavigationService';
 import { getReasonCodesAction } from '../../redux/actions/others';
 import { ReasonCode } from '../../types/picking';
-import { DUMMY_REPLENISHMENT } from './mock-data';
 import { useReplenishmentContext } from './ReplenishmentContext';
 import styles from './styles';
 
@@ -79,8 +78,7 @@ export default function ReplenishmentPickQuantityScreen() {
 
   return (
     <>
-      {/* @ts-ignore */}
-      <ProductDetails.Provider product={DUMMY_REPLENISHMENT.product}>
+      <ProductDetails.Provider product={currentTask.product}>
         <ProductDetails.Root>
           <ProductDetails.Header>
             <ProductDetails.Badge icon="barcode" label="Product Code">

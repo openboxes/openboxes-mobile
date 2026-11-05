@@ -1,105 +1,148 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import React from 'react';
-import { Divider, Paragraph, Subheading } from 'react-native-paper';
+import React, { useEffect } from 'react';
+import { Alert, ScrollView, View } from 'react-native';
+import { Button, Divider, Paragraph, Subheading } from 'react-native-paper';
 
-import { Alert, View } from 'react-native';
+import EmptyView from '../../components/EmptyView';
 import { ProductDetails } from '../../components/ProductDetails';
+import { ScanErrorText } from '../../components/ScanErrorText';
 import { ScannerInput } from '../../components/ScannerInput';
+import { SearchButton } from '../../components/SearchButton';
+import { useSearchButton } from '../../components/SearchButton/useSearchButton';
 import { EMPTY_STRING, HYPHEN } from '../../constants';
+import { useScanField } from '../../hooks/useScanField';
 import { navigate } from '../../NavigationService';
-import { DUMMY_REPLENISHMENT } from './mock-data';
+import { parseFromISODateToLocaleString } from '../../utils/utils';
 import { useReplenishmentContext } from './ReplenishmentContext';
 import styles from './styles';
 
 export function ReplenishmentLocationScreen() {
-  const { currentTask, currentTaskIndex, tasksCount, startReplenishment } = useReplenishmentContext();
+  const { currentList, currentTask, currentTaskIndex, tasksCount, skipCurrentTask } = useReplenishmentContext();
+  const locationScan = useScanField();
+  const resetLocationScan = locationScan.setValue;
+  const { isSearchOpen, searchButtonProps } = useSearchButton({ onSelect: locationScan.onChange });
 
-  const [locationBarcode, setLocationBarcode] = React.useState<string>('');
+  // A skipped task brings another one into view, which needs a fresh scan
+  useEffect(() => {
+    resetLocationScan(EMPTY_STRING);
+  }, [currentTask?.id, resetLocationScan]);
 
   if (!currentTask) {
-    Alert.alert('No Replenishment Task', 'There is no current replenishment task available. Try again later.', [
-      {
-        text: 'OK',
-        onPress: () => {
-          navigate('Dashboard');
-        }
-      }
-    ]);
-    return null;
+    return (
+      <View style={styles.flex1}>
+        <EmptyView
+          title="No Replenishment Task"
+          description="There is no replenishment task to work on. Choose a replenishment list to start."
+        />
+        <Button mode="text" style={styles.marginBottom} onPress={() => navigate('ReplenishmentList')}>
+          Back To List
+        </Button>
+      </View>
+    );
   }
 
-  // A hardware scan submits before `locationBarcode` re-renders, so validate the submitted code.
-  function handleSubmit(code: string) {
-    const isValid = code === currentTask?.location?.locationNumber;
+  const expectedLocation = currentTask.location?.locationNumber;
 
-    if (!isValid) {
-      Alert.alert(
-        'Invalid Barcode',
-        `Incorrect location scanned. Expected: ${currentTask?.location?.locationNumber}. Try again.`
-      );
-      setLocationBarcode('');
+  function handleScan(locationBarcode: string) {
+    if (!expectedLocation) {
+      locationScan.fail('There is no pick location assigned to this task.');
       return;
     }
 
-    // startReplenishment((response) => {
-    //   if ('errorMessage' in response) {
-    //     Alert.alert('Error', response.errorMessage);
-    //     setLocationBarcode('');
-    //     return;
-    //   }
+    if (locationBarcode !== expectedLocation) {
+      locationScan.fail(`Incorrect location scanned (${locationBarcode}). Expected: ${expectedLocation}.`);
+      return;
+    }
 
-    //   navigate('ReplenishmentProduct');
-    // });
-
-    setLocationBarcode(EMPTY_STRING);
+    locationScan.setValue(EMPTY_STRING);
+    locationScan.pass();
     navigate('ReplenishmentProduct');
   }
 
+  function handleSkip() {
+    Alert.alert(
+      'Skip Replenishment Task',
+      'Are you sure you want to skip this task? It will be moved to the end of the list.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Skip', style: 'destructive', onPress: skipCurrentTask }
+      ]
+    );
+  }
+
+  const pickLocation = currentTask.location
+    ? `${currentTask.location.name} (${currentTask.location.locationNumber})`
+    : HYPHEN;
+
   return (
-    // @ts-ignore
-    <ProductDetails.Provider product={DUMMY_REPLENISHMENT.product}>
-      <ProductDetails.Root>
-        <ProductDetails.Header>
-          <ProductDetails.Badge icon="barcode" label="Product Code">
-            {DUMMY_REPLENISHMENT.product.productCode}
-          </ProductDetails.Badge>
-          <ProductDetails.Badge icon="navigation" label="Task">
-            {`${currentTaskIndex + 1} / ${tasksCount}`}
-          </ProductDetails.Badge>
-        </ProductDetails.Header>
+    <ScrollView style={styles.flex1} keyboardShouldPersistTaps="handled">
+      <ProductDetails.Provider product={currentTask.product} status={currentTask.status}>
+        <ProductDetails.Root>
+          <ProductDetails.Header>
+            <ProductDetails.Badge icon="identifier" label="Replenishment">
+              {currentList?.orderNumber ?? currentTask.orderNumber ?? HYPHEN}
+            </ProductDetails.Badge>
+            <ProductDetails.Badge icon="navigation" label="Task">
+              {`${currentTaskIndex + 1} / ${tasksCount}`}
+            </ProductDetails.Badge>
+          </ProductDetails.Header>
 
-        <ProductDetails.Separator />
-        <ProductDetails.Title />
+          <ProductDetails.Separator />
+          <ProductDetails.Title />
+          <ProductDetails.Caption
+            title={currentTask.inventoryItem?.lotNumber}
+            subtitle={
+              currentTask.inventoryItem?.expirationDate
+                ? parseFromISODateToLocaleString(currentTask.inventoryItem.expirationDate)
+                : undefined
+            }
+          />
 
-        <ProductDetails.List
-          items={[
-            {
-              icon: 'package',
-              label: 'Quantity Picked',
-              value: `${currentTask.quantityPicked || 0} / ${currentTask.quantityRequired}`
-            },
-            { icon: 'pin', label: 'Pick Location', value: currentTask.location?.name || HYPHEN }
-          ]}
-        />
-      </ProductDetails.Root>
+          <ProductDetails.List
+            items={[
+              { icon: 'pin', label: 'Pick Location', value: pickLocation },
+              {
+                icon: 'package',
+                label: 'Quantity',
+                value: `${currentTask.quantityPicked || 0} / ${currentTask.quantityRequired}`
+              },
+              {
+                icon: 'store',
+                label: 'Replenish To',
+                value: currentTask.destinationLocation?.name || HYPHEN
+              }
+            ]}
+          />
+        </ProductDetails.Root>
 
-      <Divider />
+        <Divider />
 
-      <View style={styles.wrapperWithPadding}>
-        <Subheading style={styles.subheading}>Scan Pick Location Barcode</Subheading>
-        <Paragraph style={styles.paragraph}>
-          Point your barcode scanner at the pick location barcode or type the code manually.
-        </Paragraph>
+        <View style={styles.wrapperWithPadding}>
+          <Subheading style={styles.subheading}>Scan Pick Location Barcode</Subheading>
+          <Paragraph style={styles.paragraph}>
+            Point your barcode scanner at the pick location barcode or use search to find it.
+          </Paragraph>
 
-        <ScannerInput
-          style={styles.marginTop}
-          label="Location Barcode"
-          value={locationBarcode}
-          onChange={setLocationBarcode}
-          onSubmit={handleSubmit}
-        />
-      </View>
-    </ProductDetails.Provider>
+          <View style={styles.scannerRow}>
+            <ScannerInput
+              style={styles.scannerInput}
+              label="Pick Location"
+              value={locationScan.value}
+              isEnabled={!isSearchOpen}
+              danger={!!locationScan.error}
+              onChange={locationScan.onChange}
+              onSubmit={handleScan}
+            />
+            <SearchButton searchType="location" {...searchButtonProps} />
+          </View>
+          <ScanErrorText message={locationScan.error} />
+
+          {tasksCount > 1 && (
+            <Button mode="text" style={styles.marginTop} onPress={handleSkip}>
+              Skip
+            </Button>
+          )}
+        </View>
+      </ProductDetails.Provider>
+    </ScrollView>
   );
 }

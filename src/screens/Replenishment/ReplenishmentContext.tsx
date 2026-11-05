@@ -1,18 +1,25 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { createContext, ReactNode, useContext, useState } from 'react';
+import { Alert } from 'react-native';
 import { useDispatch } from 'react-redux';
 
-import { DUMMY_REPLENISHMENT_TASKS } from './mock-data';
-import { ReplenishmentTask } from './types';
+import { getReplenishmentTasksAction } from '../../redux/actions/replenishment';
+import { ReplenishmentList, ReplenishmentTask } from '../../types/replenishment';
+import { moveTaskToEnd, sortTasksByLocation } from './lib';
 
 type ReplenishmentContextType = {
+  /** The replenishment list being worked on */
+  currentList?: ReplenishmentList;
   allTasks: ReplenishmentTask[];
   tasksCount: number;
   currentTask?: ReplenishmentTask;
   currentTaskIndex: number;
+  /** Loads the open tasks of the list in location sequence, resolves false (after alerting) when there are none */
+  startSession: (list: ReplenishmentList) => Promise<boolean>;
   startReplenishment: (callback: (response: { errorMessage?: string }) => void) => void;
   goToNextTask: () => void;
+  /** Moves the current task to the end of the sequence and shows the next one */
+  skipCurrentTask: () => void;
   pickCurrentTask: (outboundContainerId: string, callback: (response: { errorMessage?: string }) => void) => void;
   shortPickTask: (
     outboundContainerId: string,
@@ -34,12 +41,52 @@ const ReplenishmentContext = createContext<ReplenishmentContextType | undefined>
 export function ReplenishmentProvider({ children }: { children: ReactNode }) {
   const dispatch = useDispatch();
 
-  // @ts-ignore
-  const [allTasks, setAllTasks] = useState<ReplenishmentTask[]>(DUMMY_REPLENISHMENT_TASKS);
+  const [currentList, setCurrentList] = useState<ReplenishmentList | undefined>(undefined);
+  const [allTasks, setAllTasks] = useState<ReplenishmentTask[]>([]);
   const [currentTaskIndex, setCurrentTaskIndex] = useState<number>(0);
   const tasksCount = allTasks.length;
-  const currentTask = DUMMY_REPLENISHMENT_TASKS[0];
-  // const currentTask = tasksCount > 0 ? allTasks[currentTaskIndex] : undefined;
+  const currentTask = currentTaskIndex < tasksCount ? allTasks[currentTaskIndex] : undefined;
+
+  const startSession = (list: ReplenishmentList): Promise<boolean> =>
+    new Promise((resolve) => {
+      dispatch(
+        getReplenishmentTasksAction(list.id, ({ response, errorMessage }) => {
+          if (errorMessage || !response) {
+            Alert.alert('Error', errorMessage ?? 'Failed to load replenishment tasks.');
+            resolve(false);
+            return;
+          }
+
+          if (response.errorCode) {
+            Alert.alert('Error', response.message ?? 'Failed to load replenishment tasks.');
+            resolve(false);
+            return;
+          }
+
+          if (!response.data || response.data.length === 0) {
+            Alert.alert('No Tasks', `No open replenishment tasks were found for ${list.orderNumber}.`);
+            resolve(false);
+            return;
+          }
+
+          setCurrentList(list);
+          setAllTasks(sortTasksByLocation(response.data));
+          setCurrentTaskIndex(0);
+          resolve(true);
+        })
+      );
+    });
+
+  const skipCurrentTask = () => {
+    if (tasksCount <= 1) {
+      return;
+    }
+    setAllTasks((tasks) => moveTaskToEnd(tasks, currentTaskIndex));
+    // The next task moved up into the current index; when the last task was skipped, wrap around to the first.
+    if (currentTaskIndex >= tasksCount - 1) {
+      setCurrentTaskIndex(0);
+    }
+  };
 
   const startReplenishment = (callback: (response: { errorMessage?: string }) => void) => {
     // TODO: Implement the logic for starting the replenishment process
@@ -91,6 +138,7 @@ export function ReplenishmentProvider({ children }: { children: ReactNode }) {
   };
 
   const resetReplenishmentSession = () => {
+    setCurrentList(undefined);
     setAllTasks([]);
     setCurrentTaskIndex(0);
   };
@@ -102,13 +150,15 @@ export function ReplenishmentProvider({ children }: { children: ReactNode }) {
   return (
     <ReplenishmentContext.Provider
       value={{
+        currentList,
         allTasks,
         tasksCount,
         currentTaskIndex,
-        // @ts-ignore
         currentTask,
+        startSession,
         startReplenishment,
         goToNextTask,
+        skipCurrentTask,
         pickCurrentTask,
         shortPickTask,
         revalidateCurrentTask,

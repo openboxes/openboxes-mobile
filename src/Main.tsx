@@ -77,6 +77,7 @@ import PickingPickOutboundContainerScreen from './screens/Picking/PickingPickOut
 import PickingPickStagingLocationScreen from './screens/Picking/PickingPickStagingLocationScreen';
 import PickingMoveToStagingScreen from './screens/Picking/PickingMoveToStaging';
 import PickingStagingDropScreen from './screens/Picking/PickingStagingDrop';
+import ReplenishmentListScreen from './screens/Replenishment/ReplenishmentListScreen';
 import { ReplenishmentLocationScreen } from './screens/Replenishment/ReplenishmentLocationScreen';
 import { ReplenishmentProductScreen } from './screens/Replenishment/ReplenishmentProductScreen';
 import ReplenishmentOutboundContainerScreen from './screens/Replenishment/ReplenishmentOutboundContainerScreen';
@@ -413,6 +414,11 @@ class Main extends Component<Props, State> {
                 name="PickingStagingDrop"
                 component={PickingStagingDropScreen}
                 options={{ title: 'Staging Location Drop' }}
+              />
+              <Stack.Screen
+                name="ReplenishmentList"
+                component={ReplenishmentListScreen}
+                options={{ title: 'Replenishment' }}
               />
               <Stack.Screen
                 name="ReplenishmentPickingLocation"

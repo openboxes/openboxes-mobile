@@ -1,12 +1,12 @@
 import React from 'react';
-import { Divider, Paragraph, Subheading } from 'react-native-paper';
-
 import { Alert, View } from 'react-native';
+import { Button, Divider, Paragraph, Subheading } from 'react-native-paper';
+
+import EmptyView from '../../components/EmptyView';
 import { ProductDetails } from '../../components/ProductDetails';
 import { ScannerInput } from '../../components/ScannerInput';
 import { HYPHEN } from '../../constants';
 import { navigate } from '../../NavigationService';
-import { DUMMY_REPLENISHMENT } from './mock-data';
 import { useReplenishmentContext } from './ReplenishmentContext';
 import styles from './styles';
 
@@ -15,13 +15,21 @@ export function ReplenishmentProductScreen() {
   const [productBarcode, setProductBarcode] = React.useState<string>('');
 
   if (!currentTask) {
-    Alert.alert('No Replenishment Task', 'There is no current replenishment task available. Try again later.');
-    navigate('Dashboard');
-    return null;
+    return (
+      <View style={styles.flex1}>
+        <EmptyView
+          title="No Replenishment Task"
+          description="There is no replenishment task to work on. Choose a replenishment list to start."
+        />
+        <Button mode="text" style={styles.marginBottom} onPress={() => navigate('ReplenishmentList')}>
+          Back To List
+        </Button>
+      </View>
+    );
   }
 
   function handleSubmit() {
-    // TODO: Replace with actual barcode validation logic
+    // TODO(OBLS-409): Replace with actual barcode validation logic
     const isValid = true;
 
     if (!isValid) {
@@ -38,12 +46,11 @@ export function ReplenishmentProductScreen() {
   }
 
   return (
-    // @ts-ignore
-    <ProductDetails.Provider product={DUMMY_REPLENISHMENT.product}>
+    <ProductDetails.Provider product={currentTask.product} status={currentTask.status}>
       <ProductDetails.Root>
         <ProductDetails.Header>
-          <ProductDetails.Badge icon="barcode" label="Replenishment ID">
-            {DUMMY_REPLENISHMENT.product.productCode}
+          <ProductDetails.Badge icon="barcode" label="Product Code">
+            {currentTask.product?.productCode}
           </ProductDetails.Badge>
           <ProductDetails.Badge icon="navigation" label="Task">
             {`${currentTaskIndex + 1} / ${tasksCount}`}

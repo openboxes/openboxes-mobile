@@ -57,5 +57,36 @@ export default StyleSheet.create({
   },
   divider: {
     marginVertical: Theme.spacing.small
+  },
+  flex1: {
+    flex: 1
+  },
+  screenContainer: {
+    flex: 1,
+    backgroundColor: Theme.colors.background
+  },
+  listContent: {
+    paddingBottom: Theme.spacing.large
+  },
+  orderNumberChip: {
+    flexShrink: 1
+  },
+  orderNumberText: {
+    fontSize: 14,
+    color: Theme.colors.text
+  },
+  additionalInfoRow: {
+    flexDirection: 'row',
+    marginTop: Theme.spacing.small,
+    alignItems: 'center',
+    flexWrap: 'wrap'
+  },
+  scannerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: Theme.spacing.medium
+  },
+  scannerInput: {
+    flex: 1
   }
 });
