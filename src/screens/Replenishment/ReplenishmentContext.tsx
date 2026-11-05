@@ -11,9 +11,19 @@ import {
   startReplenishmentTaskAction
 } from '../../redux/actions/replenishment';
 import { ReplenishmentList, ReplenishmentTask, ReplenishmentTaskStatus } from '../../types/replenishment';
-import { findNextOpenTaskIndex, isOpenTask, moveTaskToEnd, sortTasksByLocation } from './lib';
+import {
+  appendNewTasks,
+  describeReallocatedTasks,
+  findNextOpenTaskIndex,
+  isOpenTask,
+  moveTaskToEnd,
+  sortTasksByLocation
+} from './lib';
 
 type Callback = (response: { errorMessage?: string }) => void;
+
+/** tasks: the session's tasks after the short pick, with any task created to pick the shortage elsewhere */
+type ShortPickCallback = (response: { errorMessage?: string; tasks?: ReplenishmentTask[] }) => void;
 
 /** What to do with a list once its session is started: pick its tasks, or stage what was picked */
 export type SessionStart = 'PICK' | 'STAGE';
@@ -43,7 +53,7 @@ type ReplenishmentContextType = {
   shortPickTask: (
     outboundContainerId: string | null,
     parsedQuantityPicked: number,
-    callback: Callback,
+    callback: ShortPickCallback,
     reasonCodeName?: string
   ) => void;
   /** Stages the picks of the container in the staging location */
@@ -190,13 +200,17 @@ export function ReplenishmentProvider({ children }: { children: ReactNode }) {
     );
   };
 
+  /**
+   * Shorts the current task. With a reason, the server holds the quantity not found and may create tasks to pick it
+   * from other bins: those are loaded into the session, after the tasks it has, and the picker is told.
+   */
   const shortPickTask = (
     outboundContainerId: string | null,
     parsedQuantityPicked: number,
-    callback: Callback,
+    callback: ShortPickCallback,
     reasonCodeName?: string
   ) => {
-    if (!currentTask) {
+    if (!currentTask || !currentList) {
       callback({ errorMessage: 'No current replenishment task.' });
       return;
     }
@@ -211,12 +225,44 @@ export function ReplenishmentProvider({ children }: { children: ReactNode }) {
             callback({ errorMessage });
             return;
           }
-          updateCurrentTask(response?.data, {
-            quantityPicked: (currentTask.quantityPicked || 0) + parsedQuantityPicked,
-            reasonCode: reasonCodeName ?? null,
-            status: ReplenishmentTaskStatus.PICKED
+          const pickedTask = response?.data;
+          const tasks = allTasks.map((task, index) => {
+            if (index !== currentTaskIndex) {
+              return task;
+            }
+            return pickedTask?.id === task.id
+              ? pickedTask
+              : {
+                  ...task,
+                  quantityPicked: (currentTask.quantityPicked || 0) + parsedQuantityPicked,
+                  reasonCode: reasonCodeName ?? null,
+                  status: ReplenishmentTaskStatus.PICKED
+                };
           });
-          callback({});
+
+          if (!reasonCodeName) {
+            setAllTasks(tasks);
+            callback({ tasks });
+            return;
+          }
+
+          dispatch(
+            getReplenishmentTasksAction(currentList.id, ({ response: openTasksResponse }) => {
+              // When the reload fails, the session goes on with the tasks it has
+              const tasksWithReallocated = appendNewTasks(tasks, openTasksResponse?.data ?? []);
+              const reallocatedTasks = tasksWithReallocated.slice(tasks.length);
+              setAllTasks(tasksWithReallocated);
+              if (reallocatedTasks.length > 0) {
+                Alert.alert(
+                  'Inventory On Hold',
+                  `The quantity not found was put on hold for investigation. ${describeReallocatedTasks(
+                    reallocatedTasks
+                  )}.`
+                );
+              }
+              callback({ tasks: tasksWithReallocated });
+            })
+          );
         }
       )
     );

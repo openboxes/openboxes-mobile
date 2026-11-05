@@ -104,13 +104,13 @@ export default function ReplenishmentPickQuantityScreen() {
     shortPickTask(
       null,
       0,
-      ({ errorMessage }) => {
+      ({ errorMessage, tasks }) => {
         if (errorMessage) {
           Alert.alert('Short Pick Error', errorMessage);
           setQuantityPicked('');
           return;
         }
-        proceedToNextTask({ tasks: allTasks, currentTaskIndex, goToTask });
+        proceedToNextTask({ tasks: tasks ?? allTasks, currentTaskIndex, goToTask });
       },
       reasonCode?.name
     );

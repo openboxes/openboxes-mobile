@@ -1,6 +1,8 @@
 import Location from '../src/data/location/Location';
 import { navigate, resetToRoutes } from '../src/NavigationService';
 import {
+  appendNewTasks,
+  describeReallocatedTasks,
   findNextOpenTaskIndex,
   moveTaskToEnd,
   proceedToNextTask,
@@ -172,5 +174,36 @@ describe('summarizeListTasks', () => {
 
   it('has nothing to stage when nothing was put in a container', () => {
     expect(summarizeListTasks([taskWith('1', PICKED, 0, 10)]).containersToStage).toEqual([]);
+  });
+});
+
+describe('appendNewTasks', () => {
+  it('keeps the session tasks and appends the new ones in location order', () => {
+    const tasks = [task('1', 'B-1-1'), task('2', 'A-1-1')];
+    const loaded = [task('2', 'A-1-1'), task('4', 'C-1-1'), task('3', 'A-11-1')];
+
+    expect(appendNewTasks(tasks, loaded).map((t) => t.id)).toEqual(['1', '2', '3', '4']);
+  });
+
+  it('changes nothing when nothing is new', () => {
+    const tasks = [task('1', 'B-1-1')];
+
+    expect(appendNewTasks(tasks, [task('1', 'B-1-1')])).toEqual(tasks);
+  });
+});
+
+describe('describeReallocatedTasks', () => {
+  const reallocated = (id: string, quantityRequired: number, locationNumber: string) =>
+    ({ ...task(id, locationNumber), quantityRequired } as ReplenishmentTask);
+
+  it('says how much more to pick and where', () => {
+    expect(describeReallocatedTasks([reallocated('1', 3, 'A-11-1')])).toBe('3 more to pick from A-11-1');
+    expect(
+      describeReallocatedTasks([
+        reallocated('1', 3, 'A-11-1'),
+        reallocated('2', 2, 'B-2-1'),
+        reallocated('3', 1, 'C-5-1')
+      ])
+    ).toBe('3 more to pick from A-11-1, 2 from B-2-1 and 1 from C-5-1');
   });
 });

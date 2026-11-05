@@ -12,6 +12,7 @@ import { EMPTY_STRING } from '../../constants';
 import { useScanField } from '../../hooks/useScanField';
 import { navigate } from '../../NavigationService';
 import { ReasonCode } from '../../types/picking';
+import { ReplenishmentTask } from '../../types/replenishment';
 import { proceedToNextTask } from './lib';
 import { useReplenishmentContext } from './ReplenishmentContext';
 import { ReplenishmentTaskDetails } from './ReplenishmentTaskDetails';
@@ -64,7 +65,7 @@ export default function ReplenishmentOutboundContainerScreen() {
       return;
     }
 
-    const onPicked = ({ errorMessage }: { errorMessage?: string }) => {
+    const onPicked = ({ errorMessage, tasks }: { errorMessage?: string; tasks?: ReplenishmentTask[] }) => {
       if (errorMessage) {
         logScan('CONTAINER', 'FAIL', containerId, undefined, { quantity: parsedQuantityPicked, message: errorMessage });
         containerScan.fail(errorMessage);
@@ -73,7 +74,7 @@ export default function ReplenishmentOutboundContainerScreen() {
       logScan('CONTAINER', 'PASS', containerId, undefined, { quantity: parsedQuantityPicked });
       containerScan.setValue(EMPTY_STRING);
       containerScan.pass();
-      proceedToNextTask({ tasks: allTasks, currentTaskIndex, goToTask });
+      proceedToNextTask({ tasks: tasks ?? allTasks, currentTaskIndex, goToTask });
     };
 
     if (parsedQuantityPicked < qtyRemaining) {

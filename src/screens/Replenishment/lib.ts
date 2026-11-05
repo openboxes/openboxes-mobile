@@ -106,6 +106,26 @@ export function proceedToNextTask({ tasks, currentTaskIndex, goToTask }: Proceed
   ]);
 }
 
+/**
+ * The session's tasks followed by the loaded ones it does not have yet (tasks created on the server while picking,
+ * e.g. to pick a shortage from another bin), those in location sequence.
+ */
+export function appendNewTasks(tasks: ReplenishmentTask[], loadedTasks: ReplenishmentTask[]): ReplenishmentTask[] {
+  const knownIds = new Set(tasks.map((task) => task.id));
+  return [...tasks, ...sortTasksByLocation(loadedTasks.filter((task) => !knownIds.has(task.id)))];
+}
+
+/** "3 more to pick from A-11-1 and 2 from B-2-1" */
+export function describeReallocatedTasks(tasks: ReplenishmentTask[]): string {
+  const parts = tasks.map(
+    (task, index) =>
+      `${task.quantityRequired}${index === 0 ? ' more to pick' : ''} from ${
+        task.location?.name ?? task.location?.locationNumber ?? 'another location'
+      }`
+  );
+  return parts.length > 1 ? `${parts.slice(0, -1).join(', ')} and ${parts[parts.length - 1]}` : parts[0] ?? '';
+}
+
 export type ContainerToStage = {
   container: Container;
   tasks: ReplenishmentTask[];
