@@ -60,6 +60,29 @@ describe('buildScanAttempt', () => {
   });
 });
 
+describe('buildScanAttempt for a container', () => {
+  it('carries the quantity put in the container and the reason of a failure', () => {
+    const attempt = buildScanAttempt({
+      scanType: 'CONTAINER',
+      result: 'FAIL',
+      scannedValue: 'XYZ',
+      quantity: 25,
+      message: 'Outbound container XYZ does not exist',
+      task,
+      list
+    });
+
+    expect(attempt).toMatchObject({
+      scanType: 'CONTAINER',
+      result: 'FAIL',
+      scannedValue: 'XYZ',
+      quantity: 25,
+      message: 'Outbound container XYZ does not exist',
+      productCode: '10002'
+    });
+  });
+});
+
 describe('logScanAttempt', () => {
   let consoleInfo: jest.SpyInstance;
 

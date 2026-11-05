@@ -6,7 +6,7 @@ import { userLocation, userSession } from '../../redux/selectors/auth';
 import { ReplenishmentList, ReplenishmentTask } from '../../types/replenishment';
 import { useReplenishmentContext } from './ReplenishmentContext';
 
-export type ScanType = 'LOCATION' | 'PRODUCT';
+export type ScanType = 'LOCATION' | 'PRODUCT' | 'CONTAINER';
 
 export type ScanResult = 'PASS' | 'FAIL';
 
@@ -20,6 +20,10 @@ export type ScanAttempt = {
   orderNumber?: string;
   productCode?: string;
   locationNumber?: string;
+  /** For a container scan, the quantity put in the container */
+  quantity?: number;
+  /** Why the scan failed, e.g. the error returned when associating the container */
+  message?: string;
   userId?: string;
   facilityId?: string;
   /** ISO 8601 */
@@ -33,6 +37,8 @@ type BuildScanAttemptParams = {
   expectedValue?: string;
   task?: ReplenishmentTask;
   list?: ReplenishmentList;
+  quantity?: number;
+  message?: string;
   userId?: string;
   facilityId?: string;
   date?: Date;
@@ -45,6 +51,8 @@ export function buildScanAttempt({
   expectedValue,
   task,
   list,
+  quantity,
+  message,
   userId,
   facilityId,
   date = new Date()
@@ -58,6 +66,8 @@ export function buildScanAttempt({
     orderNumber: list?.orderNumber ?? task?.orderNumber,
     productCode: task?.product?.productCode,
     locationNumber: task?.location?.locationNumber,
+    quantity,
+    message,
     userId,
     facilityId,
     timestamp: date.toISOString()
@@ -92,7 +102,13 @@ export function useReplenishmentScanLog() {
   const facilityId = location?.id;
 
   return useCallback(
-    (scanType: ScanType, result: ScanResult, scannedValue: string, expectedValue?: string) =>
+    (
+      scanType: ScanType,
+      result: ScanResult,
+      scannedValue: string,
+      expectedValue?: string,
+      details?: { quantity?: number; message?: string }
+    ) =>
       logScanAttempt(
         buildScanAttempt({
           scanType,
@@ -101,6 +117,8 @@ export function useReplenishmentScanLog() {
           expectedValue,
           task: currentTask,
           list: currentList,
+          quantity: details?.quantity,
+          message: details?.message,
           userId,
           facilityId
         })

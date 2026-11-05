@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { ProductDetails } from '../../components/ProductDetails';
+import { ProductDetails, ProductDetailsItem } from '../../components/ProductDetails';
 import { HYPHEN } from '../../constants';
 import { ReplenishmentList, ReplenishmentTask } from '../../types/replenishment';
 import { parseFromISODateToLocaleString } from '../../utils/utils';
@@ -10,10 +10,12 @@ type Props = {
   list?: ReplenishmentList;
   taskIndex: number;
   tasksCount: number;
+  /** Rows added after the task details, e.g. the step's own data */
+  items?: ProductDetailsItem[];
 };
 
 /** The replenishment task card shown above the scan field of each step */
-export function ReplenishmentTaskDetails({ task, list, taskIndex, tasksCount }: Props) {
+export function ReplenishmentTaskDetails({ task, list, taskIndex, tasksCount, items = [] }: Props) {
   const pickLocation = task.location ? `${task.location.name} (${task.location.locationNumber})` : HYPHEN;
 
   return (
@@ -51,7 +53,8 @@ export function ReplenishmentTaskDetails({ task, list, taskIndex, tasksCount }: 
               icon: 'store',
               label: 'Replenish To',
               value: task.destinationLocation?.name || HYPHEN
-            }
+            },
+            ...items
           ]}
         />
       </ProductDetails.Root>

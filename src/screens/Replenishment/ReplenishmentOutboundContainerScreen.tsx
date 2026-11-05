@@ -1,15 +1,21 @@
 import { RouteProp, useRoute } from '@react-navigation/native';
-import * as React from 'react';
-import { Alert, View } from 'react-native';
+import React, { useEffect } from 'react';
+import { ScrollView, View } from 'react-native';
 import { Button, Divider, Paragraph, Subheading } from 'react-native-paper';
 
 import EmptyView from '../../components/EmptyView';
-import { ProductDetails } from '../../components/ProductDetails';
+import { ScanErrorText } from '../../components/ScanErrorText';
 import { ScannerInput } from '../../components/ScannerInput';
+import { SearchButton } from '../../components/SearchButton';
+import { useSearchButton } from '../../components/SearchButton/useSearchButton';
+import { EMPTY_STRING } from '../../constants';
+import { useScanField } from '../../hooks/useScanField';
 import { navigate } from '../../NavigationService';
 import { ReasonCode } from '../../types/picking';
 import { proceedToNextTask } from './lib';
 import { useReplenishmentContext } from './ReplenishmentContext';
+import { ReplenishmentTaskDetails } from './ReplenishmentTaskDetails';
+import { useReplenishmentScanLog } from './scanLog';
 import styles from './styles';
 
 type ReplenishmentOutboundContainerScreenProps = RouteProp<
@@ -17,13 +23,22 @@ type ReplenishmentOutboundContainerScreenProps = RouteProp<
   'ReplenishmentOutboundContainer'
 >;
 
-// TODO(OBLS-412): validate and associate the container (NEW or existing), log the association
+/**
+ * Puts the picked quantity in a container, like outbound picking: any container accepted by the server, so several
+ * products can share one.
+ */
 export default function ReplenishmentOutboundContainerScreen() {
-  const { currentTask, pickCurrentTask, shortPickTask, currentTaskIndex, tasksCount, goToNextTask } =
+  const { currentList, currentTask, pickCurrentTask, shortPickTask, currentTaskIndex, tasksCount, goToNextTask } =
     useReplenishmentContext();
   const { params } = useRoute<ReplenishmentOutboundContainerScreenProps>();
+  const containerScan = useScanField();
+  const resetContainerScan = containerScan.setValue;
+  const { isSearchOpen, searchButtonProps } = useSearchButton({ onSelect: containerScan.onChange });
+  const logScan = useReplenishmentScanLog();
 
-  const [outboundContainerId, setOutboundContainerId] = React.useState<string>('');
+  useEffect(() => {
+    resetContainerScan(EMPTY_STRING);
+  }, [currentTask?.id, resetContainerScan]);
 
   if (!currentTask) {
     return (
@@ -42,22 +57,24 @@ export default function ReplenishmentOutboundContainerScreen() {
   const qtyRemaining = currentTask.quantityRequired - (currentTask.quantityPicked || 0);
   const parsedQuantityPicked = params?.quantityPicked !== undefined ? Number(params.quantityPicked) : qtyRemaining;
 
-  function onPicked({ errorMessage }: { errorMessage?: string }) {
-    if (errorMessage) {
-      Alert.alert('Pick Error', errorMessage);
-      setOutboundContainerId('');
-      return;
-    }
-    proceedToNextTask({ currentTaskIndex, tasksCount, goToNextTask });
-  }
-
-  // A hardware scan submits before `outboundContainerId` re-renders, so use the submitted code.
-  function handleSubmit(containerId: string) {
+  function handleScan(containerId: string) {
     if (!containerId) {
-      Alert.alert('Missing Input', 'Please scan or enter a valid Outbound Container ID.');
-      setOutboundContainerId('');
+      logScan('CONTAINER', 'FAIL', containerId, undefined, { quantity: parsedQuantityPicked, message: 'Empty scan' });
+      containerScan.fail('Please scan or enter a valid Replenishment Container ID.');
       return;
     }
+
+    const onPicked = ({ errorMessage }: { errorMessage?: string }) => {
+      if (errorMessage) {
+        logScan('CONTAINER', 'FAIL', containerId, undefined, { quantity: parsedQuantityPicked, message: errorMessage });
+        containerScan.fail(errorMessage);
+        return;
+      }
+      logScan('CONTAINER', 'PASS', containerId, undefined, { quantity: parsedQuantityPicked });
+      containerScan.setValue(EMPTY_STRING);
+      containerScan.pass();
+      proceedToNextTask({ currentTaskIndex, tasksCount, goToNextTask });
+    };
 
     if (parsedQuantityPicked < qtyRemaining) {
       shortPickTask(containerId, parsedQuantityPicked, onPicked, params?.reasonCode?.name);
@@ -68,52 +85,44 @@ export default function ReplenishmentOutboundContainerScreen() {
   }
 
   return (
-    <ProductDetails.Provider product={currentTask.product} status={currentTask.status}>
-      <ProductDetails.Root>
-        <ProductDetails.Header>
-          <ProductDetails.Badge icon="barcode" label="Product Code">
-            {currentTask.product.productCode}
-          </ProductDetails.Badge>
-          <ProductDetails.Badge icon="navigation" label="Task">
-            {`${currentTaskIndex + 1} / ${tasksCount}`}
-          </ProductDetails.Badge>
-        </ProductDetails.Header>
-
-        <ProductDetails.Separator />
-        <ProductDetails.Title />
-
-        <ProductDetails.List
-          items={[
-            {
-              icon: 'truck',
-              label: 'Quantity Picked',
-              value: `${parsedQuantityPicked}`
-            },
-            {
-              icon: 'pin',
-              label: 'Outbound Container Id',
-              value: currentTask.outboundContainer?.locationNumber ?? 'New'
-            }
-          ]}
-        />
-      </ProductDetails.Root>
+    <ScrollView style={styles.flex1} keyboardShouldPersistTaps="handled">
+      <ReplenishmentTaskDetails
+        task={currentTask}
+        list={currentList}
+        taskIndex={currentTaskIndex}
+        tasksCount={tasksCount}
+        items={[
+          { icon: 'truck', label: 'Quantity Picked', value: parsedQuantityPicked },
+          {
+            icon: 'package-variant-closed',
+            label: 'Outbound Container ID',
+            value: currentTask.outboundContainer?.locationNumber ?? 'New'
+          }
+        ]}
+      />
 
       <Divider />
 
-      <View style={[styles.wrapperWithPadding]}>
-        <Subheading style={styles.subheading}>Scan Outbound Container</Subheading>
+      <View style={styles.wrapperWithPadding}>
+        <Subheading style={styles.subheading}>Scan Replenishment Container</Subheading>
         <Paragraph style={styles.paragraph}>
-          Point your barcode scanner at the outbound container or type the code manually.
+          Point your barcode scanner at the replenishment container or use search to find it.
         </Paragraph>
 
-        <ScannerInput
-          style={styles.marginTop}
-          label="Outbound Container ID"
-          value={outboundContainerId}
-          onChange={setOutboundContainerId}
-          onSubmit={handleSubmit}
-        />
+        <View style={styles.scannerRow}>
+          <ScannerInput
+            style={styles.scannerInput}
+            label="Replenishment Container ID"
+            value={containerScan.value}
+            isEnabled={!isSearchOpen}
+            danger={!!containerScan.error}
+            onChange={containerScan.onChange}
+            onSubmit={handleScan}
+          />
+          <SearchButton searchType="container" {...searchButtonProps} />
+        </View>
+        <ScanErrorText message={containerScan.error} />
       </View>
-    </ProductDetails.Provider>
+    </ScrollView>
   );
 }

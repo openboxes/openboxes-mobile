@@ -1,4 +1,5 @@
 // TODO(API): remove once the replenishment task API is available (see USE_REPLENISHMENT_MOCKS in apis/replenishment.ts)
+import { Container } from '../../data/container/Shipment';
 import Location from '../../data/location/Location';
 import InventoryItem from '../../data/picklist/InventoryItem';
 import Product from '../../data/product/Product';
@@ -151,3 +152,8 @@ export const MOCK_REPLENISHMENT_TASKS: ReplenishmentTask[] = [
     quantityRequired: 30
   })
 ];
+
+/** Containers the mocked API accepts, standing in for locations supporting the OUTBOUND_CONTAINER activity */
+export const MOCK_REPLENISHMENT_CONTAINERS: Container[] = ['OUT-0001', 'OUT-0002', 'OUT-0003'].map(
+  (locationNumber) => ({ id: `container-${locationNumber}`, locationNumber, name: locationNumber } as Container)
+);
