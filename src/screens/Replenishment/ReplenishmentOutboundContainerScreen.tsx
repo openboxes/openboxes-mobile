@@ -1,14 +1,14 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { RouteProp, useRoute } from '@react-navigation/native';
 import * as React from 'react';
 import { Alert, View } from 'react-native';
-import { Divider, Paragraph, Subheading } from 'react-native-paper';
+import { Button, Divider, Paragraph, Subheading } from 'react-native-paper';
 
+import EmptyView from '../../components/EmptyView';
 import { ProductDetails } from '../../components/ProductDetails';
 import { ScannerInput } from '../../components/ScannerInput';
 import { navigate } from '../../NavigationService';
 import { ReasonCode } from '../../types/picking';
+import { proceedToNextTask } from './lib';
 import { useReplenishmentContext } from './ReplenishmentContext';
 import styles from './styles';
 
@@ -17,55 +17,38 @@ type ReplenishmentOutboundContainerScreenProps = RouteProp<
   'ReplenishmentOutboundContainer'
 >;
 
+// TODO(OBLS-412): validate and associate the container (NEW or existing), log the association
 export default function ReplenishmentOutboundContainerScreen() {
-  const {
-    currentTask,
-    pickCurrentTask,
-    shortPickTask,
-    currentTaskIndex,
-    tasksCount,
-    revalidateCurrentTask,
-    goToNextTask,
-    revalidateTasksForOrder
-  } = useReplenishmentContext();
+  const { currentTask, pickCurrentTask, shortPickTask, currentTaskIndex, tasksCount, goToNextTask } =
+    useReplenishmentContext();
   const { params } = useRoute<ReplenishmentOutboundContainerScreenProps>();
 
-  const parsedQuantityPicked = params?.quantityPicked ? Number(params.quantityPicked) : undefined;
   const [outboundContainerId, setOutboundContainerId] = React.useState<string>('');
 
   if (!currentTask) {
-    Alert.alert('No Pick Task', 'There is no current pick task available. Try again later.', [
-      {
-        text: 'OK',
-        onPress: () => {
-          navigate('Dashboard');
-        }
-      }
-    ]);
-    return null;
+    return (
+      <View style={styles.flex1}>
+        <EmptyView
+          title="No Replenishment Task"
+          description="There is no replenishment task to work on. Choose a replenishment list to start."
+        />
+        <Button mode="text" style={styles.marginBottom} onPress={() => navigate('ReplenishmentList')}>
+          Back To List
+        </Button>
+      </View>
+    );
   }
 
-  function revalidateTaskAndProceed() {
-    revalidateCurrentTask((revalidatedTask) => {
-      if (!revalidatedTask) {
-        Alert.alert('Error', 'Failed to revalidate the current pick task after picking.');
-        return;
-      }
+  const qtyRemaining = currentTask.quantityRequired - (currentTask.quantityPicked || 0);
+  const parsedQuantityPicked = params?.quantityPicked !== undefined ? Number(params.quantityPicked) : qtyRemaining;
 
-      if (currentTaskIndex + 1 >= tasksCount) {
-        // Last Task -> Navigate to staging location drop
-        Alert.alert('All Picks Complete', 'You have completed all picks. Proceeding to staging location drop.', [
-          {
-            text: 'OK',
-            onPress: () => navigate('ReplenishmentStagingLocation')
-          }
-        ]);
-      } else {
-        // More Tasks -> Start over with next pick task
-        goToNextTask();
-        navigate('ReplenishmentPickingLocation');
-      }
-    });
+  function onPicked({ errorMessage }: { errorMessage?: string }) {
+    if (errorMessage) {
+      Alert.alert('Pick Error', errorMessage);
+      setOutboundContainerId('');
+      return;
+    }
+    proceedToNextTask({ currentTaskIndex, tasksCount, goToNextTask });
   }
 
   // A hardware scan submits before `outboundContainerId` re-renders, so use the submitted code.
@@ -76,50 +59,12 @@ export default function ReplenishmentOutboundContainerScreen() {
       return;
     }
 
-    if (!currentTask) {
-      Alert.alert('Error', 'No current pick task available.');
-      navigate('Dashboard');
+    if (parsedQuantityPicked < qtyRemaining) {
+      shortPickTask(containerId, parsedQuantityPicked, onPicked, params?.reasonCode?.name);
       return;
     }
 
-    if (parsedQuantityPicked !== undefined && parsedQuantityPicked < currentTask.quantityRequired) {
-      // Handle Short Pick
-      shortPickTask(
-        containerId,
-        parsedQuantityPicked,
-        (response) => {
-          if ('errorMessage' in response) {
-            Alert.alert('Short Pick Error', response.errorMessage);
-            setOutboundContainerId('');
-            return;
-          }
-
-          if (params?.reasonCode?.id) {
-            // Revalidate all tasks for the order to get updated pick tasks
-            revalidateTasksForOrder(currentTask.orderId, () => {
-              navigate('ReplenishmentPickingLocation');
-            });
-          } else {
-            revalidateTaskAndProceed();
-          }
-        },
-        params?.reasonCode?.id
-      );
-      return;
-    }
-
-    // pickCurrentTask(containerId, ({ errorMessage }) => {
-    //   if (errorMessage) {
-    //     Alert.alert('Pick Error', errorMessage);
-    //     setOutboundContainerId('');
-    //     return;
-    //   }
-
-    //   revalidateTaskAndProceed();
-    // });
-
-    // TODO: Temporarily bypass picking for outbound container scanning flow
-    navigate('ReplenishmentStagingLocation');
+    pickCurrentTask(containerId, onPicked);
   }
 
   return (
@@ -129,7 +74,7 @@ export default function ReplenishmentOutboundContainerScreen() {
           <ProductDetails.Badge icon="barcode" label="Product Code">
             {currentTask.product.productCode}
           </ProductDetails.Badge>
-          <ProductDetails.Badge icon="navigation" label="Pick Task">
+          <ProductDetails.Badge icon="navigation" label="Task">
             {`${currentTaskIndex + 1} / ${tasksCount}`}
           </ProductDetails.Badge>
         </ProductDetails.Header>
@@ -142,7 +87,7 @@ export default function ReplenishmentOutboundContainerScreen() {
             {
               icon: 'truck',
               label: 'Quantity Picked',
-              value: params?.quantityPicked || currentTask.quantityRequired
+              value: `${parsedQuantityPicked}`
             },
             {
               icon: 'pin',

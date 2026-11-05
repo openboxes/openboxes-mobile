@@ -11,9 +11,15 @@ import {
   GET_REPLENISHMENT_TASK_BY_ID_REQUEST_SUCCESS,
   GET_REPLENISHMENT_TASKS_REQUEST,
   GET_REPLENISHMENT_TASKS_REQUEST_FAIL,
-  GET_REPLENISHMENT_TASKS_REQUEST_SUCCESS
+  GET_REPLENISHMENT_TASKS_REQUEST_SUCCESS,
+  PICK_REPLENISHMENT_TASK_REQUEST,
+  PICK_REPLENISHMENT_TASK_REQUEST_FAIL,
+  PICK_REPLENISHMENT_TASK_REQUEST_SUCCESS,
+  SHORT_PICK_REPLENISHMENT_TASK_REQUEST,
+  SHORT_PICK_REPLENISHMENT_TASK_REQUEST_FAIL,
+  SHORT_PICK_REPLENISHMENT_TASK_REQUEST_SUCCESS
 } from '../actions/replenishment';
-import { userLocation } from '../selectors/auth';
+import { userLocation, userSession } from '../selectors/auth';
 
 function* getReplenishmentListsAction(action: any) {
   const showLoader = !action.payload?.silent;
@@ -83,8 +89,73 @@ function* getReplenishmentTaskByIdAction(action: any) {
   }
 }
 
+function* pickReplenishmentTaskAction(action: any) {
+  try {
+    // @ts-ignore
+    const currentLocation = yield select(userLocation);
+    if (!currentLocation) {
+      throw new Error('User Location Not Found');
+    }
+    // @ts-ignore
+    const session = yield select(userSession);
+    if (!session || !session.user) {
+      throw new Error('User Session Not Found');
+    }
+    yield put(showScreenLoading('Picking Task...'));
+    // @ts-ignore
+    const response = yield call(api.patchReplenishmentTaskApi, currentLocation.id, action.payload.taskId, {
+      action: 'pick',
+      outboundContainerId: action.payload.outboundContainerId,
+      pickedById: session.user.id
+    });
+    yield action.callback({ response });
+    yield put({ type: PICK_REPLENISHMENT_TASK_REQUEST_SUCCESS, payload: response?.data });
+  } catch (error) {
+    const errorMessage = (error as any)?.message || 'Error Picking Replenishment Task';
+    yield put({ type: PICK_REPLENISHMENT_TASK_REQUEST_FAIL, payload: errorMessage });
+    yield action.callback({ errorMessage });
+  } finally {
+    yield put(hideScreenLoading());
+  }
+}
+
+function* shortPickReplenishmentTaskAction(action: any) {
+  try {
+    // @ts-ignore
+    const currentLocation = yield select(userLocation);
+    if (!currentLocation) {
+      throw new Error('User Location Not Found');
+    }
+    // @ts-ignore
+    const session = yield select(userSession);
+    if (!session || !session.user) {
+      throw new Error('User Session Not Found');
+    }
+    yield put(showScreenLoading('Shorting Task...'));
+    const { taskId, outboundContainerId, quantityPicked, reasonCodeName } = action.payload;
+    // @ts-ignore
+    const response = yield call(api.patchReplenishmentTaskApi, currentLocation.id, taskId, {
+      action: 'short-pick',
+      outboundContainerId,
+      quantityPicked,
+      pickedById: session.user.id,
+      reasonCode: reasonCodeName ? { name: reasonCodeName } : undefined
+    });
+    yield action.callback({ response });
+    yield put({ type: SHORT_PICK_REPLENISHMENT_TASK_REQUEST_SUCCESS, payload: response?.data });
+  } catch (error) {
+    const errorMessage = (error as any)?.message || 'Error Shorting Replenishment Task';
+    yield put({ type: SHORT_PICK_REPLENISHMENT_TASK_REQUEST_FAIL, payload: errorMessage });
+    yield action.callback({ errorMessage });
+  } finally {
+    yield put(hideScreenLoading());
+  }
+}
+
 export default function* watcher() {
   yield takeLatest(GET_REPLENISHMENT_LISTS_REQUEST, getReplenishmentListsAction);
   yield takeLatest(GET_REPLENISHMENT_TASKS_REQUEST, getReplenishmentTasksAction);
   yield takeLatest(GET_REPLENISHMENT_TASK_BY_ID_REQUEST, getReplenishmentTaskByIdAction);
+  yield takeLatest(PICK_REPLENISHMENT_TASK_REQUEST, pickReplenishmentTaskAction);
+  yield takeLatest(SHORT_PICK_REPLENISHMENT_TASK_REQUEST, shortPickReplenishmentTaskAction);
 }

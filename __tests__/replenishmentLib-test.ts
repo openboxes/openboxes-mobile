@@ -1,6 +1,11 @@
+import { Alert } from 'react-native';
+
 import Location from '../src/data/location/Location';
-import { moveTaskToEnd, sortTasksByLocation } from '../src/screens/Replenishment/lib';
+import { navigate } from '../src/NavigationService';
+import { moveTaskToEnd, proceedToNextTask, sortTasksByLocation } from '../src/screens/Replenishment/lib';
 import { ReplenishmentTask } from '../src/types/replenishment';
+
+jest.mock('../src/NavigationService', () => ({ navigate: jest.fn() }));
 
 function task(id: string, locationNumber?: string): ReplenishmentTask {
   return {
@@ -58,5 +63,42 @@ describe('moveTaskToEnd', () => {
     expect(ids(moveTaskToEnd(tasks, 1))).toEqual(['1', '2']);
     expect(moveTaskToEnd(tasks, 5)).toBe(tasks);
     expect(moveTaskToEnd(tasks, -1)).toBe(tasks);
+  });
+});
+
+describe('proceedToNextTask', () => {
+  let alert: jest.SpyInstance;
+
+  beforeEach(() => {
+    (navigate as jest.Mock).mockClear();
+    alert = jest.spyOn(Alert, 'alert').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    alert.mockRestore();
+  });
+
+  it('shows the next task on the details screen when tasks remain', () => {
+    const goToNextTask = jest.fn();
+
+    proceedToNextTask({ currentTaskIndex: 1, tasksCount: 3, goToNextTask });
+
+    expect(goToNextTask).toHaveBeenCalledTimes(1);
+    expect(navigate).toHaveBeenCalledWith('ReplenishmentPickingLocation');
+    expect(alert).not.toHaveBeenCalled();
+  });
+
+  it('ends the picks after the last task and goes to staging on OK', () => {
+    const goToNextTask = jest.fn();
+
+    proceedToNextTask({ currentTaskIndex: 2, tasksCount: 3, goToNextTask });
+
+    expect(goToNextTask).not.toHaveBeenCalled();
+    expect(navigate).not.toHaveBeenCalled();
+    expect(alert).toHaveBeenCalledWith('All Picks Complete', expect.any(String), expect.any(Array));
+
+    const [{ onPress }] = alert.mock.calls[0][2];
+    onPress();
+    expect(navigate).toHaveBeenCalledWith('ReplenishmentStagingLocation');
   });
 });

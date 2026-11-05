@@ -1,3 +1,6 @@
+import { Alert } from 'react-native';
+
+import { navigate } from '../../NavigationService';
 import { ReplenishmentTask } from '../../types/replenishment';
 
 /**
@@ -54,4 +57,24 @@ export function moveTaskToEnd(tasks: ReplenishmentTask[], index: number): Replen
     return tasks;
   }
   return [...tasks.slice(0, index), ...tasks.slice(index + 1), tasks[index]];
+}
+
+type ProceedToNextTaskParams = {
+  currentTaskIndex: number;
+  tasksCount: number;
+  goToNextTask: () => void;
+};
+
+/** After a task is picked (or shorted), shows the next task, or ends the picks of the list after the last one */
+export function proceedToNextTask({ currentTaskIndex, tasksCount, goToNextTask }: ProceedToNextTaskParams) {
+  if (currentTaskIndex + 1 < tasksCount) {
+    goToNextTask();
+    navigate('ReplenishmentPickingLocation');
+    return;
+  }
+
+  // TODO(OBLS-413): staging and the completion summary
+  Alert.alert('All Picks Complete', 'You have completed all picks. Proceeding to staging location drop.', [
+    { text: 'OK', onPress: () => navigate('ReplenishmentStagingLocation') }
+  ]);
 }

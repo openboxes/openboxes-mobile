@@ -3,8 +3,12 @@ import React, { createContext, ReactNode, useContext, useState } from 'react';
 import { Alert } from 'react-native';
 import { useDispatch } from 'react-redux';
 
-import { getReplenishmentTasksAction } from '../../redux/actions/replenishment';
-import { ReplenishmentList, ReplenishmentTask } from '../../types/replenishment';
+import {
+  getReplenishmentTasksAction,
+  pickReplenishmentTaskAction,
+  shortPickReplenishmentTaskAction
+} from '../../redux/actions/replenishment';
+import { ReplenishmentList, ReplenishmentTask, ReplenishmentTaskStatus } from '../../types/replenishment';
 import { moveTaskToEnd, sortTasksByLocation } from './lib';
 
 type ReplenishmentContextType = {
@@ -22,10 +26,10 @@ type ReplenishmentContextType = {
   skipCurrentTask: () => void;
   pickCurrentTask: (outboundContainerId: string, callback: (response: { errorMessage?: string }) => void) => void;
   shortPickTask: (
-    outboundContainerId: string,
+    outboundContainerId: string | null,
     parsedQuantityPicked: number,
     callback: (response: { errorMessage?: string }) => void,
-    reasonCodeId?: string
+    reasonCodeName?: string
   ) => void;
   revalidateCurrentTask: (callback: (revalidatedTask?: ReplenishmentTask) => void) => void;
   revalidateTasksForOrder: (orderId: string, callback: () => void) => void;
@@ -93,19 +97,71 @@ export function ReplenishmentProvider({ children }: { children: ReactNode }) {
     // dispatch(startReplenishmentProcess(currentTask.id, callback));
   };
 
+  /**
+   * Replaces the current task by the one returned by the API, or else records the pick on it, so the session shows what
+   * was picked
+   */
+  const updateCurrentTask = (pickedTask: ReplenishmentTask | undefined, fallback: Partial<ReplenishmentTask>) => {
+    setAllTasks((tasks) =>
+      tasks.map((task, index) => {
+        if (index !== currentTaskIndex) {
+          return task;
+        }
+        return pickedTask?.id === task.id ? pickedTask : { ...task, ...fallback };
+      })
+    );
+  };
+
   const pickCurrentTask = (outboundContainerId: string, callback: (response: { errorMessage?: string }) => void) => {
-    // TODO: Implement the logic for picking the current task
-    // dispatch(pickCurrentTask(currentTask.id, outboundContainerId, callback));
+    if (!currentTask) {
+      callback({ errorMessage: 'No current replenishment task.' });
+      return;
+    }
+    dispatch(
+      pickReplenishmentTaskAction(currentTask.id, outboundContainerId, ({ response, errorMessage }) => {
+        if (errorMessage) {
+          callback({ errorMessage });
+          return;
+        }
+        updateCurrentTask(response?.data, {
+          quantityPicked: currentTask.quantityRequired,
+          status: ReplenishmentTaskStatus.PICKED
+        });
+        callback({});
+      })
+    );
   };
 
   const shortPickTask = (
-    outboundContainerId: string,
+    outboundContainerId: string | null,
     parsedQuantityPicked: number,
     callback: (response: { errorMessage?: string }) => void,
-    reasonCodeId?: string
+    reasonCodeName?: string
   ) => {
-    // TODO: Implement the logic for short picking the current task
-    // dispatch(shortPickTask(currentTask.id, outboundContainerId, parsedQuantityPicked, callback, reasonCodeId));
+    if (!currentTask) {
+      callback({ errorMessage: 'No current replenishment task.' });
+      return;
+    }
+    dispatch(
+      shortPickReplenishmentTaskAction(
+        currentTask.id,
+        outboundContainerId,
+        parsedQuantityPicked,
+        reasonCodeName,
+        ({ response, errorMessage }) => {
+          if (errorMessage) {
+            callback({ errorMessage });
+            return;
+          }
+          updateCurrentTask(response?.data, {
+            quantityPicked: (currentTask.quantityPicked || 0) + parsedQuantityPicked,
+            reasonCode: reasonCodeName ?? null,
+            status: ReplenishmentTaskStatus.PICKED
+          });
+          callback({});
+        }
+      )
+    );
   };
 
   const revalidateCurrentTask = (callback: (revalidatedTask?: ReplenishmentTask) => void) => {
