@@ -1,136 +1,165 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import * as React from 'react';
-import { Alert, View } from 'react-native';
-import { Divider, Paragraph, Subheading } from 'react-native-paper';
+import React, { useEffect, useRef, useState } from 'react';
+import { Alert, ScrollView, View } from 'react-native';
+import { Button, Card, Chip, Divider, Paragraph, Subheading, Text } from 'react-native-paper';
 
+import { LayoutStyle } from '../../assets/styles';
+import EmptyView from '../../components/EmptyView';
 import { ProductDetails } from '../../components/ProductDetails';
+import { ScanErrorText } from '../../components/ScanErrorText';
 import { ScannerInput } from '../../components/ScannerInput';
-import { navigate } from '../../NavigationService';
+import { SearchButton } from '../../components/SearchButton';
+import { useSearchButton } from '../../components/SearchButton/useSearchButton';
+import { EMPTY_STRING, HYPHEN } from '../../constants';
+import { useScanField } from '../../hooks/useScanField';
+import { navigate, resetToRoutes } from '../../NavigationService';
+import { ContainerToStage, summarizeListTasks } from './lib';
 import { useReplenishmentContext } from './ReplenishmentContext';
+import { useReplenishmentScanLog } from './scanLog';
 import styles from './styles';
 
+/**
+ * Stages the containers of the list one by one, like outbound picking: the expected staging location is shown, and
+ * the server accepts or rejects the scanned one.
+ */
 export function ReplenishmentStagingLocationScreen() {
-  const { allTasks, dropCurrentTaskAtStagingLocation, resetReplenishmentSession } = useReplenishmentContext();
+  const { currentList, listTasks, loadListTasks, dropContainerAtStagingLocation, resetReplenishmentSession } =
+    useReplenishmentContext();
+  const stagingScan = useScanField();
+  const { isSearchOpen, searchButtonProps } = useSearchButton({ onSelect: stagingScan.onChange });
+  const logScan = useReplenishmentScanLog();
 
-  const [stagingLocationNumber, setStagingLocationNumber] = React.useState('');
-  const [currentUniqueIndex, setCurrentUniqueIndex] = React.useState(0);
+  // Taken once, so staging a container does not shift the ones left
+  const [containers, setContainers] = useState<ContainerToStage[] | undefined>(undefined);
+  const [containerIndex, setContainerIndex] = useState(0);
 
-  const uniqueTasks = React.useMemo(
-    () => Array.from(new Map(allTasks.map((task) => [task.outboundContainer?.id, task])).values()),
-    [allTasks]
-  );
+  const hasRequestedTasks = useRef(false);
+  const [hasLoadedTasks, setHasLoadedTasks] = useState(false);
 
-  const currentTask = uniqueTasks[currentUniqueIndex];
+  useEffect(() => {
+    if (containers) {
+      return;
+    }
+    // The summary loads the tasks of the list before staging; load them here only when they are missing
+    if (listTasks.length > 0 || hasLoadedTasks) {
+      setContainers(summarizeListTasks(listTasks).containersToStage);
+      return;
+    }
+    if (!hasRequestedTasks.current) {
+      hasRequestedTasks.current = true;
+      loadListTasks(() => setHasLoadedTasks(true));
+    }
+  }, [containers, listTasks, hasLoadedTasks, loadListTasks]);
 
-  if (!currentTask) {
-    Alert.alert('Error', 'No current replenishment task available.');
-    navigate('Dashboard');
+  if (!containers) {
     return null;
   }
 
-  // A hardware scan submits before `stagingLocationNumber` re-renders, so use the submitted code.
-  function handleSubmit(code: string) {
-    if (!code) {
-      Alert.alert('Missing Input', 'Please scan or enter a valid Staging Location ID.');
-      setStagingLocationNumber('');
+  const current = containers[containerIndex];
+
+  if (!currentList || !current) {
+    return (
+      <View style={styles.flex1}>
+        <EmptyView title="Replenishment Staging" description="There are no replenishment containers to stage." />
+        <Button mode="text" style={styles.marginBottom} onPress={() => navigate('ReplenishmentList')}>
+          Back To List
+        </Button>
+      </View>
+    );
+  }
+
+  const containerNumber = current.container.locationNumber;
+
+  function completeStaging() {
+    Alert.alert('Staging Complete', `${currentList?.orderNumber} is staged and ready for putaway.`, [
+      {
+        text: 'OK',
+        onPress: () => {
+          resetReplenishmentSession();
+          resetToRoutes([{ name: 'Drawer', params: { screen: 'Dashboard' } }]);
+        }
+      }
+    ]);
+  }
+
+  function handleScan(stagingLocationId: string) {
+    if (!stagingLocationId) {
       return;
     }
 
-    navigate('ReplenishmentPickingLocation');
+    dropContainerAtStagingLocation(current.container.id, stagingLocationId, ({ errorMessage }) => {
+      if (errorMessage) {
+        logScan('STAGING', 'FAIL', stagingLocationId, current.stagingLocation?.locationNumber, {
+          message: `${containerNumber}: ${errorMessage}`
+        });
+        stagingScan.fail(errorMessage);
+        return;
+      }
 
-    // TODO: Implement the staging location validation and task dropping logic
-    // const expected = currentTask.stagingLocation?.locationNumber;
-
-    // if (!expected || code !== expected) {
-    //   Alert.alert(
-    //     'Invalid Staging Location',
-    //     `Expected: ${expected ?? '-'}, but got: ${code}. Please try again.`
-    //   );
-    //   setStagingLocationNumber('');
-    //   return;
-    // }
-
-    // dropCurrentTaskAtStagingLocation(currentTask, (response) => {
-    //   if ('errorMessage' in response) {
-    //     Alert.alert('Error', response.errorMessage);
-    //     setStagingLocationNumber('');
-    //     return;
-    //   }
-
-    //   const nextIndex = currentUniqueIndex + 1;
-    //   if (nextIndex < uniqueTasks.length) {
-    //     Alert.alert('Success', 'Staging Location confirmed. Proceeding to the next container.', [
-    //       {
-    //         text: 'OK',
-    //         onPress: () => {
-    //           // Proceed to next unique task
-    //           setCurrentUniqueIndex(nextIndex);
-    //           setStagingLocationNumber('');
-    //         }
-    //       }
-    //     ]);
-    //   } else {
-    //     Alert.alert('Picking Session Complete', 'You have completed all staging confirmations.', [
-    //       {
-    //         text: 'OK',
-    //         onPress: () => {
-    //           resetReplenishmentSession();
-    //           navigate('Dashboard');
-    //         }
-    //       }
-    //     ]);
-    //   }
-    // });
+      logScan('STAGING', 'PASS', stagingLocationId, current.stagingLocation?.locationNumber, {
+        message: containerNumber
+      });
+      stagingScan.setValue(EMPTY_STRING);
+      if (containerIndex + 1 < (containers?.length ?? 0)) {
+        stagingScan.pass();
+        setContainerIndex(containerIndex + 1);
+        return;
+      }
+      stagingScan.pass(completeStaging);
+    });
   }
 
   return (
-    <ProductDetails.Provider product={currentTask.product} status={currentTask.status}>
-      <ProductDetails.Root>
-        <ProductDetails.Header>
-          <ProductDetails.Badge icon="barcode" label="Product Code">
-            {currentTask.product.productCode}
-          </ProductDetails.Badge>
-          <ProductDetails.Badge icon="navigation" label="Task Progress">
-            {`${currentUniqueIndex + 1} / ${uniqueTasks.length}`}
-          </ProductDetails.Badge>
-        </ProductDetails.Header>
+    <ScrollView style={styles.flex1} keyboardShouldPersistTaps="handled">
+      <Card style={LayoutStyle.listItemContainer}>
+        <Card.Content>
+          <View style={styles.headerRow}>
+            <Chip icon="identifier" style={[styles.chipDefault, styles.orderNumberChip]}>
+              <Text style={[styles.orderNumberText, styles.fontBold]}>{currentList.orderNumber ?? HYPHEN}</Text>
+            </Chip>
+            <Chip icon="navigation" style={styles.chipDefault}>
+              <Text style={styles.chipText}>
+                Container:{' '}
+                <Text style={[styles.chipText, styles.fontBold]}>{`${containerIndex + 1} / ${containers.length}`}</Text>
+              </Text>
+            </Chip>
+          </View>
 
-        <ProductDetails.Separator />
-        <ProductDetails.Title />
+          <Divider style={styles.divider} />
 
-        <ProductDetails.List
-          items={[
-            {
-              icon: 'pin',
-              label: 'Outbound Container',
-              value: currentTask.outboundContainer?.locationNumber ?? '-'
-            },
-            {
-              icon: 'package',
-              label: 'Staging Location',
-              value: currentTask.stagingLocation?.name ?? '-'
-            }
-          ]}
-        />
-      </ProductDetails.Root>
+          <ProductDetails.List
+            items={[
+              { icon: 'package-variant-closed', label: 'Outbound Container ID', value: containerNumber },
+              { icon: 'tray-arrow-down', label: 'Staging Location', value: current.stagingLocation?.name ?? HYPHEN },
+              {
+                icon: 'barcode',
+                label: 'Products',
+                value: current.tasks.map((task) => `${task.product?.productCode} (${task.quantityPicked})`).join(', ')
+              }
+            ]}
+          />
+        </Card.Content>
+      </Card>
 
-      <Divider />
-
-      <View style={[styles.wrapperWithPadding]}>
+      <View style={styles.wrapperWithPadding}>
         <Subheading style={styles.subheading}>Scan Staging Location</Subheading>
         <Paragraph style={styles.paragraph}>
-          Point your barcode scanner at the staging location or type the ID manually.
+          Put the container in the staging location and scan its barcode, or use search to find it.
         </Paragraph>
 
-        <ScannerInput
-          style={styles.marginTop}
-          label="Staging Location ID"
-          value={stagingLocationNumber}
-          onChange={setStagingLocationNumber}
-          onSubmit={handleSubmit}
-        />
+        <View style={styles.scannerRow}>
+          <ScannerInput
+            style={styles.scannerInput}
+            label="Staging Location ID"
+            value={stagingScan.value}
+            isEnabled={!isSearchOpen}
+            danger={!!stagingScan.error}
+            onChange={stagingScan.onChange}
+            onSubmit={handleScan}
+          />
+          <SearchButton searchType="location" {...searchButtonProps} />
+        </View>
+        <ScanErrorText message={stagingScan.error} />
       </View>
-    </ProductDetails.Provider>
+    </ScrollView>
   );
 }

@@ -83,6 +83,7 @@ import { ReplenishmentProductScreen } from './screens/Replenishment/Replenishmen
 import ReplenishmentOutboundContainerScreen from './screens/Replenishment/ReplenishmentOutboundContainerScreen';
 import ReplenishmentPickQuantityScreen from './screens/Replenishment/ReplenishmentPickQuantityScreen';
 import { ReplenishmentStagingLocationScreen } from './screens/Replenishment/ReplenishmentStagingLocationScreen';
+import ReplenishmentSummaryScreen from './screens/Replenishment/ReplenishmentSummaryScreen';
 import Transfer from './screens/Transfer';
 import Transfers from './screens/Transfers';
 import TransferDetails from './screens/TransfersDetails';
@@ -439,6 +440,11 @@ class Main extends Component<Props, State> {
                 name="ReplenishmentOutboundContainer"
                 component={ReplenishmentOutboundContainerScreen}
                 options={{ title: 'Replenishment Outbound Container' }}
+              />
+              <Stack.Screen
+                name="ReplenishmentSummary"
+                component={ReplenishmentSummaryScreen}
+                options={{ title: 'Replenishment Summary' }}
               />
               <Stack.Screen
                 name="ReplenishmentStagingLocation"

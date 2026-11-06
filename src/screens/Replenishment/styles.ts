@@ -88,5 +88,10 @@ export default StyleSheet.create({
   },
   scannerInput: {
     flex: 1
+  },
+  summaryRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: Theme.spacing.small
   }
 });

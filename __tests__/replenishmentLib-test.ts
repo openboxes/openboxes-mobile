@@ -1,11 +1,15 @@
-import { Alert } from 'react-native';
-
 import Location from '../src/data/location/Location';
-import { navigate } from '../src/NavigationService';
-import { moveTaskToEnd, proceedToNextTask, sortTasksByLocation } from '../src/screens/Replenishment/lib';
-import { ReplenishmentTask } from '../src/types/replenishment';
+import { navigate, resetToRoutes } from '../src/NavigationService';
+import {
+  findNextOpenTaskIndex,
+  moveTaskToEnd,
+  proceedToNextTask,
+  sortTasksByLocation,
+  summarizeListTasks
+} from '../src/screens/Replenishment/lib';
+import { ReplenishmentTask, ReplenishmentTaskStatus } from '../src/types/replenishment';
 
-jest.mock('../src/NavigationService', () => ({ navigate: jest.fn() }));
+jest.mock('../src/NavigationService', () => ({ navigate: jest.fn(), resetToRoutes: jest.fn() }));
 
 function task(id: string, locationNumber?: string): ReplenishmentTask {
   return {
@@ -66,39 +70,109 @@ describe('moveTaskToEnd', () => {
   });
 });
 
-describe('proceedToNextTask', () => {
-  let alert: jest.SpyInstance;
+function taskWith(
+  id: string,
+  status: ReplenishmentTaskStatus,
+  quantityPicked = 0,
+  quantityRequired = 10,
+  containerNumber?: string
+): ReplenishmentTask {
+  return {
+    id,
+    status,
+    quantityPicked,
+    quantityRequired,
+    product: { productCode: `P-${id}` },
+    outboundContainer: containerNumber ? { id: `c-${containerNumber}`, locationNumber: containerNumber } : null,
+    stagingLocation: { id: 'staging-001', locationNumber: 'REP-PUT0001', name: 'Replen Putaway' }
+  } as ReplenishmentTask;
+}
 
+const { PENDING, PICKED, STAGED } = ReplenishmentTaskStatus;
+
+describe('findNextOpenTaskIndex', () => {
+  it('finds the next task to pick after the given one, wrapping around', () => {
+    const tasks = [taskWith('1', PENDING), taskWith('2', PICKED), taskWith('3', PENDING)];
+
+    expect(findNextOpenTaskIndex(tasks, 0)).toBe(2);
+    expect(findNextOpenTaskIndex(tasks, 2)).toBe(0);
+  });
+
+  it('treats the task just picked as done, its new status not being in the tasks yet', () => {
+    const tasks = [taskWith('1', PENDING), taskWith('2', STAGED), taskWith('3', PENDING)];
+
+    expect(findNextOpenTaskIndex(tasks, 2, '3')).toBe(0);
+    expect(findNextOpenTaskIndex([taskWith('1', PICKED), taskWith('2', PENDING)], 1, '2')).toBe(-1);
+  });
+
+  it('starts from the first task when given -1', () => {
+    expect(findNextOpenTaskIndex([taskWith('1', PENDING), taskWith('2', PENDING)], -1)).toBe(0);
+  });
+});
+
+describe('proceedToNextTask', () => {
   beforeEach(() => {
     (navigate as jest.Mock).mockClear();
-    alert = jest.spyOn(Alert, 'alert').mockImplementation(() => {});
+    (resetToRoutes as jest.Mock).mockClear();
   });
 
-  afterEach(() => {
-    alert.mockRestore();
-  });
+  it('shows the next task to pick on the details screen', () => {
+    const goToTask = jest.fn();
+    const tasks = [taskWith('1', PICKED), taskWith('2', PENDING), taskWith('3', PENDING)];
 
-  it('shows the next task on the details screen when tasks remain', () => {
-    const goToNextTask = jest.fn();
+    proceedToNextTask({ tasks, currentTaskIndex: 1, goToTask });
 
-    proceedToNextTask({ currentTaskIndex: 1, tasksCount: 3, goToNextTask });
-
-    expect(goToNextTask).toHaveBeenCalledTimes(1);
+    expect(goToTask).toHaveBeenCalledWith(2);
     expect(navigate).toHaveBeenCalledWith('ReplenishmentPickingLocation');
-    expect(alert).not.toHaveBeenCalled();
+    expect(resetToRoutes).not.toHaveBeenCalled();
   });
 
-  it('ends the picks after the last task and goes to staging on OK', () => {
-    const goToNextTask = jest.fn();
+  it('goes back to a skipped task before completing', () => {
+    const goToTask = jest.fn();
+    const tasks = [taskWith('1', PENDING), taskWith('2', PICKED), taskWith('3', PENDING)];
 
-    proceedToNextTask({ currentTaskIndex: 2, tasksCount: 3, goToNextTask });
+    proceedToNextTask({ tasks, currentTaskIndex: 2, goToTask });
 
-    expect(goToNextTask).not.toHaveBeenCalled();
+    expect(goToTask).toHaveBeenCalledWith(0);
+  });
+
+  it('shows the completion summary once all picks are done', () => {
+    const goToTask = jest.fn();
+    const tasks = [taskWith('1', PICKED), taskWith('2', PENDING)];
+
+    proceedToNextTask({ tasks, currentTaskIndex: 1, goToTask });
+
+    expect(goToTask).not.toHaveBeenCalled();
     expect(navigate).not.toHaveBeenCalled();
-    expect(alert).toHaveBeenCalledWith('All Picks Complete', expect.any(String), expect.any(Array));
+    expect(resetToRoutes).toHaveBeenCalledWith([
+      { name: 'Drawer', params: { screen: 'Dashboard' } },
+      { name: 'ReplenishmentList' },
+      { name: 'ReplenishmentSummary' }
+    ]);
+  });
+});
 
-    const [{ onPress }] = alert.mock.calls[0][2];
-    onPress();
-    expect(navigate).toHaveBeenCalledWith('ReplenishmentStagingLocation');
+describe('summarizeListTasks', () => {
+  it('counts the tasks by outcome and groups the picks to stage by container', () => {
+    const summary = summarizeListTasks([
+      taskWith('1', PICKED, 10, 10, 'OUT-0001'),
+      taskWith('2', PICKED, 4, 10, 'OUT-0002'),
+      taskWith('3', PICKED, 0, 10),
+      taskWith('4', PICKED, 10, 10, 'OUT-0001'),
+      taskWith('5', PENDING),
+      taskWith('6', STAGED, 10, 10, 'OUT-0003')
+    ]);
+
+    expect(summary).toMatchObject({ total: 6, completed: 3, partial: 1, notPicked: 1, open: 1 });
+    expect(summary.containersToStage.map(({ container }) => container.locationNumber)).toEqual([
+      'OUT-0001',
+      'OUT-0002'
+    ]);
+    expect(summary.containersToStage[0].tasks.map((t) => t.id)).toEqual(['1', '4']);
+    expect(summary.containersToStage[0].stagingLocation?.name).toBe('Replen Putaway');
+  });
+
+  it('has nothing to stage when nothing was put in a container', () => {
+    expect(summarizeListTasks([taskWith('1', PICKED, 0, 10)]).containersToStage).toEqual([]);
   });
 });

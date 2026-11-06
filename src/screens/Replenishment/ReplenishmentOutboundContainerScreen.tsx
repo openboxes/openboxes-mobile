@@ -28,7 +28,7 @@ type ReplenishmentOutboundContainerScreenProps = RouteProp<
  * products can share one.
  */
 export default function ReplenishmentOutboundContainerScreen() {
-  const { currentList, currentTask, pickCurrentTask, shortPickTask, currentTaskIndex, tasksCount, goToNextTask } =
+  const { currentList, allTasks, currentTask, pickCurrentTask, shortPickTask, currentTaskIndex, tasksCount, goToTask } =
     useReplenishmentContext();
   const { params } = useRoute<ReplenishmentOutboundContainerScreenProps>();
   const containerScan = useScanField();
@@ -73,7 +73,7 @@ export default function ReplenishmentOutboundContainerScreen() {
       logScan('CONTAINER', 'PASS', containerId, undefined, { quantity: parsedQuantityPicked });
       containerScan.setValue(EMPTY_STRING);
       containerScan.pass();
-      proceedToNextTask({ currentTaskIndex, tasksCount, goToNextTask });
+      proceedToNextTask({ tasks: allTasks, currentTaskIndex, goToTask });
     };
 
     if (parsedQuantityPicked < qtyRemaining) {

@@ -1,4 +1,4 @@
-import { ReplenishmentList, ReplenishmentTask } from '../../types/replenishment';
+import { ReplenishmentList, ReplenishmentTask, ReplenishmentTaskStatus } from '../../types/replenishment';
 
 export const GET_REPLENISHMENT_LISTS_REQUEST = 'GET_REPLENISHMENT_LISTS_REQUEST';
 export const GET_REPLENISHMENT_LISTS_REQUEST_SUCCESS = 'GET_REPLENISHMENT_LISTS_REQUEST_SUCCESS';
@@ -20,6 +20,10 @@ export const SHORT_PICK_REPLENISHMENT_TASK_REQUEST = 'SHORT_PICK_REPLENISHMENT_T
 export const SHORT_PICK_REPLENISHMENT_TASK_REQUEST_SUCCESS = 'SHORT_PICK_REPLENISHMENT_TASK_REQUEST_SUCCESS';
 export const SHORT_PICK_REPLENISHMENT_TASK_REQUEST_FAIL = 'SHORT_PICK_REPLENISHMENT_TASK_REQUEST_FAIL';
 
+export const DROP_REPLENISHMENT_CONTAINER_REQUEST = 'DROP_REPLENISHMENT_CONTAINER_REQUEST';
+export const DROP_REPLENISHMENT_CONTAINER_REQUEST_SUCCESS = 'DROP_REPLENISHMENT_CONTAINER_REQUEST_SUCCESS';
+export const DROP_REPLENISHMENT_CONTAINER_REQUEST_FAIL = 'DROP_REPLENISHMENT_CONTAINER_REQUEST_FAIL';
+
 export type ReplenishmentCallback<T> = (response: {
   response?: {
     data: T;
@@ -40,10 +44,17 @@ export function getReplenishmentListsAction(callback: ReplenishmentCallback<Repl
   };
 }
 
-export function getReplenishmentTasksAction(orderId: string, callback: ReplenishmentCallback<ReplenishmentTask[]>) {
+/**
+ * @param statuses the statuses of the tasks to get, the open ones (to pick) by default
+ */
+export function getReplenishmentTasksAction(
+  orderId: string,
+  callback: ReplenishmentCallback<ReplenishmentTask[]>,
+  statuses?: ReplenishmentTaskStatus[]
+) {
   return {
     type: GET_REPLENISHMENT_TASKS_REQUEST,
-    payload: { orderId },
+    payload: { orderId, statuses },
     callback
   };
 }
@@ -80,6 +91,19 @@ export function shortPickReplenishmentTaskAction(
   return {
     type: SHORT_PICK_REPLENISHMENT_TASK_REQUEST,
     payload: { taskId, outboundContainerId, quantityPicked, reasonCodeName },
+    callback
+  };
+}
+
+/** Stages the picks of the container in the staging location */
+export function dropReplenishmentContainerAction(
+  outboundContainerId: string,
+  stagingLocationId: string,
+  callback: ReplenishmentCallback<ReplenishmentTask[]>
+) {
+  return {
+    type: DROP_REPLENISHMENT_CONTAINER_REQUEST,
+    payload: { outboundContainerId, stagingLocationId },
     callback
   };
 }

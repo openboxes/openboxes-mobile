@@ -3,6 +3,9 @@ import { call, put, select, takeLatest } from 'redux-saga/effects';
 import * as api from '../../apis';
 import { hideScreenLoading, showScreenLoading } from '../actions/main';
 import {
+  DROP_REPLENISHMENT_CONTAINER_REQUEST,
+  DROP_REPLENISHMENT_CONTAINER_REQUEST_FAIL,
+  DROP_REPLENISHMENT_CONTAINER_REQUEST_SUCCESS,
   GET_REPLENISHMENT_LISTS_REQUEST,
   GET_REPLENISHMENT_LISTS_REQUEST_FAIL,
   GET_REPLENISHMENT_LISTS_REQUEST_SUCCESS,
@@ -56,7 +59,12 @@ function* getReplenishmentTasksAction(action: any) {
     }
     yield put(showScreenLoading('Fetching Tasks...'));
     // @ts-ignore
-    const response = yield call(api.getReplenishmentTasksApi, currentLocation.id, action.payload.orderId);
+    const response = yield call(
+      api.getReplenishmentTasksApi,
+      currentLocation.id,
+      action.payload.orderId,
+      action.payload.statuses
+    );
     yield action.callback({ response });
     yield put({ type: GET_REPLENISHMENT_TASKS_REQUEST_SUCCESS, payload: response.data });
   } catch (error) {
@@ -152,10 +160,42 @@ function* shortPickReplenishmentTaskAction(action: any) {
   }
 }
 
+function* dropReplenishmentContainerAction(action: any) {
+  try {
+    // @ts-ignore
+    const currentLocation = yield select(userLocation);
+    if (!currentLocation) {
+      throw new Error('User Location Not Found');
+    }
+    // @ts-ignore
+    const session = yield select(userSession);
+    if (!session || !session.user) {
+      throw new Error('User Session Not Found');
+    }
+    yield put(showScreenLoading('Staging Container...'));
+    const { outboundContainerId, stagingLocationId } = action.payload;
+    // @ts-ignore
+    const response = yield call(api.dropReplenishmentContainerApi, currentLocation.id, outboundContainerId, {
+      action: 'drop',
+      stagingLocationId,
+      stagedById: session.user.id
+    });
+    yield action.callback({ response });
+    yield put({ type: DROP_REPLENISHMENT_CONTAINER_REQUEST_SUCCESS, payload: response?.data });
+  } catch (error) {
+    const errorMessage = (error as any)?.message || 'Error Staging Replenishment Container';
+    yield put({ type: DROP_REPLENISHMENT_CONTAINER_REQUEST_FAIL, payload: errorMessage });
+    yield action.callback({ errorMessage });
+  } finally {
+    yield put(hideScreenLoading());
+  }
+}
+
 export default function* watcher() {
   yield takeLatest(GET_REPLENISHMENT_LISTS_REQUEST, getReplenishmentListsAction);
   yield takeLatest(GET_REPLENISHMENT_TASKS_REQUEST, getReplenishmentTasksAction);
   yield takeLatest(GET_REPLENISHMENT_TASK_BY_ID_REQUEST, getReplenishmentTaskByIdAction);
   yield takeLatest(PICK_REPLENISHMENT_TASK_REQUEST, pickReplenishmentTaskAction);
   yield takeLatest(SHORT_PICK_REPLENISHMENT_TASK_REQUEST, shortPickReplenishmentTaskAction);
+  yield takeLatest(DROP_REPLENISHMENT_CONTAINER_REQUEST, dropReplenishmentContainerAction);
 }

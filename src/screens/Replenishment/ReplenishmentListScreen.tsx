@@ -4,6 +4,7 @@ import { FlatList, View } from 'react-native';
 import { Card, Chip, Divider, Text } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
+import { LIST_STATUS_PICKED } from '../../apis/replenishment';
 import { LayoutStyle } from '../../assets/styles';
 import EmptyView from '../../components/EmptyView';
 import ListLoadingSkeleton from '../../components/ListLoadingSkeleton';
@@ -29,6 +30,11 @@ function ReplenishmentListCard({ list, onPress }: ReplenishmentListCardProps) {
           <Chip icon="identifier" style={[styles.chipDefault, styles.orderNumberChip]}>
             <Text style={[styles.orderNumberText, styles.fontBold]}>{list.orderNumber ?? HYPHEN}</Text>
           </Chip>
+          {list.status === LIST_STATUS_PICKED && (
+            <Chip icon="tray-arrow-down" style={styles.chipDefault}>
+              <Text style={[styles.chipText, styles.fontBold]}>Ready to stage</Text>
+            </Chip>
+          )}
         </View>
 
         <Divider style={styles.divider} />
@@ -88,9 +94,11 @@ export default function ReplenishmentListScreen() {
   );
 
   const handleListPress = (list: ReplenishmentList) => {
-    startSession(list).then((success) => {
-      if (success) {
+    startSession(list).then((sessionStart) => {
+      if (sessionStart === 'PICK') {
         navigate('ReplenishmentPickingLocation');
+      } else if (sessionStart === 'STAGE') {
+        navigate('ReplenishmentSummary');
       }
     });
   };

@@ -17,7 +17,7 @@ import { ReplenishmentTaskDetails } from './ReplenishmentTaskDetails';
 import styles from './styles';
 
 export default function ReplenishmentPickQuantityScreen() {
-  const { currentList, currentTask, currentTaskIndex, tasksCount, shortPickTask, goToNextTask } =
+  const { currentList, allTasks, currentTask, currentTaskIndex, tasksCount, shortPickTask, goToTask } =
     useReplenishmentContext();
   const dispatch = useDispatch();
   const isFocused = useIsFocused();
@@ -110,7 +110,7 @@ export default function ReplenishmentPickQuantityScreen() {
           setQuantityPicked('');
           return;
         }
-        proceedToNextTask({ currentTaskIndex, tasksCount, goToNextTask });
+        proceedToNextTask({ tasks: allTasks, currentTaskIndex, goToTask });
       },
       reasonCode?.name
     );

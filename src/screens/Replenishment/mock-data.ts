@@ -21,6 +21,12 @@ function mockInventoryItem(id: string, product: Product, lotNumber: string, expi
 
 const FACILITY = mockLocation('facility-001', 'MAIN', 'Main Warehouse');
 
+/** The "replen awaiting putaway" staging location, preassigned to the tasks as the server would */
+const REPLEN_PUTAWAY = mockLocation('staging-001', 'REP-PUT0001', 'Replen Putaway');
+
+/** Staging locations the mocked API accepts, standing in for locations supporting the STAGING_LOCATION activity */
+export const MOCK_REPLENISHMENT_STAGING_LOCATIONS: Location[] = [REPLEN_PUTAWAY];
+
 const PRODUCTS = {
   gloves: mockProduct('prod-001', '10001', 'Examination gloves, nitrile, medium'),
   syringe: mockProduct('prod-002', '10002', 'Syringe, 5 ml, luer lock'),
@@ -61,7 +67,7 @@ function mockTask({
     location,
     destinationLocation,
     outboundContainer: null,
-    stagingLocation: null,
+    stagingLocation: REPLEN_PUTAWAY,
     product,
     inventoryItem: mockInventoryItem(`ii-${id}`, product, lotNumber, expirationDate),
     quantityRequired,

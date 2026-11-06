@@ -16,7 +16,8 @@ import { useReplenishmentScanLog } from './scanLog';
 import styles from './styles';
 
 export function ReplenishmentLocationScreen() {
-  const { currentList, currentTask, currentTaskIndex, tasksCount, skipCurrentTask } = useReplenishmentContext();
+  const { currentList, currentTask, currentTaskIndex, tasksCount, openTasksCount, skipCurrentTask } =
+    useReplenishmentContext();
   const locationScan = useScanField();
   const resetLocationScan = locationScan.setValue;
   const { isSearchOpen, searchButtonProps } = useSearchButton({ onSelect: locationScan.onChange });
@@ -106,7 +107,7 @@ export function ReplenishmentLocationScreen() {
         </View>
         <ScanErrorText message={locationScan.error} />
 
-        {tasksCount > 1 && (
+        {openTasksCount > 1 && (
           <Button mode="text" style={styles.marginTop} onPress={handleSkip}>
             Skip
           </Button>

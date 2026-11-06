@@ -1,42 +1,52 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { createContext, ReactNode, useContext, useState } from 'react';
 import { Alert } from 'react-native';
 import { useDispatch } from 'react-redux';
 
+import { ALL_TASK_STATUSES, LIST_STATUS_PICKED } from '../../apis/replenishment';
 import {
+  dropReplenishmentContainerAction,
   getReplenishmentTasksAction,
   pickReplenishmentTaskAction,
   shortPickReplenishmentTaskAction
 } from '../../redux/actions/replenishment';
 import { ReplenishmentList, ReplenishmentTask, ReplenishmentTaskStatus } from '../../types/replenishment';
-import { moveTaskToEnd, sortTasksByLocation } from './lib';
+import { findNextOpenTaskIndex, isOpenTask, moveTaskToEnd, sortTasksByLocation } from './lib';
+
+type Callback = (response: { errorMessage?: string }) => void;
+
+/** What to do with a list once its session is started: pick its tasks, or stage what was picked */
+export type SessionStart = 'PICK' | 'STAGE';
 
 type ReplenishmentContextType = {
   /** The replenishment list being worked on */
   currentList?: ReplenishmentList;
+  /** The tasks to pick in this session, in location sequence; picked ones stay with their new status */
   allTasks: ReplenishmentTask[];
   tasksCount: number;
+  /** Tasks of the session still to pick */
+  openTasksCount: number;
   currentTask?: ReplenishmentTask;
   currentTaskIndex: number;
-  /** Loads the open tasks of the list in location sequence, resolves false (after alerting) when there are none */
-  startSession: (list: ReplenishmentList) => Promise<boolean>;
-  startReplenishment: (callback: (response: { errorMessage?: string }) => void) => void;
-  goToNextTask: () => void;
-  /** Moves the current task to the end of the sequence and shows the next one */
+  /** All tasks of the list, whatever their status, as last loaded by loadListTasks (for the summary and staging) */
+  listTasks: ReplenishmentTask[];
+  /**
+   * Loads the open tasks of the list in location sequence. Resolves 'STAGE' when none are left but picks wait to be
+   * staged, and false (after alerting) when there is nothing to do.
+   */
+  startSession: (list: ReplenishmentList) => Promise<SessionStart | false>;
+  loadListTasks: (callback?: Callback) => void;
+  goToTask: (index: number) => void;
+  /** Moves the current task to the end of the sequence and shows the next one to pick */
   skipCurrentTask: () => void;
-  pickCurrentTask: (outboundContainerId: string, callback: (response: { errorMessage?: string }) => void) => void;
+  pickCurrentTask: (outboundContainerId: string, callback: Callback) => void;
   shortPickTask: (
     outboundContainerId: string | null,
     parsedQuantityPicked: number,
-    callback: (response: { errorMessage?: string }) => void,
+    callback: Callback,
     reasonCodeName?: string
   ) => void;
-  revalidateCurrentTask: (callback: (revalidatedTask?: ReplenishmentTask) => void) => void;
-  revalidateTasksForOrder: (orderId: string, callback: () => void) => void;
-  dropCurrentTaskAtStagingLocation: (
-    task: ReplenishmentTask,
-    callback: (response: { errorMessage?: string }) => void
-  ) => void;
+  /** Stages the picks of the container in the staging location */
+  dropContainerAtStagingLocation: (outboundContainerId: string, stagingLocationId: string, callback: Callback) => void;
   resetReplenishmentSession: () => void;
 };
 
@@ -47,11 +57,13 @@ export function ReplenishmentProvider({ children }: { children: ReactNode }) {
 
   const [currentList, setCurrentList] = useState<ReplenishmentList | undefined>(undefined);
   const [allTasks, setAllTasks] = useState<ReplenishmentTask[]>([]);
+  const [listTasks, setListTasks] = useState<ReplenishmentTask[]>([]);
   const [currentTaskIndex, setCurrentTaskIndex] = useState<number>(0);
   const tasksCount = allTasks.length;
+  const openTasksCount = allTasks.filter(isOpenTask).length;
   const currentTask = currentTaskIndex < tasksCount ? allTasks[currentTaskIndex] : undefined;
 
-  const startSession = (list: ReplenishmentList): Promise<boolean> =>
+  const startSession = (list: ReplenishmentList): Promise<SessionStart | false> =>
     new Promise((resolve) => {
       dispatch(
         getReplenishmentTasksAction(list.id, ({ response, errorMessage }) => {
@@ -67,34 +79,55 @@ export function ReplenishmentProvider({ children }: { children: ReactNode }) {
             return;
           }
 
-          if (!response.data || response.data.length === 0) {
+          const openTasks = response.data ?? [];
+          if (openTasks.length === 0 && list.status !== LIST_STATUS_PICKED) {
             Alert.alert('No Tasks', `No open replenishment tasks were found for ${list.orderNumber}.`);
             resolve(false);
             return;
           }
 
           setCurrentList(list);
-          setAllTasks(sortTasksByLocation(response.data));
+          setAllTasks(sortTasksByLocation(openTasks));
+          setListTasks([]);
           setCurrentTaskIndex(0);
-          resolve(true);
+          resolve(openTasks.length > 0 ? 'PICK' : 'STAGE');
         })
       );
     });
 
-  const skipCurrentTask = () => {
-    if (tasksCount <= 1) {
+  const loadListTasks = (callback?: Callback) => {
+    if (!currentList) {
+      callback?.({ errorMessage: 'No current replenishment list.' });
       return;
     }
-    setAllTasks((tasks) => moveTaskToEnd(tasks, currentTaskIndex));
-    // The next task moved up into the current index; when the last task was skipped, wrap around to the first.
-    if (currentTaskIndex >= tasksCount - 1) {
-      setCurrentTaskIndex(0);
-    }
+    dispatch(
+      getReplenishmentTasksAction(
+        currentList.id,
+        ({ response, errorMessage }) => {
+          if (errorMessage || !response?.data) {
+            callback?.({ errorMessage: errorMessage ?? 'Failed to load replenishment tasks.' });
+            return;
+          }
+          setListTasks(response.data);
+          callback?.({});
+        },
+        ALL_TASK_STATUSES
+      )
+    );
   };
 
-  const startReplenishment = (callback: (response: { errorMessage?: string }) => void) => {
-    // TODO: Implement the logic for starting the replenishment process
-    // dispatch(startReplenishmentProcess(currentTask.id, callback));
+  const goToTask = (index: number) => {
+    setCurrentTaskIndex(index);
+  };
+
+  const skipCurrentTask = () => {
+    if (openTasksCount <= 1) {
+      return;
+    }
+    const tasks = moveTaskToEnd(allTasks, currentTaskIndex);
+    setAllTasks(tasks);
+    // Starting from the current index, which now holds the task that followed the skipped one
+    setCurrentTaskIndex(Math.max(findNextOpenTaskIndex(tasks, currentTaskIndex - 1), 0));
   };
 
   /**
@@ -112,7 +145,7 @@ export function ReplenishmentProvider({ children }: { children: ReactNode }) {
     );
   };
 
-  const pickCurrentTask = (outboundContainerId: string, callback: (response: { errorMessage?: string }) => void) => {
+  const pickCurrentTask = (outboundContainerId: string, callback: Callback) => {
     if (!currentTask) {
       callback({ errorMessage: 'No current replenishment task.' });
       return;
@@ -135,7 +168,7 @@ export function ReplenishmentProvider({ children }: { children: ReactNode }) {
   const shortPickTask = (
     outboundContainerId: string | null,
     parsedQuantityPicked: number,
-    callback: (response: { errorMessage?: string }) => void,
+    callback: Callback,
     reasonCodeName?: string
   ) => {
     if (!currentTask) {
@@ -164,43 +197,27 @@ export function ReplenishmentProvider({ children }: { children: ReactNode }) {
     );
   };
 
-  const revalidateCurrentTask = (callback: (revalidatedTask?: ReplenishmentTask) => void) => {
-    // TODO: Implement the logic for revalidating the current task
-    // dispatch(getTaskById(currentTask.id, ({ response }) => {
-    // if (response.errorCode || !response.data) {
-    //   Alert.alert('Failed To Revalidate', 'Could not revalidate the current task.');
-    //   return;
-    // }
-    //
-    // const revalidatedTask = response.data;
-    // setAllTasks((prevTasks) => prevTasks.map((task, index) => (index === currentTaskIndex ? revalidatedTask : task)));
-    // callback?.(revalidatedTask);
-    // });
-  };
-
-  const revalidateTasksForOrder = (orderId: string, callback: () => void) => {
-    // TODO: Implement the logic for revalidating all tasks for the order
-    // dispatch(revalidateTasksForOrderAction(orderId, ({ response }) => {
-    // TODO: Handle response and update tasks accordingly
-    //}));
-  };
-
-  const dropCurrentTaskAtStagingLocation = (
-    task: ReplenishmentTask,
-    callback: (response: { errorMessage?: string }) => void
+  const dropContainerAtStagingLocation = (
+    outboundContainerId: string,
+    stagingLocationId: string,
+    callback: Callback
   ) => {
-    // TODO: Implement the logic for dropping the current task at the staging location
-    // dispatch(dropTaskAtStagingLocation(task.outboundContainer.id, task.stagingLocation.id, callback));
+    if (!stagingLocationId) {
+      callback({ errorMessage: 'Please scan or enter a staging location.' });
+      return;
+    }
+    dispatch(
+      dropReplenishmentContainerAction(outboundContainerId, stagingLocationId, ({ errorMessage }) => {
+        callback(errorMessage ? { errorMessage } : {});
+      })
+    );
   };
 
   const resetReplenishmentSession = () => {
     setCurrentList(undefined);
     setAllTasks([]);
+    setListTasks([]);
     setCurrentTaskIndex(0);
-  };
-
-  const goToNextTask = () => {
-    setCurrentTaskIndex((prevIndex) => prevIndex + 1);
   };
 
   return (
@@ -209,17 +226,17 @@ export function ReplenishmentProvider({ children }: { children: ReactNode }) {
         currentList,
         allTasks,
         tasksCount,
+        openTasksCount,
         currentTaskIndex,
         currentTask,
+        listTasks,
         startSession,
-        startReplenishment,
-        goToNextTask,
+        loadListTasks,
+        goToTask,
         skipCurrentTask,
         pickCurrentTask,
         shortPickTask,
-        revalidateCurrentTask,
-        revalidateTasksForOrder,
-        dropCurrentTaskAtStagingLocation,
+        dropContainerAtStagingLocation,
         resetReplenishmentSession
       }}
     >

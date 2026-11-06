@@ -6,7 +6,7 @@ import { userLocation, userSession } from '../../redux/selectors/auth';
 import { ReplenishmentList, ReplenishmentTask } from '../../types/replenishment';
 import { useReplenishmentContext } from './ReplenishmentContext';
 
-export type ScanType = 'LOCATION' | 'PRODUCT' | 'CONTAINER';
+export type ScanType = 'LOCATION' | 'PRODUCT' | 'CONTAINER' | 'STAGING';
 
 export type ScanResult = 'PASS' | 'FAIL';
 
