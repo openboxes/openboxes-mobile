@@ -6,8 +6,9 @@ export const DELIVERY_TYPES: DeliveryType[] = [
   { priority: 2, label: 'Service', code: DeliveryTypeCode.SERVICE },
   { priority: 3, label: 'Will Call', code: DeliveryTypeCode.WILL_CALL },
   { priority: 3, label: 'Stock Transfer (IBT)', code: DeliveryTypeCode.STOCK_TRANSFER_IBT },
+  { priority: 3, label: 'Vendor Return', code: DeliveryTypeCode.VENDOR_RETURN },
   { priority: 4, label: 'Ship To', code: DeliveryTypeCode.SHIP_TO },
-  { priority: 5, label: 'System Directed', code: DeliveryTypeCode.DEFAULT }
+  { priority: 6, label: 'System Directed', code: DeliveryTypeCode.DEFAULT }
 ];
 
 export const PRIORITY_LABELS: Record<number, string> = {
