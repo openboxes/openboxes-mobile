@@ -9,6 +9,7 @@ import Button from '../../components/Button';
 import { LocationIcon, QuantityIcon } from '../../components/Icons';
 import { EMPTY_FALLBACK } from '../../constants';
 import { getStockTransferCandidatesAction } from '../../redux/actions/createTransfer';
+import { getProductByIdAction } from '../../redux/actions/products';
 import { RootState } from '../../redux/reducers';
 import { StockTransferCandidate } from '../CreateTransfer/types';
 import { toSelectedInventoryItem } from '../CreateTransfer/utils';
@@ -38,11 +39,37 @@ export default function ViewAvailableItem() {
 
   useFocusEffect(
     useCallback(() => {
+      let active = true;
       setIsStartingTransfer(false);
+      const item = route.params.item;
+      dispatch(
+        getProductByIdAction(item.product.id, (response: any) => {
+          if (!active) {
+            return;
+          }
+          if (response?.error) {
+            Alert.alert('Refresh Failed', response.errorMessage || 'Failed to refresh available stock.');
+            return;
+          }
+          const updatedItem = response?.availableItems?.find(
+            (entry: any) =>
+              (entry.inventoryItem?.id ?? entry['inventoryItem.id']) ===
+                (item.inventoryItem?.id ?? item['inventoryItem.id']) &&
+              (entry.binLocation?.id ?? null) === (item.binLocation?.id ?? null)
+          );
+          setAvailableItem({
+            ...item,
+            ...updatedItem,
+            quantityOnHand: updatedItem?.quantityOnHand ?? 0,
+            quantityAvailable: updatedItem?.quantityAvailable ?? 0
+          });
+        })
+      );
       return () => {
+        active = false;
         pendingTransfer.current = null;
       };
-    }, [])
+    }, [dispatch, route.params.item])
   );
 
   const showLotNumber = useMemo(() => productSummaryConfig?.lotNumber !== false, [productSummaryConfig]);
