@@ -1,14 +1,18 @@
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
-import React, { useMemo, useState } from 'react';
-import { Image, View } from 'react-native';
+import { RouteProp, useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
+import { Alert, Image, View } from 'react-native';
 import { Chip, Divider, Text, Title } from 'react-native-paper';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import DefaultProductIcon from '../../assets/images/icon_default_product.svg';
 import Button from '../../components/Button';
 import { LocationIcon, QuantityIcon } from '../../components/Icons';
 import { EMPTY_FALLBACK } from '../../constants';
+import { getStockTransferCandidatesAction } from '../../redux/actions/createTransfer';
+import { getProductByIdAction } from '../../redux/actions/products';
 import { RootState } from '../../redux/reducers';
+import { StockTransferCandidate } from '../CreateTransfer/types';
+import { toSelectedInventoryItem } from '../CreateTransfer/utils';
 import { DetailChip } from '../../types/sortation';
 import Theme from '../../utils/Theme';
 import styles from './styles';
@@ -25,9 +29,48 @@ type ViewAvailableItemRouteProp = RouteProp<ViewAvailableItemRouteParams, 'ViewA
 export default function ViewAvailableItem() {
   const route = useRoute<ViewAvailableItemRouteProp>();
   const navigation = useNavigation<any>();
+  const dispatch = useDispatch();
+  const currentLocation = useSelector((state: RootState) => state.mainReducer.currentLocation);
+  const pendingTransfer = useRef<symbol | null>(null);
+  const [isStartingTransfer, setIsStartingTransfer] = useState(false);
   const [availableItem, setAvailableItem] = useState(route.params.item);
   const source = route.params.imageUrl ? { uri: route.params.imageUrl } : null;
   const { productSummaryConfig } = useSelector((state: RootState) => state.settingsReducer);
+
+  useFocusEffect(
+    useCallback(() => {
+      let active = true;
+      setIsStartingTransfer(false);
+      const item = route.params.item;
+      dispatch(
+        getProductByIdAction(item.product.id, (response: any) => {
+          if (!active) {
+            return;
+          }
+          if (response?.error) {
+            Alert.alert('Refresh Failed', response.errorMessage || 'Failed to refresh available stock.');
+            return;
+          }
+          const updatedItem = response?.availableItems?.find(
+            (entry: any) =>
+              (entry.inventoryItem?.id ?? entry['inventoryItem.id']) ===
+                (item.inventoryItem?.id ?? item['inventoryItem.id']) &&
+              (entry.binLocation?.id ?? null) === (item.binLocation?.id ?? null)
+          );
+          setAvailableItem({
+            ...item,
+            ...updatedItem,
+            quantityOnHand: updatedItem?.quantityOnHand ?? 0,
+            quantityAvailable: updatedItem?.quantityAvailable ?? 0
+          });
+        })
+      );
+      return () => {
+        active = false;
+        pendingTransfer.current = null;
+      };
+    }, [dispatch, route.params.item])
+  );
 
   const showLotNumber = useMemo(() => productSummaryConfig?.lotNumber !== false, [productSummaryConfig]);
   const showLocationType = useMemo(() => productSummaryConfig?.locationType !== false, [productSummaryConfig]);
@@ -40,6 +83,39 @@ export default function ViewAvailableItem() {
       quantityAvailable: data?.quantityAvailable,
       quantityAvailableToPromise: data?.quantityAdjusted
     }));
+  };
+
+  const handleTransfer = () => {
+    if (pendingTransfer.current || !currentLocation?.id) {
+      return;
+    }
+    const request = Symbol();
+    pendingTransfer.current = request;
+    setIsStartingTransfer(true);
+    dispatch(
+      getStockTransferCandidatesAction(currentLocation.id, (response: any) => {
+        if (pendingTransfer.current !== request) {
+          return;
+        }
+        pendingTransfer.current = null;
+        setIsStartingTransfer(false);
+        if (response?.error) {
+          Alert.alert('Transfer Failed', response.errorMessage || 'Failed to load available stock.');
+          return;
+        }
+        const candidate = (response?.data as StockTransferCandidate[] | undefined)?.find(
+          (item) =>
+            item.product?.id === availableItem.product?.id &&
+            item.inventoryItem?.id === (availableItem.inventoryItem?.id ?? availableItem['inventoryItem.id']) &&
+            (item.originBinLocation?.id ?? null) === (availableItem.binLocation?.id ?? null)
+        );
+        if (!candidate || candidate.quantityNotPicked <= 0) {
+          Alert.alert('Stock Unavailable', 'This inventory item no longer has stock available to transfer.');
+          return;
+        }
+        navigation.navigate('CreateTransferQuantity', { item: toSelectedInventoryItem(candidate) });
+      })
+    );
   };
 
   const detailsChips: DetailChip[] = [
@@ -128,7 +204,8 @@ export default function ViewAvailableItem() {
           title="Transfer"
           size="100%"
           variant="secondary"
-          onPress={() => navigation.navigate('Transfer', { item: availableItem })}
+          disabled={isStartingTransfer}
+          onPress={handleTransfer}
         />
       </View>
     </View>

@@ -13,12 +13,13 @@ export function lookupLocationByCode(code: string) {
   return apiClient.get(`/locations/${encodeURIComponent(code)}`);
 }
 
-export function searchDestinationBins(searchTerm: string) {
+export function searchDestinationBins(searchTerm: string, facilityId: string) {
   const term = encodeURIComponent(searchTerm || '');
   return apiClient.get(
     `/internalLocations/search?searchTerm=${term}` +
       '&locationTypeCode=BIN_LOCATION&locationTypeCode=INTERNAL' +
-      '&ignoreActivityCodes=RECEIVE_STOCK'
+      '&ignoreActivityCodes=RECEIVE_STOCK' +
+      `&parentLocation.id=${encodeURIComponent(facilityId)}`
   );
 }
 

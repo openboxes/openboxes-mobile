@@ -19,6 +19,7 @@ interface Location {
   locationType: LocationType;
   locationNumber: string;
   isDisplay: boolean;
+  supportedActivities?: string[];
 }
 
 export default Location;

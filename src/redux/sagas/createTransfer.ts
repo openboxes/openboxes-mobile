@@ -1,4 +1,4 @@
-import { all, call, takeLatest } from 'redux-saga/effects';
+import { all, call, select, takeLatest } from 'redux-saga/effects';
 
 import * as api from '../../apis';
 import { parseResponse } from '../../utils/utils';
@@ -11,9 +11,10 @@ import {
   SEARCH_PRODUCT_OR_LOCATION,
   SUBMIT_CREATE_TRANSFER
 } from '../actions/createTransfer';
-import { STOCK_TRANSFER_STATUS } from '../../screens/CreateTransfer/utils';
+import { isReceivingLocation, STOCK_TRANSFER_STATUS } from '../../screens/CreateTransfer/utils';
 import Product from '../../data/product/Product';
 import Location from '../../data/location/Location';
+import { RootState } from '../reducers';
 
 function* getCandidates(action: any) {
   try {
@@ -90,8 +91,12 @@ function* searchProductOrLocation(action: any) {
 
 function* searchDestBins(action: any) {
   try {
-    const response = yield call(api.searchDestinationBins, action.payload.searchTerm);
-    yield action.callback(response);
+    const facilityId = yield select((state: RootState) => state.mainReducer.currentLocation.id);
+    const response = yield call(api.searchDestinationBins, action.payload.searchTerm, facilityId);
+    yield action.callback({
+      ...response,
+      data: response?.data?.filter((location: Location) => !isReceivingLocation(location))
+    });
   } catch (e: any) {
     yield action.callback({ error: true, errorMessage: e?.message });
   }
