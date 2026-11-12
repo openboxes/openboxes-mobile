@@ -12,7 +12,8 @@ import { getStockTransferCandidatesAction } from '../../redux/actions/createTran
 import { RootState } from '../../redux/reducers';
 import CreateTransferItemRowSkeleton from './CreateTransferItemRowSkeleton';
 import styles from './styles';
-import { CreateTransferStackParams, SelectedInventoryItem, StockTransferCandidate } from './types';
+import { CreateTransferStackParams, StockTransferCandidate } from './types';
+import { toSelectedInventoryItem } from './utils';
 
 type ItemListRouteProp = RouteProp<CreateTransferStackParams, 'CreateTransferItemList'>;
 
@@ -146,17 +147,7 @@ export default function CreateTransferItemListScreen() {
     if (!candidate?.originBinLocation?.id || !candidate?.inventoryItem?.id || !candidate?.product?.id) {
       return;
     }
-    const selected: SelectedInventoryItem = {
-      inventoryItemId: candidate.inventoryItem.id,
-      productAvailabilityId: candidate.productAvailabilityId,
-      product: candidate.product,
-      originBinLocation: candidate.originBinLocation,
-      lotNumber: candidate.lotNumber ?? null,
-      expirationDate: candidate.expirationDate ?? null,
-      quantityOnHand: candidate.quantityOnHand,
-      quantityNotPicked: candidate.quantityNotPicked
-    };
-    navigate('CreateTransferQuantity', { item: selected });
+    navigate('CreateTransferQuantity', { item: toSelectedInventoryItem(candidate) });
   }, []);
 
   const renderItem = useCallback(

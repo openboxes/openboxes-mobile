@@ -1,4 +1,28 @@
 import { EMPTY_FALLBACK } from '../../constants';
+import { SelectedInventoryItem, StockTransferCandidate } from './types';
+
+export function isReceivingLocation(location: {
+  supportedActivities?: string[];
+  locationType?: { id?: string; supportedActivities?: string[] };
+}): boolean {
+  const activities = location.supportedActivities?.length
+    ? location.supportedActivities
+    : location.locationType?.supportedActivities;
+  return activities?.includes('RECEIVE_STOCK') ?? false;
+}
+
+export function toSelectedInventoryItem(candidate: StockTransferCandidate): SelectedInventoryItem {
+  return {
+    inventoryItemId: candidate.inventoryItem.id,
+    productAvailabilityId: candidate.productAvailabilityId,
+    product: candidate.product,
+    originBinLocation: candidate.originBinLocation,
+    lotNumber: candidate.lotNumber ?? null,
+    expirationDate: candidate.expirationDate ?? null,
+    quantityOnHand: candidate.quantityOnHand,
+    quantityNotPicked: candidate.quantityNotPicked
+  };
+}
 
 export function formatLotExpiry(lot: string | null, expiry: string | null): string {
   if (lot && expiry) {

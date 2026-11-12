@@ -2,7 +2,7 @@ import { RouteProp, useRoute } from '@react-navigation/native';
 import React, { useCallback, useMemo, useRef } from 'react';
 import { Alert, ScrollView, View } from 'react-native';
 import { Divider } from 'react-native-paper';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { LocationIcon, QuantityIcon } from '../../components/Icons';
 import { ScanErrorText } from '../../components/ScanErrorText';
@@ -13,11 +13,12 @@ import { EMPTY_STRING } from '../../constants';
 import { useScanField } from '../../hooks/useScanField';
 import { replace } from '../../NavigationService';
 import { lookupLocationByCodeAction, submitCreateTransferAction } from '../../redux/actions/createTransfer';
+import { RootState } from '../../redux/reducers';
 import { DetailChip } from '../../types/sortation';
 import CreateTransferDetailsPanel from './CreateTransferDetailsPanel';
 import styles from './styles';
 import { CreateTransferStackParams, DestinationBin, StockTransferPayload } from './types';
-import { formatLotExpiry, STOCK_TRANSFER_STATUS } from './utils';
+import { formatLotExpiry, isReceivingLocation, STOCK_TRANSFER_STATUS } from './utils';
 
 type DestinationRouteProp = RouteProp<CreateTransferStackParams, 'CreateTransferDestination'>;
 
@@ -27,6 +28,7 @@ export default function CreateTransferDestinationScreen() {
   const { params } = useRoute<DestinationRouteProp>();
   const { item, quantity } = params;
   const dispatch = useDispatch();
+  const facilityId = useSelector((state: RootState) => state.mainReducer.currentLocation.id);
 
   const destinationScan = useScanField();
   const { pass, fail, setValue } = destinationScan;
@@ -95,8 +97,16 @@ export default function CreateTransferDestinationScreen() {
         lookupLocationByCodeAction(code.trim(), (resp: any) => {
           if (resp && !resp.error && resp.data) {
             const loc = resp.data;
+            if (isReceivingLocation(loc)) {
+              failDestination('Receiving locations cannot be used as transfer destinations.');
+              return;
+            }
             if (loc.id === item.originBinLocation.id) {
               failDestination('Destination cannot be the same as source bin.');
+              return;
+            }
+            if (loc.parentLocation?.id !== facilityId) {
+              failDestination('Destination must be in the current warehouse.');
               return;
             }
             submitTransfer({
@@ -110,7 +120,7 @@ export default function CreateTransferDestinationScreen() {
         })
       );
     },
-    [dispatch, item.originBinLocation.id, failDestination, submitTransfer]
+    [dispatch, item.originBinLocation.id, facilityId, failDestination, submitTransfer]
   );
 
   const { isSearchOpen, searchButtonProps } = useSearchButton({ onSelect: destinationScan.onChange });
