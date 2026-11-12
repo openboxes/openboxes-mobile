@@ -27,7 +27,7 @@ type CandidateRowProps = {
 function CandidateRow({ candidate, onPress }: CandidateRowProps) {
   const productCode = candidate.product?.productCode || '-';
   const productName = candidate.product?.name;
-  const bin = candidate.originBinLocation?.locationNumber || candidate.originBinLocation?.name || '-';
+  const bin = candidate.originBinLocation?.locationNumber || candidate.originBinLocation?.name || 'Default';
   const lot = candidate.lotNumber ? `Lot ${candidate.lotNumber}` : '';
   const expiry = candidate.expirationDate ? ` • Exp ${candidate.expirationDate}` : '';
   const detail = `${lot}${expiry}`.trim();
@@ -144,7 +144,7 @@ export default function CreateTransferItemListScreen() {
   }, [productCode, binName, initialSearchTerm]);
 
   const handleRowPress = useCallback((candidate: StockTransferCandidate) => {
-    if (!candidate?.originBinLocation?.id || !candidate?.inventoryItem?.id || !candidate?.product?.id) {
+    if (!candidate?.inventoryItem?.id || !candidate?.product?.id) {
       return;
     }
     navigate('CreateTransferQuantity', { item: toSelectedInventoryItem(candidate) });

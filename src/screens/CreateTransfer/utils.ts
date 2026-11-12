@@ -16,7 +16,11 @@ export function toSelectedInventoryItem(candidate: StockTransferCandidate): Sele
     inventoryItemId: candidate.inventoryItem.id,
     productAvailabilityId: candidate.productAvailabilityId,
     product: candidate.product,
-    originBinLocation: candidate.originBinLocation,
+    originBinLocation: {
+      id: candidate.originBinLocation?.id ?? null,
+      name: candidate.originBinLocation?.name || 'Default',
+      locationNumber: candidate.originBinLocation?.locationNumber
+    },
     lotNumber: candidate.lotNumber ?? null,
     expirationDate: candidate.expirationDate ?? null,
     quantityOnHand: candidate.quantityOnHand,

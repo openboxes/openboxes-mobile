@@ -1,5 +1,5 @@
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
-import React, { useMemo, useRef, useState } from 'react';
+import { RouteProp, useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { Alert, Image, View } from 'react-native';
 import { Chip, Divider, Text, Title } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
@@ -30,11 +30,20 @@ export default function ViewAvailableItem() {
   const navigation = useNavigation<any>();
   const dispatch = useDispatch();
   const currentLocation = useSelector((state: RootState) => state.mainReducer.currentLocation);
-  const startingTransfer = useRef(false);
+  const pendingTransfer = useRef<symbol | null>(null);
   const [isStartingTransfer, setIsStartingTransfer] = useState(false);
   const [availableItem, setAvailableItem] = useState(route.params.item);
   const source = route.params.imageUrl ? { uri: route.params.imageUrl } : null;
   const { productSummaryConfig } = useSelector((state: RootState) => state.settingsReducer);
+
+  useFocusEffect(
+    useCallback(() => {
+      setIsStartingTransfer(false);
+      return () => {
+        pendingTransfer.current = null;
+      };
+    }, [])
+  );
 
   const showLotNumber = useMemo(() => productSummaryConfig?.lotNumber !== false, [productSummaryConfig]);
   const showLocationType = useMemo(() => productSummaryConfig?.locationType !== false, [productSummaryConfig]);
@@ -50,14 +59,18 @@ export default function ViewAvailableItem() {
   };
 
   const handleTransfer = () => {
-    if (startingTransfer.current || !currentLocation?.id) {
+    if (pendingTransfer.current || !currentLocation?.id) {
       return;
     }
-    startingTransfer.current = true;
+    const request = Symbol();
+    pendingTransfer.current = request;
     setIsStartingTransfer(true);
     dispatch(
       getStockTransferCandidatesAction(currentLocation.id, (response: any) => {
-        startingTransfer.current = false;
+        if (pendingTransfer.current !== request) {
+          return;
+        }
+        pendingTransfer.current = null;
         setIsStartingTransfer(false);
         if (response?.error) {
           Alert.alert('Transfer Failed', response.errorMessage || 'Failed to load available stock.');
@@ -67,7 +80,7 @@ export default function ViewAvailableItem() {
           (item) =>
             item.product?.id === availableItem.product?.id &&
             item.inventoryItem?.id === (availableItem.inventoryItem?.id ?? availableItem['inventoryItem.id']) &&
-            item.originBinLocation?.id === availableItem.binLocation?.id
+            (item.originBinLocation?.id ?? null) === (availableItem.binLocation?.id ?? null)
         );
         if (!candidate || candidate.quantityNotPicked <= 0) {
           Alert.alert('Stock Unavailable', 'This inventory item no longer has stock available to transfer.');
