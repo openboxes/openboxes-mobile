@@ -1,14 +1,9 @@
 import { EMPTY_FALLBACK } from '../../constants';
+import Location from '../../data/location/Location';
 import { SelectedInventoryItem, StockTransferCandidate } from './types';
 
-export function isReceivingLocation(location: {
-  supportedActivities?: string[];
-  locationType?: { id?: string; supportedActivities?: string[] };
-}): boolean {
-  const activities = location.supportedActivities?.length
-    ? location.supportedActivities
-    : location.locationType?.supportedActivities;
-  return activities?.includes('RECEIVE_STOCK') ?? false;
+export function isReceivingLocation(location: Pick<Location, 'supportedActivities'>): boolean {
+  return location.supportedActivities?.includes('RECEIVE_STOCK') ?? false;
 }
 
 export function toSelectedInventoryItem(candidate: StockTransferCandidate): SelectedInventoryItem {
