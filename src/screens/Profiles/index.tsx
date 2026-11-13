@@ -11,9 +11,20 @@ import { logout as logoutApi } from '../../apis/auth';
 import { LOGOUT_REQUEST_SUCCESS } from '../../redux/actions/auth';
 import { Profile } from '../../types/profile';
 import ApiClient from '../../utils/ApiClient';
+import { withDeadline } from '../../utils/requestDeadline';
 import Theme from '../../utils/Theme';
 import ProfileFormDialog from './ProfileFormDialog';
 import styles from './styles';
+
+// The current server may be unreachable (often the reason for switching), so the logout is aborted
+// after a few seconds. An aborted request gets no late response that could reach the 401 handler.
+const LOGOUT_TIMEOUT_MS = 5000;
+
+function endSession(): Promise<void> {
+  return withDeadline(LOGOUT_TIMEOUT_MS, (cancelToken) => logoutApi(null, { timeout: LOGOUT_TIMEOUT_MS, cancelToken }))
+    .then(() => {})
+    .catch(() => {});
+}
 
 type ProfileRowProps = {
   profile: Profile;
@@ -54,11 +65,21 @@ export default function ProfilesScreen() {
     async (label: string, serverUrl: string) => {
       if (editingProfile) {
         const updated = { ...editingProfile, label, serverUrl };
-        await updateProfile(updated);
+        const isActive = editingProfile.id === activeProfileId;
 
-        if (editingProfile.id === activeProfileId) {
+        if (isActive && serverUrl !== editingProfile.serverUrl) {
+          // A new address for the active profile is a server switch: end the session on the old
+          // server, point the client at the new one and log in again (same as handleActivate)
+          await endSession();
+          await updateProfile(updated);
           ApiClient.setBaseUrl(serverUrl);
+          dispatch({ type: LOGOUT_REQUEST_SUCCESS });
+          setDialogVisible(false);
+          NavigationService.reset('Login');
+          return;
         }
+
+        await updateProfile(updated);
       } else {
         const isFirstProfile = profiles.length === 0;
         await addProfile(label, serverUrl);
@@ -69,7 +90,7 @@ export default function ProfilesScreen() {
 
       setDialogVisible(false);
     },
-    [editingProfile, activeProfileId, updateProfile, addProfile, profiles.length]
+    [editingProfile, activeProfileId, updateProfile, addProfile, profiles.length, dispatch]
   );
 
   const handleDelete = useCallback(
@@ -88,7 +109,7 @@ export default function ProfilesScreen() {
             const wasActive = profile.id === activeProfileId;
             const success = await removeProfile(profile.id);
             if (success && wasActive) {
-              await logoutApi(null).catch(() => {});
+              await endSession();
               const newActive = await ProfileStorage.getActiveProfile();
               if (newActive) {
                 ApiClient.setBaseUrl(newActive.serverUrl);
@@ -113,7 +134,7 @@ export default function ProfilesScreen() {
           text: 'Switch',
           callback: async () => {
             // Log out directly from the API to ensure the token is revoked, but ignore any errors since we want to switch regardless
-            await logoutApi(null).catch(() => {});
+            await endSession();
             await setActive(profile.id);
             ApiClient.setBaseUrl(profile.serverUrl);
             dispatch({ type: LOGOUT_REQUEST_SUCCESS });
