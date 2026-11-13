@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { Profile, ProfileStorageData } from '../types/profile';
 import { createEventEmitter } from '../utils/EventEmitter';
+import { validateServerUrl } from '../utils/serverUrl';
 
 function generateId(): string {
   return Date.now().toString(36) + Math.random().toString(36).slice(2);
@@ -115,14 +116,7 @@ export function upgradeStorage(data: ProfileStorageData): ProfileStorageData {
 }
 
 export function validateUrl(url: string): string | null {
-  const trimmed = url.trim();
-  if (!trimmed) {
-    return 'URL is required';
-  }
-  if (!/^https?:\/\/.+/i.test(trimmed)) {
-    return 'URL must start with http:// or https://';
-  }
-  return null;
+  return validateServerUrl(url);
 }
 
 export function validateProfile(label: string, serverUrl: string): string | null {
