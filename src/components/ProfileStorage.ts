@@ -9,13 +9,19 @@ function generateId(): string {
 
 const PROFILES_KEY = 'PROFILES';
 const LEGACY_API_URL_KEY = 'API_URL';
-const CURRENT_VERSION = 1;
+const CURRENT_VERSION = 2;
+
+const STAGING_SERVER = { label: 'Staging Server', serverUrl: 'https://vvg-stage.openboxes.cloud/api' };
 
 // The first one in the list will be used as the default active profile if no activeProfileId is set
 const DEFAULT_SERVERS = [
   { label: 'Test Server', serverUrl: 'https://vvg.openboxes.com/openboxes/api' },
-  { label: 'Staging Server', serverUrl: 'https://stag.vtc.openboxes.com/openboxes/api' }
+  STAGING_SERVER
 ];
+
+// The staging server moved; profiles still pointing at the old address are moved by upgradeStorage
+const PREVIOUS_STAGING_URL = 'https://stag.vtc.openboxes.com/openboxes/api';
+const STAGING_URLS = [STAGING_SERVER.serverUrl, 'https://vvg-stage.openboxes.cloud/openboxes/api'];
 
 const emitter = createEventEmitter();
 export const subscribe = emitter.subscribe;
@@ -37,7 +43,8 @@ function parseStorageData(raw: string | null): ProfileStorageData {
     const parsed = JSON.parse(raw);
 
     return {
-      version: parsed.version ?? CURRENT_VERSION,
+      // Storage written before versioning was acted on is treated as the oldest version
+      version: parsed.version ?? 1,
       activeProfileId: parsed.activeProfileId ?? null,
       profiles: Array.isArray(parsed.profiles)
         ? parsed.profiles.map((p: any) => ({
@@ -76,6 +83,37 @@ function normalizeUrl(url: string): string {
   return url.trim().toLowerCase().replace(/\/+$/, '');
 }
 
+// Scheme and host are case-insensitive, the path is not
+function canonicalServerUrl(url: string): string {
+  const trimmed = url.trim().replace(/\/+$/, '');
+  const match = /^([a-z][a-z0-9+.-]*:\/\/[^/]*)(.*)$/i.exec(trimmed);
+  return match ? match[1].toLowerCase() + match[2] : trimmed;
+}
+
+function isSameServerUrl(a: string, b: string): boolean {
+  return canonicalServerUrl(a) === canonicalServerUrl(b);
+}
+
+/**
+ * Upgrades stored profiles to the current version (2):
+ * - profiles on the previous staging server are moved to the new staging server in place
+ *   (id, label, settings and the active selection are kept)
+ * - the staging server is added when no profile uses it yet
+ * Profiles are never removed and the active profile never changes.
+ */
+export function upgradeStorage(data: ProfileStorageData): ProfileStorageData {
+  const profiles = data.profiles.map((p) =>
+    isSameServerUrl(p.serverUrl, PREVIOUS_STAGING_URL) ? { ...p, serverUrl: STAGING_SERVER.serverUrl } : p
+  );
+
+  const hasStaging = profiles.some((p) => STAGING_URLS.some((url) => isSameServerUrl(p.serverUrl, url)));
+  if (!hasStaging) {
+    profiles.push(createProfile(STAGING_SERVER.label, STAGING_SERVER.serverUrl));
+  }
+
+  return { ...data, version: CURRENT_VERSION, profiles };
+}
+
 export function validateUrl(url: string): string | null {
   const trimmed = url.trim();
   if (!trimmed) {
@@ -105,11 +143,14 @@ export async function migrate(): Promise<string | null> {
 
   // Path 1: profiles already exist
   if (data.profiles.length > 0) {
-    let active = data.profiles.find((p) => p.id === data.activeProfileId);
+    const current = data.version < CURRENT_VERSION ? upgradeStorage(data) : data;
+    let active = current.profiles.find((p) => p.id === current.activeProfileId);
 
     if (!active) {
-      active = data.profiles[0];
-      await writeStorage(createStorage(data.profiles, active.id));
+      active = current.profiles[0];
+      await writeStorage(createStorage(current.profiles, active.id));
+    } else if (current !== data) {
+      await writeStorage(current);
     }
 
     return active.serverUrl;
@@ -129,9 +170,11 @@ export async function migrate(): Promise<string | null> {
       }
     }
 
-    await writeStorage(createStorage(profiles, legacyProfile.id));
+    // The legacy URL may itself be the previous staging server
+    const upgraded = upgradeStorage(createStorage(profiles, legacyProfile.id));
+    await writeStorage(upgraded);
     await AsyncStorage.removeItem(LEGACY_API_URL_KEY);
-    return legacyProfile.serverUrl;
+    return upgraded.profiles.find((p) => p.id === legacyProfile.id)!.serverUrl;
   }
 
   // Path 3: fresh install
