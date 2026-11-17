@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { getProfiles, migrate, upgradeStorage } from '../src/components/ProfileStorage';
+import { migrate, syncBuiltInServers } from '../src/components/ProfileStorage';
 import { Profile, ProfileStorageData } from '../src/types/profile';
 
 jest.mock('@react-native-async-storage/async-storage', () =>
@@ -15,12 +15,9 @@ function profile(id: string, label: string, serverUrl: string, settings: Record<
   return { id, label, serverUrl, settings };
 }
 
-function storage(profiles: Profile[], activeProfileId: string | null, version?: number): any {
-  const data: any = { activeProfileId, profiles };
-  if (version !== undefined) {
-    data.version = version;
-  }
-  return data;
+// Storage as written by the app before built-in sync existed
+function oldStorage(profiles: Profile[], activeProfileId: string | null): ProfileStorageData {
+  return { version: 1, activeProfileId, profiles };
 }
 
 async function store(data: any) {
@@ -31,191 +28,226 @@ async function stored(): Promise<ProfileStorageData> {
   return JSON.parse((await AsyncStorage.getItem('PROFILES')) as string);
 }
 
+function labelsAndUrls(data: ProfileStorageData) {
+  return data.profiles.map((p) => [p.label, p.serverUrl]);
+}
+
 beforeEach(async () => {
   await AsyncStorage.clear();
   jest.clearAllMocks();
 });
 
 describe('migrate - fresh install', () => {
-  it('seeds the test and staging servers at version 2 with test active', async () => {
+  it('seeds every built-in server with the first one active', async () => {
     const url = await migrate();
 
     const data = await stored();
     expect(url).toBe(TEST_URL);
-    expect(data.version).toBe(2);
-    expect(data.profiles.map((p) => [p.label, p.serverUrl])).toEqual([
+    expect(labelsAndUrls(data)).toEqual([
       ['Test Server', TEST_URL],
-      ['Staging Server', STAGING_URL]
+      ['Staging Server', STAGING_URL],
+      ['Previous Staging Server', PREVIOUS_STAGING_URL]
     ]);
     expect(data.activeProfileId).toBe(data.profiles[0].id);
   });
 });
 
-describe('migrate - existing version 1 storage', () => {
-  it('rewrites the previous staging profile in place when it is active', async () => {
+describe('migrate - an installed app from before the sync', () => {
+  it('adds the new staging server and relabels the previous one, keeping everything else', async () => {
     await store(
-      storage(
-        [profile('t', 'Test Server', TEST_URL), profile('s', 'Old Staging', PREVIOUS_STAGING_URL, { a: 1 })],
-        's',
-        1
+      oldStorage(
+        [profile('t', 'Test Server', TEST_URL), profile('s', 'Staging Server', PREVIOUS_STAGING_URL, { a: 1 })],
+        's'
       )
     );
 
     const url = await migrate();
 
     const data = await stored();
-    expect(url).toBe(STAGING_URL);
-    expect(data.version).toBe(2);
+    expect(url).toBe(PREVIOUS_STAGING_URL);
     expect(data.activeProfileId).toBe('s');
-    expect(data.profiles).toEqual([
-      profile('t', 'Test Server', TEST_URL),
-      profile('s', 'Old Staging', STAGING_URL, { a: 1 })
-    ]);
+    expect(data.profiles[0]).toEqual(profile('t', 'Test Server', TEST_URL));
+    expect(data.profiles[1]).toEqual(profile('s', 'Previous Staging Server', PREVIOUS_STAGING_URL, { a: 1 }));
+    expect(data.profiles[2]).toMatchObject({ label: 'Staging Server', serverUrl: STAGING_URL });
+    expect(data.profiles).toHaveLength(3);
   });
 
-  it('rewrites the previous staging profile when it is not active and keeps the active server', async () => {
-    await store(
-      storage([profile('t', 'Test Server', TEST_URL), profile('s', 'Staging Server', PREVIOUS_STAGING_URL)], 't', 1)
-    );
+  it('keeps labels the user chose', async () => {
+    await store(oldStorage([profile('s', 'Old box', PREVIOUS_STAGING_URL)], 's'));
 
-    const url = await migrate();
+    await migrate();
 
-    const data = await stored();
-    expect(url).toBe(TEST_URL);
-    expect(data.activeProfileId).toBe('t');
-    expect(data.profiles[1]).toEqual(profile('s', 'Staging Server', STAGING_URL));
-    expect(data.profiles).toHaveLength(2);
+    expect((await stored()).profiles[0].label).toBe('Old box');
   });
 
-  it('keeps both profiles when a new staging profile already exists (no deletion)', async () => {
-    await store(
-      storage(
-        [profile('old', 'Old Staging', PREVIOUS_STAGING_URL), profile('new', 'My Staging', STAGING_URL + '/')],
-        'old',
-        1
-      )
-    );
+  it('does not add a built-in a profile already uses, ignoring host case and a trailing slash', async () => {
+    await store(oldStorage([profile('n', 'Mine', 'https://VVG-STAGE.openboxes.cloud/api/')], 'n'));
 
-    const url = await migrate();
+    await migrate();
 
-    const data = await stored();
-    expect(url).toBe(STAGING_URL);
-    expect(data.activeProfileId).toBe('old');
-    expect(data.profiles).toEqual([
-      profile('old', 'Old Staging', STAGING_URL),
-      profile('new', 'My Staging', STAGING_URL + '/')
-    ]);
+    const urls = (await stored()).profiles.map((p) => p.serverUrl);
+    expect(urls.filter((u) => u.toLowerCase().includes('vvg-stage'))).toHaveLength(1);
   });
 
-  it('appends the staging server when no staging profile exists and keeps the active profile', async () => {
-    await store(storage([profile('u', 'My Server', 'https://example.org/openboxes/api')], 'u', 1));
+  it.each(['https://vvg-stage.openboxes.cloud/openboxes/api', 'https://vvg-stage.openboxes.cloud:443/api'])(
+    'does not add the staging server when a profile already reaches it as %s',
+    async (url) => {
+      await store(oldStorage([profile('n', 'Mine', url)], 'n'));
+
+      await migrate();
+
+      const urls = (await stored()).profiles.map((p) => p.serverUrl);
+      expect(urls.filter((u) => u.includes('vvg-stage'))).toEqual([url]);
+    }
+  );
+
+  it('treats a different path case as a different server', async () => {
+    await store(oldStorage([profile('n', 'Mine', 'https://vvg-stage.openboxes.cloud/API')], 'n'));
+
+    await migrate();
+
+    expect((await stored()).profiles.map((p) => p.serverUrl)).toContain(STAGING_URL);
+  });
+
+  it('keeps user profiles and the active one untouched, and does not restore built-ins the user deleted', async () => {
+    await store(oldStorage([profile('u', 'My Server', 'https://example.org/openboxes/api')], 'u'));
 
     const url = await migrate();
 
     const data = await stored();
     expect(url).toBe('https://example.org/openboxes/api');
     expect(data.activeProfileId).toBe('u');
-    expect(data.profiles).toHaveLength(2);
-    expect(data.profiles[0]).toEqual(profile('u', 'My Server', 'https://example.org/openboxes/api'));
-    expect(data.profiles[1]).toMatchObject({ label: 'Staging Server', serverUrl: STAGING_URL });
+    expect(labelsAndUrls(data)).toEqual([
+      ['My Server', 'https://example.org/openboxes/api'],
+      ['Staging Server', STAGING_URL]
+    ]);
   });
 
-  it('does not append staging when a profile already uses it under /openboxes/api', async () => {
-    await store(storage([profile('s', 'Staging', 'https://vvg-stage.openboxes.cloud/openboxes/api')], 's', 1));
-
-    await migrate();
-
-    expect((await stored()).profiles).toHaveLength(1);
-  });
-
-  it('treats storage without a version as version 1', async () => {
-    await store(storage([profile('s', 'Staging Server', PREVIOUS_STAGING_URL)], 's'));
+  it('picks the first profile when the stored active id is missing', async () => {
+    await store(oldStorage([profile('t', 'Test Server', TEST_URL)], 'gone'));
 
     const url = await migrate();
 
-    expect(url).toBe(STAGING_URL);
-    expect((await stored()).version).toBe(2);
+    expect(url).toBe(TEST_URL);
+    expect((await stored()).activeProfileId).toBe('t');
   });
+});
 
-  it('does not rewrite storage that is already at version 2', async () => {
-    await store(storage([profile('s', 'Staging Server', PREVIOUS_STAGING_URL)], 's', 2));
+describe('migrate - after a sync', () => {
+  it('does not write anything when the built-in list has not changed', async () => {
+    await migrate();
     const setItem = jest.spyOn(AsyncStorage, 'setItem');
     setItem.mockClear();
 
-    const url = await migrate();
+    await migrate();
 
-    expect(url).toBe(PREVIOUS_STAGING_URL);
     expect(setItem).not.toHaveBeenCalled();
   });
 
-  it('runs once: a staging profile deleted after the upgrade is not added back', async () => {
-    await store(storage([profile('t', 'Test Server', TEST_URL)], 't', 1));
+  it('runs again when a previous label is added to the list', async () => {
+    await migrate();
+    const data = await stored();
+    await store({ ...data, builtInsSignature: data.builtInsSignature!.replace(/\["Staging Server"\]/, '[]') });
+    const setItem = jest.spyOn(AsyncStorage, 'setItem');
+    setItem.mockClear();
+
+    await migrate();
+
+    expect(setItem).toHaveBeenCalled();
+  });
+
+  it('does not add back a built-in the user deleted', async () => {
     await migrate();
     const data = await stored();
     await store({ ...data, profiles: data.profiles.filter((p) => p.serverUrl !== STAGING_URL) });
 
     await migrate();
 
-    expect((await stored()).profiles).toEqual([profile('t', 'Test Server', TEST_URL)]);
+    expect((await stored()).profiles.map((p) => p.serverUrl)).not.toContain(STAGING_URL);
+  });
+
+  it('does not add back a deleted built-in when the list changes later', async () => {
+    await migrate();
+    const data = await stored();
+    await store({
+      ...data,
+      profiles: data.profiles.filter((p) => p.serverUrl !== STAGING_URL),
+      builtInsSignature: 'an older list'
+    });
+
+    await migrate();
+
+    expect((await stored()).profiles.map((p) => p.serverUrl)).not.toContain(STAGING_URL);
+  });
+
+  it('keeps a built-in label the user gave to another built-in server when the list changes', async () => {
+    await migrate();
+    const data = await stored();
+    const renamed = data.profiles.map((p) => (p.serverUrl === STAGING_URL ? { ...p, label: 'Test Server' } : p));
+    await store({ ...data, profiles: renamed, builtInsSignature: 'an older list' });
+
+    await migrate();
+
+    expect((await stored()).profiles.find((p) => p.serverUrl === STAGING_URL)!.label).toBe('Test Server');
+  });
+
+  it('does not override a user who renamed a profile to a built-in label', async () => {
+    await migrate();
+    const data = await stored();
+    const renamed = data.profiles.map((p) => (p.serverUrl === STAGING_URL ? { ...p, label: 'Test Server' } : p));
+    await store({ ...data, profiles: renamed });
+
+    await migrate();
+
+    expect((await stored()).profiles.find((p) => p.serverUrl === STAGING_URL)!.label).toBe('Test Server');
   });
 });
 
 describe('migrate - legacy API_URL key', () => {
-  it('moves a legacy previous staging URL to the new staging server', async () => {
-    await AsyncStorage.setItem('API_URL', PREVIOUS_STAGING_URL);
-
-    const url = await migrate();
-
-    const data = await stored();
-    expect(url).toBe(STAGING_URL);
-    expect(data.version).toBe(2);
-    expect(data.profiles.find((p) => p.id === data.activeProfileId)).toMatchObject({
-      label: 'Default',
-      serverUrl: STAGING_URL
-    });
-    expect(await AsyncStorage.getItem('API_URL')).toBeNull();
-  });
-
-  it('keeps any other legacy URL as the active Default profile next to the built-ins', async () => {
+  it('keeps the legacy URL as the active Default profile next to the built-ins', async () => {
     await AsyncStorage.setItem('API_URL', 'https://example.org/openboxes/api');
 
     const url = await migrate();
 
     const data = await stored();
     expect(url).toBe('https://example.org/openboxes/api');
-    expect(data.profiles.map((p) => p.serverUrl)).toEqual(['https://example.org/openboxes/api', TEST_URL, STAGING_URL]);
+    expect(labelsAndUrls(data)).toEqual([
+      ['Default', 'https://example.org/openboxes/api'],
+      ['Test Server', TEST_URL],
+      ['Staging Server', STAGING_URL],
+      ['Previous Staging Server', PREVIOUS_STAGING_URL]
+    ]);
+    expect(data.activeProfileId).toBe(data.profiles[0].id);
+    expect(await AsyncStorage.getItem('API_URL')).toBeNull();
+  });
+
+  it('does not duplicate a built-in that is the legacy URL', async () => {
+    await AsyncStorage.setItem('API_URL', TEST_URL);
+
+    await migrate();
+
+    const data = await stored();
+    expect(data.profiles.filter((p) => p.serverUrl === TEST_URL)).toHaveLength(1);
+    expect(data.profiles[0].label).toBe('Default');
   });
 });
 
-describe('upgradeStorage - URL matching', () => {
-  it('matches the previous staging URL with a different host case and a trailing slash', () => {
-    const result = upgradeStorage(
-      storage([profile('s', 'S', 'https://STAG.vtc.openboxes.com/openboxes/api/')], 's', 1)
+describe('syncBuiltInServers', () => {
+  it('never removes a profile or changes the active one', () => {
+    const before = oldStorage(
+      [profile('a', 'A', 'https://a.example.org/api'), profile('s', 'Staging Server', PREVIOUS_STAGING_URL)],
+      'a'
     );
 
-    expect(result.profiles[0].serverUrl).toBe(STAGING_URL);
+    const after = syncBuiltInServers(before);
+
+    expect(after.activeProfileId).toBe('a');
+    expect(after.profiles.map((p) => p.id).slice(0, 2)).toEqual(['a', 's']);
   });
 
-  it('does not match when only the path case differs', () => {
-    const odd = 'https://stag.vtc.openboxes.com/OpenBoxes/API';
-    const result = upgradeStorage(storage([profile('s', 'S', odd)], 's', 1));
+  it('returns the same object when the list is unchanged', () => {
+    const synced = syncBuiltInServers(oldStorage([], null));
 
-    expect(result.profiles[0].serverUrl).toBe(odd);
-    expect(result.profiles).toHaveLength(2);
-  });
-
-  it('returns version 2 and does not change the active profile id', () => {
-    const result = upgradeStorage(storage([profile('t', 'T', TEST_URL)], 't', 1));
-
-    expect(result.version).toBe(2);
-    expect(result.activeProfileId).toBe('t');
-  });
-});
-
-describe('getProfiles', () => {
-  it('reports a missing version as 1', async () => {
-    await store(storage([profile('t', 'T', TEST_URL)], 't'));
-
-    expect((await getProfiles()).version).toBe(1);
+    expect(syncBuiltInServers(synced)).toBe(synced);
   });
 });

@@ -10,19 +10,33 @@ function generateId(): string {
 
 const PROFILES_KEY = 'PROFILES';
 const LEGACY_API_URL_KEY = 'API_URL';
-const CURRENT_VERSION = 2;
+const CURRENT_VERSION = 1;
 
-const STAGING_SERVER = { label: 'Staging Server', serverUrl: 'https://vvg-stage.openboxes.cloud/api' };
-
-// The first one in the list will be used as the default active profile if no activeProfileId is set
-const DEFAULT_SERVERS = [
+// TODO: remove these hard-coded servers before launch and supply the list at build time instead.
+// Changing this list needs no migration code: syncBuiltInServers offers new entries to installed apps.
+// The first one in the list will be used as the default active profile on a fresh install.
+// `previousLabels` lists the labels this server had in earlier versions of the list, so profiles that
+// still carry one get the current label. `aliases` are other URLs that reach the same server.
+const BUILT_IN_SERVERS: { label: string; serverUrl: string; previousLabels?: string[]; aliases?: string[] }[] = [
   { label: 'Test Server', serverUrl: 'https://vvg.openboxes.com/openboxes/api' },
-  STAGING_SERVER
+  {
+    label: 'Staging Server',
+    serverUrl: 'https://vvg-stage.openboxes.cloud/api',
+    aliases: ['https://vvg-stage.openboxes.cloud/openboxes/api']
+  },
+  {
+    label: 'Previous Staging Server',
+    serverUrl: 'https://stag.vtc.openboxes.com/openboxes/api',
+    previousLabels: ['Staging Server']
+  }
 ];
 
-// The staging server moved; profiles still pointing at the old address are moved by upgradeStorage
-const PREVIOUS_STAGING_URL = 'https://stag.vtc.openboxes.com/openboxes/api';
-const STAGING_URLS = [STAGING_SERVER.serverUrl, 'https://vvg-stage.openboxes.cloud/openboxes/api'];
+// The built-in servers apps shipped with before the sync existed. Storage written by those versions has
+// no record of what it was offered, but it was seeded with exactly these, so only newer ones are added.
+const PRE_SYNC_BUILT_IN_URLS = [
+  'https://vvg.openboxes.com/openboxes/api',
+  'https://stag.vtc.openboxes.com/openboxes/api'
+];
 
 const emitter = createEventEmitter();
 export const subscribe = emitter.subscribe;
@@ -31,7 +45,8 @@ export function createStorage(profiles: Profile[] = [], activeProfileId?: string
   return {
     version: CURRENT_VERSION,
     activeProfileId: activeProfileId ?? profiles[0]?.id ?? null,
-    profiles
+    profiles,
+    seededServerUrls: []
   };
 }
 
@@ -44,9 +59,12 @@ function parseStorageData(raw: string | null): ProfileStorageData {
     const parsed = JSON.parse(raw);
 
     return {
-      // Storage written before versioning was acted on is treated as the oldest version
-      version: parsed.version ?? 1,
+      version: parsed.version ?? CURRENT_VERSION,
       activeProfileId: parsed.activeProfileId ?? null,
+      seededServerUrls: Array.isArray(parsed.seededServerUrls)
+        ? parsed.seededServerUrls.filter((u: unknown) => typeof u === 'string')
+        : PRE_SYNC_BUILT_IN_URLS,
+      builtInsSignature: typeof parsed.builtInsSignature === 'string' ? parsed.builtInsSignature : undefined,
       profiles: Array.isArray(parsed.profiles)
         ? parsed.profiles.map((p: any) => ({
             id: p.id ?? generateId(),
@@ -80,39 +98,62 @@ export function createProfile(label: string, serverUrl: string): Profile {
   };
 }
 
-function normalizeUrl(url: string): string {
-  return url.trim().toLowerCase().replace(/\/+$/, '');
-}
-
-// Scheme and host are case-insensitive, the path is not
+// Scheme and host are case-insensitive and a default port is the same as none; the path is case-sensitive
 function canonicalServerUrl(url: string): string {
   const trimmed = url.trim().replace(/\/+$/, '');
   const match = /^([a-z][a-z0-9+.-]*:\/\/[^/]*)(.*)$/i.exec(trimmed);
-  return match ? match[1].toLowerCase() + match[2] : trimmed;
+  if (!match) {
+    return trimmed;
+  }
+  const origin = match[1].toLowerCase().replace(/^(https:\/\/[^/]*?):0*443$|^(http:\/\/[^/]*?):0*80$/, '$1$2');
+  return origin + match[2];
+}
+
+function matchesBuiltIn(server: { serverUrl: string; aliases?: string[] }, url: string): boolean {
+  return [server.serverUrl, ...(server.aliases ?? [])].some((u) => isSameServerUrl(u, url));
 }
 
 function isSameServerUrl(a: string, b: string): boolean {
   return canonicalServerUrl(a) === canonicalServerUrl(b);
 }
 
+function builtInsSignature(): string {
+  return JSON.stringify(
+    BUILT_IN_SERVERS.map((s) => [s.label, canonicalServerUrl(s.serverUrl), s.previousLabels ?? []])
+  );
+}
+
 /**
- * Upgrades stored profiles to the current version (2):
- * - profiles on the previous staging server are moved to the new staging server in place
- *   (id, label, settings and the active selection are kept)
- * - the staging server is added when no profile uses it yet
+ * Brings stored profiles in line with the built-in server list, when that list has changed since the
+ * last sync:
+ * - a built-in server not offered on this device before is added, unless a profile already uses its URL
+ *   (a built-in the user deleted is not added again)
+ * - a profile on a built-in URL that still carries one of that server's earlier labels gets the current
+ *   label, so environments stay distinguishable; labels the user chose are kept
  * Profiles are never removed and the active profile never changes.
  */
-export function upgradeStorage(data: ProfileStorageData): ProfileStorageData {
-  const profiles = data.profiles.map((p) =>
-    isSameServerUrl(p.serverUrl, PREVIOUS_STAGING_URL) ? { ...p, serverUrl: STAGING_SERVER.serverUrl } : p
-  );
-
-  const hasStaging = profiles.some((p) => STAGING_URLS.some((url) => isSameServerUrl(p.serverUrl, url)));
-  if (!hasStaging) {
-    profiles.push(createProfile(STAGING_SERVER.label, STAGING_SERVER.serverUrl));
+export function syncBuiltInServers(data: ProfileStorageData): ProfileStorageData {
+  const signature = builtInsSignature();
+  if (data.builtInsSignature === signature) {
+    return data;
   }
 
-  return { ...data, version: CURRENT_VERSION, profiles };
+  const seeded = new Set((data.seededServerUrls ?? []).map(canonicalServerUrl));
+
+  const profiles = data.profiles.map((p) => {
+    const builtIn = BUILT_IN_SERVERS.find((s) => matchesBuiltIn(s, p.serverUrl));
+    return builtIn?.previousLabels?.includes(p.label) ? { ...p, label: builtIn.label } : p;
+  });
+
+  for (const server of BUILT_IN_SERVERS) {
+    const url = canonicalServerUrl(server.serverUrl);
+    if (!seeded.has(url) && !profiles.some((p) => matchesBuiltIn(server, p.serverUrl))) {
+      profiles.push(createProfile(server.label, server.serverUrl));
+    }
+    seeded.add(url);
+  }
+
+  return { ...data, profiles, seededServerUrls: [...seeded], builtInsSignature: signature };
 }
 
 export function validateUrl(url: string): string | null {
@@ -128,21 +169,21 @@ export function validateProfile(label: string, serverUrl: string): string | null
 
 /**
  * Initializes profiles and returns the active server URL.
- * 1. Profiles exist → use them as-is
- * 2. No profiles, legacy API_URL exists → create Default (from legacy) + default servers
- * 3. No profiles, no legacy → create default servers
+ * 1. Profiles exist → keep them, and sync the built-in servers if the list changed
+ * 2. No profiles, legacy API_URL exists → create Default (from legacy) + built-in servers
+ * 3. No profiles, no legacy → create built-in servers
  */
 export async function migrate(): Promise<string | null> {
   const data = await readStorage();
 
   // Path 1: profiles already exist
   if (data.profiles.length > 0) {
-    const current = data.version < CURRENT_VERSION ? upgradeStorage(data) : data;
+    const current = syncBuiltInServers(data);
     let active = current.profiles.find((p) => p.id === current.activeProfileId);
 
     if (!active) {
       active = current.profiles[0];
-      await writeStorage(createStorage(current.profiles, active.id));
+      await writeStorage({ ...current, activeProfileId: active.id });
     } else if (current !== data) {
       await writeStorage(current);
     }
@@ -155,27 +196,16 @@ export async function migrate(): Promise<string | null> {
 
   if (legacyUrl) {
     const legacyProfile = createProfile('Default', legacyUrl);
-    const normalizedLegacy = normalizeUrl(legacyUrl);
-    const profiles = [legacyProfile];
-
-    for (const server of DEFAULT_SERVERS) {
-      if (normalizeUrl(server.serverUrl) !== normalizedLegacy) {
-        profiles.push(createProfile(server.label, server.serverUrl));
-      }
-    }
-
-    // The legacy URL may itself be the previous staging server
-    const upgraded = upgradeStorage(createStorage(profiles, legacyProfile.id));
-    await writeStorage(upgraded);
+    await writeStorage(syncBuiltInServers(createStorage([legacyProfile], legacyProfile.id)));
     await AsyncStorage.removeItem(LEGACY_API_URL_KEY);
-    return upgraded.profiles.find((p) => p.id === legacyProfile.id)!.serverUrl;
+    return legacyProfile.serverUrl;
   }
 
   // Path 3: fresh install
-  const profiles = DEFAULT_SERVERS.map((s) => createProfile(s.label, s.serverUrl));
-  await writeStorage(createStorage(profiles));
+  const fresh = syncBuiltInServers(createStorage());
+  await writeStorage({ ...fresh, activeProfileId: fresh.profiles[0].id });
 
-  return profiles[0].serverUrl;
+  return fresh.profiles[0].serverUrl;
 }
 
 export async function getProfiles(): Promise<ProfileStorageData> {
