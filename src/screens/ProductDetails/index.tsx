@@ -54,6 +54,7 @@ function RowDetail({ label, value }: { label: string; value: string }) {
 
 class ProductDetails extends React.Component<Props, State> {
   pendingPullDone?: () => void;
+  unsubscribeFocus?: () => void;
 
   constructor(props: Props) {
     super(props);
@@ -67,6 +68,11 @@ class ProductDetails extends React.Component<Props, State> {
 
   componentDidMount() {
     this.getProduct();
+    this.unsubscribeFocus = this.props.navigation.addListener('focus', this.getProduct);
+  }
+
+  componentWillUnmount() {
+    this.unsubscribeFocus?.();
   }
 
   componentDidUpdate(prevProps: Props) {

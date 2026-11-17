@@ -2,7 +2,7 @@ export type StockTransferCandidate = {
   productAvailabilityId: string;
   product: { id: string; productCode: string; name: string };
   inventoryItem: { id: string };
-  originBinLocation: { id: string; name: string; locationNumber?: string };
+  originBinLocation: { id: string | null; name: string | null; locationNumber?: string } | null;
   originZone?: string | null;
   lotNumber: string | null;
   expirationDate: string | null;
@@ -15,7 +15,7 @@ export type SelectedInventoryItem = {
   inventoryItemId: string;
   productAvailabilityId: string;
   product: { id: string; productCode: string; name: string };
-  originBinLocation: { id: string; name: string; locationNumber?: string };
+  originBinLocation: { id: string | null; name: string; locationNumber?: string };
   lotNumber: string | null;
   expirationDate: string | null;
   quantityOnHand: number;
@@ -38,7 +38,7 @@ export type StockTransferPayloadItem = {
   productAvailabilityId: string;
   product: { id: string };
   inventoryItem: { id: string };
-  originBinLocation: { id: string };
+  originBinLocation: { id: string | null };
   destinationBinLocation: { id: string };
   quantity: number;
   quantityOnHand: number;
