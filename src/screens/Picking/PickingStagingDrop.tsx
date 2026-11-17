@@ -4,6 +4,7 @@ import { Alert, FlatList, View } from 'react-native';
 import { Button, Caption, Chip, Divider, Subheading, Text, Title } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import StagingLocationZoneMismatchModal from '../../components/StagingLocationZoneMismatchModal';
 import { HYPHEN } from '../../constants';
 import { dropPickTaskAction } from '../../redux/actions/picking';
 import { PickTask } from '../../types/picking';
@@ -17,6 +18,7 @@ export default function PickingStagingDropScreen() {
   const { params } = useRoute<PickingStagingDropRouteProp>();
   const { tasks } = params;
   const dispatch = useDispatch();
+  const [zoneMismatchMessage, setZoneMismatchMessage] = React.useState<string | undefined>(undefined);
 
   const outboundContainer = tasks?.[0]?.outboundContainer;
   const stagingLocation = tasks?.[0]?.stagingLocation;
@@ -27,6 +29,27 @@ export default function PickingStagingDropScreen() {
         .filter((requisitionNumber): requisitionNumber is string => Boolean(requisitionNumber))
     )
   );
+
+  function handleTransferResponse(response: { errorMessage?: string; allowOverride?: boolean }) {
+    if (response.allowOverride) {
+      setZoneMismatchMessage(response.errorMessage);
+      return;
+    }
+
+    if (response.errorMessage) {
+      Alert.alert('Transfer Failed', response.errorMessage);
+      return;
+    }
+
+    Alert.alert('Transfer Successful', 'Picked items have been moved to the staging location.', [
+      {
+        text: 'OK',
+        onPress: () => {
+          navigate('PickingMoveToStaging');
+        }
+      }
+    ]);
+  }
 
   function handleDropToStaging() {
     if (!stagingLocation) {
@@ -39,23 +62,20 @@ export default function PickingStagingDropScreen() {
       return;
     }
 
-    dispatch(
-      dropPickTaskAction(outboundContainer.id, stagingLocation.id, ({ errorMessage }) => {
-        if (errorMessage) {
-          Alert.alert('Transfer Failed', errorMessage);
-          return;
-        }
+    dispatch(dropPickTaskAction(outboundContainer.id, stagingLocation.id, handleTransferResponse));
+  }
 
-        Alert.alert('Transfer Successful', 'Picked items have been moved to the staging location.', [
-          {
-            text: 'OK',
-            onPress: () => {
-              navigate('PickingMoveToStaging');
-            }
-          }
-        ]);
-      })
-    );
+  // The suggested staging location (the only one this screen ever uses - there's no scanning
+  // here) can fail the facility's zone check; this resubmits the same drop with the override
+  // flag so the user can still stage there after acknowledging the mismatch.
+  function handleStageAnyway() {
+    setZoneMismatchMessage(undefined);
+
+    if (!outboundContainer || !stagingLocation) {
+      return;
+    }
+
+    dispatch(dropPickTaskAction(outboundContainer.id, stagingLocation.id, handleTransferResponse, true));
   }
 
   return (
@@ -139,6 +159,14 @@ export default function PickingStagingDropScreen() {
           Move To Staging
         </Button>
       </View>
+
+      <StagingLocationZoneMismatchModal
+        visible={!!zoneMismatchMessage}
+        message={zoneMismatchMessage}
+        cancelLabel="Cancel"
+        onScanAnother={() => setZoneMismatchMessage(undefined)}
+        onStageAnyway={handleStageAnyway}
+      />
     </View>
   );
 }
