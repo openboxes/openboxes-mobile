@@ -1,6 +1,9 @@
 import axios, { CancelToken } from 'axios';
 
+import { createLogger } from './Logger';
 import { withDeadline } from './requestDeadline';
+
+const logger = createLogger('serverUrl.ts');
 
 /**
  * Turns what a user types as a server address into a working API root.
@@ -166,10 +169,19 @@ export function parseServerInput(input: string): ParsedServerInput {
   return { origin, path, suffix, base: origin + path };
 }
 
-/** The API roots to probe, in order: root context first. */
+/**
+ * The API roots to probe, in order. The context the user typed comes first; a bare host (or /api)
+ * tries the root context first.
+ */
 export function candidateApiUrls(input: string): string[] {
-  const { base } = parseServerInput(input);
-  return [`${base}/api`, `${base}/openboxes/api`];
+  const { base, suffix } = parseServerInput(input);
+  const candidates = [`${base}/api`, `${base}/openboxes/api`];
+  return suffix === '/openboxes/api' || suffix === '/openboxes' ? candidates.reverse() : candidates;
+}
+
+/** True when the user typed a scheme such as http:// or https:// (without one, https is assumed). */
+export function hasExplicitScheme(input: string): boolean {
+  return SCHEME_PATTERN.test(input.trim());
 }
 
 /** The API root to store when the user saves without a successful check. */
@@ -200,14 +212,21 @@ function comparableOrigin(origin: string): string {
     return origin;
   }
   const [, scheme, host, port] = match;
-  const defaultPort = scheme === 'https' ? '443' : '80';
+  const portNumber = port === undefined ? undefined : Number(port);
+  const defaultPort = scheme === 'https' ? 443 : 80;
   const hostPart = host.startsWith('[') && isIpv6(host.slice(1, -1)) ? `[${expandIpv6(host.slice(1, -1))}]` : host;
-  return `${scheme}://${hostPart}${port && port !== defaultPort ? `:${port}` : ''}`;
+  return `${scheme}://${hostPart}${portNumber !== undefined && portNumber !== defaultPort ? `:${portNumber}` : ''}`;
 }
 
 function canonicalUrl(url: string): string {
   const { origin, path, suffix } = parseServerInput(url);
   return comparableOrigin(origin) + path + suffix;
+}
+
+// A URL for the log: no credentials, query or fragment
+function forLog(url: string): string {
+  // Drop query and fragment first, then everything up to the last @ of the authority
+  return url.replace(/[?#].*$/, '').replace(/\/\/[^/]*@/, '//');
 }
 
 // No HTTP answer: DNS, refused, TLS, timeout, abort. axios 0.22 can also settle a status-0 response.
@@ -231,15 +250,19 @@ function acceptedRoot(candidate: string, response: any): string | null {
     return candidate;
   }
 
-  const expected = canonicalUrl(`${candidate}/status`);
   const actual = canonicalUrl(finalUrl);
-  if (actual === expected) {
+  if (actual === canonicalUrl(`${candidate}/status`)) {
     return candidate;
   }
-  const upgraded = canonicalUrl(`https://${candidate.slice('http://'.length)}/status`);
-  if (candidate.startsWith('http://') && actual === upgraded) {
-    return `https://${candidate.slice('http://'.length)}`;
+  // Canonicalize before switching the scheme, so an explicit :80 is not carried over to https
+  const root = canonicalUrl(candidate);
+  if (root.startsWith('http://')) {
+    const upgradedRoot = `https://${root.slice('http://'.length)}`;
+    if (actual === canonicalUrl(`${upgradedRoot}/status`)) {
+      return upgradedRoot;
+    }
   }
+  logger.d(`${candidate}/status -> rejected, the response came from ${forLog(finalUrl)}`);
   return null;
 }
 
@@ -265,16 +288,20 @@ export async function resolveApiUrl(input: string, options: ResolveOptions = {})
       );
       if (response?.status === 0) {
         transportFailure = true;
+        logger.d(`${candidate}/status -> no response (status 0)`);
       } else if (isOpenBoxesStatus(response)) {
         const root = acceptedRoot(candidate, response);
         if (root) {
           return { kind: 'ok', url: root };
         }
+      } else {
+        logger.d(`${candidate}/status -> ${response?.status}, not an OpenBoxes status response`);
       }
     } catch (error: any) {
       if (isTransportFailure(error)) {
         transportFailure = true;
       }
+      logger.d(`${candidate}/status -> ${error?.response?.status ?? error?.code ?? error?.message ?? 'no response'}`);
     }
   }
 

@@ -6,7 +6,8 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Button from '../../components/Button';
 import { validateProfile } from '../../components/ProfileStorage';
 import { Profile } from '../../types/profile';
-import { fallbackApiUrl, ResolveResult } from '../../utils/serverUrl';
+import { fallbackApiUrl } from '../../utils/serverUrl';
+import { checkErrorMessage } from './serverCheckMessage';
 import styles from './styles';
 import { useServerCheck } from './useServerCheck';
 
@@ -16,17 +17,6 @@ type ProfileFormDialogProps = {
   onSave: (label: string, serverUrl: string) => Promise<void>;
   onDismiss: () => void;
 };
-
-function checkErrorMessage(result: ResolveResult): string | null {
-  switch (result.kind) {
-    case 'not-openboxes':
-      return `No OpenBoxes server found at ${result.tried.join(' or ')}.`;
-    case 'unreachable':
-      return 'Could not reach the server. Check the address and your connection.';
-    default:
-      return null;
-  }
-}
 
 export default function ProfileFormDialog({ visible, profile, onSave, onDismiss }: ProfileFormDialogProps) {
   const [formLabel, setFormLabel] = useState('');
@@ -84,7 +74,7 @@ export default function ProfileFormDialog({ visible, profile, onSave, onDismiss 
     if (outcome.kind === 'ok') {
       await commit(label, outcome.url);
     } else {
-      setFormError(checkErrorMessage(outcome));
+      setFormError(checkErrorMessage(outcome, url));
     }
   }, [formLabel, formUrl, profile, check, commit]);
 

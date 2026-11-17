@@ -1,6 +1,7 @@
 import {
   candidateApiUrls,
   fallbackApiUrl,
+  hasExplicitScheme,
   parseServerInput,
   resolveApiUrl,
   validateServerUrl
@@ -102,11 +103,37 @@ describe('parseServerInput', () => {
 });
 
 describe('candidateApiUrls', () => {
-  it('tries the root context first, then /openboxes/api', () => {
-    expect(candidateApiUrls('https://vvg.openboxes.com/openboxes')).toEqual([
-      'https://vvg.openboxes.com/api',
-      'https://vvg.openboxes.com/openboxes/api'
+  it.each(['vvg.openboxes.com', 'https://vvg.openboxes.com/', 'https://vvg.openboxes.com/api'])(
+    'tries the root context first for %s',
+    (input) => {
+      expect(candidateApiUrls(input)).toEqual([
+        'https://vvg.openboxes.com/api',
+        'https://vvg.openboxes.com/openboxes/api'
+      ]);
+    }
+  );
+
+  it.each([
+    'https://vvg.openboxes.com/openboxes/api',
+    'https://vvg.openboxes.com/openboxes',
+    'vvg.openboxes.com/OpenBoxes'
+  ])('tries the typed /openboxes context first for %s', (input) => {
+    expect(candidateApiUrls(input)).toEqual([
+      'https://vvg.openboxes.com/openboxes/api',
+      'https://vvg.openboxes.com/api'
     ]);
+  });
+});
+
+describe('hasExplicitScheme', () => {
+  it.each([
+    ['http://10.0.2.2:8080', true],
+    ['HTTPS://example.org', true],
+    ['  https://example.org', true],
+    ['10.0.2.2:8080', false],
+    ['example.org/openboxes', false]
+  ])('%s -> %p', (input, expected) => {
+    expect(hasExplicitScheme(input)).toBe(expected);
   });
 });
 
@@ -127,7 +154,7 @@ describe('resolveApiUrl', () => {
   it('picks /api when the root context answers', async () => {
     const get = fakeGet({ 'https://vvg-stage.openboxes.cloud/api/status': OK });
 
-    const result = await resolveApiUrl('vvg-stage.openboxes.cloud/openboxes/api', { get });
+    const result = await resolveApiUrl('vvg-stage.openboxes.cloud', { get });
 
     expect(result).toEqual({ kind: 'ok', url: 'https://vvg-stage.openboxes.cloud/api' });
     expect(get).toHaveBeenCalledTimes(1);
@@ -213,6 +240,48 @@ describe('resolveApiUrl', () => {
     });
   });
 
+  it('stores the typed /openboxes/api root when both contexts answer', async () => {
+    const get = fakeGet({
+      'https://example.org/api/status': OK,
+      'https://example.org/openboxes/api/status': OK
+    });
+
+    expect(await resolveApiUrl('https://example.org/openboxes/api', { get })).toEqual({
+      kind: 'ok',
+      url: 'https://example.org/openboxes/api'
+    });
+    expect(get).toHaveBeenCalledTimes(1);
+  });
+
+  it('accepts an http to https upgrade with an explicit :80 and stores the https root without it', async () => {
+    const get = fakeGet({
+      'http://example.org:80/api/status': { ...OK, responseURL: 'https://example.org/api/status' }
+    });
+
+    expect(await resolveApiUrl('http://example.org:80', { get })).toEqual({
+      kind: 'ok',
+      url: 'https://example.org/api'
+    });
+  });
+
+  it.each([
+    ['http://example.org:080', 'https://example.org/api/status'],
+    ['http://example.org', 'https://example.org:0443/api/status']
+  ])('compares ports by value (%s redirected to %s)', async (input, responseURL) => {
+    const get = fakeGet({ [`${input}/api/status`]: { ...OK, responseURL } });
+
+    expect(await resolveApiUrl(input, { get })).toEqual({ kind: 'ok', url: 'https://example.org/api' });
+  });
+
+  it('still rejects an upgrade to https on a non-default port', async () => {
+    const get = fakeGet({
+      'http://example.org:8080/api/status': { ...OK, responseURL: 'https://example.org/api/status' },
+      'http://example.org:8080/openboxes/api/status': { status: 404 }
+    });
+
+    expect(await resolveApiUrl('http://example.org:8080', { get })).toMatchObject({ kind: 'not-openboxes' });
+  });
+
   it('rejects an https to http downgrade', async () => {
     const get = fakeGet({
       'https://example.org/api/status': { ...OK, responseURL: 'http://example.org/api/status' },
@@ -251,6 +320,42 @@ describe('resolveApiUrl', () => {
     });
 
     expect(await resolveApiUrl('example.org', { get })).toMatchObject({ kind: 'unreachable' });
+  });
+
+  it('does not log credentials, query or fragment of a rejected redirect', async () => {
+    const debug = jest.spyOn(console, 'debug').mockImplementation(() => {});
+    const get = fakeGet({
+      'https://example.org/api/status': {
+        ...OK,
+        responseURL: 'https://user:secret@other.example.org/x?token=abc#frag'
+      },
+      'https://example.org/openboxes/api/status': { status: 404 }
+    });
+
+    await resolveApiUrl('example.org', { get });
+
+    const logged = debug.mock.calls.map((c) => String(c[0])).join('\n');
+    expect(logged).toContain('https://other.example.org/x');
+    expect(logged).not.toMatch(/secret|token|frag/);
+    debug.mockRestore();
+  });
+
+  it.each([
+    ['https://user:p@ss@other.example.org/x', 'https://other.example.org/x'],
+    ['https://other.example.org?email=a@b.example.org', 'https://other.example.org']
+  ])('logs %s as %s', async (responseURL, expected) => {
+    const debug = jest.spyOn(console, 'debug').mockImplementation(() => {});
+    const get = fakeGet({
+      'https://example.org/api/status': { ...OK, responseURL },
+      'https://example.org/openboxes/api/status': { status: 404 }
+    });
+
+    await resolveApiUrl('example.org', { get });
+
+    const logged = debug.mock.calls.map((c) => String(c[0])).join('\n');
+    expect(logged).toContain(`came from ${expected}`);
+    expect(logged).not.toMatch(/ss@|email|p@/);
+    debug.mockRestore();
   });
 
   it('accepts a final URL without the default port', async () => {

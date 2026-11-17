@@ -68,10 +68,11 @@ export default function ProfilesScreen() {
         const isActive = editingProfile.id === activeProfileId;
 
         if (isActive && serverUrl !== editingProfile.serverUrl) {
-          // A new address for the active profile is a server switch: end the session on the old
-          // server, point the client at the new one and log in again (same as handleActivate)
-          await endSession();
+          // A new address for the active profile is a server switch: save it, end the session on the
+          // old server, point the client at the new one and log in again (as handleActivate does).
+          // Saving comes first so that a failed save leaves the current session intact.
           await updateProfile(updated);
+          await endSession();
           ApiClient.setBaseUrl(serverUrl);
           dispatch({ type: LOGOUT_REQUEST_SUCCESS });
           setDialogVisible(false);
