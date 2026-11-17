@@ -52,7 +52,7 @@ type PickingContextType = {
     outboundContainerId: string | null,
     parsedQuantityPicked: number,
     callback: (response: { errorMessage?: string }) => void,
-    reasonCodeName?: string
+    reasonCodeId?: string
   ) => void;
   /** Revalidates all tasks for a given requisition ID */
   revalidateTasksForRequisition: (requisitionId: string | undefined, callback: (errorMessage?: string) => void) => void;
@@ -161,14 +161,14 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
     outboundContainerId: string | null,
     parsedQuantityPicked: number,
     callback: (response: { errorMessage?: string }) => void,
-    reasonCodeName?: string
+    reasonCodeId?: string
   ) => {
     if (!currentTask || parsedQuantityPicked === undefined) {
       callback({ errorMessage: 'Missing required fields for short pick.' });
       return;
     }
 
-    dispatch(shortPickTaskAction(currentTask.id, outboundContainerId, parsedQuantityPicked, callback, reasonCodeName));
+    dispatch(shortPickTaskAction(currentTask.id, outboundContainerId, parsedQuantityPicked, callback, reasonCodeId));
   };
 
   const revalidateCurrentTask = (callback?: (task: PickTask | undefined, errorMessage?: string) => void) => {
