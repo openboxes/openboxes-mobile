@@ -12,7 +12,8 @@ import { getStockTransferCandidatesAction } from '../../redux/actions/createTran
 import { RootState } from '../../redux/reducers';
 import CreateTransferItemRowSkeleton from './CreateTransferItemRowSkeleton';
 import styles from './styles';
-import { CreateTransferStackParams, SelectedInventoryItem, StockTransferCandidate } from './types';
+import { CreateTransferStackParams, StockTransferCandidate } from './types';
+import { toSelectedInventoryItem } from './utils';
 
 type ItemListRouteProp = RouteProp<CreateTransferStackParams, 'CreateTransferItemList'>;
 
@@ -26,7 +27,7 @@ type CandidateRowProps = {
 function CandidateRow({ candidate, onPress }: CandidateRowProps) {
   const productCode = candidate.product?.productCode || '-';
   const productName = candidate.product?.name;
-  const bin = candidate.originBinLocation?.locationNumber || candidate.originBinLocation?.name || '-';
+  const bin = candidate.originBinLocation?.locationNumber || candidate.originBinLocation?.name || 'Default';
   const lot = candidate.lotNumber ? `Lot ${candidate.lotNumber}` : '';
   const expiry = candidate.expirationDate ? ` • Exp ${candidate.expirationDate}` : '';
   const detail = `${lot}${expiry}`.trim();
@@ -143,20 +144,10 @@ export default function CreateTransferItemListScreen() {
   }, [productCode, binName, initialSearchTerm]);
 
   const handleRowPress = useCallback((candidate: StockTransferCandidate) => {
-    if (!candidate?.originBinLocation?.id || !candidate?.inventoryItem?.id || !candidate?.product?.id) {
+    if (!candidate?.inventoryItem?.id || !candidate?.product?.id) {
       return;
     }
-    const selected: SelectedInventoryItem = {
-      inventoryItemId: candidate.inventoryItem.id,
-      productAvailabilityId: candidate.productAvailabilityId,
-      product: candidate.product,
-      originBinLocation: candidate.originBinLocation,
-      lotNumber: candidate.lotNumber ?? null,
-      expirationDate: candidate.expirationDate ?? null,
-      quantityOnHand: candidate.quantityOnHand,
-      quantityNotPicked: candidate.quantityNotPicked
-    };
-    navigate('CreateTransferQuantity', { item: selected });
+    navigate('CreateTransferQuantity', { item: toSelectedInventoryItem(candidate) });
   }, []);
 
   const renderItem = useCallback(

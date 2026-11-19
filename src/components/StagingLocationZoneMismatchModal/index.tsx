@@ -10,9 +10,18 @@ type Props = {
   message?: string;
   onScanAnother: () => void;
   onStageAnyway: () => void;
+  // Some callers don't scan a location at all (e.g. the "Move to Staging" flow drops a whole
+  // container at its single suggested location), so the first button isn't always "scan again".
+  cancelLabel?: string;
 };
 
-export default function StagingLocationZoneMismatchModal({ visible, message, onScanAnother, onStageAnyway }: Props) {
+export default function StagingLocationZoneMismatchModal({
+  visible,
+  message,
+  onScanAnother,
+  onStageAnyway,
+  cancelLabel = 'Scan Another Location'
+}: Props) {
   return (
     <Modal transparent animationType="slide" visible={visible} onRequestClose={onScanAnother}>
       <View style={styles.modalOverlay}>
@@ -21,7 +30,7 @@ export default function StagingLocationZoneMismatchModal({ visible, message, onS
           <Paragraph style={styles.modalDescription}>{message}</Paragraph>
 
           <Button mode="contained" onPress={onScanAnother}>
-            Scan Another Location
+            {cancelLabel}
           </Button>
           <Divider style={{ marginVertical: Theme.spacing.small }} />
           <Button mode="outlined" onPress={onStageAnyway}>

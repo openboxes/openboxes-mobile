@@ -92,7 +92,7 @@ export default function PickingPickOutboundContainerScreen() {
             });
           }
         },
-        params?.reasonCode?.name
+        params?.reasonCode?.id
       );
       return;
     }

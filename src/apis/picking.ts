@@ -23,7 +23,7 @@ export type PickTaskActionParams =
       outboundContainerId: string | null;
       quantityPicked: number;
       pickedById: string;
-      reasonCode?: Pick<ReasonCode, 'name'>;
+      reasonCode?: Pick<ReasonCode, 'id'>;
     };
 
 export type PickTaskDropParams = {

@@ -18,7 +18,7 @@ type ReplenishmentContextType = {
     outboundContainerId: string,
     parsedQuantityPicked: number,
     callback: (response: { errorMessage?: string }) => void,
-    reasonCodeName?: string
+    reasonCodeId?: string
   ) => void;
   revalidateCurrentTask: (callback: (revalidatedTask?: ReplenishmentTask) => void) => void;
   revalidateTasksForOrder: (orderId: string, callback: () => void) => void;
@@ -55,10 +55,10 @@ export function ReplenishmentProvider({ children }: { children: ReactNode }) {
     outboundContainerId: string,
     parsedQuantityPicked: number,
     callback: (response: { errorMessage?: string }) => void,
-    reasonCodeName?: string
+    reasonCodeId?: string
   ) => {
     // TODO: Implement the logic for short picking the current task
-    // dispatch(shortPickTask(currentTask.id, outboundContainerId, parsedQuantityPicked, callback, reasonCodeName));
+    // dispatch(shortPickTask(currentTask.id, outboundContainerId, parsedQuantityPicked, callback, reasonCodeId));
   };
 
   const revalidateCurrentTask = (callback: (revalidatedTask?: ReplenishmentTask) => void) => {
