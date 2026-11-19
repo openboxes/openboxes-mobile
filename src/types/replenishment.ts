@@ -4,7 +4,7 @@ import InventoryItem from '../data/picklist/InventoryItem';
 import Person from '../data/picklist/Person';
 import Product from '../data/product/Product';
 
-// TODO(API): align with the replenishment task API once it is available. The shape mirrors PickTask (types/picking.ts).
+// Shapes of the replenishment task API (ReplenishmentTask.toJson() on the server), close to PickTask (types/picking.ts)
 
 export enum ReplenishmentTaskStatus {
   PENDING = 'PENDING',
@@ -37,6 +37,7 @@ export type ReplenishmentTask = {
   /** The display location to replenish */
   destinationLocation?: Location | null;
   outboundContainer?: Container | null;
+  /** Where the picks were staged; empty until the container is dropped */
   stagingLocation?: Location | null;
 
   product: Product;
@@ -50,7 +51,6 @@ export type ReplenishmentTask = {
   pickedBy?: Person | null;
   stagedBy?: Person | null;
 
-  priority?: number;
   reasonCode?: string | null;
   status: ReplenishmentTaskStatus;
 

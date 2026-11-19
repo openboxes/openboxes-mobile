@@ -1,4 +1,4 @@
-import React, { createContext, ReactNode, useContext, useState } from 'react';
+import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { Alert } from 'react-native';
 import { useDispatch } from 'react-redux';
 
@@ -7,7 +7,8 @@ import {
   dropReplenishmentContainerAction,
   getReplenishmentTasksAction,
   pickReplenishmentTaskAction,
-  shortPickReplenishmentTaskAction
+  shortPickReplenishmentTaskAction,
+  startReplenishmentTaskAction
 } from '../../redux/actions/replenishment';
 import { ReplenishmentList, ReplenishmentTask, ReplenishmentTaskStatus } from '../../types/replenishment';
 import { findNextOpenTaskIndex, isOpenTask, moveTaskToEnd, sortTasksByLocation } from './lib';
@@ -62,6 +63,30 @@ export function ReplenishmentProvider({ children }: { children: ReactNode }) {
   const tasksCount = allTasks.length;
   const openTasksCount = allTasks.filter(isOpenTask).length;
   const currentTask = currentTaskIndex < tasksCount ? allTasks[currentTaskIndex] : undefined;
+  const currentTaskId = currentTask?.id;
+  const isCurrentTaskPending = currentTask?.status === ReplenishmentTaskStatus.PENDING;
+
+  // Starts a task when it is shown, like outbound picking: it is assigned to the picker and becomes PICKING. A task
+  // started by another picker is refused, and the picker is told so.
+  useEffect(() => {
+    if (!currentTaskId || !isCurrentTaskPending) {
+      return;
+    }
+    dispatch(
+      startReplenishmentTaskAction(currentTaskId, ({ response, errorMessage }) => {
+        if (errorMessage) {
+          Alert.alert('Unable To Start Task', errorMessage);
+          return;
+        }
+        const startedTask = response?.data;
+        setAllTasks((tasks) =>
+          tasks.map((task) =>
+            task.id === currentTaskId ? startedTask ?? { ...task, status: ReplenishmentTaskStatus.PICKING } : task
+          )
+        );
+      })
+    );
+  }, [currentTaskId, isCurrentTaskPending, dispatch]);
 
   const startSession = (list: ReplenishmentList): Promise<SessionStart | false> =>
     new Promise((resolve) => {

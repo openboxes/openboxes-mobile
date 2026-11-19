@@ -20,7 +20,10 @@ import {
   PICK_REPLENISHMENT_TASK_REQUEST_SUCCESS,
   SHORT_PICK_REPLENISHMENT_TASK_REQUEST,
   SHORT_PICK_REPLENISHMENT_TASK_REQUEST_FAIL,
-  SHORT_PICK_REPLENISHMENT_TASK_REQUEST_SUCCESS
+  SHORT_PICK_REPLENISHMENT_TASK_REQUEST_SUCCESS,
+  START_REPLENISHMENT_TASK_REQUEST,
+  START_REPLENISHMENT_TASK_REQUEST_FAIL,
+  START_REPLENISHMENT_TASK_REQUEST_SUCCESS
 } from '../actions/replenishment';
 import { userLocation, userSession } from '../selectors/auth';
 
@@ -94,6 +97,32 @@ function* getReplenishmentTaskByIdAction(action: any) {
     yield action.callback({ errorMessage });
   } finally {
     yield put(hideScreenLoading());
+  }
+}
+
+function* startReplenishmentTaskAction(action: any) {
+  try {
+    // @ts-ignore
+    const currentLocation = yield select(userLocation);
+    if (!currentLocation) {
+      throw new Error('User Location Not Found');
+    }
+    // @ts-ignore
+    const session = yield select(userSession);
+    if (!session || !session.user) {
+      throw new Error('User Session Not Found');
+    }
+    // @ts-ignore
+    const response = yield call(api.patchReplenishmentTaskApi, currentLocation.id, action.payload.taskId, {
+      action: 'start',
+      assigneeId: session.user.id
+    });
+    yield action.callback({ response });
+    yield put({ type: START_REPLENISHMENT_TASK_REQUEST_SUCCESS, payload: response?.data });
+  } catch (error) {
+    const errorMessage = (error as any)?.message || 'Error Starting Replenishment Task';
+    yield put({ type: START_REPLENISHMENT_TASK_REQUEST_FAIL, payload: errorMessage });
+    yield action.callback({ errorMessage });
   }
 }
 
@@ -195,6 +224,7 @@ export default function* watcher() {
   yield takeLatest(GET_REPLENISHMENT_LISTS_REQUEST, getReplenishmentListsAction);
   yield takeLatest(GET_REPLENISHMENT_TASKS_REQUEST, getReplenishmentTasksAction);
   yield takeLatest(GET_REPLENISHMENT_TASK_BY_ID_REQUEST, getReplenishmentTaskByIdAction);
+  yield takeLatest(START_REPLENISHMENT_TASK_REQUEST, startReplenishmentTaskAction);
   yield takeLatest(PICK_REPLENISHMENT_TASK_REQUEST, pickReplenishmentTaskAction);
   yield takeLatest(SHORT_PICK_REPLENISHMENT_TASK_REQUEST, shortPickReplenishmentTaskAction);
   yield takeLatest(DROP_REPLENISHMENT_CONTAINER_REQUEST, dropReplenishmentContainerAction);

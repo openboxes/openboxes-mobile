@@ -88,14 +88,14 @@ export function ReplenishmentStagingLocationScreen() {
 
     dropContainerAtStagingLocation(current.container.id, stagingLocationId, ({ errorMessage }) => {
       if (errorMessage) {
-        logScan('STAGING', 'FAIL', stagingLocationId, current.stagingLocation?.locationNumber, {
+        logScan('STAGING', 'FAIL', stagingLocationId, undefined, {
           message: `${containerNumber}: ${errorMessage}`
         });
         stagingScan.fail(errorMessage);
         return;
       }
 
-      logScan('STAGING', 'PASS', stagingLocationId, current.stagingLocation?.locationNumber, {
+      logScan('STAGING', 'PASS', stagingLocationId, undefined, {
         message: containerNumber
       });
       stagingScan.setValue(EMPTY_STRING);
@@ -129,7 +129,6 @@ export function ReplenishmentStagingLocationScreen() {
           <ProductDetails.List
             items={[
               { icon: 'package-variant-closed', label: 'Outbound Container ID', value: containerNumber },
-              { icon: 'tray-arrow-down', label: 'Staging Location', value: current.stagingLocation?.name ?? HYPHEN },
               {
                 icon: 'barcode',
                 label: 'Products',

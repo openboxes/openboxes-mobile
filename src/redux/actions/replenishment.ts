@@ -12,6 +12,10 @@ export const GET_REPLENISHMENT_TASK_BY_ID_REQUEST = 'GET_REPLENISHMENT_TASK_BY_I
 export const GET_REPLENISHMENT_TASK_BY_ID_REQUEST_SUCCESS = 'GET_REPLENISHMENT_TASK_BY_ID_REQUEST_SUCCESS';
 export const GET_REPLENISHMENT_TASK_BY_ID_REQUEST_FAIL = 'GET_REPLENISHMENT_TASK_BY_ID_REQUEST_FAIL';
 
+export const START_REPLENISHMENT_TASK_REQUEST = 'START_REPLENISHMENT_TASK_REQUEST';
+export const START_REPLENISHMENT_TASK_REQUEST_SUCCESS = 'START_REPLENISHMENT_TASK_REQUEST_SUCCESS';
+export const START_REPLENISHMENT_TASK_REQUEST_FAIL = 'START_REPLENISHMENT_TASK_REQUEST_FAIL';
+
 export const PICK_REPLENISHMENT_TASK_REQUEST = 'PICK_REPLENISHMENT_TASK_REQUEST';
 export const PICK_REPLENISHMENT_TASK_REQUEST_SUCCESS = 'PICK_REPLENISHMENT_TASK_REQUEST_SUCCESS';
 export const PICK_REPLENISHMENT_TASK_REQUEST_FAIL = 'PICK_REPLENISHMENT_TASK_REQUEST_FAIL';
@@ -62,6 +66,15 @@ export function getReplenishmentTasksAction(
 export function getReplenishmentTaskByIdAction(taskId: string, callback: ReplenishmentCallback<ReplenishmentTask>) {
   return {
     type: GET_REPLENISHMENT_TASK_BY_ID_REQUEST,
+    payload: { taskId },
+    callback
+  };
+}
+
+/** Starts the task (PICKING), assigned to the signed-in user, like outbound picking does before the first scan */
+export function startReplenishmentTaskAction(taskId: string, callback: ReplenishmentCallback<ReplenishmentTask>) {
+  return {
+    type: START_REPLENISHMENT_TASK_REQUEST,
     payload: { taskId },
     callback
   };

@@ -83,8 +83,7 @@ function taskWith(
     quantityPicked,
     quantityRequired,
     product: { productCode: `P-${id}` },
-    outboundContainer: containerNumber ? { id: `c-${containerNumber}`, locationNumber: containerNumber } : null,
-    stagingLocation: { id: 'staging-001', locationNumber: 'REP-PUT0001', name: 'Replen Putaway' }
+    outboundContainer: containerNumber ? { id: `c-${containerNumber}`, locationNumber: containerNumber } : null
   } as ReplenishmentTask;
 }
 
@@ -169,7 +168,6 @@ describe('summarizeListTasks', () => {
       'OUT-0002'
     ]);
     expect(summary.containersToStage[0].tasks.map((t) => t.id)).toEqual(['1', '4']);
-    expect(summary.containersToStage[0].stagingLocation?.name).toBe('Replen Putaway');
   });
 
   it('has nothing to stage when nothing was put in a container', () => {

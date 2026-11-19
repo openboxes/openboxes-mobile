@@ -1,5 +1,4 @@
 import { Container } from '../../data/container/Shipment';
-import Location from '../../data/location/Location';
 import { navigate, resetToRoutes } from '../../NavigationService';
 import { ReplenishmentTask, ReplenishmentTaskStatus } from '../../types/replenishment';
 
@@ -109,7 +108,6 @@ export function proceedToNextTask({ tasks, currentTaskIndex, goToTask }: Proceed
 
 export type ContainerToStage = {
   container: Container;
-  stagingLocation?: Location | null;
   tasks: ReplenishmentTask[];
 };
 
@@ -153,11 +151,7 @@ export function summarizeListTasks(tasks: ReplenishmentTask[]): ListSummary {
 
     const container = task.outboundContainer;
     if (task.status === ReplenishmentTaskStatus.PICKED && container?.id && quantityPicked > 0) {
-      const containerToStage = containers.get(container.id) ?? {
-        container,
-        stagingLocation: task.stagingLocation,
-        tasks: []
-      };
+      const containerToStage = containers.get(container.id) ?? { container, tasks: [] };
       containerToStage.tasks.push(task);
       containers.set(container.id, containerToStage);
     }
