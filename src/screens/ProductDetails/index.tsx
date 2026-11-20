@@ -12,8 +12,8 @@ import PullToRefreshControl from '../../components/PullToRefreshControl';
 import { HYPHEN } from '../../constants';
 import { resetToRoutes } from '../../NavigationService';
 import {
-  removeProductIdentifierAction,
   getProductByIdAction,
+  removeProductIdentifierAction,
   updateProductIdentifierAction
 } from '../../redux/actions/products';
 import { RootState } from '../../redux/reducers';

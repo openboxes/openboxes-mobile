@@ -3,7 +3,7 @@ import TestRenderer, { act, ReactTestRenderer } from 'react-test-renderer';
 
 import { ScannerInput } from '../src/components/ScannerInput';
 
-// The DataWedge listener is replaced by a handle the test calls like a hardware mockScan.
+// The DataWedge listener is replaced by a handle the test calls like a hardware scan.
 const mockScan: { emit: (data: string) => void; enabled: boolean } = { emit: () => undefined, enabled: false };
 jest.mock('../src/hooks/useScanListener', () => ({
   useScanListener: (onScan: (r: { data: string }) => void, enabled: boolean) => {
@@ -35,7 +35,7 @@ jest.mock('react-native-paper', () => {
 
 type Harness = { renderer: ReactTestRenderer; onChange: jest.Mock; onSubmit: jest.Mock; setValue: (v: string) => void };
 
-type FieldProps = { acceptsScans?: boolean; autoSubmitTimeout?: number };
+type FieldProps = { acceptsScans?: boolean; autoSubmitTimeout?: number; clearOnSubmit?: boolean };
 
 function render(options: FieldProps = {}): Harness {
   const onChange = jest.fn();
@@ -53,7 +53,13 @@ function render(options: FieldProps = {}): Harness {
           onChange(v);
           set(v);
         }}
-        onSubmit={onSubmit}
+        onSubmit={(v) => {
+          onSubmit(v);
+          // like a screen that rejects the code and clears the field in the same tick
+          if (options.clearOnSubmit) {
+            set('');
+          }
+        }}
       />
     );
   }
@@ -64,7 +70,15 @@ function render(options: FieldProps = {}): Harness {
   return { renderer: renderer!, onChange, onSubmit, setValue: (v) => act(() => setValue(v)) };
 }
 
-beforeEach(() => mockFlash.mockClear());
+const textInput = (r: ReactTestRenderer) => r.root.findByProps({ testID: 'text-input' }).props;
+
+let now = 0;
+beforeEach(() => {
+  mockFlash.mockClear();
+  now = 1_000_000;
+  jest.spyOn(Date, 'now').mockImplementation(() => now);
+});
+afterEach(() => jest.restoreAllMocks());
 
 describe('ScannerInput', () => {
   it('passes a hardware scan to onChange and onSubmit', () => {
@@ -93,5 +107,29 @@ describe('ScannerInput', () => {
     setValue('');
     act(() => mockScan.emit('ABC-1'));
     expect(onSubmit).toHaveBeenCalledTimes(2);
+  });
+
+  it('accepts the same scan again after the screen cleared the field in the same tick', () => {
+    const { onSubmit } = render({ clearOnSubmit: true });
+    act(() => mockScan.emit('BIN-1'));
+    now += 1500;
+    act(() => mockScan.emit('BIN-1'));
+    expect(onSubmit).toHaveBeenCalledTimes(2);
+  });
+
+  it('drops the same code fired twice in a row (a double fire)', () => {
+    const { onSubmit } = render({ clearOnSubmit: true });
+    act(() => mockScan.emit('BIN-1'));
+    now += 200;
+    act(() => mockScan.emit('BIN-1'));
+    expect(onSubmit).toHaveBeenCalledTimes(1);
+  });
+
+  it('still takes typed input and the keyboard submit when acceptsScans is false', () => {
+    const { renderer, onChange, onSubmit } = render({ acceptsScans: false });
+    act(() => textInput(renderer).onChangeText('12'));
+    expect(onChange).toHaveBeenCalledWith('12');
+    act(() => textInput(renderer).onSubmitEditing());
+    expect(onSubmit).toHaveBeenCalledWith('12');
   });
 });

@@ -108,7 +108,7 @@ export default function ReplenishmentOutboundContainerScreen() {
       return;
     }
 
-    // pickCurrentTask(outboundContainerId, ({ errorMessage }) => {
+    // pickCurrentTask(containerId, ({ errorMessage }) => {
     //   if (errorMessage) {
     //     Alert.alert('Pick Error', errorMessage);
     //     setOutboundContainerId('');

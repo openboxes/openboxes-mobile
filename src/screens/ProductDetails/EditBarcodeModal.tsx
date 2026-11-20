@@ -1,3 +1,4 @@
+import { useIsFocused } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { Keyboard, Modal, View } from 'react-native';
 import { Headline, Paragraph, Subheading } from 'react-native-paper';
@@ -26,6 +27,7 @@ export default function EditBarcodeModal({
 }: EditBarcodeModalProps) {
   const [barcode, setBarcode] = useState(EMPTY_STRING);
   const [isConfirmingRemove, setIsConfirmingRemove] = useState(false);
+  const isScreenFocused = useIsFocused();
 
   useEffect(() => {
     if (visible) {
@@ -45,18 +47,25 @@ export default function EditBarcodeModal({
     onSave(value, () => setBarcode(EMPTY_STRING));
   };
 
-  // The confirm step has no scanner field. Keep listening there and drop scans, so DataWedge keystroke
-  // output stays muted and a scan cannot save or remove anything behind the confirm.
-  useScanListener(() => undefined, visible && isConfirmingRemove);
+  // The confirm step has no scanner field. A listener for the whole modal keeps DataWedge keystroke
+  // output muted across the step switch and drops scans while confirming, so a scan cannot save or
+  // remove anything behind the confirm.
+  useScanListener(() => undefined, visible && isScreenFocused);
 
-  const handleRemoveBarcode = () => {
+  const openRemoveConfirm = () => {
     Keyboard.dismiss();
     setIsConfirmingRemove(true);
   };
 
   if (isConfirmingRemove) {
     return (
-      <Modal transparent animationType="fade" visible={visible} onDismiss={onClose}>
+      <Modal
+        transparent
+        animationType="slide"
+        visible={visible}
+        onDismiss={onClose}
+        onRequestClose={() => setIsConfirmingRemove(false)}
+      >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <Headline>Remove barcode?</Headline>
@@ -90,7 +99,7 @@ export default function EditBarcodeModal({
   }
 
   return (
-    <Modal transparent animationType="slide" visible={visible} onDismiss={onClose}>
+    <Modal transparent animationType="slide" visible={visible} onDismiss={onClose} onRequestClose={onClose}>
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
           <Headline>Edit barcode</Headline>
@@ -110,7 +119,7 @@ export default function EditBarcodeModal({
                 variant="danger"
                 size="default"
                 title="Remove"
-                onPress={handleRemoveBarcode}
+                onPress={openRemoveConfirm}
               />
             </View>
           ) : null}

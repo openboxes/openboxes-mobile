@@ -20,6 +20,8 @@ import Theme from '../utils/Theme';
 import { KeyboardIcon, ScanIcon } from './Icons';
 import { useScanFlash } from './ScanFlash';
 
+const DUPLICATE_SCAN_WINDOW_MS = 1000;
+
 type ScannerInputProps = {
   value: string;
   onChange: (value: string) => void;
@@ -105,6 +107,12 @@ export function ScannerInput({
 
   // Track the latest submitted value to prevent double submissions
   const lastSubmittedValue = useRef<string>('');
+  // A repeated scan is a duplicate while the field still shows it, or when it arrives right after the
+  // previous one (a double fire). Once a screen has cleared the field, e.g. after a failed lookup, the
+  // same code is accepted again, even if React batched the clear with the scan into no visible change.
+  const renderedValue = useRef(value);
+  renderedValue.current = value;
+  const lastScanAt = useRef(0);
   const shouldBeFocused = isScreenFocused && isEnabled;
   // Scans mid-flash are ignored below; disabling the listener would re-enable DataWedge keystrokes.
   const { isFlashing, flash } = useScanFlash();
@@ -183,10 +191,14 @@ export function ScannerInput({
       flash('fail');
       return;
     }
-    if (scanned === lastSubmittedValue.current) {
+    if (
+      scanned === lastSubmittedValue.current &&
+      (renderedValue.current.trim() === scanned || Date.now() - lastScanAt.current < DUPLICATE_SCAN_WINDOW_MS)
+    ) {
       return;
     }
     lastSubmittedValue.current = scanned;
+    lastScanAt.current = Date.now();
     onChange(scanned);
     onSubmit(scanned);
   }, shouldBeFocused);

@@ -42,10 +42,10 @@ export function ReplenishmentStagingLocationScreen() {
     // TODO: Implement the staging location validation and task dropping logic
     // const expected = currentTask.stagingLocation?.locationNumber;
 
-    // if (!expected || stagingLocationNumber !== expected) {
+    // if (!expected || code !== expected) {
     //   Alert.alert(
     //     'Invalid Staging Location',
-    //     `Expected: ${expected ?? '-'}, but got: ${stagingLocationNumber}. Please try again.`
+    //     `Expected: ${expected ?? '-'}, but got: ${code}. Please try again.`
     //   );
     //   setStagingLocationNumber('');
     //   return;

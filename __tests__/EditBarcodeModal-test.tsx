@@ -1,4 +1,5 @@
 import React from 'react';
+import { Modal } from 'react-native';
 import TestRenderer, { act, ReactTestRenderer } from 'react-test-renderer';
 
 import EditBarcodeModal from '../src/screens/ProductDetails/EditBarcodeModal';
@@ -24,6 +25,7 @@ jest.mock('../src/hooks/useScanListener', () => ({
     mockScan.enabled = enabled;
   }
 }));
+jest.mock('@react-navigation/native', () => ({ useIsFocused: () => true }));
 jest.mock('react-native-paper', () => {
   const { Text } = require('react-native');
   return { Headline: Text, Paragraph: Text, Subheading: Text };
@@ -117,16 +119,36 @@ describe('EditBarcodeModal', () => {
     expect(onRemoveBarcode).toHaveBeenCalledTimes(1);
   });
 
-  it('keeps listening during the confirm step and drops a scan there', () => {
-    const { renderer, onSave, onRemoveBarcode } = render('096619756803');
-    expect(mockScan.enabled).toBe(false);
+  it('keeps one scan listener for the whole modal, so scans never reach a field behind the confirm step', () => {
+    const { renderer } = render('096619756803');
+    expect(mockScan.enabled).toBe(true);
 
     act(() => button(renderer, 'Remove').onPress());
     expect(mockScan.enabled).toBe(true);
-    act(() => mockScan.emit());
+    expect(renderer.root.findAllByProps({ testID: 'scanner' })).toHaveLength(0);
+  });
 
-    expect(onSave).not.toHaveBeenCalled();
-    expect(onRemoveBarcode).not.toHaveBeenCalled();
-    expect(hasButton(renderer, 'Remove barcode')).toBe(true);
+  it('empties the field when the screen reports a failed save, so the same code can be scanned again', () => {
+    const { renderer, onSave } = render();
+    act(() => {
+      scanner(renderer).onChange('096619756803');
+      scanner(renderer).onSubmit('096619756803');
+    });
+    expect(scanner(renderer).value).toBe('096619756803');
+
+    const resetInput = onSave.mock.calls[0][1];
+    act(() => resetInput());
+    expect(scanner(renderer).value).toBe('');
+  });
+
+  it('Android Back closes the edit step and returns from the confirm step', () => {
+    const { renderer, onClose } = render('096619756803');
+    act(() => renderer.root.findByType(Modal).props.onRequestClose());
+    expect(onClose).toHaveBeenCalledTimes(1);
+
+    act(() => button(renderer, 'Remove').onPress());
+    act(() => renderer.root.findByType(Modal).props.onRequestClose());
+    expect(hasButton(renderer, 'Remove barcode')).toBe(false);
+    expect(onClose).toHaveBeenCalledTimes(1);
   });
 });
