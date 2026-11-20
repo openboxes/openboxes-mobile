@@ -17,7 +17,17 @@ const CURRENT_VERSION = 1;
 // The first one in the list will be used as the default active profile on a fresh install.
 // `previousLabels` lists the labels this server had in earlier versions of the list, so profiles that
 // still carry one get the current label. `aliases` are other URLs that reach the same server.
-const BUILT_IN_SERVERS: { label: string; serverUrl: string; previousLabels?: string[]; aliases?: string[] }[] = [
+// `replacedBy` is the URL of the built-in server that takes over from this one: an active profile that
+// gets the current label is switched to that server's profile.
+type BuiltInServer = {
+  label: string;
+  serverUrl: string;
+  previousLabels?: string[];
+  aliases?: string[];
+  replacedBy?: string;
+};
+
+const BUILT_IN_SERVERS: BuiltInServer[] = [
   { label: 'Test Server', serverUrl: 'https://vvg.openboxes.com/openboxes/api' },
   {
     label: 'Staging Server',
@@ -27,7 +37,8 @@ const BUILT_IN_SERVERS: { label: string; serverUrl: string; previousLabels?: str
   {
     label: 'Previous Staging Server',
     serverUrl: 'https://stag.vtc.openboxes.com/openboxes/api',
-    previousLabels: ['Staging Server']
+    previousLabels: ['Staging Server'],
+    replacedBy: 'https://vvg-stage.openboxes.cloud/api'
   }
 ];
 
@@ -119,7 +130,12 @@ function isSameServerUrl(a: string, b: string): boolean {
 
 function builtInsSignature(): string {
   return JSON.stringify(
-    BUILT_IN_SERVERS.map((s) => [s.label, canonicalServerUrl(s.serverUrl), s.previousLabels ?? []])
+    BUILT_IN_SERVERS.map((s) => [
+      s.label,
+      canonicalServerUrl(s.serverUrl),
+      s.previousLabels ?? [],
+      s.replacedBy ? canonicalServerUrl(s.replacedBy) : null
+    ])
   );
 }
 
@@ -130,7 +146,9 @@ function builtInsSignature(): string {
  *   (a built-in the user deleted is not added again)
  * - a profile on a built-in URL that still carries one of that server's earlier labels gets the current
  *   label, so environments stay distinguishable; labels the user chose are kept
- * Profiles are never removed and the active profile never changes.
+ * - when that relabeled profile is the active one and its server has a `replacedBy`, the replacing
+ *   server's profile becomes active
+ * Profiles are never removed, and the active profile changes only in that last case.
  */
 export function syncBuiltInServers(data: ProfileStorageData): ProfileStorageData {
   const signature = builtInsSignature();
@@ -140,9 +158,20 @@ export function syncBuiltInServers(data: ProfileStorageData): ProfileStorageData
 
   const seeded = new Set((data.seededServerUrls ?? []).map(canonicalServerUrl));
 
+  // The profile the app runs on: the stored active one, or the first profile when that id is missing
+  const activeId = data.profiles.some((p) => p.id === data.activeProfileId)
+    ? data.activeProfileId
+    : data.profiles[0]?.id;
+  let replacedActiveBy: string | undefined;
   const profiles = data.profiles.map((p) => {
     const builtIn = BUILT_IN_SERVERS.find((s) => matchesBuiltIn(s, p.serverUrl));
-    return builtIn?.previousLabels?.includes(p.label) ? { ...p, label: builtIn.label } : p;
+    if (!builtIn?.previousLabels?.includes(p.label)) {
+      return p;
+    }
+    if (p.id === activeId) {
+      replacedActiveBy = builtIn.replacedBy;
+    }
+    return { ...p, label: builtIn.label };
   });
 
   for (const server of BUILT_IN_SERVERS) {
@@ -153,7 +182,16 @@ export function syncBuiltInServers(data: ProfileStorageData): ProfileStorageData
     seeded.add(url);
   }
 
-  return { ...data, profiles, seededServerUrls: [...seeded], builtInsSignature: signature };
+  let activeProfileId = data.activeProfileId;
+  if (replacedActiveBy) {
+    const replacement = BUILT_IN_SERVERS.find((s) => isSameServerUrl(s.serverUrl, replacedActiveBy!));
+    const target = replacement && profiles.find((p) => matchesBuiltIn(replacement, p.serverUrl));
+    if (target) {
+      activeProfileId = target.id;
+    }
+  }
+
+  return { ...data, profiles, activeProfileId, seededServerUrls: [...seeded], builtInsSignature: signature };
 }
 
 export function validateUrl(url: string): string | null {

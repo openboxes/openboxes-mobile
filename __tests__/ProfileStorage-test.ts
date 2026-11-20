@@ -53,7 +53,7 @@ describe('migrate - fresh install', () => {
 });
 
 describe('migrate - an installed app from before the sync', () => {
-  it('adds the new staging server and relabels the previous one, keeping everything else', async () => {
+  it('adds the new staging server, relabels the previous one and moves the active selection to the new one', async () => {
     await store(
       oldStorage(
         [profile('t', 'Test Server', TEST_URL), profile('s', 'Staging Server', PREVIOUS_STAGING_URL, { a: 1 })],
@@ -64,12 +64,89 @@ describe('migrate - an installed app from before the sync', () => {
     const url = await migrate();
 
     const data = await stored();
-    expect(url).toBe(PREVIOUS_STAGING_URL);
-    expect(data.activeProfileId).toBe('s');
+    expect(url).toBe(STAGING_URL);
     expect(data.profiles[0]).toEqual(profile('t', 'Test Server', TEST_URL));
     expect(data.profiles[1]).toEqual(profile('s', 'Previous Staging Server', PREVIOUS_STAGING_URL, { a: 1 }));
     expect(data.profiles[2]).toMatchObject({ label: 'Staging Server', serverUrl: STAGING_URL });
     expect(data.profiles).toHaveLength(3);
+    expect(data.activeProfileId).toBe(data.profiles[2].id);
+  });
+
+  it('keeps the active selection when the previous staging profile is not active', async () => {
+    await store(
+      oldStorage([profile('t', 'Test Server', TEST_URL), profile('s', 'Staging Server', PREVIOUS_STAGING_URL)], 't')
+    );
+
+    const url = await migrate();
+
+    expect(url).toBe(TEST_URL);
+    expect((await stored()).activeProfileId).toBe('t');
+  });
+
+  it('moves the active selection to a new staging profile the user already had', async () => {
+    await store(
+      oldStorage(
+        [
+          profile('s', 'Staging Server', PREVIOUS_STAGING_URL),
+          profile('n', 'Mine', 'https://VVG-STAGE.openboxes.cloud/openboxes/api/')
+        ],
+        's'
+      )
+    );
+
+    await migrate();
+
+    const data = await stored();
+    expect(data.activeProfileId).toBe('n');
+    expect(data.profiles).toHaveLength(2);
+  });
+
+  it('keeps an active previous staging profile the user renamed', async () => {
+    await store(oldStorage([profile('s', 'Old box', PREVIOUS_STAGING_URL)], 's'));
+
+    const url = await migrate();
+
+    expect(url).toBe(PREVIOUS_STAGING_URL);
+    expect((await stored()).activeProfileId).toBe('s');
+  });
+
+  it('keeps the previous staging profile active when the user deleted the new one', async () => {
+    await store({
+      ...oldStorage([profile('s', 'Staging Server', PREVIOUS_STAGING_URL)], 's'),
+      seededServerUrls: [TEST_URL, STAGING_URL, PREVIOUS_STAGING_URL]
+    });
+
+    const url = await migrate();
+
+    const data = await stored();
+    expect(url).toBe(PREVIOUS_STAGING_URL);
+    expect(data.activeProfileId).toBe('s');
+    expect(data.profiles).toHaveLength(1);
+  });
+
+  it('moves the active selection when the stored active id is missing and the previous staging profile is first', async () => {
+    await store(
+      oldStorage([profile('s', 'Staging Server', PREVIOUS_STAGING_URL), profile('t', 'Test Server', TEST_URL)], 'gone')
+    );
+
+    const url = await migrate();
+
+    const data = await stored();
+    expect(url).toBe(STAGING_URL);
+    expect(data.activeProfileId).toBe(data.profiles[2].id);
+  });
+
+  it('moves the active selection only once, so switching back to the previous staging server sticks', async () => {
+    await store(
+      oldStorage([profile('t', 'Test Server', TEST_URL), profile('s', 'Staging Server', PREVIOUS_STAGING_URL)], 's')
+    );
+    await migrate();
+    await store({ ...(await stored()), activeProfileId: 's' });
+
+    const url = await migrate();
+
+    expect(url).toBe(PREVIOUS_STAGING_URL);
+    expect((await stored()).activeProfileId).toBe('s');
   });
 
   it('keeps labels the user chose', async () => {
@@ -233,7 +310,7 @@ describe('migrate - legacy API_URL key', () => {
 });
 
 describe('syncBuiltInServers', () => {
-  it('never removes a profile or changes the active one', () => {
+  it('never removes a profile, and keeps the active one when it is not being replaced', () => {
     const before = oldStorage(
       [profile('a', 'A', 'https://a.example.org/api'), profile('s', 'Staging Server', PREVIOUS_STAGING_URL)],
       'a'
