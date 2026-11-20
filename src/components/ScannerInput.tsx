@@ -107,9 +107,10 @@ export function ScannerInput({
 
   // Track the latest submitted value to prevent double submissions
   const lastSubmittedValue = useRef<string>('');
-  // A repeated scan is a duplicate while the field still shows it, or when it arrives right after the
-  // previous one (a double fire). Once a screen has cleared the field, e.g. after a failed lookup, the
-  // same code is accepted again, even if React batched the clear with the scan into no visible change.
+  // A repeated scan is a duplicate while the field still shows it, or when it arrives within
+  // DUPLICATE_SCAN_WINDOW_MS of the same scan (a double fire). Once a screen has cleared the field, e.g.
+  // after a failed lookup, the same code is accepted again after that window, even if React batched the
+  // clear with the scan into no visible change.
   const renderedValue = useRef(value);
   renderedValue.current = value;
   // Kept apart from lastSubmittedValue, which is reset when the field empties.
@@ -193,7 +194,9 @@ export function ScannerInput({
       return;
     }
     const now = Date.now();
-    const isDoubleFire = scanned === lastScan.current.code && now - lastScan.current.at < DUPLICATE_SCAN_WINDOW_MS;
+    const elapsed = now - lastScan.current.at;
+    // elapsed < 0: the device clock stepped back; do not treat that as a double fire.
+    const isDoubleFire = scanned === lastScan.current.code && elapsed >= 0 && elapsed < DUPLICATE_SCAN_WINDOW_MS;
     const isStillShown = scanned === lastSubmittedValue.current && renderedValue.current.trim() === scanned;
     if (isDoubleFire || isStillShown) {
       return;

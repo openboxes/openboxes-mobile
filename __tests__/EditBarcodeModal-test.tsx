@@ -173,9 +173,10 @@ describe('EditBarcodeModal', () => {
     act(() => button(renderer, 'Remove barcode').onPress());
 
     // the screen closes the modal and reloads the product without a barcode
-    act(() => renderer.update(modal(false)));
-    act(() => renderer.update(modal(true)));
-    expect(hasButton(renderer, 'Remove barcode')).toBe(false);
-    expect(renderer.root.findAllByProps({ testID: 'scanner' }).length).toBeGreaterThan(0);
+    act(() => renderer!.update(modal(false)));
+    expect(hasButton(renderer!, 'Remove barcode')).toBe(false);
+    act(() => renderer!.update(modal(true)));
+    expect(hasButton(renderer!, 'Remove barcode')).toBe(false);
+    expect(renderer!.root.findAllByProps({ testID: 'scanner' }).length).toBeGreaterThan(0);
   });
 });

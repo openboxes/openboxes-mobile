@@ -100,6 +100,8 @@ describe('ScannerInput', () => {
   it('accepts the same scan again once the field was emptied, with auto-submit off', () => {
     const { onSubmit, setValue } = render({ autoSubmitTimeout: 0 });
     act(() => mockScan.emit('ABC-1'));
+    // past the double-fire window, but the field still shows the code
+    now += 1500;
     act(() => mockScan.emit('ABC-1'));
     expect(onSubmit).toHaveBeenCalledTimes(1);
 
