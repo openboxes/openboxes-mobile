@@ -78,6 +78,12 @@ const styles = StyleSheet.create({
     marginBottom: Theme.spacing.medium,
     backgroundColor: 'white'
   },
+  urlInput: {
+    backgroundColor: 'white'
+  },
+  urlHelper: {
+    marginBottom: Theme.spacing.small
+  },
   errorBox: {
     flexDirection: 'row',
     alignItems: 'center',
