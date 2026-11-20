@@ -105,6 +105,7 @@ describe('ScannerInput', () => {
 
     // e.g. the save failed and the screen cleared the field for a rescan
     setValue('');
+    now += 1500;
     act(() => mockScan.emit('ABC-1'));
     expect(onSubmit).toHaveBeenCalledTimes(2);
   });
@@ -131,5 +132,14 @@ describe('ScannerInput', () => {
     expect(onChange).toHaveBeenCalledWith('12');
     act(() => textInput(renderer).onSubmitEditing());
     expect(onSubmit).toHaveBeenCalledWith('12');
+  });
+
+  it('drops a double fire that arrives after the screen already cleared the field', () => {
+    const { onSubmit, setValue } = render({ autoSubmitTimeout: 0 });
+    act(() => mockScan.emit('BIN-1'));
+    setValue('');
+    now += 100;
+    act(() => mockScan.emit('BIN-1'));
+    expect(onSubmit).toHaveBeenCalledTimes(1);
   });
 });

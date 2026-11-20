@@ -112,7 +112,8 @@ export function ScannerInput({
   // same code is accepted again, even if React batched the clear with the scan into no visible change.
   const renderedValue = useRef(value);
   renderedValue.current = value;
-  const lastScanAt = useRef(0);
+  // Kept apart from lastSubmittedValue, which is reset when the field empties.
+  const lastScan = useRef<{ code: string; at: number }>({ code: '', at: 0 });
   const shouldBeFocused = isScreenFocused && isEnabled;
   // Scans mid-flash are ignored below; disabling the listener would re-enable DataWedge keystrokes.
   const { isFlashing, flash } = useScanFlash();
@@ -191,14 +192,14 @@ export function ScannerInput({
       flash('fail');
       return;
     }
-    if (
-      scanned === lastSubmittedValue.current &&
-      (renderedValue.current.trim() === scanned || Date.now() - lastScanAt.current < DUPLICATE_SCAN_WINDOW_MS)
-    ) {
+    const now = Date.now();
+    const isDoubleFire = scanned === lastScan.current.code && now - lastScan.current.at < DUPLICATE_SCAN_WINDOW_MS;
+    const isStillShown = scanned === lastSubmittedValue.current && renderedValue.current.trim() === scanned;
+    if (isDoubleFire || isStillShown) {
       return;
     }
     lastSubmittedValue.current = scanned;
-    lastScanAt.current = Date.now();
+    lastScan.current = { code: scanned, at: now };
     onChange(scanned);
     onSubmit(scanned);
   }, shouldBeFocused);
