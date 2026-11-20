@@ -68,8 +68,9 @@ export default function ReplenishmentOutboundContainerScreen() {
     });
   }
 
-  function handleSubmit() {
-    if (!outboundContainerId) {
+  // A hardware scan submits before `outboundContainerId` re-renders, so use the submitted code.
+  function handleSubmit(containerId: string) {
+    if (!containerId) {
       Alert.alert('Missing Input', 'Please scan or enter a valid Outbound Container ID.');
       setOutboundContainerId('');
       return;
@@ -84,7 +85,7 @@ export default function ReplenishmentOutboundContainerScreen() {
     if (parsedQuantityPicked !== undefined && parsedQuantityPicked < currentTask.quantityRequired) {
       // Handle Short Pick
       shortPickTask(
-        outboundContainerId,
+        containerId,
         parsedQuantityPicked,
         (response) => {
           if ('errorMessage' in response) {

@@ -154,6 +154,7 @@ export default function SortationQuantityScreen() {
           leftIcon={<QuantityIcon size={24} />}
           placeholder={task?.quantity?.toString() ?? EMPTY_FALLBACK}
           keyboardType="number-pad"
+          acceptsScans={false}
           label="Quantity"
           value={quantitySorted?.toString() ?? ''}
           onChange={handleChange}

@@ -29,8 +29,9 @@ export function ReplenishmentStagingLocationScreen() {
     return null;
   }
 
-  function handleSubmit() {
-    if (!stagingLocationNumber) {
+  // A hardware scan submits before `stagingLocationNumber` re-renders, so use the submitted code.
+  function handleSubmit(code: string) {
+    if (!code) {
       Alert.alert('Missing Input', 'Please scan or enter a valid Staging Location ID.');
       setStagingLocationNumber('');
       return;

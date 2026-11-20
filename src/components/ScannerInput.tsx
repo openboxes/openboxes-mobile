@@ -53,6 +53,12 @@ type ScannerInputProps = {
    * If true, shows error styling (red border) - uses PaperTextInput error color (#B00020)
    */
   danger?: boolean;
+  /**
+   * If false, hardware (DataWedge) scans are dropped with a fail flash; typing still works.
+   * Use it on fields that are not meant for barcodes, such as quantities. The scan listener
+   * stays registered so DataWedge keystroke output stays muted.
+   */
+  acceptsScans?: boolean;
 };
 
 /**
@@ -86,7 +92,8 @@ export function ScannerInput({
   showKeyboardOnMount,
   keyboardType,
   placeholder,
-  danger = false
+  danger = false,
+  acceptsScans = true
 }: ScannerInputProps) {
   const storedDebounceTime = useSelector((state: RootState) => state.settingsReducer.barcodeScanDebounceTime);
   const defaultTimeout = storedDebounceTime ?? appConfig.DEFAULT_DEBOUNCE_TIME;
@@ -100,7 +107,7 @@ export function ScannerInput({
   const lastSubmittedValue = useRef<string>('');
   const shouldBeFocused = isScreenFocused && isEnabled;
   // Scans mid-flash are ignored below; disabling the listener would re-enable DataWedge keystrokes.
-  const { isFlashing } = useScanFlash();
+  const { isFlashing, flash } = useScanFlash();
 
   // Focus the input — keyboard is handled via onFocus callback
   const requestFocus = useCallback(() => {
@@ -142,12 +149,13 @@ export function ScannerInput({
 
   // Auto-submit after timeout
   useEffect(() => {
-    if (!timeout) {
+    // An emptied field accepts the same value again, also when auto-submit is off.
+    if (!value) {
+      lastSubmittedValue.current = '';
       return;
     }
 
-    if (!value) {
-      lastSubmittedValue.current = '';
+    if (!timeout) {
       return;
     }
 
@@ -168,7 +176,14 @@ export function ScannerInput({
 
   useScanListener((result) => {
     const scanned = result.data;
-    if (!scanned || isFlashing || scanned === lastSubmittedValue.current) {
+    if (!scanned || isFlashing) {
+      return;
+    }
+    if (!acceptsScans) {
+      flash('fail');
+      return;
+    }
+    if (scanned === lastSubmittedValue.current) {
       return;
     }
     lastSubmittedValue.current = scanned;
