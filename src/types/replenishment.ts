@@ -19,7 +19,10 @@ export type ReplenishmentList = {
   orderNumber: string;
   status: string;
   dateCreated: string;
+  /** All tasks of the list */
   tasksCount: number;
+  /** Tasks still to pick (PENDING or PICKING) */
+  openTasksCount: number;
 };
 
 export type ReplenishmentTask = {

@@ -7,7 +7,8 @@ import {
   moveTaskToEnd,
   proceedToNextTask,
   sortTasksByLocation,
-  summarizeListTasks
+  summarizeListTasks,
+  tasksCountLabel
 } from '../src/screens/Replenishment/lib';
 import { ReplenishmentTask, ReplenishmentTaskStatus } from '../src/types/replenishment';
 
@@ -205,5 +206,19 @@ describe('describeReallocatedTasks', () => {
         reallocated('3', 1, 'C-5-1')
       ])
     ).toBe('3 more to pick from A-11-1, 2 from B-2-1 and 1 from C-5-1');
+  });
+});
+
+describe('tasksCountLabel', () => {
+  it('shows all the tasks before any is done', () => {
+    expect(tasksCountLabel({ tasksCount: 5, openTasksCount: 5 })).toBe('5');
+  });
+
+  it('shows the tasks left once some are done', () => {
+    expect(tasksCountLabel({ tasksCount: 5, openTasksCount: 2 })).toBe('2 / 5 Left');
+  });
+
+  it('shows all the tasks when none is left to pick', () => {
+    expect(tasksCountLabel({ tasksCount: 5, openTasksCount: 0 })).toBe('5');
   });
 });

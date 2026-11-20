@@ -18,8 +18,8 @@ import { useReplenishmentScanLog } from './scanLog';
 import styles from './styles';
 
 /**
- * Stages the containers of the list one by one, like outbound picking: the expected staging location is shown, and
- * the server accepts or rejects the scanned one.
+ * Stages the containers of the list one by one: the picker scans a staging lane set aside for bin replenishment
+ * (BIN_REPLENISHMENT activity), which the search lists, and the server rejects any other location.
  */
 export function ReplenishmentStagingLocationScreen() {
   const { currentList, listTasks, loadListTasks, dropContainerAtStagingLocation, resetReplenishmentSession } =
@@ -155,7 +155,7 @@ export function ReplenishmentStagingLocationScreen() {
             onChange={stagingScan.onChange}
             onSubmit={handleScan}
           />
-          <SearchButton searchType="location" {...searchButtonProps} />
+          <SearchButton searchType="replenishmentStagingLocation" {...searchButtonProps} />
         </View>
         <ScanErrorText message={stagingScan.error} />
       </View>

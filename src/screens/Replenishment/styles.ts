@@ -71,6 +71,21 @@ export default StyleSheet.create({
   orderNumberChip: {
     flexShrink: 1
   },
+  statusChip: {
+    marginRight: 0
+  },
+  statusChipReady: {
+    backgroundColor: Theme.colors.successBackground
+  },
+  statusChipTextReady: {
+    color: Theme.colors.successForeground
+  },
+  statusChipInProgress: {
+    backgroundColor: Theme.colors.infoBackground
+  },
+  statusChipTextInProgress: {
+    color: Theme.colors.infoForeground
+  },
   orderNumberText: {
     fontSize: 14,
     color: Theme.colors.text

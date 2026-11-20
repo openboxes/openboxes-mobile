@@ -1,6 +1,6 @@
 import { Container } from '../../data/container/Shipment';
 import { navigate, resetToRoutes } from '../../NavigationService';
-import { ReplenishmentTask, ReplenishmentTaskStatus } from '../../types/replenishment';
+import { ReplenishmentList, ReplenishmentTask, ReplenishmentTaskStatus } from '../../types/replenishment';
 
 /**
  * Orders the tasks by pick location, so the picker walks the locations in sequence.
@@ -179,4 +179,12 @@ export function summarizeListTasks(tasks: ReplenishmentTask[]): ListSummary {
 
   summary.containersToStage = Array.from(containers.values());
   return summary;
+}
+
+/** "2 / 5 Left" once some tasks are done but others are still to pick, otherwise all the tasks */
+export function tasksCountLabel({
+  tasksCount,
+  openTasksCount
+}: Pick<ReplenishmentList, 'tasksCount' | 'openTasksCount'>) {
+  return openTasksCount > 0 && openTasksCount < tasksCount ? `${openTasksCount} / ${tasksCount} Left` : `${tasksCount}`;
 }

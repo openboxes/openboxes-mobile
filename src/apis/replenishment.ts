@@ -5,6 +5,9 @@ export const OPEN_TASK_STATUSES = [ReplenishmentTaskStatus.PENDING, Replenishmen
 
 export const ALL_TASK_STATUSES = Object.values(ReplenishmentTaskStatus);
 
+/** Activity code of the locations set aside for bin replenishment, e.g. the staging lanes replenishment is dropped in */
+export const BIN_REPLENISHMENT_ACTIVITY = 'BIN_REPLENISHMENT';
+
 /** Status of a list whose tasks are all picked, with picks waiting in containers to be staged */
 export const LIST_STATUS_PICKED = 'PICKED';
 

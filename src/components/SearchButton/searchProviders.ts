@@ -1,3 +1,4 @@
+import { BIN_REPLENISHMENT_ACTIVITY } from '../../apis/replenishment';
 import Location from '../../data/location/Location';
 import Product from '../../data/product/Product';
 import { searchDestinationBinsAction, searchProductOrLocationAction } from '../../redux/actions/createTransfer';
@@ -79,6 +80,17 @@ function createLocationAction(term: string, callback: SearchCallback) {
   );
 }
 
+/** Only the staging lanes set aside for bin replenishment */
+function createReplenishmentStagingLocationAction(term: string, callback: SearchCallback) {
+  return searchInternalLocations(
+    term,
+    { activityCodes: BIN_REPLENISHMENT_ACTIVITY },
+    (response: SearchResponse<Location>) =>
+      handleLocationSearchResponse(response, callback, 'Failed to search staging locations.'),
+    true
+  );
+}
+
 function createProductOrLocationAction(term: string, callback: SearchCallback) {
   return searchProductOrLocationAction(
     term,
@@ -141,6 +153,12 @@ export const searchProviders = {
     placeholder: 'Search by name or number...',
     inputLabel: 'Destination Bin',
     createAction: createDestinationBinAction
+  },
+  replenishmentStagingLocation: {
+    title: 'Search Staging Location',
+    placeholder: 'Search by name or number...',
+    inputLabel: 'Staging Location',
+    createAction: createReplenishmentStagingLocationAction
   },
   productOrLocation: {
     title: 'Search Product or Bin',

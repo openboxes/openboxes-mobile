@@ -12,10 +12,41 @@ import PullToRefreshControl from '../../components/PullToRefreshControl';
 import { HYPHEN } from '../../constants';
 import { navigate } from '../../NavigationService';
 import { getReplenishmentListsAction } from '../../redux/actions/replenishment';
-import { ReplenishmentList } from '../../types/replenishment';
+import { ReplenishmentList, ReplenishmentTaskStatus } from '../../types/replenishment';
+import Theme from '../../utils/Theme';
 import { parseFromISODateToLocaleString } from '../../utils/utils';
+import { tasksCountLabel } from './lib';
 import { useReplenishmentContext } from './ReplenishmentContext';
 import styles from './styles';
+
+/** Like the discrete picking order card: "Ready" before picking starts, "In progress" while picking */
+function ListStatusChip({ status }: { status: string }) {
+  if (status === LIST_STATUS_PICKED) {
+    return (
+      <Chip icon="tray-arrow-down" style={[styles.chipDefault, styles.statusChip]}>
+        <Text style={[styles.chipText, styles.fontBold]}>Ready to stage</Text>
+      </Chip>
+    );
+  }
+  const inProgress = status === ReplenishmentTaskStatus.PICKING;
+  return (
+    <Chip
+      icon={inProgress ? 'progress-clock' : 'check-circle-outline'}
+      selectedColor={inProgress ? Theme.colors.infoForeground : Theme.colors.successForeground}
+      style={[styles.chipDefault, styles.statusChip, inProgress ? styles.statusChipInProgress : styles.statusChipReady]}
+    >
+      <Text
+        style={[
+          styles.chipText,
+          styles.fontBold,
+          inProgress ? styles.statusChipTextInProgress : styles.statusChipTextReady
+        ]}
+      >
+        {inProgress ? 'In progress' : 'Ready'}
+      </Text>
+    </Chip>
+  );
+}
 
 type ReplenishmentListCardProps = {
   list: ReplenishmentList;
@@ -30,11 +61,7 @@ function ReplenishmentListCard({ list, onPress }: ReplenishmentListCardProps) {
           <Chip icon="identifier" style={[styles.chipDefault, styles.orderNumberChip]}>
             <Text style={[styles.orderNumberText, styles.fontBold]}>{list.orderNumber ?? HYPHEN}</Text>
           </Chip>
-          {list.status === LIST_STATUS_PICKED && (
-            <Chip icon="tray-arrow-down" style={styles.chipDefault}>
-              <Text style={[styles.chipText, styles.fontBold]}>Ready to stage</Text>
-            </Chip>
-          )}
+          <ListStatusChip status={list.status} />
         </View>
 
         <Divider style={styles.divider} />
@@ -43,7 +70,7 @@ function ReplenishmentListCard({ list, onPress }: ReplenishmentListCardProps) {
           <Chip icon="package-variant-closed" style={styles.chipDefault}>
             <Text style={styles.chipText}>
               {list.tasksCount === 1 ? 'Task' : 'Tasks'}:{' '}
-              <Text style={[styles.chipText, styles.fontBold]}>{list.tasksCount}</Text>
+              <Text style={[styles.chipText, styles.fontBold]}>{tasksCountLabel(list)}</Text>
             </Text>
           </Chip>
           <Chip icon="calendar" style={styles.chipDefault}>
