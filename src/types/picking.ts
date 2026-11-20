@@ -61,6 +61,12 @@ export type PickTask = {
   facility?: Location;
   location?: Location;
   outboundContainer?: Container | null;
+  /** true when the container was created on behalf of the picker rather than scanned */
+  employeeLocation?: boolean;
+  /** true when the facility lets the picker skip the outbound container scan */
+  outboundContainerBypassAllowed?: boolean;
+  /** Only set for a PICKED-only search: the picked stock is no longer in the bin the task names */
+  hasStockIssue?: boolean | null;
   stagingLocation?: Location | null;
 
   product: Product;
@@ -187,4 +193,56 @@ export type ReallocatePicklistItem = {
   inventoryItem: { id: string };
   binLocation: { id: string };
   quantity: number;
+};
+
+/** Picked lines of one order sitting in one container — the unit of work on the staging list. */
+export type StagingOrderGroup = {
+  key: string;
+  requisitionId: string;
+  requisitionNumber?: string;
+  destination?: string;
+  destinationLocationType?: string;
+  deliveryTypeCode?: DeliveryTypeCode;
+  /** Order-wide lines not yet picked, straight from the pick_task view */
+  openLineCount: number;
+  containerId: string | null;
+  containerLabel: string;
+  isEmployeeLocation: boolean;
+  tasks: PickTask[];
+  /** Lines of this order in this container that are waiting to be staged */
+  pickedLineCount: number;
+  /** Lines of this order picked at all, staged ones included — total minus still-to-pick */
+  pickedCumulativeCount: number;
+  orderTotalLineCount: number;
+  hasStockIssue: boolean;
+  searchIndex: string;
+};
+
+export type StagingContainerGroup = {
+  containerId: string | null;
+  containerLabel: string;
+  isEmployeeLocation: boolean;
+  itemCount: number;
+  orders: StagingOrderGroup[];
+};
+
+/** One order across every container it was picked into. */
+export type StagingOrderRollup = {
+  requisitionId: string;
+  requisitionNumber?: string;
+  destination?: string;
+  destinationLocationType?: string;
+  deliveryTypeCode?: DeliveryTypeCode;
+  groups: StagingOrderGroup[];
+  /** Lines of this order waiting to be staged, across every container */
+  pickedLineCount: number;
+  /** Lines of this order picked at all, staged ones included — total minus still-to-pick */
+  pickedCumulativeCount: number;
+  /** Lines of this order already staged, inferred from the three order-wide counts */
+  stagedCount: number;
+  /** Order-wide lines not yet picked, straight from the pick_task view */
+  openLineCount: number;
+  orderTotalLineCount: number;
+  isSplitAcrossContainers: boolean;
+  searchIndex: string;
 };

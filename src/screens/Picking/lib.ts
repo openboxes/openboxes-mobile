@@ -46,17 +46,7 @@ export function proceedToNextOrComplete({
     return;
   }
 
-  Alert.alert('All Picks Complete', 'You have completed all picks. Proceeding to staging location drop.', [
-    {
-      text: 'OK',
-      onPress: () =>
-        resetToRoutes([
-          { name: 'Drawer', params: { screen: 'Dashboard' } },
-          { name: homeRoute },
-          { name: 'PickingPickStagingLocation' }
-        ])
-    }
-  ]);
+  resetToRoutes([{ name: 'Drawer', params: { screen: 'Dashboard' } }, { name: homeRoute }, { name: 'PickComplete' }]);
 }
 
 export function revalidateTaskAndProceed({

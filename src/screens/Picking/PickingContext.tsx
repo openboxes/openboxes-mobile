@@ -4,7 +4,6 @@ import { useDispatch } from 'react-redux';
 
 import { navigate, resetToRoutes } from '../../NavigationService';
 import {
-  dropPickTaskAction,
   getPickTaskByIdAction,
   getPickTasksAction,
   getPickTasksByRequisitionAction,
@@ -43,8 +42,11 @@ type PickingContextType = {
   startSession: (deliveryType: DeliveryType, ordersCount: number) => Promise<boolean>;
   /** Starts a picking session for a single order (discrete picking), returns whether it was successful */
   startOrderSession: (requisitionId: string) => Promise<boolean>;
-  /** Completes the current pick task. */
-  pickCurrentTask: (outboundContainerId: string, callback: (response: { errorMessage?: string }) => void) => void;
+  /** Completes the current pick task. A null container means the picker bypassed the scan. */
+  pickCurrentTask: (
+    outboundContainerId: string | null,
+    callback: (response: { errorMessage?: string }) => void
+  ) => void;
   /** Resets state to initial values */
   resetSession: () => void;
   /** Handles short pick for the current task */
@@ -58,13 +60,6 @@ type PickingContextType = {
   revalidateTasksForRequisition: (requisitionId: string | undefined, callback: (errorMessage?: string) => void) => void;
   /** Start the pick task (API call) */
   startPickTask: (callback: (response: { errorMessage?: string }) => void) => void;
-  /** Drop the current pick task at the given staging location */
-  dropCurrentTaskAtStagingLocation: (
-    task: PickTask,
-    stagingLocationId: string,
-    callback?: (response: { errorMessage?: string; allowOverride?: boolean }) => void,
-    overrideStagingLocationZone?: boolean
-  ) => void;
   /** Revalidates the current pick task details from the server */
   revalidateCurrentTask: (callback?: (task: PickTask | undefined, errorMessage?: string) => void) => void;
   /** Advances to the next task in the list */
@@ -149,7 +144,10 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
     dispatch(startPickTaskAction(currentTask.id, callback));
   };
 
-  const pickCurrentTask = (outboundContainerId: string, callback: (response: { errorMessage?: string }) => void) => {
+  const pickCurrentTask = (
+    outboundContainerId: string | null,
+    callback: (response: { errorMessage?: string }) => void
+  ) => {
     if (!currentTask) {
       return;
     }
@@ -221,14 +219,14 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
             return;
           }
 
-          Alert.alert('No Additional Tasks', 'No new pick tasks were created. Proceeding to staging location drop.', [
+          Alert.alert('No Additional Tasks', 'No new pick tasks were created. Picking is complete.', [
             {
               text: 'OK',
               onPress: () =>
                 resetToRoutes([
                   { name: 'Drawer', params: { screen: 'Dashboard' } },
                   { name: homeRoute },
-                  { name: 'PickingPickStagingLocation' }
+                  { name: 'PickComplete' }
                 ])
             }
           ]);
@@ -247,32 +245,6 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
         callback();
       })
     );
-  };
-
-  // Drops the current task at the given (scanned) staging location; the server validates it
-  // against the task's delivery type/zone (see PickTaskService.validateStagingLocationZone).
-  const dropCurrentTaskAtStagingLocation = (
-    task: PickTask,
-    stagingLocationId: string,
-    callback?: (response: { errorMessage?: string; allowOverride?: boolean }) => void,
-    overrideStagingLocationZone?: boolean
-  ) => {
-    if (!task) {
-      callback?.({ errorMessage: 'No current task to drop.' });
-      return;
-    }
-
-    if (!stagingLocationId) {
-      callback?.({ errorMessage: 'Please scan or enter a staging location.' });
-      return;
-    }
-
-    if (!task.outboundContainer?.id) {
-      callback?.({ errorMessage: 'Current task does not have a valid Outbound Container.' });
-      return;
-    }
-
-    dispatch(dropPickTaskAction(task.outboundContainer.id, stagingLocationId, callback, overrideStagingLocationZone));
   };
 
   const resetSession = () => {
@@ -298,7 +270,6 @@ export function PickingProvider({ children }: { children: React.ReactNode }) {
         resetSession,
         revalidateTasksForRequisition,
         startPickTask,
-        dropCurrentTaskAtStagingLocation,
         revalidateCurrentTask,
         goToNextTask
       }}
