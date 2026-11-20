@@ -30,9 +30,9 @@ export default function EditBarcodeModal({
   const isScreenFocused = useIsFocused();
 
   useEffect(() => {
+    setIsConfirmingRemove(false);
     if (visible) {
       setBarcode(EMPTY_STRING);
-      setIsConfirmingRemove(false);
     }
   }, [visible]);
 
@@ -57,7 +57,7 @@ export default function EditBarcodeModal({
     setIsConfirmingRemove(true);
   };
 
-  if (isConfirmingRemove) {
+  if (isConfirmingRemove && currentBarcode) {
     return (
       <Modal
         transparent

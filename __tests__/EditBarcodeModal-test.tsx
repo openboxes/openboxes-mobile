@@ -151,4 +151,31 @@ describe('EditBarcodeModal', () => {
     expect(hasButton(renderer, 'Remove barcode')).toBe(false);
     expect(onClose).toHaveBeenCalledTimes(1);
   });
+
+  it('opens on the edit step again after a removal closed it from the confirm step', () => {
+    const onSave = jest.fn();
+    const onRemoveBarcode = jest.fn();
+    const onClose = jest.fn();
+    const modal = (visible: boolean, currentBarcode?: string) => (
+      <EditBarcodeModal
+        visible={visible}
+        currentBarcode={currentBarcode}
+        onSave={onSave}
+        onRemoveBarcode={onRemoveBarcode}
+        onClose={onClose}
+      />
+    );
+    let renderer: ReactTestRenderer;
+    act(() => {
+      renderer = TestRenderer.create(modal(true, '096619756803'));
+    });
+    act(() => button(renderer, 'Remove').onPress());
+    act(() => button(renderer, 'Remove barcode').onPress());
+
+    // the screen closes the modal and reloads the product without a barcode
+    act(() => renderer.update(modal(false)));
+    act(() => renderer.update(modal(true)));
+    expect(hasButton(renderer, 'Remove barcode')).toBe(false);
+    expect(renderer.root.findAllByProps({ testID: 'scanner' }).length).toBeGreaterThan(0);
+  });
 });
