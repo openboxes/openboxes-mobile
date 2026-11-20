@@ -5,7 +5,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { Button } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
-import { PICK_TASK_PAGE_SIZE } from '../../apis/picking';
+import { PICK_TASK_PAGE_SIZE, StagingWorkScope } from '../../apis/picking';
 import BarcodeSearchHeader from '../../components/BarcodeSearchHeader/BarcodeSearchHeader';
 import DiscretePickingCardSkeleton from '../Picking/DiscretePickingCardSkeleton';
 import EmptyView from '../../components/EmptyView';
@@ -171,35 +171,43 @@ export default function MoveToStagingListScreen() {
     ]);
   }, []);
 
+  // A multi-container pick is filtered on the server too, so its containers are never past the first page
+  const workScope = React.useMemo<StagingWorkScope>(
+    () => ({
+      outboundContainerId: containerFilter,
+      outboundContainerIds: containerFilter ? undefined : pickSession?.containerIds
+    }),
+    [containerFilter, pickSession]
+  );
+
   const fetchWork = React.useCallback(
-    (outboundContainerId?: string, fromPull = false) => {
+    (fromPull = false) => {
       setIsRefreshing(true);
       if (fromPull) {
         setIsPullRefreshing(true);
       }
       dispatch(
-        getStagingWorkAction(
-          { outboundContainerId, max: PICK_TASK_PAGE_SIZE, offset: 0 },
-          ({ response, errorMessage }) => {
-            if (errorMessage || !response?.data) {
-              setLoadError(errorMessage ?? 'Something went wrong');
-            } else {
-              setLoadError(undefined);
-              setTasks(response.data);
-              setTotalCount(response.totalCount ?? response.data.length);
-              // A walk started from picking ends once its own work is gone, not when the facility is empty.
-              if (pickSession && response.data.filter(isInSession).length === 0) {
-                finishPickingWalk();
-              }
+        getStagingWorkAction({ ...workScope, max: PICK_TASK_PAGE_SIZE, offset: 0 }, ({ response, errorMessage }) => {
+          if (errorMessage || !response?.data) {
+            setLoadError(errorMessage ?? 'Something went wrong');
+          } else {
+            setLoadError(undefined);
+            const total = response.totalCount ?? response.data.length;
+            setTasks(response.data);
+            setTotalCount(total);
+            // A walk started from picking ends once its own work is gone, not when the facility is empty,
+            // and only on a complete list - a partial page cannot prove the work is gone.
+            if (pickSession && response.data.length >= total && response.data.filter(isInSession).length === 0) {
+              finishPickingWalk();
             }
-            setIsRefreshing(false);
-            setIsPullRefreshing(false);
-            setHasLoaded(true);
           }
-        )
+          setIsRefreshing(false);
+          setIsPullRefreshing(false);
+          setHasLoaded(true);
+        })
       );
     },
-    [dispatch, pickSession, isInSession, finishPickingWalk]
+    [dispatch, workScope, pickSession, isInSession, finishPickingWalk]
   );
 
   // The facility-wide picked list can exceed one page, and grouping happens over whatever is
@@ -216,7 +224,7 @@ export default function MoveToStagingListScreen() {
     setIsRefreshing(true);
     dispatch(
       getStagingWorkAction(
-        { outboundContainerId: containerFilter, max: PICK_TASK_PAGE_SIZE, offset: tasks.length },
+        { ...workScope, max: PICK_TASK_PAGE_SIZE, offset: tasks.length },
         ({ response, errorMessage }) => {
           if (!errorMessage && response?.data) {
             setTasks((previous) => [...previous, ...response.data]);
@@ -227,14 +235,14 @@ export default function MoveToStagingListScreen() {
         }
       )
     );
-  }, [dispatch, tasks.length, totalCount, containerFilter]);
+  }, [dispatch, tasks.length, totalCount, workScope]);
 
   // Refetch on every entry. A held list is a snapshot that goes stale, and this screen is the
   // way back into interrupted work.
   useFocusEffect(
     React.useCallback(() => {
-      fetchWork(containerFilter);
-    }, [fetchWork, containerFilter])
+      fetchWork();
+    }, [fetchWork])
   );
 
   const sessionTasks = React.useMemo(() => tasks.filter(isInSession), [tasks, isInSession]);
@@ -265,14 +273,11 @@ export default function MoveToStagingListScreen() {
     });
   };
 
-  // Any filter change of the picker's own leaves the post-pick view and opens up the whole facility
-  const applyContainerFilter = (term?: string) => {
+  // Leaves the post-pick view and opens up the whole facility. Scans only search the loaded list,
+  // which matches containers and order numbers alike.
+  const clearFilter = () => {
     setPickSession(undefined);
-    setContainerFilter(term);
-  };
-
-  const handleScan = (term: string) => {
-    applyContainerFilter(term || undefined);
+    setContainerFilter(undefined);
   };
 
   const containerIcon = (group: { isEmployeeLocation: boolean; containerId: string | null }) =>
@@ -384,7 +389,7 @@ export default function MoveToStagingListScreen() {
     resetToRoutes([{ name: 'Drawer', params: { screen: 'Dashboard' } }]);
   };
 
-  const retry = () => fetchWork(containerFilter);
+  const retry = () => fetchWork();
   const emptyState = (
     <ListFallback
       loadError={loadError}
@@ -409,7 +414,6 @@ export default function MoveToStagingListScreen() {
         accessibilityLabel="Scan container or order to filter"
         loading={hasLoaded && isRefreshing && !isPullRefreshing}
         onSearchTermSubmit={setSearchTerm}
-        onSearchTermScan={handleScan}
       />
 
       <View style={styles.listHeader}>
@@ -423,7 +427,7 @@ export default function MoveToStagingListScreen() {
         {filterLabel ? (
           <View style={styles.activeFilterRow}>
             <Text style={styles.activeFilterText}>{filterLabel}</Text>
-            <TouchableOpacity accessibilityRole="button" onPress={() => applyContainerFilter(undefined)}>
+            <TouchableOpacity accessibilityRole="button" onPress={clearFilter}>
               <Text style={styles.activeFilterClear}>Clear</Text>
             </TouchableOpacity>
           </View>
@@ -456,7 +460,7 @@ export default function MoveToStagingListScreen() {
             contentContainerStyle={styles.listContent}
             refreshing={isPullRefreshing}
             ListEmptyComponent={emptyState}
-            onRefresh={() => fetchWork(containerFilter, true)}
+            onRefresh={() => fetchWork(true)}
             onEndReached={loadMore}
             onEndReachedThreshold={0.5}
           />
@@ -468,7 +472,7 @@ export default function MoveToStagingListScreen() {
             contentContainerStyle={styles.listContent}
             refreshing={isPullRefreshing}
             ListEmptyComponent={emptyState}
-            onRefresh={() => fetchWork(containerFilter, true)}
+            onRefresh={() => fetchWork(true)}
             onEndReached={loadMore}
             onEndReachedThreshold={0.5}
           />

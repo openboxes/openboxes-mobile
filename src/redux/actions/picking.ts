@@ -1,4 +1,4 @@
-import { PickTaskDropScope, PickTaskParams } from '../../apis';
+import { PickTaskDropScope, PickTaskParams, StagingWorkScope } from '../../apis';
 import { DeliveryTypeOrderCount, PickPageItem, PickTask, ReallocatePicklistItem } from '../../types/picking';
 
 export const GET_PICK_TASKS_REQUEST = 'GET_PICK_TASKS_REQUEST';
@@ -203,7 +203,7 @@ type PickTaskListResponse = {
 };
 
 export function getStagingWorkAction(
-  params: { outboundContainerId?: string; max?: number; offset?: number },
+  params: StagingWorkScope & { max?: number; offset?: number },
   callback: (response: PickTaskListResponse) => void
 ) {
   return {

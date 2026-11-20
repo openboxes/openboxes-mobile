@@ -86,15 +86,15 @@ export function getPickTaskByIdApi(facilityId: string, taskId: string) {
   return ApiClient.get(`/facilities/${facilityId}/pick-tasks/${taskId}`);
 }
 
-export function getStagingWorkApi(
-  facilityId: string,
-  params?: { outboundContainerId?: string; max?: number; offset?: number }
-) {
+export type StagingWorkScope = { outboundContainerId?: string; outboundContainerIds?: string[] };
+
+export function getStagingWorkApi(facilityId: string, params?: StagingWorkScope & { max?: number; offset?: number }) {
   const query = ['status=PICKED'];
 
   if (params?.outboundContainerId) {
     query.push(`outboundContainerId=${encodeURIComponent(params.outboundContainerId)}`);
   }
+  params?.outboundContainerIds?.forEach((id) => query.push(`outboundContainerIds=${encodeURIComponent(id)}`));
   if (params?.max !== undefined) {
     query.push(`max=${params.max}`);
   }
