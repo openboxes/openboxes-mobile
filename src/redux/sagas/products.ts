@@ -274,12 +274,10 @@ function* getSortationDetailsSaga(action: any) {
 function* updateProductIdentifierSaga(action: any) {
   try {
     yield put(showScreenLoading('Saving...'));
-    const response = yield call(
-      api.updateProductIdentifier,
-      action.payload.id,
-      action.payload.type,
-      action.payload.value
-    );
+    const { id, type, value, remove } = action.payload;
+    const response = remove
+      ? yield call(api.removeProductIdentifier, id, type)
+      : yield call(api.updateProductIdentifier, id, type, value);
     yield put({
       type: UPDATE_PRODUCT_IDENTIFIER_SUCCESS,
       payload: response.data

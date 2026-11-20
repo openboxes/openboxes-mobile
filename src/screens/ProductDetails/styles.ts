@@ -89,6 +89,15 @@ export default StyleSheet.create({
   bottomSeparator: {
     marginBottom: Theme.spacing.small
   },
+  currentBarcodeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: Theme.spacing.medium
+  },
+  currentBarcodeText: {
+    flex: 1
+  },
   modalOverlay: {
     flex: 1,
     justifyContent: 'center',
@@ -113,6 +122,12 @@ export default StyleSheet.create({
   },
   modalButton: {
     flex: 1
+  },
+  confirmButtonColumn: {
+    marginTop: Theme.spacing.large
+  },
+  confirmButtonSpacing: {
+    marginBottom: Theme.spacing.small
   },
   modalButtonSpacing: {
     marginRight: Theme.spacing.small
