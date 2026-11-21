@@ -20,6 +20,8 @@ import Theme from '../utils/Theme';
 import { KeyboardIcon, ScanIcon } from './Icons';
 import { useScanFlash } from './ScanFlash';
 
+const DUPLICATE_SCAN_WINDOW_MS = 1000;
+
 type ScannerInputProps = {
   value: string;
   onChange: (value: string) => void;
@@ -53,6 +55,12 @@ type ScannerInputProps = {
    * If true, shows error styling (red border) - uses PaperTextInput error color (#B00020)
    */
   danger?: boolean;
+  /**
+   * If false, hardware (DataWedge) scans are dropped with a fail flash; typing still works.
+   * Use it on fields that are not meant for barcodes, such as quantities. The scan listener
+   * stays registered so DataWedge keystroke output stays muted.
+   */
+  acceptsScans?: boolean;
 };
 
 /**
@@ -86,7 +94,8 @@ export function ScannerInput({
   showKeyboardOnMount,
   keyboardType,
   placeholder,
-  danger = false
+  danger = false,
+  acceptsScans = true
 }: ScannerInputProps) {
   const storedDebounceTime = useSelector((state: RootState) => state.settingsReducer.barcodeScanDebounceTime);
   const defaultTimeout = storedDebounceTime ?? appConfig.DEFAULT_DEBOUNCE_TIME;
@@ -98,9 +107,17 @@ export function ScannerInput({
 
   // Track the latest submitted value to prevent double submissions
   const lastSubmittedValue = useRef<string>('');
+  // A repeated scan is a duplicate while the field still shows it, or when it arrives within
+  // DUPLICATE_SCAN_WINDOW_MS of the same scan (a double fire). Once a screen has cleared the field, e.g.
+  // after a failed lookup, the same code is accepted again after that window, even if React batched the
+  // clear with the scan into no visible change.
+  const renderedValue = useRef(value);
+  renderedValue.current = value;
+  // Kept apart from lastSubmittedValue, which is reset when the field empties.
+  const lastScan = useRef<{ code: string; at: number }>({ code: '', at: 0 });
   const shouldBeFocused = isScreenFocused && isEnabled;
   // Scans mid-flash are ignored below; disabling the listener would re-enable DataWedge keystrokes.
-  const { isFlashing } = useScanFlash();
+  const { isFlashing, flash } = useScanFlash();
 
   // Focus the input — keyboard is handled via onFocus callback
   const requestFocus = useCallback(() => {
@@ -142,12 +159,13 @@ export function ScannerInput({
 
   // Auto-submit after timeout
   useEffect(() => {
-    if (!timeout) {
+    // An emptied field accepts the same value again, also when auto-submit is off.
+    if (!value) {
+      lastSubmittedValue.current = '';
       return;
     }
 
-    if (!value) {
-      lastSubmittedValue.current = '';
+    if (!timeout) {
       return;
     }
 
@@ -168,10 +186,23 @@ export function ScannerInput({
 
   useScanListener((result) => {
     const scanned = result.data;
-    if (!scanned || isFlashing || scanned === lastSubmittedValue.current) {
+    if (!scanned || isFlashing) {
+      return;
+    }
+    if (!acceptsScans) {
+      flash('fail');
+      return;
+    }
+    const now = Date.now();
+    const elapsed = now - lastScan.current.at;
+    // elapsed < 0: the device clock stepped back; do not treat that as a double fire.
+    const isDoubleFire = scanned === lastScan.current.code && elapsed >= 0 && elapsed < DUPLICATE_SCAN_WINDOW_MS;
+    const isStillShown = scanned === lastSubmittedValue.current && renderedValue.current.trim() === scanned;
+    if (isDoubleFire || isStillShown) {
       return;
     }
     lastSubmittedValue.current = scanned;
+    lastScan.current = { code: scanned, at: now };
     onChange(scanned);
     onSubmit(scanned);
   }, shouldBeFocused);

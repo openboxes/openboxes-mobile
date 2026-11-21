@@ -29,8 +29,9 @@ export function ReplenishmentStagingLocationScreen() {
     return null;
   }
 
-  function handleSubmit() {
-    if (!stagingLocationNumber) {
+  // A hardware scan submits before `stagingLocationNumber` re-renders, so use the submitted code.
+  function handleSubmit(code: string) {
+    if (!code) {
       Alert.alert('Missing Input', 'Please scan or enter a valid Staging Location ID.');
       setStagingLocationNumber('');
       return;
@@ -41,10 +42,10 @@ export function ReplenishmentStagingLocationScreen() {
     // TODO: Implement the staging location validation and task dropping logic
     // const expected = currentTask.stagingLocation?.locationNumber;
 
-    // if (!expected || stagingLocationNumber !== expected) {
+    // if (!expected || code !== expected) {
     //   Alert.alert(
     //     'Invalid Staging Location',
-    //     `Expected: ${expected ?? '-'}, but got: ${stagingLocationNumber}. Please try again.`
+    //     `Expected: ${expected ?? '-'}, but got: ${code}. Please try again.`
     //   );
     //   setStagingLocationNumber('');
     //   return;

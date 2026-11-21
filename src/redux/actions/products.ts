@@ -154,3 +154,11 @@ export function updateProductIdentifierAction(
     callback
   };
 }
+
+export function removeProductIdentifierAction(id: string, type: string, callback?: (response: any) => void) {
+  return {
+    type: UPDATE_PRODUCT_IDENTIFIER_REQUEST,
+    payload: { id, type, remove: true },
+    callback
+  };
+}
