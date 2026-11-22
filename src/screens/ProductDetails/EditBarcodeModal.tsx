@@ -64,6 +64,14 @@ export default function EditBarcodeModal({
     });
   };
 
+  // Closing mid-request would drop the response (the screen ignores it once the modal is closed), so the
+  // product would not reload after a save that went through.
+  const handleClose = () => {
+    if (!savingRef.current) {
+      onClose();
+    }
+  };
+
   const handleRemove = () => {
     if (savingRef.current) {
       return;
@@ -125,7 +133,7 @@ export default function EditBarcodeModal({
   }
 
   return (
-    <Modal transparent animationType="slide" visible={visible} onDismiss={onClose} onRequestClose={onClose}>
+    <Modal transparent animationType="slide" visible={visible} onDismiss={onClose} onRequestClose={handleClose}>
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
           <Headline>Edit barcode</Headline>
@@ -153,6 +161,7 @@ export default function EditBarcodeModal({
 
           <ScannerInput
             isEnabled={visible}
+            acceptsScans={!isSaving}
             label="Barcode (UPC)"
             placeholder="Scan or type the product's barcode"
             value={barcode}
@@ -168,8 +177,9 @@ export default function EditBarcodeModal({
               variant="secondary"
               mode="contained"
               title="Cancel"
+              disabled={isSaving}
               style={[styles.modalButton, styles.modalButtonSpacing]}
-              onPress={onClose}
+              onPress={handleClose}
             />
             <Button
               icon="arrow-right-circle"

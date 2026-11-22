@@ -141,27 +141,40 @@ describe('EditBarcodeModal', () => {
     expect(scanner(renderer).value).toBe('');
   });
 
-  it('sends one save at a time: a tap or a scan while the save is pending does nothing', () => {
+  it('sends one save at a time: a tap in the same frame as the scan does nothing', () => {
     const { renderer, onSave } = render();
+    act(() => scanner(renderer).onChange('ABC-1'));
+    // handlers from the render before the save, as a tap landing before the disabled state renders sees them
+    const { onSubmit } = scanner(renderer);
+    const { onPress } = button(renderer, 'Save');
     act(() => {
-      scanner(renderer).onChange('096619756803');
-      scanner(renderer).onSubmit('096619756803');
-    });
-    expect(button(renderer, 'Save').disabled).toBe(true);
-
-    // a tap in the same frame as the scan, before the disabled state renders
-    act(() => {
-      scanner(renderer).onSubmit('096619756803');
-      button(renderer, 'Save').onPress();
+      onSubmit('ABC-1');
+      onPress();
     });
     expect(onSave).toHaveBeenCalledTimes(1);
+    expect(button(renderer, 'Save').disabled).toBe(true);
 
     // the save failed: the field is emptied and the next save goes through
     act(() => onSave.mock.calls[0][1]());
-    act(() => scanner(renderer).onChange('ABC-1'));
+    act(() => scanner(renderer).onChange('ABC-2'));
     expect(button(renderer, 'Save').disabled).toBe(false);
     act(() => button(renderer, 'Save').onPress());
     expect(onSave).toHaveBeenCalledTimes(2);
+  });
+
+  it('does not take scans or close while a save is pending', () => {
+    const { renderer, onSave, onClose } = render();
+    act(() => scanner(renderer).onSubmit('096619756803'));
+    expect(scanner(renderer).acceptsScans).toBe(false);
+    expect(button(renderer, 'Cancel').disabled).toBe(true);
+    act(() => button(renderer, 'Cancel').onPress());
+    act(() => renderer.root.findByType(Modal).props.onRequestClose());
+    expect(onClose).not.toHaveBeenCalled();
+
+    act(() => onSave.mock.calls[0][1]());
+    expect(scanner(renderer).acceptsScans).toBe(true);
+    act(() => button(renderer, 'Cancel').onPress());
+    expect(onClose).toHaveBeenCalledTimes(1);
   });
 
   it('sends one removal for a double tap on Remove barcode, and allows another after a failure', () => {
