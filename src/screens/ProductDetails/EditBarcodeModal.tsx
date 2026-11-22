@@ -1,5 +1,5 @@
 import { useIsFocused } from '@react-navigation/native';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Keyboard, Modal, View } from 'react-native';
 import { Headline, Paragraph, Subheading } from 'react-native-paper';
 
@@ -13,8 +13,10 @@ import styles from './styles';
 type EditBarcodeModalProps = {
   visible: boolean;
   currentBarcode?: string;
-  onSave: (barcode: string, resetInput: () => void) => void;
-  onRemoveBarcode: () => void;
+  /** onFailed: call it when the save failed; it empties the field and re-enables the buttons. */
+  onSave: (barcode: string, onFailed: () => void) => void;
+  /** onFailed: call it when the removal failed; it re-enables the buttons. */
+  onRemoveBarcode: (onFailed: () => void) => void;
   onClose: () => void;
 };
 
@@ -27,10 +29,21 @@ export default function EditBarcodeModal({
 }: EditBarcodeModalProps) {
   const [barcode, setBarcode] = useState(EMPTY_STRING);
   const [isConfirmingRemove, setIsConfirmingRemove] = useState(false);
+  // One save or removal at a time: a second tap or scan before the loading overlay shows would send
+  // another request. The ref guards taps in the same frame; the state disables the buttons.
+  const [isSaving, setIsSaving] = useState(false);
+  const savingRef = useRef(false);
   const isScreenFocused = useIsFocused();
+
+  const setSaving = (saving: boolean) => {
+    savingRef.current = saving;
+    setIsSaving(saving);
+  };
 
   useEffect(() => {
     setIsConfirmingRemove(false);
+    savingRef.current = false;
+    setIsSaving(false);
     if (visible) {
       setBarcode(EMPTY_STRING);
     }
@@ -40,11 +53,23 @@ export default function EditBarcodeModal({
   // so save the value that was submitted, not the state.
   const handleSave = (submitted: string) => {
     const value = submitted.trim();
-    if (!value) {
+    if (!value || savingRef.current) {
       return;
     }
     Keyboard.dismiss();
-    onSave(value, () => setBarcode(EMPTY_STRING));
+    setSaving(true);
+    onSave(value, () => {
+      setBarcode(EMPTY_STRING);
+      setSaving(false);
+    });
+  };
+
+  const handleRemove = () => {
+    if (savingRef.current) {
+      return;
+    }
+    setSaving(true);
+    onRemoveBarcode(() => setSaving(false));
   };
 
   // The confirm step has no scanner field. A listener for the whole modal keeps DataWedge keystroke
@@ -80,8 +105,9 @@ export default function EditBarcodeModal({
                 mode="contained"
                 size="100%"
                 title="Remove barcode"
+                disabled={isSaving}
                 style={styles.confirmButtonSpacing}
-                onPress={onRemoveBarcode}
+                onPress={handleRemove}
               />
               <Button
                 icon="close-circle"
@@ -119,6 +145,7 @@ export default function EditBarcodeModal({
                 variant="danger"
                 size="default"
                 title="Remove"
+                disabled={isSaving}
                 onPress={openRemoveConfirm}
               />
             </View>
@@ -148,7 +175,7 @@ export default function EditBarcodeModal({
               icon="arrow-right-circle"
               mode="contained"
               title="Save"
-              disabled={!barcode.trim()}
+              disabled={!barcode.trim() || isSaving}
               style={styles.modalButton}
               onPress={() => handleSave(barcode)}
             />

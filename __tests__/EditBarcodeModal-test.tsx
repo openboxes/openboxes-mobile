@@ -141,6 +141,62 @@ describe('EditBarcodeModal', () => {
     expect(scanner(renderer).value).toBe('');
   });
 
+  it('sends one save at a time: a tap or a scan while the save is pending does nothing', () => {
+    const { renderer, onSave } = render();
+    act(() => {
+      scanner(renderer).onChange('096619756803');
+      scanner(renderer).onSubmit('096619756803');
+    });
+    expect(button(renderer, 'Save').disabled).toBe(true);
+
+    // a tap in the same frame as the scan, before the disabled state renders
+    act(() => {
+      scanner(renderer).onSubmit('096619756803');
+      button(renderer, 'Save').onPress();
+    });
+    expect(onSave).toHaveBeenCalledTimes(1);
+
+    // the save failed: the field is emptied and the next save goes through
+    act(() => onSave.mock.calls[0][1]());
+    act(() => scanner(renderer).onChange('ABC-1'));
+    expect(button(renderer, 'Save').disabled).toBe(false);
+    act(() => button(renderer, 'Save').onPress());
+    expect(onSave).toHaveBeenCalledTimes(2);
+  });
+
+  it('sends one removal for a double tap on Remove barcode, and allows another after a failure', () => {
+    const { renderer, onRemoveBarcode } = render('096619756803');
+    act(() => button(renderer, 'Remove').onPress());
+    act(() => {
+      button(renderer, 'Remove barcode').onPress();
+      button(renderer, 'Remove barcode').onPress();
+    });
+    expect(onRemoveBarcode).toHaveBeenCalledTimes(1);
+    expect(button(renderer, 'Remove barcode').disabled).toBe(true);
+
+    act(() => onRemoveBarcode.mock.calls[0][0]());
+    expect(button(renderer, 'Remove barcode').disabled).toBe(false);
+    act(() => button(renderer, 'Remove barcode').onPress());
+    expect(onRemoveBarcode).toHaveBeenCalledTimes(2);
+  });
+
+  it('re-enables saving when the modal is opened again', () => {
+    const onSave = jest.fn();
+    const modal = (visible: boolean) => (
+      <EditBarcodeModal visible={visible} onSave={onSave} onRemoveBarcode={jest.fn()} onClose={jest.fn()} />
+    );
+    let renderer: ReactTestRenderer;
+    act(() => {
+      renderer = TestRenderer.create(modal(true));
+    });
+    act(() => scanner(renderer!).onSubmit('096619756803'));
+    // the save succeeded: the screen closes the modal without calling back
+    act(() => renderer!.update(modal(false)));
+    act(() => renderer!.update(modal(true)));
+    act(() => scanner(renderer!).onSubmit('ABC-1'));
+    expect(onSave).toHaveBeenCalledTimes(2);
+  });
+
   it('Android Back closes the edit step and returns from the confirm step', () => {
     const { renderer, onClose } = render('096619756803');
     act(() => renderer.root.findByType(Modal).props.onRequestClose());

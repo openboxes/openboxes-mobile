@@ -150,20 +150,22 @@ class ProductDetails extends React.Component<Props, State> {
     this.getProductDetails(id);
   };
 
-  handleSaveBarcode = (newBarcode: string, resetInput: () => void) => {
+  handleSaveBarcode = (newBarcode: string, onFailed: () => void) => {
     const id = this.state.productDetails.id;
     if (!id) {
+      onFailed();
       return;
     }
-    this.props.updateProductIdentifierAction(id, 'upc', newBarcode, this.handleIdentifierResponse(id, resetInput));
+    this.props.updateProductIdentifierAction(id, 'upc', newBarcode, this.handleIdentifierResponse(id, onFailed));
   };
 
-  handleRemoveBarcode = () => {
+  handleRemoveBarcode = (onFailed: () => void) => {
     const id = this.state.productDetails.id;
     if (!id) {
+      onFailed();
       return;
     }
-    this.props.removeProductIdentifierAction(id, 'upc', this.handleIdentifierResponse(id));
+    this.props.removeProductIdentifierAction(id, 'upc', this.handleIdentifierResponse(id, onFailed));
   };
 
   navigateToDetails = (item: any) => {

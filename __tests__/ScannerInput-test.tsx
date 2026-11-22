@@ -128,6 +128,16 @@ describe('ScannerInput', () => {
     expect(onSubmit).toHaveBeenCalledTimes(1);
   });
 
+  it('accepts a quick rescan of the same code after the screen cleared the field', () => {
+    const { onSubmit, setValue } = render({ autoSubmitTimeout: 0 });
+    act(() => mockScan.emit('BIN-1'));
+    // e.g. useScanField().fail() cleared the field, and the user scans the label again right away
+    setValue('');
+    now += 400;
+    act(() => mockScan.emit('BIN-1'));
+    expect(onSubmit).toHaveBeenCalledTimes(2);
+  });
+
   it('still takes typed input and the keyboard submit when acceptsScans is false', () => {
     const { renderer, onChange, onSubmit } = render({ acceptsScans: false });
     act(() => textInput(renderer).onChangeText('12'));

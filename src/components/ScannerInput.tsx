@@ -20,7 +20,9 @@ import Theme from '../utils/Theme';
 import { KeyboardIcon, ScanIcon } from './Icons';
 import { useScanFlash } from './ScanFlash';
 
-const DUPLICATE_SCAN_WINDOW_MS = 1000;
+// Short enough that a person rescanning a label after a failure is not dropped (the scan flash, during
+// which scans are ignored anyway, lasts about as long), long enough to catch a scanner firing twice.
+const DUPLICATE_SCAN_WINDOW_MS = 300;
 
 type ScannerInputProps = {
   value: string;
@@ -59,6 +61,7 @@ type ScannerInputProps = {
    * If false, hardware (DataWedge) scans are dropped with a fail flash; typing still works.
    * Use it on fields that are not meant for barcodes, such as quantities. The scan listener
    * stays registered so DataWedge keystroke output stays muted.
+   * With scan flash turned off in Settings, the dropped scan gives no feedback at all.
    */
   acceptsScans?: boolean;
 };
