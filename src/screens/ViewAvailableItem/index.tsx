@@ -200,13 +200,7 @@ export default function ViewAvailableItem() {
             })
           }
         />
-        <Button
-          title="Transfer"
-          size="100%"
-          variant="secondary"
-          disabled={isStartingTransfer}
-          onPress={handleTransfer}
-        />
+        <Button title="Transfer" size="100%" disabled={isStartingTransfer} onPress={handleTransfer} />
       </View>
     </View>
   );
