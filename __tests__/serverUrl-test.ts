@@ -50,6 +50,11 @@ describe('validateServerUrl', () => {
     'https://[2001:db8::1]/openboxes',
     'https://[2001:db8:0:0:0:0:0:1]',
     'https://[::ffff:192.0.2.1]',
+    'http://openboxes_web:8080/openboxes/api',
+    'https://example.org.',
+    'https://example.org.:8443/api',
+    // 253 characters plus the trailing dot
+    'https://' + ['a'.repeat(63), 'b'.repeat(63), 'c'.repeat(63), 'd'.repeat(61)].join('.') + '.',
     '  https://example.org  '
   ])('accepts %s', (input) => {
     expect(validateServerUrl(input)).toBeNull();
@@ -80,7 +85,10 @@ describe('validateServerUrl', () => {
     ['https://[12345::1]', 'Enter a valid server address'],
     ['https://[192.0.2.1::]', 'Enter a valid server address'],
     ['https://[::192.0.2.1:1]', 'Enter a valid server address'],
-    ['https://' + 'a'.repeat(64) + '.org', 'Enter a valid server address']
+    ['https://' + 'a'.repeat(64) + '.org', 'Enter a valid server address'],
+    ['https://example.org..', 'Enter a valid server address'],
+    ['https://.', 'Enter a valid server address'],
+    ['https://-_.org', 'Enter a valid server address']
   ])('rejects %p', (input, message) => {
     expect(validateServerUrl(input)).toBe(message);
   });
@@ -320,6 +328,58 @@ describe('resolveApiUrl', () => {
     });
 
     expect(await resolveApiUrl('example.org', { get })).toMatchObject({ kind: 'unreachable' });
+  });
+
+  it.each([502, 503, 504, 500])('reports a %s as an unavailable server, not a wrong address', async (status) => {
+    const get = fakeGet({
+      'https://example.org/api/status': { status: 404, data: '<html>' },
+      'https://example.org/openboxes/api/status': { status, data: '<html>Bad gateway</html>' }
+    });
+
+    expect(await resolveApiUrl('example.org', { get })).toEqual({
+      kind: 'unavailable',
+      status,
+      tried: ['https://example.org/api', 'https://example.org/openboxes/api']
+    });
+  });
+
+  it('reports a 5xx as unavailable even when another candidate could not be reached', async () => {
+    const get = fakeGet({
+      'https://example.org/api/status': { status: 503 },
+      'https://example.org/openboxes/api/status': { transportError: true }
+    });
+
+    expect(await resolveApiUrl('example.org', { get })).toMatchObject({ kind: 'unavailable', status: 503 });
+  });
+
+  it('does not report a 5xx reached through a redirect to another root as unavailable', async () => {
+    const get = fakeGet({
+      'https://example.org/api/status': { status: 503, responseURL: 'https://other.example.org/status' },
+      'https://example.org/openboxes/api/status': { status: 404 }
+    });
+
+    expect(await resolveApiUrl('example.org', { get })).toMatchObject({ kind: 'not-openboxes' });
+  });
+
+  it('does not treat a status above 599 as a server error', async () => {
+    const get = fakeGet({
+      'https://example.org/api/status': { status: 600 },
+      'https://example.org/openboxes/api/status': { status: 404 }
+    });
+
+    expect(await resolveApiUrl('example.org', { get })).toMatchObject({ kind: 'not-openboxes' });
+  });
+
+  it('still uses a candidate that answers after another one returned a 5xx', async () => {
+    const get = fakeGet({
+      'https://example.org/api/status': { status: 503 },
+      'https://example.org/openboxes/api/status': OK
+    });
+
+    expect(await resolveApiUrl('example.org', { get })).toEqual({
+      kind: 'ok',
+      url: 'https://example.org/openboxes/api'
+    });
   });
 
   it('does not log credentials, query or fragment of a rejected redirect', async () => {

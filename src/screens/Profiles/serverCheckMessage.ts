@@ -5,6 +5,8 @@ export function checkErrorMessage(result: ResolveResult, input: string): string 
   switch (result.kind) {
     case 'not-openboxes':
       return `No OpenBoxes server found at ${result.tried.join(' or ')}.`;
+    case 'unavailable':
+      return `The server answered with an error (${result.status}). It may be down or restarting. Try again later.`;
     case 'unreachable':
       return hasExplicitScheme(input)
         ? 'Could not reach the server. Check the address and your connection.'

@@ -24,6 +24,12 @@ describe('checkErrorMessage', () => {
     ).toBe('No OpenBoxes server found at https://example.org/api or https://example.org/openboxes/api.');
   });
 
+  it('says the server is down, not that the address is wrong, for a 5xx', () => {
+    expect(
+      checkErrorMessage({ kind: 'unavailable', status: 503, tried: ['https://example.org/api'] }, 'example.org')
+    ).toBe('The server answered with an error (503). It may be down or restarting. Try again later.');
+  });
+
   it('has no message for a successful check', () => {
     expect(checkErrorMessage({ kind: 'ok', url: 'https://example.org/api' }, 'example.org')).toBeNull();
   });

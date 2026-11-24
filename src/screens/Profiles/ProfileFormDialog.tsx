@@ -52,7 +52,7 @@ export default function ProfileFormDialog({ visible, profile, onSave, onDismiss 
   );
 
   const handleSave = useCallback(async () => {
-    const error = validateProfile(formLabel, formUrl);
+    const error = validateProfile(formLabel, formUrl, profile?.serverUrl);
     if (error) {
       setFormError(error);
       return;
@@ -61,7 +61,7 @@ export default function ProfileFormDialog({ visible, profile, onSave, onDismiss 
     const url = formUrl.trim();
 
     // A label-only edit keeps the stored URL and needs no server check
-    if (profile && url === profile.serverUrl) {
+    if (profile && url === profile.serverUrl.trim()) {
       await commit(label, url);
       return;
     }

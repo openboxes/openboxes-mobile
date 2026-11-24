@@ -30,6 +30,8 @@ export type ParsedServerInput = {
 export type ResolveResult =
   | { kind: 'ok'; url: string }
   | { kind: 'not-openboxes'; tried: string[] }
+  // A server answered with a 5xx: it is there but down or restarting, so the address may well be right
+  | { kind: 'unavailable'; tried: string[]; status: number }
   | { kind: 'unreachable'; tried: string[] };
 
 type HttpGet = (
@@ -47,7 +49,8 @@ export type ResolveOptions = {
 
 const INVALID_ADDRESS = 'Enter a valid server address';
 const SCHEME_PATTERN = /^([a-z][a-z0-9+.-]*):\/\//i;
-const DNS_LABEL_PATTERN = /^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$/i;
+// Underscores are not valid in DNS names but are common in container and compose service names
+const HOST_LABEL_PATTERN = /^[a-z0-9_]([a-z0-9_-]{0,61}[a-z0-9_])?$/i;
 const SUFFIXES: ApiSuffix[] = ['/openboxes/api', '/api', '/openboxes'];
 
 function isIpv4(host: string): boolean {
@@ -85,15 +88,17 @@ function isIpv6(address: string): boolean {
 }
 
 function isHostName(host: string): boolean {
-  if (host.length > 253) {
+  // A trailing dot marks a fully qualified name
+  const name = host.endsWith('.') ? host.slice(0, -1) : host;
+  if (name.length > 253) {
     return false;
   }
-  const labels = host.split('.');
+  const labels = name.split('.');
   // Something that looks numeric must be a complete IPv4 address
   if (labels.every((l) => /^\d+$/.test(l))) {
     return isIpv4(host);
   }
-  return labels.every((l) => DNS_LABEL_PATTERN.test(l));
+  return labels.every((l) => HOST_LABEL_PATTERN.test(l));
 }
 
 function isValidAuthority(authority: string): boolean {
@@ -266,12 +271,26 @@ function acceptedRoot(candidate: string, response: any): string | null {
   return null;
 }
 
+// The HTTP status of a candidate's answer, or undefined when the request ended up on another root
+function statusAtRoot(candidate: string, response: any): number | undefined {
+  return acceptedRoot(candidate, response) ? response?.status : undefined;
+}
+
+// A 5xx means a server is there but failing (down, restarting, a gateway without a backend)
+function serverErrorResult(answered: (number | undefined)[], tried: string[]): ResolveResult | null {
+  const status = answered.find((s) => s !== undefined && s >= 500 && s <= 599);
+  return status === undefined ? null : { kind: 'unavailable', tried, status };
+}
+
 /** Finds the API root for what the user typed. Never throws. */
+
 export async function resolveApiUrl(input: string, options: ResolveOptions = {}): Promise<ResolveResult> {
   const { timeoutMs = 6000, totalMs = 10000, get = axios.get } = options;
   const deadline = Date.now() + totalMs;
   const tried: string[] = [];
   let transportFailure = false;
+  // HTTP statuses of the candidates that answered without an OpenBoxes status response
+  const answered: (number | undefined)[] = [];
 
   for (const candidate of candidateApiUrls(input)) {
     const remaining = deadline - Date.now();
@@ -295,15 +314,21 @@ export async function resolveApiUrl(input: string, options: ResolveOptions = {})
           return { kind: 'ok', url: root };
         }
       } else {
+        answered.push(statusAtRoot(candidate, response));
         logger.d(`${candidate}/status -> ${response?.status}, not an OpenBoxes status response`);
       }
     } catch (error: any) {
       if (isTransportFailure(error)) {
         transportFailure = true;
+      } else {
+        answered.push(statusAtRoot(candidate, error.response));
       }
       logger.d(`${candidate}/status -> ${error?.response?.status ?? error?.code ?? error?.message ?? 'no response'}`);
     }
   }
 
-  return transportFailure ? { kind: 'unreachable', tried } : { kind: 'not-openboxes', tried };
+  return (
+    serverErrorResult(answered, tried) ??
+    (transportFailure ? { kind: 'unreachable', tried } : { kind: 'not-openboxes', tried })
+  );
 }

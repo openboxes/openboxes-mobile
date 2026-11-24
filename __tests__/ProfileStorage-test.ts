@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { migrate, syncBuiltInServers } from '../src/components/ProfileStorage';
+import { migrate, syncBuiltInServers, validateProfile } from '../src/components/ProfileStorage';
 import { Profile, ProfileStorageData } from '../src/types/profile';
 
 jest.mock('@react-native-async-storage/async-storage', () =>
@@ -326,5 +326,29 @@ describe('syncBuiltInServers', () => {
     const synced = syncBuiltInServers(oldStorage([], null));
 
     expect(syncBuiltInServers(synced)).toBe(synced);
+  });
+});
+
+describe('validateProfile', () => {
+  it('checks the address of a new profile', () => {
+    expect(validateProfile('New', 'ftp://example.org')).toBe('URL must start with http:// or https://');
+  });
+
+  it('lets a profile be renamed when its stored address no longer passes validation', () => {
+    expect(validateProfile('Renamed', 'https://exa mple.org', 'https://exa mple.org')).toBeNull();
+  });
+
+  it('treats a stored address with surrounding spaces as unchanged', () => {
+    expect(validateProfile('Renamed', 'https://exa mple.org', ' https://exa mple.org ')).toBeNull();
+  });
+
+  it('checks the address again once it is changed', () => {
+    expect(validateProfile('Renamed', 'https://exa mple.org/api', 'https://exa mple.org')).toBe(
+      'Enter a valid server address'
+    );
+  });
+
+  it('still requires a label when the address is unchanged', () => {
+    expect(validateProfile('  ', 'https://example.org', 'https://example.org')).toBe('Profile label is required');
   });
 });

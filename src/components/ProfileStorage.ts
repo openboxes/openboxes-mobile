@@ -198,9 +198,17 @@ export function validateUrl(url: string): string | null {
   return validateServerUrl(url);
 }
 
-export function validateProfile(label: string, serverUrl: string): string | null {
+/**
+ * Validates the profile form. `storedUrl` is the URL of the profile being edited: when the URL is left
+ * as it is, only the label is checked, so a profile saved before the current address rules can still
+ * be renamed.
+ */
+export function validateProfile(label: string, serverUrl: string, storedUrl?: string): string | null {
   if (!label.trim()) {
     return 'Profile label is required';
+  }
+  if (storedUrl !== undefined && serverUrl.trim() === storedUrl.trim()) {
+    return null;
   }
   return validateUrl(serverUrl);
 }
