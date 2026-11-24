@@ -6,7 +6,7 @@ export function getStockTransferCandidates(facilityId: string) {
 }
 
 export function lookupBarcodeProduct(code: string) {
-  return apiClient.get(`/barcodes/${encodeURIComponent(code)}`);
+  return apiClient.get(`/barcodes?id=${encodeURIComponent(code)}`);
 }
 
 export function lookupLocationByCode(code: string) {
