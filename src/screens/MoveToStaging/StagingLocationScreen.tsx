@@ -61,6 +61,9 @@ export default function StagingLocationScreen() {
   const [stagedElsewhere, setStagedElsewhere] = React.useState<StagedElsewhere[]>([]);
   const [pendingLocationId, setPendingLocationId] = React.useState<string>(EMPTY_STRING);
   const [zoneMismatchMessage, setZoneMismatchMessage] = React.useState<string | undefined>(undefined);
+  // A ref as well as state: a second scan can arrive before the re-render that disables the scanner
+  const dropInFlightRef = React.useRef(false);
+  const [isDropping, setIsDropping] = React.useState(false);
   const [moving, setMoving] = React.useState<MovingItems>({});
   const [itemsExpanded, setItemsExpanded] = React.useState(false);
   const { isSearchOpen, searchButtonProps } = useSearchButton({ onSelect: setStagingLocationNumber });
@@ -106,7 +109,17 @@ export default function StagingLocationScreen() {
   // Always defers to the server: it is the authority on whether the scanned location is valid for
   // this delivery type's zone (per-facility configurable). A mismatch surfaces a modal offering to
   // stage at the scanned location anyway, rather than sending the user back.
+  const setDropInFlight = (inFlight: boolean) => {
+    dropInFlightRef.current = inFlight;
+    setIsDropping(inFlight);
+  };
+
+  // Hardware scans bypass the loading overlay and alerts, so one drop at a time is enforced here
   const drop = (locationId: string, overrideStagingLocationZone?: boolean) => {
+    if (dropInFlightRef.current) {
+      return;
+    }
+    setDropInFlight(true);
     dispatch(
       dropPickTaskAction(
         {
@@ -119,6 +132,7 @@ export default function StagingLocationScreen() {
           if (allowOverride) {
             setPendingLocationId(locationId);
             setZoneMismatchMessage(errorMessage);
+            setDropInFlight(false);
             return;
           }
 
@@ -129,6 +143,7 @@ export default function StagingLocationScreen() {
               {
                 text: 'OK',
                 onPress: () => {
+                  setDropInFlight(false);
                   setStagingLocationNumber(EMPTY_STRING);
                   goBack();
                 }
@@ -137,6 +152,7 @@ export default function StagingLocationScreen() {
             return;
           }
 
+          setDropInFlight(false);
           finish();
         },
         overrideStagingLocationZone
@@ -207,7 +223,7 @@ export default function StagingLocationScreen() {
           style={styles.scannerInput}
           label="Staging Location"
           value={stagingLocationNumber}
-          isEnabled={!isSearchOpen && !zoneMismatchMessage}
+          isEnabled={!isSearchOpen && !zoneMismatchMessage && !isDropping}
           onChange={setStagingLocationNumber}
           onSubmit={handleScan}
         />

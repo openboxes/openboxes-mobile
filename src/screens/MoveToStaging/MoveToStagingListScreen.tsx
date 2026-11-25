@@ -180,14 +180,22 @@ export default function MoveToStagingListScreen() {
     [containerFilter, pickSession]
   );
 
+  // Requests run concurrently, so each refresh starts a new generation and older responses are dropped
+  const requestGenerationRef = React.useRef(0);
+
   const fetchWork = React.useCallback(
     (fromPull = false) => {
+      requestGenerationRef.current += 1;
+      const generation = requestGenerationRef.current;
       setIsRefreshing(true);
       if (fromPull) {
         setIsPullRefreshing(true);
       }
       dispatch(
         getStagingWorkAction({ ...workScope, max: PICK_TASK_PAGE_SIZE, offset: 0 }, ({ response, errorMessage }) => {
+          if (generation !== requestGenerationRef.current) {
+            return;
+          }
           if (errorMessage || !response?.data) {
             setLoadError(errorMessage ?? 'Something went wrong');
           } else {
@@ -221,16 +229,21 @@ export default function MoveToStagingListScreen() {
       return;
     }
     isFetchingMoreRef.current = true;
+    const generation = requestGenerationRef.current;
     setIsRefreshing(true);
     dispatch(
       getStagingWorkAction(
         { ...workScope, max: PICK_TASK_PAGE_SIZE, offset: tasks.length },
         ({ response, errorMessage }) => {
+          isFetchingMoreRef.current = false;
+          // A refresh started meanwhile owns the list and the loading indicator
+          if (generation !== requestGenerationRef.current) {
+            return;
+          }
           if (!errorMessage && response?.data) {
             setTasks((previous) => [...previous, ...response.data]);
             setTotalCount(response.totalCount ?? tasks.length + response.data.length);
           }
-          isFetchingMoreRef.current = false;
           setIsRefreshing(false);
         }
       )
@@ -366,9 +379,6 @@ export default function MoveToStagingListScreen() {
           )}
           {item.openLineCount > 0 ? (
             <StatusPill label={`${countLabel(item.openLineCount, 'line')} still to pick`} tone="warning" />
-          ) : null}
-          {item.stagedCount > 0 ? (
-            <StatusPill label={`${item.stagedCount} staged`} tone="success" icon="check-circle-outline" />
           ) : null}
         </View>
       </View>

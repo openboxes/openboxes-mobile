@@ -1,4 +1,4 @@
-import { call, put, select, takeLatest } from 'redux-saga/effects';
+import { call, put, select, takeEvery, takeLatest } from 'redux-saga/effects';
 
 import * as api from '../../apis';
 import { hideScreenLoading, showScreenLoading } from '../actions/main';
@@ -397,7 +397,8 @@ export default function* watcher() {
   yield takeLatest(PICK_PICK_TASK_REQUEST, pickPickTaskAction);
   yield takeLatest(DROP_PICK_TASK_REQUEST, dropPickTaskAction);
   yield takeLatest(GET_PICK_TASK_BY_ID_REQUEST, getPickTaskByIdAction);
-  yield takeLatest(GET_STAGING_WORK_REQUEST, getStagingWorkAction);
+  // Refresh, load-more and the container preview run side by side; takeLatest would cancel one without its callback
+  yield takeEvery(GET_STAGING_WORK_REQUEST, getStagingWorkAction);
   yield takeLatest(GET_ORDER_STAGING_DETAIL_REQUEST, getOrderStagingDetailAction);
   yield takeLatest(SHORT_PICK_TASK_REQUEST, shortPickTaskAction);
   yield takeLatest(GET_PICK_TASKS_BY_REQUISITION_REQUEST, getPickTasksByRequisitionAction);
