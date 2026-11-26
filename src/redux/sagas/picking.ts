@@ -1,4 +1,4 @@
-import { call, put, select, takeLatest } from 'redux-saga/effects';
+import { call, put, select, takeEvery, takeLatest } from 'redux-saga/effects';
 
 import * as api from '../../apis';
 import { hideScreenLoading, showScreenLoading } from '../actions/main';
@@ -24,9 +24,12 @@ import {
   GET_PICK_TASKS_REQUEST,
   GET_PICK_TASKS_REQUEST_FAIL,
   GET_PICK_TASKS_REQUEST_SUCCESS,
-  GET_PICKED_TASKS_BY_CONTAINER_REQUEST,
-  GET_PICKED_TASKS_BY_CONTAINER_REQUEST_FAIL,
-  GET_PICKED_TASKS_BY_CONTAINER_REQUEST_SUCCESS,
+  GET_STAGING_WORK_REQUEST,
+  GET_STAGING_WORK_REQUEST_FAIL,
+  GET_STAGING_WORK_REQUEST_SUCCESS,
+  GET_ORDER_STAGING_DETAIL_REQUEST,
+  GET_ORDER_STAGING_DETAIL_REQUEST_FAIL,
+  GET_ORDER_STAGING_DETAIL_REQUEST_SUCCESS,
   PICK_PICK_TASK_REQUEST,
   PICK_PICK_TASK_REQUEST_FAIL,
   PICK_PICK_TASK_REQUEST_SUCCESS,
@@ -218,17 +221,12 @@ function* dropPickTaskAction(action: any) {
     if (!currentLocation) {
       throw new Error('User Location Not Found');
     }
-    // @ts-ignore
-    const session = yield select(userSession);
-    if (!session || !session.user) {
-      throw new Error('User Session Not Found');
-    }
     yield put(showScreenLoading('Dropping Pick Task...'));
     // Drop Pick Task API Call
-    yield call(api.dropPickTaskApi, currentLocation.id, action.payload.outboundContainerId, {
+    yield call(api.dropPickTaskApi, currentLocation.id, {
       action: 'drop',
+      ...action.payload.scope,
       stagingLocationId: action.payload.stagingLocationId,
-      stagedById: session.user.id,
       overrideStagingLocationZone: action.payload.overrideStagingLocationZone
     });
     yield put({ type: DROP_PICK_TASK_REQUEST_SUCCESS });
@@ -271,32 +269,48 @@ function* getPickTaskByIdAction(action: any) {
   }
 }
 
-function* getPickedTasksByContainerAction(action: any) {
+// No screen loading overlay: the list owns its own skeleton and pull-to-refresh indicator.
+function* getStagingWorkAction(action: any) {
   try {
     // @ts-ignore
     const currentLocation = yield select(userLocation);
     if (!currentLocation) {
       throw new Error('User Location Not Found');
     }
-    yield put(showScreenLoading('Fetching Picked Tasks...'));
-    // Call API to get picked tasks by container
+    // @ts-ignore
+    const response = yield call(api.getStagingWorkApi, currentLocation.id, action.payload);
+    yield put({ type: GET_STAGING_WORK_REQUEST_SUCCESS, payload: response.data });
+    yield action.callback({ response });
+  } catch (error) {
+    const errorMessage = (error as any)?.message || 'Error Fetching Staging Work';
+    yield put({ type: GET_STAGING_WORK_REQUEST_FAIL, payload: errorMessage });
+    yield action.callback({ errorMessage });
+  }
+}
+
+function* getOrderStagingDetailAction(action: any) {
+  try {
+    // @ts-ignore
+    const currentLocation = yield select(userLocation);
+    if (!currentLocation) {
+      throw new Error('User Location Not Found');
+    }
+    yield put(showScreenLoading('Fetching Order...'));
     // @ts-ignore
     const response = yield call(
-      api.getPickTasksByStatusAndContainerApi,
+      api.getOrderStagingDetailApi,
       currentLocation.id,
-      action.payload.outboundContainerId,
-      'PICKED'
+      action.payload.requisitionId,
+      action.payload.outboundContainerId
     );
-    yield put({ type: GET_PICKED_TASKS_BY_CONTAINER_REQUEST_SUCCESS, payload: response.data });
+    yield put({ type: GET_ORDER_STAGING_DETAIL_REQUEST_SUCCESS, payload: response.data });
+    yield put(hideScreenLoading());
     yield action.callback({ response });
-    yield put(hideScreenLoading());
   } catch (error) {
-    yield put({
-      type: GET_PICKED_TASKS_BY_CONTAINER_REQUEST_FAIL,
-      payload: (error as any)?.message || 'Error Fetching Picked Tasks'
-    });
-    yield action.callback({ errorMessage: (error as any)?.message || 'Error Fetching Picked Tasks' });
+    const errorMessage = (error as any)?.message || 'Error Fetching Order';
+    yield put({ type: GET_ORDER_STAGING_DETAIL_REQUEST_FAIL, payload: errorMessage });
     yield put(hideScreenLoading());
+    yield action.callback({ errorMessage });
   }
 }
 
@@ -383,7 +397,9 @@ export default function* watcher() {
   yield takeLatest(PICK_PICK_TASK_REQUEST, pickPickTaskAction);
   yield takeLatest(DROP_PICK_TASK_REQUEST, dropPickTaskAction);
   yield takeLatest(GET_PICK_TASK_BY_ID_REQUEST, getPickTaskByIdAction);
-  yield takeLatest(GET_PICKED_TASKS_BY_CONTAINER_REQUEST, getPickedTasksByContainerAction);
+  // Refresh, load-more and the container preview run side by side; takeLatest would cancel one without its callback
+  yield takeEvery(GET_STAGING_WORK_REQUEST, getStagingWorkAction);
+  yield takeLatest(GET_ORDER_STAGING_DETAIL_REQUEST, getOrderStagingDetailAction);
   yield takeLatest(SHORT_PICK_TASK_REQUEST, shortPickTaskAction);
   yield takeLatest(GET_PICK_TASKS_BY_REQUISITION_REQUEST, getPickTasksByRequisitionAction);
   yield takeLatest(GET_STOCK_MOVEMENT_ITEM_DETAILS_REQUEST, getStockMovementItemDetailsAction);
