@@ -1,7 +1,7 @@
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useRef, useState } from 'react';
 import { FlatList, View } from 'react-native';
-import { Card, Chip, Divider, Text } from 'react-native-paper';
+import { Button, Card, Chip, Divider, Paragraph, Text } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 
 import { LIST_STATUS_PICKED } from '../../apis/replenishment';
@@ -15,7 +15,8 @@ import { getReplenishmentListsAction } from '../../redux/actions/replenishment';
 import { ReplenishmentList, ReplenishmentTaskStatus } from '../../types/replenishment';
 import Theme from '../../utils/Theme';
 import { parseFromISODateToLocaleString } from '../../utils/utils';
-import { tasksCountLabel } from './lib';
+import { ToggleRow } from '../Dashboard/ToggleRow';
+import { countOpenTasks, tasksCountLabel } from './lib';
 import { useReplenishmentContext } from './ReplenishmentContext';
 import styles from './styles';
 
@@ -87,9 +88,43 @@ function ReplenishmentListCard({ list, onPress }: ReplenishmentListCardProps) {
   );
 }
 
+type SequentialStartCardProps = {
+  lists: ReplenishmentList[];
+  onStart: () => void;
+};
+
+/** Sequential mode: one card to go through the open tasks of all the lists, in location sequence */
+function SequentialStartCard({ lists, onStart }: SequentialStartCardProps) {
+  const openTasks = countOpenTasks(lists);
+  return (
+    <Card style={LayoutStyle.listItemContainer}>
+      <Card.Content>
+        <View style={styles.headerRow}>
+          <Chip icon="format-list-numbered" style={[styles.chipDefault, styles.orderNumberChip]}>
+            <Text style={[styles.orderNumberText, styles.fontBold]}>All Replenishments</Text>
+          </Chip>
+        </View>
+
+        <Divider style={styles.divider} />
+
+        <Paragraph style={styles.paragraph}>
+          {openTasks.tasks > 0
+            ? `${openTasks.tasks} ${openTasks.tasks === 1 ? 'task' : 'tasks'} to pick across ${openTasks.lists} ${
+                openTasks.lists === 1 ? 'list' : 'lists'
+              }, in location sequence.`
+            : 'No open replenishment tasks.'}
+        </Paragraph>
+        <Button mode="contained" style={styles.marginTop} disabled={openTasks.tasks === 0} onPress={onStart}>
+          Start Picking
+        </Button>
+      </Card.Content>
+    </Card>
+  );
+}
+
 export default function ReplenishmentListScreen() {
   const dispatch = useDispatch();
-  const { startSession } = useReplenishmentContext();
+  const { startSession, startSequentialSession, sequentialMode, setSequentialMode } = useReplenishmentContext();
   const [lists, setLists] = useState<ReplenishmentList[]>([]);
   const [hasLoaded, setHasLoaded] = useState<boolean>(false);
   // takeLatest cancels a superseded pull without its callback, so any completion settles it
@@ -130,15 +165,39 @@ export default function ReplenishmentListScreen() {
     });
   };
 
+  const handleSequentialStart = () => {
+    startSequentialSession().then((started) => {
+      if (started) {
+        navigate('ReplenishmentPickingLocation');
+      }
+    });
+  };
+
+  // In sequential mode the lists are only shown to stage what was picked: staging stays per list
+  const visibleLists = sequentialMode ? lists.filter((list) => list.status === LIST_STATUS_PICKED) : lists;
+
   return (
     <View style={styles.screenContainer}>
+      <View style={styles.sequentialToggle}>
+        <ToggleRow
+          title="Pick By List"
+          description="Choose a replenishment list instead of picking all open tasks in location sequence"
+          value={!sequentialMode}
+          onValueChange={(byList) => setSequentialMode(!byList)}
+        />
+      </View>
       {hasLoaded ? (
         <FlatList
-          data={lists}
+          data={visibleLists}
           keyExtractor={(list) => list.id}
           renderItem={({ item }) => <ReplenishmentListCard list={item} onPress={handleListPress} />}
           contentContainerStyle={styles.listContent}
-          ListEmptyComponent={<EmptyView title="Replenishment" description="No open replenishment lists" />}
+          ListHeaderComponent={
+            sequentialMode ? <SequentialStartCard lists={lists} onStart={handleSequentialStart} /> : null
+          }
+          ListEmptyComponent={
+            sequentialMode ? null : <EmptyView title="Replenishment" description="No open replenishment lists" />
+          }
           refreshControl={<PullToRefreshControl onRefresh={fetchLists} />}
         />
       ) : (

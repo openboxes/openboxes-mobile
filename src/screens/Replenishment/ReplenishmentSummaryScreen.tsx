@@ -8,7 +8,7 @@ import EmptyView from '../../components/EmptyView';
 import { ProductDetailsItem } from '../../components/ProductDetails';
 import { HYPHEN } from '../../constants';
 import { navigate } from '../../NavigationService';
-import { summarizeListTasks } from './lib';
+import { sessionTitle, summarizeListTasks } from './lib';
 import { useReplenishmentContext } from './ReplenishmentContext';
 import styles from './styles';
 
@@ -21,9 +21,11 @@ function SummaryRow({ label, value }: ProductDetailsItem) {
   );
 }
 
-/** The completion summary of a replenishment list, once all its picks are done */
+/**
+ * The completion summary of a replenishment list once all its picks are done, or of the tasks of a sequential session
+ */
 export default function ReplenishmentSummaryScreen() {
-  const { currentList, listTasks, loadListTasks } = useReplenishmentContext();
+  const { currentList, isSequential, listTasks, loadListTasks } = useReplenishmentContext();
   const [loadError, setLoadError] = useState<string | undefined>(undefined);
   const [hasLoaded, setHasLoaded] = useState(false);
 
@@ -34,12 +36,12 @@ export default function ReplenishmentSummaryScreen() {
         setHasLoaded(true);
       });
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentList?.id])
+    }, [currentList?.id, isSequential])
   );
 
   const summary = useMemo(() => summarizeListTasks(listTasks), [listTasks]);
 
-  if (!currentList || loadError) {
+  if ((!currentList && !isSequential) || loadError) {
     return (
       <View style={styles.flex1}>
         <EmptyView
@@ -67,7 +69,9 @@ export default function ReplenishmentSummaryScreen() {
         <Card.Content>
           <View style={styles.headerRow}>
             <Chip icon="identifier" style={[styles.chipDefault, styles.orderNumberChip]}>
-              <Text style={[styles.orderNumberText, styles.fontBold]}>{currentList.orderNumber ?? HYPHEN}</Text>
+              <Text style={[styles.orderNumberText, styles.fontBold]}>
+                {sessionTitle(currentList, listTasks) ?? HYPHEN}
+              </Text>
             </Chip>
             <Chip icon="check-circle-outline" style={styles.chipDefault}>
               <Text style={[styles.chipText, styles.fontBold]}>

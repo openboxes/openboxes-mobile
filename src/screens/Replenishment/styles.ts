@@ -68,6 +68,9 @@ export default StyleSheet.create({
   listContent: {
     paddingBottom: Theme.spacing.large
   },
+  sequentialToggle: {
+    paddingHorizontal: Theme.spacing.medium
+  },
   orderNumberChip: {
     flexShrink: 1
   },

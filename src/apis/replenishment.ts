@@ -19,13 +19,14 @@ export function getReplenishmentListsApi(facilityId: string) {
   return apiClient.get(`/facilities/${facilityId}/replenishments?status=PENDING&status=PICKING&status=PICKED`);
 }
 
+/** The tasks of a replenishment list, or of all the facility's lists when no order is given */
 export function getReplenishmentTasksApi(
   facilityId: string,
-  orderId: string,
+  orderId?: string,
   statuses: ReplenishmentTaskStatus[] = OPEN_TASK_STATUSES
 ) {
-  const statusParams = statuses.map((status) => `&status=${status}`).join('');
-  return apiClient.get(`/facilities/${facilityId}/replenishment-tasks?orderId=${orderId}${statusParams}`);
+  const params = [...(orderId ? [`orderId=${orderId}`] : []), ...statuses.map((status) => `status=${status}`)];
+  return apiClient.get(`/facilities/${facilityId}/replenishment-tasks?${params.join('&')}`);
 }
 
 export function getReplenishmentTaskByIdApi(facilityId: string, taskId: string) {

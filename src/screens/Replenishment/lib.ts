@@ -188,3 +188,21 @@ export function tasksCountLabel({
 }: Pick<ReplenishmentList, 'tasksCount' | 'openTasksCount'>) {
   return openTasksCount > 0 && openTasksCount < tasksCount ? `${openTasksCount} / ${tasksCount} Left` : `${tasksCount}`;
 }
+
+/** What a sequential session starts with: the open tasks of all the lists, and how many lists have some */
+export function countOpenTasks(lists: Pick<ReplenishmentList, 'openTasksCount'>[]) {
+  const listsWithOpenTasks = lists.filter((list) => list.openTasksCount > 0);
+  return {
+    tasks: listsWithOpenTasks.reduce((sum, list) => sum + list.openTasksCount, 0),
+    lists: listsWithOpenTasks.length
+  };
+}
+
+/** The list being worked on, or for a sequential session the lists its tasks come from: "R-1, R-2" */
+export function sessionTitle(list: Pick<ReplenishmentList, 'orderNumber'> | undefined, tasks: ReplenishmentTask[]) {
+  if (list) {
+    return list.orderNumber;
+  }
+  const orderNumbers = Array.from(new Set(tasks.map((task) => task.orderNumber).filter(Boolean)));
+  return orderNumbers.length > 0 ? orderNumbers.join(', ') : undefined;
+}

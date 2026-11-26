@@ -12,18 +12,24 @@ import { useSearchButton } from '../../components/SearchButton/useSearchButton';
 import { EMPTY_STRING, HYPHEN } from '../../constants';
 import { useScanField } from '../../hooks/useScanField';
 import { navigate, resetToRoutes } from '../../NavigationService';
-import { ContainerToStage, summarizeListTasks } from './lib';
+import { ContainerToStage, sessionTitle, summarizeListTasks } from './lib';
 import { useReplenishmentContext } from './ReplenishmentContext';
 import { useReplenishmentScanLog } from './scanLog';
 import styles from './styles';
 
 /**
- * Stages the containers of the list one by one: the picker scans a staging lane set aside for bin replenishment
+ * Stages the containers of the list (or of the sequential session) one by one: the picker scans a staging lane set aside for bin replenishment
  * (BIN_REPLENISHMENT activity), which the search lists, and the server rejects any other location.
  */
 export function ReplenishmentStagingLocationScreen() {
-  const { currentList, listTasks, loadListTasks, dropContainerAtStagingLocation, resetReplenishmentSession } =
-    useReplenishmentContext();
+  const {
+    currentList,
+    isSequential,
+    listTasks,
+    loadListTasks,
+    dropContainerAtStagingLocation,
+    resetReplenishmentSession
+  } = useReplenishmentContext();
   const stagingScan = useScanField();
   const { isSearchOpen, searchButtonProps } = useSearchButton({ onSelect: stagingScan.onChange });
   const logScan = useReplenishmentScanLog();
@@ -56,7 +62,7 @@ export function ReplenishmentStagingLocationScreen() {
 
   const current = containers[containerIndex];
 
-  if (!currentList || !current) {
+  if ((!currentList && !isSequential) || !current) {
     return (
       <View style={styles.flex1}>
         <EmptyView title="Replenishment Staging" description="There are no replenishment containers to stage." />
@@ -70,7 +76,10 @@ export function ReplenishmentStagingLocationScreen() {
   const containerNumber = current.container.locationNumber;
 
   function completeStaging() {
-    Alert.alert('Staging Complete', `${currentList?.orderNumber} is staged and ready for putaway.`, [
+    const message = currentList
+      ? `${currentList.orderNumber} is staged and ready for putaway.`
+      : 'The containers are staged and ready for putaway.';
+    Alert.alert('Staging Complete', message, [
       {
         text: 'OK',
         onPress: () => {
@@ -114,7 +123,9 @@ export function ReplenishmentStagingLocationScreen() {
         <Card.Content>
           <View style={styles.headerRow}>
             <Chip icon="identifier" style={[styles.chipDefault, styles.orderNumberChip]}>
-              <Text style={[styles.orderNumberText, styles.fontBold]}>{currentList.orderNumber ?? HYPHEN}</Text>
+              <Text style={[styles.orderNumberText, styles.fontBold]}>
+                {sessionTitle(currentList, listTasks) ?? HYPHEN}
+              </Text>
             </Chip>
             <Chip icon="navigation" style={styles.chipDefault}>
               <Text style={styles.chipText}>

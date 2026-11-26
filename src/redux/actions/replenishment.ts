@@ -51,8 +51,9 @@ export function getReplenishmentListsAction(callback: ReplenishmentCallback<Repl
 /**
  * @param statuses the statuses of the tasks to get, the open ones (to pick) by default
  */
+/** orderId: the list whose tasks to load; undefined loads the tasks of all the facility's lists */
 export function getReplenishmentTasksAction(
-  orderId: string,
+  orderId: string | undefined,
   callback: ReplenishmentCallback<ReplenishmentTask[]>,
   statuses?: ReplenishmentTaskStatus[]
 ) {

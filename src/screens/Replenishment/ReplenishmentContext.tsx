@@ -29,8 +29,13 @@ type ShortPickCallback = (response: { errorMessage?: string; tasks?: Replenishme
 export type SessionStart = 'PICK' | 'STAGE';
 
 type ReplenishmentContextType = {
-  /** The replenishment list being worked on */
+  /** The replenishment list being worked on; undefined in a sequential session */
   currentList?: ReplenishmentList;
+  /** Whether the list screen starts sequential sessions (all open tasks of the facility) rather than one list's */
+  sequentialMode: boolean;
+  setSequentialMode: (sequentialMode: boolean) => void;
+  /** Whether the current session goes through the open tasks of all lists, rather than one list's */
+  isSequential: boolean;
   /** The tasks to pick in this session, in location sequence; picked ones stay with their new status */
   allTasks: ReplenishmentTask[];
   tasksCount: number;
@@ -45,6 +50,11 @@ type ReplenishmentContextType = {
    * staged, and false (after alerting) when there is nothing to do.
    */
   startSession: (list: ReplenishmentList) => Promise<SessionStart | false>;
+  /**
+   * Loads the open tasks of all the facility's lists in location sequence. Resolves false (after alerting) when there
+   * is nothing to pick.
+   */
+  startSequentialSession: () => Promise<boolean>;
   loadListTasks: (callback?: Callback) => void;
   goToTask: (index: number) => void;
   /** Moves the current task to the end of the sequence and shows the next one to pick */
@@ -67,6 +77,9 @@ export function ReplenishmentProvider({ children }: { children: ReactNode }) {
   const dispatch = useDispatch();
 
   const [currentList, setCurrentList] = useState<ReplenishmentList | undefined>(undefined);
+  // Not saved: each app start begins in the sequential run of OBLS-408; the "Pick By List" toggle turns on list mode
+  const [sequentialMode, setSequentialMode] = useState<boolean>(true);
+  const [isSequential, setIsSequential] = useState<boolean>(false);
   const [allTasks, setAllTasks] = useState<ReplenishmentTask[]>([]);
   const [listTasks, setListTasks] = useState<ReplenishmentTask[]>([]);
   const [currentTaskIndex, setCurrentTaskIndex] = useState<number>(0);
@@ -122,6 +135,7 @@ export function ReplenishmentProvider({ children }: { children: ReactNode }) {
           }
 
           setCurrentList(list);
+          setIsSequential(false);
           setAllTasks(sortTasksByLocation(openTasks));
           setListTasks([]);
           setCurrentTaskIndex(0);
@@ -130,7 +144,41 @@ export function ReplenishmentProvider({ children }: { children: ReactNode }) {
       );
     });
 
+  const startSequentialSession = (): Promise<boolean> =>
+    new Promise((resolve) => {
+      dispatch(
+        getReplenishmentTasksAction(undefined, ({ response, errorMessage }) => {
+          if (errorMessage || !response || response.errorCode) {
+            Alert.alert('Error', errorMessage ?? response?.message ?? 'Failed to load replenishment tasks.');
+            resolve(false);
+            return;
+          }
+
+          const openTasks = response.data ?? [];
+          if (openTasks.length === 0) {
+            Alert.alert('No Tasks', 'No open replenishment tasks were found.');
+            resolve(false);
+            return;
+          }
+
+          setCurrentList(undefined);
+          setIsSequential(true);
+          setAllTasks(sortTasksByLocation(openTasks));
+          setListTasks([]);
+          setCurrentTaskIndex(0);
+          resolve(true);
+        })
+      );
+    });
+
   const loadListTasks = (callback?: Callback) => {
+    // A sequential session spans lists: its summary and staging are about the tasks of the session, kept up to date
+    // after each pick
+    if (isSequential) {
+      setListTasks(allTasks);
+      callback?.({});
+      return;
+    }
     if (!currentList) {
       callback?.({ errorMessage: 'No current replenishment list.' });
       return;
@@ -210,7 +258,7 @@ export function ReplenishmentProvider({ children }: { children: ReactNode }) {
     callback: ShortPickCallback,
     reasonCodeName?: string
   ) => {
-    if (!currentTask || !currentList) {
+    if (!currentTask || (!currentList && !isSequential)) {
       callback({ errorMessage: 'No current replenishment task.' });
       return;
     }
@@ -247,7 +295,8 @@ export function ReplenishmentProvider({ children }: { children: ReactNode }) {
           }
 
           dispatch(
-            getReplenishmentTasksAction(currentList.id, ({ response: openTasksResponse }) => {
+            // In a sequential session, the reload also brings new open tasks of other lists: they join the run
+            getReplenishmentTasksAction(currentList?.id, ({ response: openTasksResponse }) => {
               // When the reload fails, the session goes on with the tasks it has
               const tasksWithReallocated = appendNewTasks(tasks, openTasksResponse?.data ?? []);
               const reallocatedTasks = tasksWithReallocated.slice(tasks.length);
@@ -286,6 +335,7 @@ export function ReplenishmentProvider({ children }: { children: ReactNode }) {
 
   const resetReplenishmentSession = () => {
     setCurrentList(undefined);
+    setIsSequential(false);
     setAllTasks([]);
     setListTasks([]);
     setCurrentTaskIndex(0);
@@ -295,6 +345,9 @@ export function ReplenishmentProvider({ children }: { children: ReactNode }) {
     <ReplenishmentContext.Provider
       value={{
         currentList,
+        sequentialMode,
+        setSequentialMode,
+        isSequential,
         allTasks,
         tasksCount,
         openTasksCount,
@@ -302,6 +355,7 @@ export function ReplenishmentProvider({ children }: { children: ReactNode }) {
         currentTask,
         listTasks,
         startSession,
+        startSequentialSession,
         loadListTasks,
         goToTask,
         skipCurrentTask,

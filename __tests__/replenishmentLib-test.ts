@@ -2,10 +2,12 @@ import Location from '../src/data/location/Location';
 import { navigate, resetToRoutes } from '../src/NavigationService';
 import {
   appendNewTasks,
+  countOpenTasks,
   describeReallocatedTasks,
   findNextOpenTaskIndex,
   moveTaskToEnd,
   proceedToNextTask,
+  sessionTitle,
   sortTasksByLocation,
   summarizeListTasks,
   tasksCountLabel
@@ -220,5 +222,36 @@ describe('tasksCountLabel', () => {
 
   it('shows all the tasks when none is left to pick', () => {
     expect(tasksCountLabel({ tasksCount: 5, openTasksCount: 0 })).toBe('5');
+  });
+});
+
+describe('countOpenTasks', () => {
+  it('sums the open tasks and counts only the lists that have some', () => {
+    expect(countOpenTasks([{ openTasksCount: 2 }, { openTasksCount: 0 }, { openTasksCount: 3 }])).toEqual({
+      tasks: 5,
+      lists: 2
+    });
+  });
+
+  it('is zero without lists', () => {
+    expect(countOpenTasks([])).toEqual({ tasks: 0, lists: 0 });
+  });
+});
+
+describe('sessionTitle', () => {
+  const withOrder = (id: string, orderNumber: string) => ({ ...task(id), orderNumber } as ReplenishmentTask);
+
+  it('is the number of the list being worked on', () => {
+    expect(sessionTitle({ orderNumber: 'R-1' }, [withOrder('a', 'R-2')])).toBe('R-1');
+  });
+
+  it('lists the numbers of the lists the tasks of a sequential session come from, once each', () => {
+    expect(sessionTitle(undefined, [withOrder('a', 'R-2'), withOrder('b', 'R-1'), withOrder('c', 'R-2')])).toBe(
+      'R-2, R-1'
+    );
+  });
+
+  it('is undefined without list or tasks', () => {
+    expect(sessionTitle(undefined, [])).toBeUndefined();
   });
 });
