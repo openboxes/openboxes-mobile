@@ -84,3 +84,9 @@ export function updateProductIdentifier(id: string, type: string, value: string)
     identifier: { type, value }
   });
 }
+
+export function removeProductIdentifier(id: string, type: string) {
+  return apiClient.put(`/mobile/products/${id}/identifiers`, {
+    identifier: { type, clear: true }
+  });
+}

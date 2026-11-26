@@ -185,6 +185,7 @@ export default function PickingPickQuantityScreen() {
               showKeyboardOnMount
               autoSubmitTimeout={0}
               keyboardType="number-pad"
+              acceptsScans={false}
               leftIcon={<QuantityIcon size={24} />}
               label="Quantity Picked"
               value={quantityPicked}

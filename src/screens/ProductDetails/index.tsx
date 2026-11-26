@@ -11,7 +11,11 @@ import PrintModal from '../../components/PrintModal';
 import PullToRefreshControl from '../../components/PullToRefreshControl';
 import { HYPHEN } from '../../constants';
 import { resetToRoutes } from '../../NavigationService';
-import { getProductByIdAction, updateProductIdentifierAction } from '../../redux/actions/products';
+import {
+  getProductByIdAction,
+  removeProductIdentifierAction,
+  updateProductIdentifierAction
+} from '../../redux/actions/products';
 import { RootState } from '../../redux/reducers';
 import Theme from '../../utils/Theme';
 import EditBarcodeModal from './EditBarcodeModal';
@@ -133,25 +137,35 @@ class ProductDetails extends React.Component<Props, State> {
     });
   };
 
-  handleSaveBarcode = (newBarcode: string, clear: () => void) => {
-    const { productDetails } = this.state;
-    const id = productDetails.id;
-    if (!id) {
+  handleIdentifierResponse = (id: string, onError?: () => void) => (response: any) => {
+    if (!this.state.editBarcodeVisible) {
       return;
     }
+    if (response?.error) {
+      Alert.alert('Error', response.errorMessage ?? 'Product identifier update failed.');
+      onError?.();
+      return;
+    }
+    this.setState({ editBarcodeVisible: false });
+    this.getProductDetails(id);
+  };
 
-    this.props.updateProductIdentifierAction(id, 'upc', newBarcode, (response: any) => {
-      if (!this.state.editBarcodeVisible) {
-        return;
-      }
-      if (response?.error) {
-        Alert.alert('Error', response.errorMessage ?? 'Product identifier update failed.');
-        clear();
-        return;
-      }
-      this.setState({ editBarcodeVisible: false });
-      this.getProductDetails(id);
-    });
+  handleSaveBarcode = (newBarcode: string, onFailed: () => void) => {
+    const id = this.state.productDetails.id;
+    if (!id) {
+      onFailed();
+      return;
+    }
+    this.props.updateProductIdentifierAction(id, 'upc', newBarcode, this.handleIdentifierResponse(id, onFailed));
+  };
+
+  handleRemoveBarcode = (onFailed: () => void) => {
+    const id = this.state.productDetails.id;
+    if (!id) {
+      onFailed();
+      return;
+    }
+    this.props.removeProductIdentifierAction(id, 'upc', this.handleIdentifierResponse(id, onFailed));
   };
 
   navigateToDetails = (item: any) => {
@@ -257,6 +271,7 @@ class ProductDetails extends React.Component<Props, State> {
           currentBarcode={productDetails?.upc}
           onClose={() => this.setState({ editBarcodeVisible: false })}
           onSave={this.handleSaveBarcode}
+          onRemoveBarcode={this.handleRemoveBarcode}
         />
 
         <ScrollView
@@ -333,7 +348,8 @@ const mapStateToProps = (state: RootState) => ({
 
 const mapDispatchToProps: DispatchProps = {
   getProductByIdAction,
-  updateProductIdentifierAction
+  updateProductIdentifierAction,
+  removeProductIdentifierAction
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProductDetails);

@@ -22,6 +22,7 @@ export interface DispatchProps {
     identifierValue: string,
     callback?: (data: any) => void
   ) => void;
+  removeProductIdentifierAction: (id: string, identifierType: string, callback?: (data: any) => void) => void;
 }
 
 export interface State {

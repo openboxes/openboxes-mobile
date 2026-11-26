@@ -29,8 +29,9 @@ export function ReplenishmentLocationScreen() {
     return null;
   }
 
-  function handleSubmit() {
-    const isValid = locationBarcode === currentTask?.location?.locationNumber;
+  // A hardware scan submits before `locationBarcode` re-renders, so validate the submitted code.
+  function handleSubmit(code: string) {
+    const isValid = code === currentTask?.location?.locationNumber;
 
     if (!isValid) {
       Alert.alert(

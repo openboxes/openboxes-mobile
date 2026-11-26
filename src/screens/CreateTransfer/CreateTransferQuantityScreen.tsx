@@ -94,6 +94,7 @@ export default function CreateTransferQuantityScreen() {
             leftIcon={<QuantityIcon size={24} />}
             placeholder={`Max ${item.quantityNotPicked}`}
             keyboardType="number-pad"
+            acceptsScans={false}
             label="Quantity"
             value={quantity?.toString() ?? EMPTY_STRING}
             danger={!!quantityError}
