@@ -179,7 +179,7 @@ const dashboardEntries: DashboardEntry[] = [
     screenName: 'Replenishment',
     entryDescription: 'Manage inventory replenishment tasks',
     icon: IconProducts,
-    navigationScreenName: 'ReplenishmentPickingLocation',
+    navigationScreenName: 'ReplenishmentList',
     group: 'INVENTORY'
   },
   {

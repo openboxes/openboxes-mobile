@@ -12,3 +12,4 @@ export * from './others';
 export * from './picking';
 export * from './pua';
 export * from './createTransfer';
+export * from './replenishment';

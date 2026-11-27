@@ -77,11 +77,13 @@ import PickingPickOutboundContainerScreen from './screens/Picking/PickingPickOut
 import PickingPickStagingLocationScreen from './screens/Picking/PickingPickStagingLocationScreen';
 import PickingMoveToStagingScreen from './screens/Picking/PickingMoveToStaging';
 import PickingStagingDropScreen from './screens/Picking/PickingStagingDrop';
+import ReplenishmentListScreen from './screens/Replenishment/ReplenishmentListScreen';
 import { ReplenishmentLocationScreen } from './screens/Replenishment/ReplenishmentLocationScreen';
 import { ReplenishmentProductScreen } from './screens/Replenishment/ReplenishmentProductScreen';
 import ReplenishmentOutboundContainerScreen from './screens/Replenishment/ReplenishmentOutboundContainerScreen';
 import ReplenishmentPickQuantityScreen from './screens/Replenishment/ReplenishmentPickQuantityScreen';
 import { ReplenishmentStagingLocationScreen } from './screens/Replenishment/ReplenishmentStagingLocationScreen';
+import ReplenishmentSummaryScreen from './screens/Replenishment/ReplenishmentSummaryScreen';
 import Transfer from './screens/Transfer';
 import Transfers from './screens/Transfers';
 import TransferDetails from './screens/TransfersDetails';
@@ -415,6 +417,11 @@ class Main extends Component<Props, State> {
                 options={{ title: 'Staging Location Drop' }}
               />
               <Stack.Screen
+                name="ReplenishmentList"
+                component={ReplenishmentListScreen}
+                options={{ title: 'Replenishment' }}
+              />
+              <Stack.Screen
                 name="ReplenishmentPickingLocation"
                 component={ReplenishmentLocationScreen}
                 options={{ title: 'Replenishment Location' }}
@@ -433,6 +440,11 @@ class Main extends Component<Props, State> {
                 name="ReplenishmentOutboundContainer"
                 component={ReplenishmentOutboundContainerScreen}
                 options={{ title: 'Replenishment Outbound Container' }}
+              />
+              <Stack.Screen
+                name="ReplenishmentSummary"
+                component={ReplenishmentSummaryScreen}
+                options={{ title: 'Replenishment Summary' }}
               />
               <Stack.Screen
                 name="ReplenishmentStagingLocation"

@@ -57,5 +57,59 @@ export default StyleSheet.create({
   },
   divider: {
     marginVertical: Theme.spacing.small
+  },
+  flex1: {
+    flex: 1
+  },
+  screenContainer: {
+    flex: 1,
+    backgroundColor: Theme.colors.background
+  },
+  listContent: {
+    paddingBottom: Theme.spacing.large
+  },
+  sequentialToggle: {
+    paddingHorizontal: Theme.spacing.medium
+  },
+  orderNumberChip: {
+    flexShrink: 1
+  },
+  statusChip: {
+    marginRight: 0
+  },
+  statusChipReady: {
+    backgroundColor: Theme.colors.successBackground
+  },
+  statusChipTextReady: {
+    color: Theme.colors.successForeground
+  },
+  statusChipInProgress: {
+    backgroundColor: Theme.colors.infoBackground
+  },
+  statusChipTextInProgress: {
+    color: Theme.colors.infoForeground
+  },
+  orderNumberText: {
+    fontSize: 14,
+    color: Theme.colors.text
+  },
+  additionalInfoRow: {
+    flexDirection: 'row',
+    marginTop: Theme.spacing.small,
+    alignItems: 'center',
+    flexWrap: 'wrap'
+  },
+  scannerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: Theme.spacing.medium
+  },
+  scannerInput: {
+    flex: 1
+  },
+  summaryRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: Theme.spacing.small
   }
 });

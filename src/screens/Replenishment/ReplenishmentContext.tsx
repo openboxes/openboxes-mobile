@@ -1,31 +1,81 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { createContext, ReactNode, useContext, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { Alert } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { DUMMY_REPLENISHMENT_TASKS } from './mock-data';
-import { ReplenishmentTask } from './types';
+import { ALL_TASK_STATUSES, LIST_STATUS_PICKED } from '../../apis/replenishment';
+import {
+  dropReplenishmentContainerAction,
+  getReplenishmentTasksAction,
+  pickReplenishmentTaskAction,
+  shortPickReplenishmentTaskAction,
+  startReplenishmentTaskAction
+} from '../../redux/actions/replenishment';
+import { userSession } from '../../redux/selectors/auth';
+import { ReplenishmentList, ReplenishmentTask, ReplenishmentTaskStatus } from '../../types/replenishment';
+import {
+  appendNewTasks,
+  describeReallocatedTasks,
+  findNextOpenTaskIndex,
+  isOpenTask,
+  isTaskAvailableTo,
+  moveTaskToEnd,
+  sortTasksByLocation,
+  withSessionTasks
+} from './lib';
+
+type Callback = (response: { errorMessage?: string }) => void;
+
+/** tasks: the session's tasks after the short pick, with any task created to pick the shortage elsewhere */
+type ShortPickCallback = (response: { errorMessage?: string; tasks?: ReplenishmentTask[] }) => void;
+
+/** What to do with a list once its session is started: pick its tasks, or stage what was picked */
+export type SessionStart = 'PICK' | 'STAGE';
 
 type ReplenishmentContextType = {
+  /** The replenishment list being worked on; undefined in a sequential session */
+  currentList?: ReplenishmentList;
+  /** Whether the list screen starts sequential sessions (all open tasks of the facility) rather than one list's */
+  sequentialMode: boolean;
+  setSequentialMode: (sequentialMode: boolean) => void;
+  /** Whether the current session goes through the open tasks of all lists, rather than one list's */
+  isSequential: boolean;
+  /** The tasks to pick in this session, in location sequence; picked ones stay with their new status */
   allTasks: ReplenishmentTask[];
   tasksCount: number;
+  /** Tasks of the session still to pick */
+  openTasksCount: number;
   currentTask?: ReplenishmentTask;
   currentTaskIndex: number;
-  startReplenishment: (callback: (response: { errorMessage?: string }) => void) => void;
-  goToNextTask: () => void;
-  pickCurrentTask: (outboundContainerId: string, callback: (response: { errorMessage?: string }) => void) => void;
+  /** All tasks of the list, whatever their status, as last loaded by loadListTasks (for the summary and staging) */
+  listTasks: ReplenishmentTask[];
+  /**
+   * Loads the open tasks of the list in location sequence. Resolves 'STAGE' when none are left but picks wait to be
+   * staged, and false (after alerting) when there is nothing to do.
+   */
+  startSession: (list: ReplenishmentList) => Promise<SessionStart | false>;
+  /**
+   * Loads the open tasks of all the facility's lists in location sequence. Resolves false (after alerting) when there
+   * is nothing to pick.
+   */
+  startSequentialSession: () => Promise<boolean>;
+  loadListTasks: (callback?: Callback) => void;
+  goToTask: (index: number) => void;
+  /**
+   * Starts the current task (PICKING), assigned to the picker, at their first input on it. Reports an error when it is
+   * assigned to someone else. Does nothing when the picker already started it.
+   */
+  startCurrentTask: (callback: Callback) => void;
+  /** Moves the current task to the end of the sequence and shows the next one to pick */
+  skipCurrentTask: () => void;
+  pickCurrentTask: (outboundContainerId: string, callback: Callback) => void;
   shortPickTask: (
-    outboundContainerId: string,
+    outboundContainerId: string | null,
     parsedQuantityPicked: number,
-    callback: (response: { errorMessage?: string }) => void,
-    reasonCodeId?: string
+    callback: ShortPickCallback,
+    reasonCodeName?: string
   ) => void;
-  revalidateCurrentTask: (callback: (revalidatedTask?: ReplenishmentTask) => void) => void;
-  revalidateTasksForOrder: (orderId: string, callback: () => void) => void;
-  dropCurrentTaskAtStagingLocation: (
-    task: ReplenishmentTask,
-    callback: (response: { errorMessage?: string }) => void
-  ) => void;
+  /** Stages the picks of the container in the staging location */
+  dropContainerAtStagingLocation: (outboundContainerId: string, stagingLocationId: string, callback: Callback) => void;
   resetReplenishmentSession: () => void;
 };
 
@@ -34,86 +84,300 @@ const ReplenishmentContext = createContext<ReplenishmentContextType | undefined>
 export function ReplenishmentProvider({ children }: { children: ReactNode }) {
   const dispatch = useDispatch();
 
-  // @ts-ignore
-  const [allTasks, setAllTasks] = useState<ReplenishmentTask[]>(DUMMY_REPLENISHMENT_TASKS);
+  const [currentList, setCurrentList] = useState<ReplenishmentList | undefined>(undefined);
+  // Not saved: each app start begins in the sequential run of OBLS-408; the "Pick By List" toggle turns on list mode
+  const [sequentialMode, setSequentialMode] = useState<boolean>(true);
+  const [isSequential, setIsSequential] = useState<boolean>(false);
+  const [allTasks, setAllTasks] = useState<ReplenishmentTask[]>([]);
+  const [listTasks, setListTasks] = useState<ReplenishmentTask[]>([]);
   const [currentTaskIndex, setCurrentTaskIndex] = useState<number>(0);
   const tasksCount = allTasks.length;
-  const currentTask = DUMMY_REPLENISHMENT_TASKS[0];
-  // const currentTask = tasksCount > 0 ? allTasks[currentTaskIndex] : undefined;
+  const openTasksCount = allTasks.filter(isOpenTask).length;
+  const currentTask = currentTaskIndex < tasksCount ? allTasks[currentTaskIndex] : undefined;
+  const session = useSelector(userSession);
+  const userId: string | undefined = session?.user?.id;
 
-  const startReplenishment = (callback: (response: { errorMessage?: string }) => void) => {
-    // TODO: Implement the logic for starting the replenishment process
-    // dispatch(startReplenishmentProcess(currentTask.id, callback));
+  // Tasks started by another picker are left out: the server refuses to pick them
+  const availableTasks = (tasks: ReplenishmentTask[]) => tasks.filter((task) => isTaskAvailableTo(task, userId));
+
+  const startSession = (list: ReplenishmentList): Promise<SessionStart | false> =>
+    new Promise((resolve) => {
+      dispatch(
+        getReplenishmentTasksAction(list.id, ({ response, errorMessage }) => {
+          if (errorMessage || !response) {
+            Alert.alert('Error', errorMessage ?? 'Failed to load replenishment tasks.');
+            resolve(false);
+            return;
+          }
+
+          if (response.errorCode) {
+            Alert.alert('Error', response.message ?? 'Failed to load replenishment tasks.');
+            resolve(false);
+            return;
+          }
+
+          const openTasks = availableTasks(response.data ?? []);
+          if (openTasks.length === 0 && list.status !== LIST_STATUS_PICKED) {
+            Alert.alert('No Tasks', `No open replenishment tasks were found for ${list.orderNumber}.`);
+            resolve(false);
+            return;
+          }
+
+          setCurrentList(list);
+          setIsSequential(false);
+          setAllTasks(sortTasksByLocation(openTasks));
+          setListTasks([]);
+          setCurrentTaskIndex(0);
+          resolve(openTasks.length > 0 ? 'PICK' : 'STAGE');
+        })
+      );
+    });
+
+  const startSequentialSession = (): Promise<boolean> =>
+    new Promise((resolve) => {
+      dispatch(
+        getReplenishmentTasksAction(undefined, ({ response, errorMessage }) => {
+          if (errorMessage || !response || response.errorCode) {
+            Alert.alert('Error', errorMessage ?? response?.message ?? 'Failed to load replenishment tasks.');
+            resolve(false);
+            return;
+          }
+
+          const openTasks = availableTasks(response.data ?? []);
+          if (openTasks.length === 0) {
+            Alert.alert('No Tasks', 'No open replenishment tasks were found.');
+            resolve(false);
+            return;
+          }
+
+          setCurrentList(undefined);
+          setIsSequential(true);
+          setAllTasks(sortTasksByLocation(openTasks));
+          setListTasks([]);
+          setCurrentTaskIndex(0);
+          resolve(true);
+        })
+      );
+    });
+
+  const loadListTasks = (callback?: Callback) => {
+    // A sequential session spans lists: its summary and staging are about the tasks of the session, kept up to date
+    // after each pick
+    if (isSequential) {
+      setListTasks(allTasks);
+      callback?.({});
+      return;
+    }
+    if (!currentList) {
+      callback?.({ errorMessage: 'No current replenishment list.' });
+      return;
+    }
+    dispatch(
+      getReplenishmentTasksAction(
+        currentList.id,
+        ({ response, errorMessage }) => {
+          if (errorMessage || !response?.data) {
+            callback?.({ errorMessage: errorMessage ?? 'Failed to load replenishment tasks.' });
+            return;
+          }
+          setListTasks(withSessionTasks(response.data, allTasks));
+          callback?.({});
+        },
+        ALL_TASK_STATUSES
+      )
+    );
   };
 
-  const pickCurrentTask = (outboundContainerId: string, callback: (response: { errorMessage?: string }) => void) => {
-    // TODO: Implement the logic for picking the current task
-    // dispatch(pickCurrentTask(currentTask.id, outboundContainerId, callback));
+  const goToTask = (index: number) => {
+    setCurrentTaskIndex(index);
   };
 
+  const startCurrentTask = (callback: Callback) => {
+    const task = currentTask;
+    if (!task) {
+      callback({ errorMessage: 'No current replenishment task.' });
+      return;
+    }
+    // Already started by this picker, e.g. on coming back to the location screen
+    if (task.status === ReplenishmentTaskStatus.PICKING && task.assignee && isTaskAvailableTo(task, userId)) {
+      callback({});
+      return;
+    }
+    dispatch(
+      startReplenishmentTaskAction(task.id, ({ response, errorMessage }) => {
+        if (errorMessage) {
+          callback({ errorMessage });
+          return;
+        }
+        const startedTask = response?.data;
+        setAllTasks((tasks) =>
+          tasks.map((t) => (t.id === task.id ? startedTask ?? { ...t, status: ReplenishmentTaskStatus.PICKING } : t))
+        );
+        callback({});
+      })
+    );
+  };
+
+  const skipCurrentTask = () => {
+    if (openTasksCount <= 1) {
+      return;
+    }
+    const tasks = moveTaskToEnd(allTasks, currentTaskIndex);
+    setAllTasks(tasks);
+    // Starting from the current index, which now holds the task that followed the skipped one
+    setCurrentTaskIndex(Math.max(findNextOpenTaskIndex(tasks, currentTaskIndex - 1), 0));
+  };
+
+  /**
+   * Replaces the current task by the one returned by the API, or else records the pick on it, so the session shows what
+   * was picked
+   */
+  const updateCurrentTask = (pickedTask: ReplenishmentTask | undefined, fallback: Partial<ReplenishmentTask>) => {
+    setAllTasks((tasks) =>
+      tasks.map((task, index) => {
+        if (index !== currentTaskIndex) {
+          return task;
+        }
+        return pickedTask?.id === task.id ? pickedTask : { ...task, ...fallback };
+      })
+    );
+  };
+
+  const pickCurrentTask = (outboundContainerId: string, callback: Callback) => {
+    if (!currentTask) {
+      callback({ errorMessage: 'No current replenishment task.' });
+      return;
+    }
+    dispatch(
+      pickReplenishmentTaskAction(currentTask.id, outboundContainerId, ({ response, errorMessage }) => {
+        if (errorMessage) {
+          callback({ errorMessage });
+          return;
+        }
+        updateCurrentTask(response?.data, {
+          quantityPicked: currentTask.quantityRequired,
+          status: ReplenishmentTaskStatus.PICKED
+        });
+        callback({});
+      })
+    );
+  };
+
+  /**
+   * Shorts the current task. With a reason, the server holds the quantity not found and may create tasks to pick it
+   * from other bins: those are loaded into the session, after the tasks it has, and the picker is told.
+   */
   const shortPickTask = (
-    outboundContainerId: string,
+    outboundContainerId: string | null,
     parsedQuantityPicked: number,
-    callback: (response: { errorMessage?: string }) => void,
-    reasonCodeId?: string
+    callback: ShortPickCallback,
+    reasonCodeName?: string
   ) => {
-    // TODO: Implement the logic for short picking the current task
-    // dispatch(shortPickTask(currentTask.id, outboundContainerId, parsedQuantityPicked, callback, reasonCodeId));
+    if (!currentTask || (!currentList && !isSequential)) {
+      callback({ errorMessage: 'No current replenishment task.' });
+      return;
+    }
+    dispatch(
+      shortPickReplenishmentTaskAction(
+        currentTask.id,
+        outboundContainerId,
+        parsedQuantityPicked,
+        reasonCodeName,
+        ({ response, errorMessage }) => {
+          if (errorMessage) {
+            callback({ errorMessage });
+            return;
+          }
+          const pickedTask = response?.data;
+          const tasks = allTasks.map((task, index) => {
+            if (index !== currentTaskIndex) {
+              return task;
+            }
+            return pickedTask?.id === task.id
+              ? pickedTask
+              : {
+                  ...task,
+                  quantityPicked: (currentTask.quantityPicked || 0) + parsedQuantityPicked,
+                  reasonCode: reasonCodeName ?? null,
+                  status: ReplenishmentTaskStatus.PICKED
+                };
+          });
+
+          if (!reasonCodeName) {
+            setAllTasks(tasks);
+            callback({ tasks });
+            return;
+          }
+
+          dispatch(
+            // In a sequential session, the reload also brings new open tasks of other lists: they join the run
+            getReplenishmentTasksAction(currentList?.id, ({ response: openTasksResponse }) => {
+              // When the reload fails, the session goes on with the tasks it has
+              const tasksWithReallocated = appendNewTasks(tasks, availableTasks(openTasksResponse?.data ?? []));
+              const reallocatedTasks = tasksWithReallocated.slice(tasks.length);
+              setAllTasks(tasksWithReallocated);
+              if (reallocatedTasks.length > 0) {
+                Alert.alert(
+                  'Inventory On Hold',
+                  `The quantity not found was put on hold for investigation. ${describeReallocatedTasks(
+                    reallocatedTasks
+                  )}.`
+                );
+              }
+              callback({ tasks: tasksWithReallocated });
+            })
+          );
+        }
+      )
+    );
   };
 
-  const revalidateCurrentTask = (callback: (revalidatedTask?: ReplenishmentTask) => void) => {
-    // TODO: Implement the logic for revalidating the current task
-    // dispatch(getTaskById(currentTask.id, ({ response }) => {
-    // if (response.errorCode || !response.data) {
-    //   Alert.alert('Failed To Revalidate', 'Could not revalidate the current task.');
-    //   return;
-    // }
-    //
-    // const revalidatedTask = response.data;
-    // setAllTasks((prevTasks) => prevTasks.map((task, index) => (index === currentTaskIndex ? revalidatedTask : task)));
-    // callback?.(revalidatedTask);
-    // });
-  };
-
-  const revalidateTasksForOrder = (orderId: string, callback: () => void) => {
-    // TODO: Implement the logic for revalidating all tasks for the order
-    // dispatch(revalidateTasksForOrderAction(orderId, ({ response }) => {
-    // TODO: Handle response and update tasks accordingly
-    //}));
-  };
-
-  const dropCurrentTaskAtStagingLocation = (
-    task: ReplenishmentTask,
-    callback: (response: { errorMessage?: string }) => void
+  const dropContainerAtStagingLocation = (
+    outboundContainerId: string,
+    stagingLocationId: string,
+    callback: Callback
   ) => {
-    // TODO: Implement the logic for dropping the current task at the staging location
-    // dispatch(dropTaskAtStagingLocation(task.outboundContainer.id, task.stagingLocation.id, callback));
+    if (!stagingLocationId) {
+      callback({ errorMessage: 'Please scan or enter a staging location.' });
+      return;
+    }
+    dispatch(
+      dropReplenishmentContainerAction(outboundContainerId, stagingLocationId, ({ errorMessage }) => {
+        callback(errorMessage ? { errorMessage } : {});
+      })
+    );
   };
 
   const resetReplenishmentSession = () => {
+    setCurrentList(undefined);
+    setIsSequential(false);
     setAllTasks([]);
+    setListTasks([]);
     setCurrentTaskIndex(0);
-  };
-
-  const goToNextTask = () => {
-    setCurrentTaskIndex((prevIndex) => prevIndex + 1);
   };
 
   return (
     <ReplenishmentContext.Provider
       value={{
+        currentList,
+        sequentialMode,
+        setSequentialMode,
+        isSequential,
         allTasks,
         tasksCount,
+        openTasksCount,
         currentTaskIndex,
-        // @ts-ignore
         currentTask,
-        startReplenishment,
-        goToNextTask,
+        listTasks,
+        startSession,
+        startSequentialSession,
+        loadListTasks,
+        goToTask,
+        startCurrentTask,
+        skipCurrentTask,
         pickCurrentTask,
         shortPickTask,
-        revalidateCurrentTask,
-        revalidateTasksForOrder,
-        dropCurrentTaskAtStagingLocation,
+        dropContainerAtStagingLocation,
         resetReplenishmentSession
       }}
     >

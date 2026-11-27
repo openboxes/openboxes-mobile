@@ -14,6 +14,8 @@ type Props = {
   selectedReasonCode: ReasonCode | undefined;
   setSelectedReasonCode: (reasonCode: ReasonCode | undefined) => void;
   quantityPicked?: string;
+  /** Require a reason for any short pick, not only for a quantity of zero */
+  isReasonCodeRequired?: boolean;
 };
 
 export default function PickingShortAndReasonModal({
@@ -23,7 +25,8 @@ export default function PickingShortAndReasonModal({
   reasonCodes,
   selectedReasonCode,
   setSelectedReasonCode,
-  quantityPicked
+  quantityPicked,
+  isReasonCodeRequired = false
 }: Props) {
   const parsedQuantityPicked = quantityPicked ? Number(quantityPicked) : 0;
 
@@ -57,7 +60,7 @@ export default function PickingShortAndReasonModal({
             <Button
               mode="contained"
               // If quantity picked is zero, reason code selection is mandatory
-              disabled={parsedQuantityPicked === 0 ? !selectedReasonCode : false}
+              disabled={isReasonCodeRequired || parsedQuantityPicked === 0 ? !selectedReasonCode : false}
               onPress={() => onConfirm(selectedReasonCode)}
             >
               Short
