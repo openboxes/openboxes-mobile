@@ -58,6 +58,15 @@ export function moveTaskToEnd(tasks: ReplenishmentTask[], index: number): Replen
   return [...tasks.slice(0, index), ...tasks.slice(index + 1), tasks[index]];
 }
 
+/**
+ * Whether the picker can work on the task: nobody started it yet, or it is assigned to them. Tasks started by another
+ * picker are left out of the session, as the server refuses to pick them.
+ */
+export function isTaskAvailableTo(task: ReplenishmentTask, userId: string | undefined): boolean {
+  const assigneeId = task.assignee?.id;
+  return !assigneeId || String(assigneeId) === userId;
+}
+
 /** Whether the task still has to be picked */
 export function isOpenTask(task: ReplenishmentTask): boolean {
   return task.status !== ReplenishmentTaskStatus.PICKED && task.status !== ReplenishmentTaskStatus.STAGED;
@@ -113,6 +122,18 @@ export function proceedToNextTask({ tasks, currentTaskIndex, goToTask }: Proceed
 export function appendNewTasks(tasks: ReplenishmentTask[], loadedTasks: ReplenishmentTask[]): ReplenishmentTask[] {
   const knownIds = new Set(tasks.map((task) => task.id));
   return [...tasks, ...sortTasksByLocation(loadedTasks.filter((task) => !knownIds.has(task.id)))];
+}
+
+/**
+ * The tasks loaded for a list, plus the session's tasks they no longer include: once the last task of a list ends with
+ * nothing to stage (all shorted to zero), the list is completed and the server returns none of its tasks.
+ */
+export function withSessionTasks(
+  loadedTasks: ReplenishmentTask[],
+  sessionTasks: ReplenishmentTask[]
+): ReplenishmentTask[] {
+  const loadedIds = new Set(loadedTasks.map((task) => task.id));
+  return [...loadedTasks, ...sessionTasks.filter((task) => !loadedIds.has(task.id))];
 }
 
 /** "3 more to pick from A-11-1 and 2 from B-2-1" */

@@ -1,16 +1,19 @@
 import Location from '../src/data/location/Location';
+import Person from '../src/data/picklist/Person';
 import { navigate, resetToRoutes } from '../src/NavigationService';
 import {
   appendNewTasks,
   countOpenTasks,
   describeReallocatedTasks,
   findNextOpenTaskIndex,
+  isTaskAvailableTo,
   moveTaskToEnd,
   proceedToNextTask,
   sessionTitle,
   sortTasksByLocation,
   summarizeListTasks,
-  tasksCountLabel
+  tasksCountLabel,
+  withSessionTasks
 } from '../src/screens/Replenishment/lib';
 import { ReplenishmentTask, ReplenishmentTaskStatus } from '../src/types/replenishment';
 
@@ -253,5 +256,37 @@ describe('sessionTitle', () => {
 
   it('is undefined without list or tasks', () => {
     expect(sessionTitle(undefined, [])).toBeUndefined();
+  });
+});
+
+describe('isTaskAvailableTo', () => {
+  const assignedTo = (userId: string) => ({ ...task('t'), assignee: { id: userId } as Person });
+
+  it('is available when nobody started the task', () => {
+    expect(isTaskAvailableTo(task('t'), 'me')).toBe(true);
+    expect(isTaskAvailableTo({ ...task('t'), assignee: null }, 'me')).toBe(true);
+  });
+
+  it('is available when the task is assigned to the picker', () => {
+    expect(isTaskAvailableTo(assignedTo('me'), 'me')).toBe(true);
+  });
+
+  it('is not available when the task is assigned to someone else', () => {
+    expect(isTaskAvailableTo(assignedTo('other'), 'me')).toBe(false);
+    expect(isTaskAvailableTo(assignedTo('other'), undefined)).toBe(false);
+  });
+});
+
+describe('withSessionTasks', () => {
+  it('keeps the loaded tasks and adds the session tasks they do not include', () => {
+    const loaded = { ...task('a'), status: ReplenishmentTaskStatus.PICKED };
+    const stale = { ...task('a'), status: ReplenishmentTaskStatus.PICKING };
+    const result = withSessionTasks([loaded], [stale, task('b')]);
+    expect(ids(result)).toEqual(['a', 'b']);
+    expect(result[0].status).toBe(ReplenishmentTaskStatus.PICKED);
+  });
+
+  it('returns the session tasks when the list was completed and nothing is loaded', () => {
+    expect(ids(withSessionTasks([], [task('a'), task('b')]))).toEqual(['a', 'b']);
   });
 });

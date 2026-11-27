@@ -16,7 +16,7 @@ import { useReplenishmentScanLog } from './scanLog';
 import styles from './styles';
 
 export function ReplenishmentLocationScreen() {
-  const { currentList, currentTask, currentTaskIndex, tasksCount, openTasksCount, skipCurrentTask } =
+  const { currentList, currentTask, currentTaskIndex, tasksCount, openTasksCount, skipCurrentTask, startCurrentTask } =
     useReplenishmentContext();
   const locationScan = useScanField();
   const resetLocationScan = locationScan.setValue;
@@ -59,10 +59,19 @@ export function ReplenishmentLocationScreen() {
       return;
     }
 
-    logScan('LOCATION', 'PASS', locationBarcode, expectedLocation);
-    locationScan.setValue(EMPTY_STRING);
-    locationScan.pass();
-    navigate('ReplenishmentProduct');
+    // The scan is the picker's first input on the task: it is assigned to them now, not when it is shown, so a task
+    // that is only viewed or skipped stays free for other pickers
+    startCurrentTask(({ errorMessage }) => {
+      if (errorMessage) {
+        logScan('LOCATION', 'FAIL', locationBarcode, expectedLocation, { message: errorMessage });
+        locationScan.fail(`Unable to start this task: ${errorMessage}`);
+        return;
+      }
+      logScan('LOCATION', 'PASS', locationBarcode, expectedLocation);
+      locationScan.setValue(EMPTY_STRING);
+      locationScan.pass();
+      navigate('ReplenishmentProduct');
+    });
   }
 
   function handleSkip() {

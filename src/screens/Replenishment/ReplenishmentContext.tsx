@@ -1,6 +1,6 @@
-import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import React, { createContext, ReactNode, useContext, useState } from 'react';
 import { Alert } from 'react-native';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { ALL_TASK_STATUSES, LIST_STATUS_PICKED } from '../../apis/replenishment';
 import {
@@ -10,14 +10,17 @@ import {
   shortPickReplenishmentTaskAction,
   startReplenishmentTaskAction
 } from '../../redux/actions/replenishment';
+import { userSession } from '../../redux/selectors/auth';
 import { ReplenishmentList, ReplenishmentTask, ReplenishmentTaskStatus } from '../../types/replenishment';
 import {
   appendNewTasks,
   describeReallocatedTasks,
   findNextOpenTaskIndex,
   isOpenTask,
+  isTaskAvailableTo,
   moveTaskToEnd,
-  sortTasksByLocation
+  sortTasksByLocation,
+  withSessionTasks
 } from './lib';
 
 type Callback = (response: { errorMessage?: string }) => void;
@@ -57,6 +60,11 @@ type ReplenishmentContextType = {
   startSequentialSession: () => Promise<boolean>;
   loadListTasks: (callback?: Callback) => void;
   goToTask: (index: number) => void;
+  /**
+   * Starts the current task (PICKING), assigned to the picker, at their first input on it. Reports an error when it is
+   * assigned to someone else. Does nothing when the picker already started it.
+   */
+  startCurrentTask: (callback: Callback) => void;
   /** Moves the current task to the end of the sequence and shows the next one to pick */
   skipCurrentTask: () => void;
   pickCurrentTask: (outboundContainerId: string, callback: Callback) => void;
@@ -86,30 +94,11 @@ export function ReplenishmentProvider({ children }: { children: ReactNode }) {
   const tasksCount = allTasks.length;
   const openTasksCount = allTasks.filter(isOpenTask).length;
   const currentTask = currentTaskIndex < tasksCount ? allTasks[currentTaskIndex] : undefined;
-  const currentTaskId = currentTask?.id;
-  const isCurrentTaskPending = currentTask?.status === ReplenishmentTaskStatus.PENDING;
+  const session = useSelector(userSession);
+  const userId: string | undefined = session?.user?.id;
 
-  // Starts a task when it is shown, like outbound picking: it is assigned to the picker and becomes PICKING. A task
-  // started by another picker is refused, and the picker is told so.
-  useEffect(() => {
-    if (!currentTaskId || !isCurrentTaskPending) {
-      return;
-    }
-    dispatch(
-      startReplenishmentTaskAction(currentTaskId, ({ response, errorMessage }) => {
-        if (errorMessage) {
-          Alert.alert('Unable To Start Task', errorMessage);
-          return;
-        }
-        const startedTask = response?.data;
-        setAllTasks((tasks) =>
-          tasks.map((task) =>
-            task.id === currentTaskId ? startedTask ?? { ...task, status: ReplenishmentTaskStatus.PICKING } : task
-          )
-        );
-      })
-    );
-  }, [currentTaskId, isCurrentTaskPending, dispatch]);
+  // Tasks started by another picker are left out: the server refuses to pick them
+  const availableTasks = (tasks: ReplenishmentTask[]) => tasks.filter((task) => isTaskAvailableTo(task, userId));
 
   const startSession = (list: ReplenishmentList): Promise<SessionStart | false> =>
     new Promise((resolve) => {
@@ -127,7 +116,7 @@ export function ReplenishmentProvider({ children }: { children: ReactNode }) {
             return;
           }
 
-          const openTasks = response.data ?? [];
+          const openTasks = availableTasks(response.data ?? []);
           if (openTasks.length === 0 && list.status !== LIST_STATUS_PICKED) {
             Alert.alert('No Tasks', `No open replenishment tasks were found for ${list.orderNumber}.`);
             resolve(false);
@@ -154,7 +143,7 @@ export function ReplenishmentProvider({ children }: { children: ReactNode }) {
             return;
           }
 
-          const openTasks = response.data ?? [];
+          const openTasks = availableTasks(response.data ?? []);
           if (openTasks.length === 0) {
             Alert.alert('No Tasks', 'No open replenishment tasks were found.');
             resolve(false);
@@ -191,7 +180,7 @@ export function ReplenishmentProvider({ children }: { children: ReactNode }) {
             callback?.({ errorMessage: errorMessage ?? 'Failed to load replenishment tasks.' });
             return;
           }
-          setListTasks(response.data);
+          setListTasks(withSessionTasks(response.data, allTasks));
           callback?.({});
         },
         ALL_TASK_STATUSES
@@ -201,6 +190,32 @@ export function ReplenishmentProvider({ children }: { children: ReactNode }) {
 
   const goToTask = (index: number) => {
     setCurrentTaskIndex(index);
+  };
+
+  const startCurrentTask = (callback: Callback) => {
+    const task = currentTask;
+    if (!task) {
+      callback({ errorMessage: 'No current replenishment task.' });
+      return;
+    }
+    // Already started by this picker, e.g. on coming back to the location screen
+    if (task.status === ReplenishmentTaskStatus.PICKING && task.assignee && isTaskAvailableTo(task, userId)) {
+      callback({});
+      return;
+    }
+    dispatch(
+      startReplenishmentTaskAction(task.id, ({ response, errorMessage }) => {
+        if (errorMessage) {
+          callback({ errorMessage });
+          return;
+        }
+        const startedTask = response?.data;
+        setAllTasks((tasks) =>
+          tasks.map((t) => (t.id === task.id ? startedTask ?? { ...t, status: ReplenishmentTaskStatus.PICKING } : t))
+        );
+        callback({});
+      })
+    );
   };
 
   const skipCurrentTask = () => {
@@ -298,7 +313,7 @@ export function ReplenishmentProvider({ children }: { children: ReactNode }) {
             // In a sequential session, the reload also brings new open tasks of other lists: they join the run
             getReplenishmentTasksAction(currentList?.id, ({ response: openTasksResponse }) => {
               // When the reload fails, the session goes on with the tasks it has
-              const tasksWithReallocated = appendNewTasks(tasks, openTasksResponse?.data ?? []);
+              const tasksWithReallocated = appendNewTasks(tasks, availableTasks(openTasksResponse?.data ?? []));
               const reallocatedTasks = tasksWithReallocated.slice(tasks.length);
               setAllTasks(tasksWithReallocated);
               if (reallocatedTasks.length > 0) {
@@ -358,6 +373,7 @@ export function ReplenishmentProvider({ children }: { children: ReactNode }) {
         startSequentialSession,
         loadListTasks,
         goToTask,
+        startCurrentTask,
         skipCurrentTask,
         pickCurrentTask,
         shortPickTask,
